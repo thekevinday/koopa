@@ -30,7 +30,7 @@ class c_base_session {
 
   private $name;
   private $id_user;
-  private $ip;
+  private $host;
   private $password;
   private $session_id;
   private $settings;
@@ -53,7 +53,7 @@ class c_base_session {
 
     $this->name = NULL;
     $this->id_user = NULL;
-    $this->ip = NULL;
+    $this->host = NULL;
     $this->password = NULL;
     $this->session_id = NULL;
     $this->settings = NULL;
@@ -82,7 +82,7 @@ class c_base_session {
 
     unset($this->name);
     unset($this->id_user);
-    unset($this->ip);
+    unset($this->host);
     unset($this->password);
     unset($this->session_id);
     unset($this->special);
@@ -186,35 +186,35 @@ class c_base_session {
   }
 
   /**
-   * Assigns the ip address associated with the session.
+   * Assigns the host ip address associated with the session.
    *
-   * @param string $ip
-   *   The ip address.
+   * @param string $host
+   *   The host ip address.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_ip($ip) {
-    if (!is_string($ip) || empty($ip)) {
+  public function set_host($host) {
+    if (!is_string($host) || empty($host)) {
       return c_base_return_error::s_false();
     }
 
-    if (mb_strlen($ip) == 0 || ip2long($ip) === FALSE) {
+    if (mb_strlen($host) == 0 || ip2long($host) === FALSE) {
       return c_base_return_error::s_false();
     }
 
-    $this->ip = $ip;
+    $this->host = $host;
     return new c_base_return_true();
   }
 
   /**
-   * Returns the stored ip address.
+   * Returns the stored host ip address.
    *
    * @return c_base_return_string
-   *   The ip address string.
+   *   The host ip address string.
    */
-  public function get_ip() {
-    return c_base_return_string::s_new($this->ip);
+  public function get_host() {
+    return c_base_return_string::s_new($this->host);
   }
 
   /**
@@ -617,7 +617,7 @@ class c_base_session {
    * @see: c_base_session::p_transfer()
    */
   public function do_pull() {
-    if (is_null($this->ip) || is_null($this->session_id)) {
+    if (is_null($this->host) || is_null($this->session_id)) {
       return c_base_return_error::s_false();
     }
 
@@ -625,7 +625,7 @@ class c_base_session {
       return c_base_return_error::s_false();
     }
 
-    $response = $this->p_transfer(array('ip' => $this->ip, 'session_id' => $this->session_id));
+    $response = $this->p_transfer(array('ip' => $this->host, 'session_id' => $this->session_id));
     if (c_base_return::s_has_error($response)) {
       return $response->get_error();
     }
@@ -690,13 +690,13 @@ class c_base_session {
    *   TRUE on success, FALSE on failure.
    *
    * @see: c_base_session::set_name()
-   * @see: c_base_session::set_ip()
+   * @see: c_base_session::set_host()
    * @see: c_base_session::set_password()
    * @see: c_base_session::do_connect()
    * @see: c_base_session::p_transfer()
    */
   public function do_push($interval_expire = NULL, $interval_max = NULL) {
-    if (is_null($this->name) || is_null($this->id_user) || is_null($this->ip) || is_null($this->password)) {
+    if (is_null($this->name) || is_null($this->id_user) || is_null($this->host) || is_null($this->password)) {
       return c_base_return_error::s_false();
     }
 
@@ -717,7 +717,7 @@ class c_base_session {
       $this->settings = array();
     }
 
-    $response = $this->p_transfer(array('name' => $this->name, 'id_user' => $this->id_user, 'ip' => $this->ip, 'password' => $this->password, 'expire' => $interval_expire, 'max' => $interval_max, 'settings' => $this->settings));
+    $response = $this->p_transfer(array('name' => $this->name, 'id_user' => $this->id_user, 'ip' => $this->host, 'password' => $this->password, 'expire' => $interval_expire, 'max' => $interval_max, 'settings' => $this->settings));
     if (c_base_return::s_has_error($response)) {
       return c_base_return_error::s_false();
     }
@@ -763,7 +763,7 @@ class c_base_session {
    * @see: self::p_transfer()
    */
   public function do_terminate() {
-    if (is_null($this->ip) || is_null($this->session_id)) {
+    if (is_null($this->host) || is_null($this->session_id)) {
       return c_base_return_error::s_false();
     }
 
@@ -771,7 +771,7 @@ class c_base_session {
       return c_base_return_error::s_false();
     }
 
-    $response = $this->p_transfer(array('ip' => $this->ip, 'session_id' => $this->session_id, 'close' => TRUE));
+    $response = $this->p_transfer(array('ip' => $this->host, 'session_id' => $this->session_id, 'close' => TRUE));
     if (c_base_return::s_has_error($response)) {
       return $response->get_error();
     }
@@ -905,7 +905,7 @@ class c_base_session_return extends c_base_return_value {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, FALSE);
+    return self::p_s_value_exact($return, __CLASS__, new c_base_session());
   }
 
   /**

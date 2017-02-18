@@ -20,9 +20,10 @@ class c_base_mime {
   const CATEGORY_APPLICATION = 7000; // only for application/* that values not covered by any other category.
 
 
-  const TYPE_UNKNOWN  = 0;
-  const TYPE_PROVIDED = 1;
-  const TYPE_STREAM   = 2;
+  const TYPE_UNKNOWN   = 0;
+  const TYPE_PROVIDED  = 1;
+  const TYPE_STREAM    = 2;
+  const TYPE_MULTIPART = 3;
 
   const TYPE_TEXT_PLAIN = 1001;
   const TYPE_TEXT_HTML  = 1002;
@@ -77,8 +78,9 @@ class c_base_mime {
 
 
   private static $s_names_provided = array(
-    self::TYPE_PROVIDED => array('*/*', 'text/*', 'image/*', 'audio/*', 'video/*', 'application/*'),
-    self::TYPE_STREAM   => array('application/octet-stream'),
+    self::TYPE_PROVIDED  => array('*/*', 'text/*', 'image/*', 'audio/*', 'video/*', 'application/*'),
+    self::TYPE_STREAM    => array('application/octet-stream'),
+    self::TYPE_MULTIPART => array('multipart/form-data'),
   );
 
   private static $s_names_text = array(

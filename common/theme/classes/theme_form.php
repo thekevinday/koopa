@@ -11,7 +11,6 @@
 // include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-require_once('common/base/classes/base_form.php');
 
 // global:
 //accesskey
@@ -95,7 +94,7 @@ require_once('common/base/classes/base_form.php');
  *
  * @see: https://www.w3.org/TR/html5/forms.html#forms
  */
-class c_theme_form_tag extends c_base_form_tag {
+class c_theme_form_tag extends c_base_markup_tag {
   private $attributes;
 
   /**
@@ -265,7 +264,7 @@ class c_theme_form_tag extends c_base_form_tag {
 
       case self::ATTRIBUTE_ACCEPT:
       case self::ATTRIBUTE_FORM_ENCODE_TYPE:
-        if (!this->pr_validate_value_mime_type($value)) {
+        if (!$this->pr_validate_value_mime_type($value)) {
           return c_base_return_false();
         }
         break;
@@ -280,7 +279,7 @@ class c_theme_form_tag extends c_base_form_tag {
         break;
 
       case self::ATTRIBUTE_FORM_METHOD:
-        if (!this->pr_validate_value_http_method($value)) {
+        if (!$this->pr_validate_value_http_method($value)) {
           return c_base_return_false();
         }
         break;
@@ -315,7 +314,7 @@ class c_theme_form_tag extends c_base_form_tag {
    * @param int $attribute
    *   The attribute to assign.
    *
-   * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_false
+   * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
    *   The value assigned to the attribte (the data type is different per attribute).
    *   FALSE is returned if the element does not exist.
    *   FALSE with error bit set is returned on error.

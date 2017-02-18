@@ -321,7 +321,12 @@ class c_base_http extends c_base_rfc_string {
    *   The language class string.
    */
   public function get_language_class() {
-    return c_return_status_string::s_new($this->language_class);
+    if (is_null($this->language_class)) {
+      // provide us-only as a failsafe/fallback.
+      $this->language_class = 'c_base_language_us_only';
+    }
+
+    return c_base_return_string::s_new($this->language_class);
   }
 
   /**
@@ -5634,7 +5639,7 @@ class c_base_http extends c_base_rfc_string {
       'invalid' => FALSE,
     );
 
-    $stop = self::p_length_string($match) + 1;
+    $stop = self::p_length_string($match);
     if ($stop == 0) {
       unset($stop);
 
@@ -5665,7 +5670,7 @@ class c_base_http extends c_base_rfc_string {
 
     while ($current < $stop) {
       $weak = FALSE;
-      if ($text['ordinals'][$current] == c_base_ascii::W) {
+      if ($text['ordinals'][$current] == c_base_ascii::UPPER_W) {
         $current++;
         if ($current >= $stop) {
           $result['invalid'] = TRUE;
@@ -7907,5 +7912,80 @@ class c_base_http extends c_base_rfc_string {
       // @todo, using ascii armor on entire body.
       //        should be a header field containing the public key.
     }
+  }
+}
+/**
+ * A return class whose value is represented as a generic c_base_markup_tag_return.
+ */
+class c_base_http_return extends c_base_return_object {
+  use t_base_return_value_exact;
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, new c_base_http());
+  }
+
+  /**
+   * Assign the value.
+   *
+   * @param c_base_http $value
+   *   Any value so long as it is an resource.
+   *   NULL is not allowed.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value($value) {
+    if (!($value instanceof c_base_http)) {
+      return FALSE;
+    }
+
+    $this->value = $value;
+    return TRUE;
+  }
+
+  /**
+   * Return the value.
+   *
+   * @return c_base_http|null $value
+   *   The value c_base_http stored within this class.
+   *   NULL may be returned if there is no defined valid c_base_markup_tag.
+   */
+  public function get_value() {
+    if (!is_null($this->value) && !($this->value instanceof c_base_http)) {
+      $this->value = NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return c_base_http $value
+   *   The value c_base_html stored within this class.
+   */
+  public function get_value_exact() {
+    if (!($this->value instanceof c_base_http)) {
+      $this->value = new c_base_html();
+    }
+
+    return $this->value;
   }
 }

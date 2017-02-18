@@ -3,7 +3,7 @@
  * @file
  * Provides a class for managing HTML5 Markup.
  *
- * This is currently a draft/brainstorm and is subject to be completely rewritten/redesigned.
+ * This provides basic HTML5 support in a relatively straight-forward and rough way.
  *
  * @see: https://www.w3.org/TR/html5/
  */
@@ -11,449 +11,1361 @@
 // include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
+require_once('common/base/classes/base_markup.php');
 
 /**
- * A generic class for HTML tag attributes.
+ * A generic container for html tags.
  *
- * This is for the internal storage of the attributes and not external.
- * Externally, every attribute type is a string.
- * The internal uses PHP structures where easily possible.
- * Special case string values, such as percentage symbols, are not used internally.
+ * This uses a simple approach to store different html tags.
  *
- * @todo: should the class name include internal?
- * @todo: should external be in the html output class?
- * @todo: what about form processing/validation (which has external values)?
- * ---- Above is old comments to be reviewed. ----
- *
- * A generic class for HTML tag attributes.
- * This should accept and handle all
- *
- * @see: https://www.w3.org/TR/html5/forms.html#forms
+ * @todo: add support for non-standard tag attributes, which will just be a string or NULL.
  */
-class c_base_html_attribute_values {
-  const TYPE_NONE                  = 0;
-  const TYPE_BOOLEAN               = 1; // https://www.w3.org/TR/html5/infrastructure.html#boolean-attributes
-  const TYPE_ENUMERATED            = 2; // https://www.w3.org/TR/html5/infrastructure.html#keywords-and-enumerated-attributes
-  const TYPE_NUMBER                = 3; // https://www.w3.org/TR/html5/infrastructure.html#numbers
-  const TYPE_NUMBER_SIGNED         = 4; // https://www.w3.org/TR/html5/infrastructure.html#signed-integers
-  const TYPE_NUMBER_UNSIGNED       = 5; // https://www.w3.org/TR/html5/infrastructure.html#non-negative-integers
-  const TYPE_NUMBER_FLOAT          = 6; // https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
-  const TYPE_NUMBER_DIMENSION      = 7; // https://www.w3.org/TR/html5/infrastructure.html#percentages-and-dimensions
-  const TYPE_NUMBER_LIST           = 8; // https://www.w3.org/TR/html5/infrastructure.html#lists-of-integers
-  const TYPE_NUMBER_DIMENSION_LIST = 9; // https://www.w3.org/TR/html5/infrastructure.html#lists-of-dimensions
-  const TYPE_DATE                  = 10; // https://www.w3.org/TR/html5/infrastructure.html#dates-and-times
-  const TYPE_DATE_MONTH            = 11; // https://www.w3.org/TR/html5/infrastructure.html#months
-  const TYPE_DATE_DATES            = 12; // https://www.w3.org/TR/html5/infrastructure.html#dates
-  const TYPE_DATE_DATES_YEARLESS   = 13; // https://www.w3.org/TR/html5/infrastructure.html#yearless-dates
-  const TYPE_DATE_TIMES            = 14; // https://www.w3.org/TR/html5/infrastructure.html#times
-  const TYPE_DATE_DATES_FLOATING   = 15; // https://www.w3.org/TR/html5/infrastructure.html#floating-dates-and-times
-  const TYPE_DATE_TIMEZONE         = 16; // https://www.w3.org/TR/html5/infrastructure.html#time-zones
-  const TYPE_DATE_GLOBAL           = 17; // https://www.w3.org/TR/html5/infrastructure.html#global-dates-and-times
-  const TYPE_DATE_WEEKS            = 18; // https://www.w3.org/TR/html5/infrastructure.html#weeks
-  const TYPE_DATE_DURATION         = 19; // https://www.w3.org/TR/html5/infrastructure.html#durations
-  const TYPE_DATE_VAGUE            = 20; // https://www.w3.org/TR/html5/infrastructure.html#vaguer-moments-in-time
-  const TYPE_COLOR                 = 21; // https://www.w3.org/TR/html5/infrastructure.html#colors
-  const TYPE_TOKENS_SPACE          = 22; // https://www.w3.org/TR/html5/infrastructure.html#space-separated-tokenss
-  const TYPE_TOKENS_COMMA          = 23; // https://www.w3.org/TR/html5/infrastructure.html#comma-separated-tokens
-  const TYPE_REFERENCE             = 24; // https://www.w3.org/TR/html5/infrastructure.html#syntax-references
-  const TYPE_MEDIA                 = 25; // https://www.w3.org/TR/html5/infrastructure.html#mq
-  const TYPE_URL                   = 26; // https://www.w3.org/TR/html5/infrastructure.html#urls
-
-  const VALUE_NONE      = 0;
-  const VALUE_TRUE      = 1;
-  const VALUE_FALSE     = 2;
-  const VALUE_INHERITED = 3;
+class c_base_html {
+  private $id;
+  private $attributes;
+  private $attributes_body;
+  private $type;
+  private $method;
+  private $headers;
+  private $body;
 
   /**
    * Class constructor.
    */
   public function __construct() {
-    // do nothing.
+    $this->id = NULL;
+    $this->attributes = array();
+    $this->attributes_body = array();
+    $this->headers = array();
+    $this->body = array();
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    // do nothing.
+    unset($this->id);
+    unset($this->attributes);
+    unset($this->attributes_body);
+    unset($this->headers);
+    unset($this->body);
   }
 
   /**
-   * Validate that value is a boolean.
+   * Assign a unique numeric id to represent this form.
    *
-   * @param int $value
-   *   The value to validate.
-   * @param bool $include_inherited
-   *   (optional) When TRUE, the "Inherited" state is supported.
+   * @param int $id
+   *   The unique form tag id to assign.
    *
    * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
+   *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
-   *
-   * see: https://www.w3.org/TR/html5/infrastructure.html#boolean-attributes
    */
-  public static function is_boolean($value, $include_inherited = FALSE) {
-    if (!is_int($value)) {
+  public function set_id($id) {
+    if (!is_int($id)) {
+      return c_base_return_error::s_false();
+    }
+
+    $this->id = $id;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Get the unique id assigned to this object.
+   *
+   * @return c_base_return_int|c_base_return_status
+   *   The unique numeric id assigned to this object.
+   *   FALSE is returned if no id is assigned.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_id() {
+    if (!is_int($this->id)) {
+      return c_base_return_false();
+    }
+
+    return c_base_return_int::s_new($this->id);
+  }
+
+  /**
+   * Assign the specified attribute.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   * @param $value
+   *   The value of the attribute.
+   *   The actual value type is specific to each attribute type.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_attribute($attribute, $value) {
+    if (!is_int($attribute)) {
+      return c_base_return_error::s_false();
+    }
+
+    return $this->p_set_attribute($attribute, $value);
+  }
+
+  /**
+   * Assign the specified attribute to the body tag.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   * @param $value
+   *   The value of the attribute.
+   *   The actual value type is specific to each attribute type.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_attribute_body($attribute, $value) {
+    if (!is_int($attribute)) {
+      return c_base_return_error::s_false();
+    }
+
+    return $this->p_set_attribute($attribute, $value, TRUE);
+  }
+
+  /**
+   * Get the attributes assigned to this object.
+   *
+   * @return c_base_return_array
+   *   The attributes assigned to this class.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_attributes() {
+    if (!isset($this->attributes) && !is_array($this->attributes)) {
+      $this->attributes = array();
+    }
+
+    return c_base_return_array::s_new($this->attributes);
+  }
+
+  /**
+   * Get the value of a single attribute assigned to this object.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   *
+   * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
+   *   The value assigned to the attribte (the data type is different per attribute).
+   *   FALSE is returned if the element does not exist.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_attribute($attribute) {
+    if (!is_int($attribute)) {
+      return c_base_return_error::s_false();
+    }
+
+    return $this->p_get_attribute($attribute);
+  }
+
+  /**
+   * Get the value of a single attribute assigned to this object.
+   *
+   * These attributes are assigned to the body tag.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   *
+   * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
+   *   The value assigned to the attribte (the data type is different per attribute).
+   *   FALSE is returned if the element does not exist.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_attribute_body($attribute) {
+    if (!is_int($attribute)) {
+      return c_base_return_error::s_false();
+    }
+
+    return $this->p_get_attribute($attribute, TRUE);
+  }
+
+  /**
+   * Assign a tag to the HTML.
+   *
+   * @param c_base_markup_tag $tag
+   *   The html tag tp assign.
+   * @param int|null $delta
+   *   (optional) A position in the page to assign the tag.
+   *   If NULL, then the tag is appended.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_tag($tag, $delta = NULL) {
+    if (!($tag instanceof c_base_markup_tag)) {
+      return c_base_return_error::s_false();
+    }
+
+    if (!is_null($delta) && !is_int($delta)) {
+      return c_base_return_error::s_false();
+    }
+
+    if (!is_array($this->body)) {
+      $this->body = array();
+    }
+
+    if (is_null($delta)) {
+      $this->body[] = $tag;
+    }
+    else {
+      $this->body[$delta] = $tag;
+    }
+    return new c_base_return_true();
+  }
+
+  /**
+   * Get tag from the HTML.
+   *
+   * @param int $delta
+   *   The position in the array of the tag to get.
+   *
+   * @return c_base_markup_tag_return|c_base_return_status
+   *   The tag, if found at delta.
+   *   FALSE is returned if no tag is at delta.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_tag($delta) {
+    if (!is_int($delta)) {
+      return c_base_return_error::s_false();
+    }
+
+    if (!array_key_exists($delta, $this->body)) {
       return new c_base_return_false();
     }
 
-    if (!is_bool($include_inherited)) {
+    return c_base_markup_tag_return::s_new($this->body[$delta]);
+  }
+
+  /**
+   * Get all body assigned to the HTML.
+   *
+   * @return c_base_return_array
+   *   FALSE is returned if no tag is at delta.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_body() {
+    if (!is_array($this->body)) {
+      return c_base_return_array::s_new(array());
+    }
+
+    return c_base_return_array::s_new($this->body);
+  }
+
+  /**
+   * Assign a header to the HTML.
+   *
+   * @param c_base_markup_tag $header
+   *   The html header tp assign.
+   * @param int|null $delta
+   *   (optional) A position in the page to assign the header.
+   *   If NULL, then the header is appended.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_header($header, $delta = NULL) {
+    if (!($header instanceof c_base_markup_tag)) {
       return c_base_return_error::s_false();
+    }
+
+    if (!is_null($delta) && !is_int($delta)) {
+      return c_base_return_error::s_false();
+    }
+
+    // only certain header types are allowed.
+    $type = $header->get_type()->get_value_exact();
+    switch ($type) {
+      case c_base_markup_tag::TYPE_BASE:
+      case c_base_markup_tag::TYPE_LINK:
+      case c_base_markup_tag::TYPE_META:
+      case c_base_markup_tag::TYPE_NO_SCRIPT:
+      case c_base_markup_tag::TYPE_SCRIPT:
+      case c_base_markup_tag::TYPE_STYLE:
+      case c_base_markup_tag::TYPE_TITLE:
+        break;
+      default:
+        return new c_base_retun_false();
+    }
+
+    if (!is_array($this->headers)) {
+      $this->headers = array();
+    }
+
+    if (is_null($delta)) {
+      $this->headers[] = $header;
+    }
+    else {
+      $this->headers[$delta] = $header;
+    }
+    return new c_base_return_true();
+  }
+
+  /**
+   * Get header from the HTML.
+   *
+   * @param int $delta
+   *   The position in the array of the header to get.
+   *
+   * @return c_base_markup_tag_return|c_base_return_status
+   *   The header, if found at delta.
+   *   FALSE is returned if no header is at delta.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_header($delta) {
+    if (!is_int($delta)) {
+      return c_base_return_error::s_false();
+    }
+
+    if (!array_key_exists($delta, $this->headers)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_markup_tag_return::s_new($this->headers[$delta]);
+  }
+
+  /**
+   * Get all headers assigned to the HTML.
+   *
+   * @return c_base_return_array
+   *   FALSE is returned if no header is at delta.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_headers() {
+    if (!is_array($this->headers)) {
+      return c_base_return_array::s_new(array());
+    }
+
+    return c_base_return_array::s_new($this->headers);
+  }
+
+  /**
+   * Protected function for mime values.
+   *
+   * @param int $value
+   *   The value of the attribute populate from c_base_mime.
+   *
+   * @return bool
+   *   TRUE on success.
+   *   FALSE otherwise.
+   */
+  protected function pr_validate_value_mime_type($value) {
+    if (!is_int($value)) {
+      return FALSE;
     }
 
     switch ($value) {
-      self::VALUE_NONE:
-      self::VALUE_TRUE:
-      self::VALUE_FALSE:
+      case c_base_mime::CATEGORY_UNKNOWN:
+      case c_base_mime::CATEGORY_PROVIDED:
+      case c_base_mime::CATEGORY_STREAM:
+      case c_base_mime::CATEGORY_TEXT:
+      case c_base_mime::CATEGORY_IMAGE:
+      case c_base_mime::CATEGORY_AUDIO:
+      case c_base_mime::CATEGORY_VIDEO:
+      case c_base_mime::CATEGORY_DOCUMENT:
+      case c_base_mime::CATEGORY_CONTAINER:
+      case c_base_mime::CATEGORY_APPLICATION:
+      case c_base_mime::TYPE_UNKNOWN:
+      case c_base_mime::TYPE_PROVIDED:
+      case c_base_mime::TYPE_STREAM:
+      case c_base_mime::TYPE_MULTIPART:
+      case c_base_mime::TYPE_TEXT_PLAIN:
+      case c_base_mime::TYPE_TEXT_HTML:
+      case c_base_mime::TYPE_TEXT_RSS:
+      case c_base_mime::TYPE_TEXT_ICAL:
+      case c_base_mime::TYPE_TEXT_CSV:
+      case c_base_mime::TYPE_TEXT_XML:
+      case c_base_mime::TYPE_TEXT_CSS:
+      case c_base_mime::TYPE_TEXT_JS:
+      case c_base_mime::TYPE_TEXT_JSON:
+      case c_base_mime::TYPE_TEXT_RICH:
+      case c_base_mime::TYPE_TEXT_XHTML:
+      case c_base_mime::TYPE_TEXT_PS:
+      case c_base_mime::TYPE_IMAGE_PNG:
+      case c_base_mime::TYPE_IMAGE_GIF:
+      case c_base_mime::TYPE_IMAGE_JPEG:
+      case c_base_mime::TYPE_IMAGE_BMP:
+      case c_base_mime::TYPE_IMAGE_SVG:
+      case c_base_mime::TYPE_IMAGE_TIFF:
+      case c_base_mime::TYPE_AUDIO_WAV:
+      case c_base_mime::TYPE_AUDIO_OGG:
+      case c_base_mime::TYPE_AUDIO_MP3:
+      case c_base_mime::TYPE_AUDIO_MP4:
+      case c_base_mime::TYPE_AUDIO_MIDI:
+      case c_base_mime::TYPE_VIDEO_MPEG:
+      case c_base_mime::TYPE_VIDEO_OGG:
+      case c_base_mime::TYPE_VIDEO_H264:
+      case c_base_mime::TYPE_VIDEO_QUICKTIME:
+      case c_base_mime::TYPE_VIDEO_DV:
+      case c_base_mime::TYPE_VIDEO_JPEG:
+      case c_base_mime::TYPE_VIDEO_WEBM:
+      case c_base_mime::TYPE_DOCUMENT_LIBRECHART:
+      case c_base_mime::TYPE_DOCUMENT_LIBREFORMULA:
+      case c_base_mime::TYPE_DOCUMENT_LIBREGRAPHIC:
+      case c_base_mime::TYPE_DOCUMENT_LIBREPRESENTATION:
+      case c_base_mime::TYPE_DOCUMENT_LIBRESPREADSHEET:
+      case c_base_mime::TYPE_DOCUMENT_LIBRETEXT:
+      case c_base_mime::TYPE_DOCUMENT_LIBREHTML:
+      case c_base_mime::TYPE_DOCUMENT_PDF:
+      case c_base_mime::TYPE_DOCUMENT_ABIWORD:
+      case c_base_mime::TYPE_DOCUMENT_MSWORD:
+      case c_base_mime::TYPE_DOCUMENT_MSEXCEL:
+      case c_base_mime::TYPE_DOCUMENT_MSPOWERPOINT:
+      case c_base_mime::TYPE_CONTAINER_TAR:
+      case c_base_mime::TYPE_CONTAINER_CPIO:
+      case c_base_mime::TYPE_CONTAINER_JAVA:
+        break;
+      default:
+        return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Protected function for character set values.
+   *
+   * @param int $value
+   *   The value of the attribute populate from c_base_charset.
+   *
+   * @return bool
+   *   TRUE on success.
+   *   FALSE otherwise.
+   */
+  protected function pr_validate_value_character_set($value) {
+    if (!is_int($value)) {
+      return FALSE;
+    }
+
+    switch ($value) {
+      case c_base_charset::UNDEFINED:
+      case c_base_charset::ASCII:
+      case c_base_charset::UTF_8:
+      case c_base_charset::UTF_16:
+      case c_base_charset::UTF_32:
+      case c_base_charset::ISO_8859_1:
+      case c_base_charset::ISO_8859_2:
+      case c_base_charset::ISO_8859_3:
+      case c_base_charset::ISO_8859_4:
+      case c_base_charset::ISO_8859_5:
+      case c_base_charset::ISO_8859_6:
+      case c_base_charset::ISO_8859_7:
+      case c_base_charset::ISO_8859_8:
+      case c_base_charset::ISO_8859_9:
+      case c_base_charset::ISO_8859_10:
+      case c_base_charset::ISO_8859_11:
+      case c_base_charset::ISO_8859_12:
+      case c_base_charset::ISO_8859_13:
+      case c_base_charset::ISO_8859_14:
+      case c_base_charset::ISO_8859_15:
+      case c_base_charset::ISO_8859_16:
+        break;
+      default:
+        return FALSE;
+    }
+
+    return TRUE;
+  }
+
+
+
+  /**
+   * Get the value of a single attribute assigned to this object.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   * @param bool $body
+   *   (optional) When TRUE, the body attributes are returned.
+   *   When FALSE, the normal attributes are returned.
+   *
+   * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
+   *   The value assigned to the attribte (the data type is different per attribute).
+   *   FALSE is returned if the element does not exist.
+   *   FALSE with error bit set is returned on error.
+   */
+  private function p_get_attribute($attribute, $body = FALSE) {
+    if ($body) {
+      if (!isset($this->attributes_body) && !is_array($this->attributes_body)) {
+        $this->attributes_body = array();
+      }
+    }
+    else {
+      if (!isset($this->attributes) && !is_array($this->attributes)) {
+        $this->attributes = array();
+      }
+    }
+
+    if ($body) {
+      if (!array_key_exists($attribute, $this->attributes_body)) {
+        return new c_base_return_false();
+      }
+    }
+    else {
+      if (!array_key_exists($attribute, $this->attributes)) {
+        return new c_base_return_false();
+      }
+    }
+
+    switch ($attribute) {
+      case c_base_markup_attributes::ATTRIBUTE_NONE:
+        // should not be possible, so consider this an error (attributes set to NONE are actually unset from the array).
+        return c_base_return_error::s_false();
+
+      case c_base_markup_attributes::ATTRIBUTE_ABBR:
+      case c_base_markup_attributes::ATTRIBUTE_ACCESS_KEY:
+      case c_base_markup_attributes::ATTRIBUTE_ACTION:
+      case c_base_markup_attributes::ATTRIBUTE_ALTERNATE:
+      case c_base_markup_attributes::ATTRIBUTE_BY:
+      case c_base_markup_attributes::ATTRIBUTE_CALCULATE_MODE:
+      case c_base_markup_attributes::ATTRIBUTE_CLIP_PATH:
+      case c_base_markup_attributes::ATTRIBUTE_CLIP_PATH_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_CITE:
+      case c_base_markup_attributes::ATTRIBUTE_COLOR:
+      case c_base_markup_attributes::ATTRIBUTE_COORDINATES:
+      case c_base_markup_attributes::ATTRIBUTE_CONTENT:
+      case c_base_markup_attributes::ATTRIBUTE_CONTENT_EDITABLE:
+      case c_base_markup_attributes::ATTRIBUTE_CROSS_ORIGIN:
+      case c_base_markup_attributes::ATTRIBUTE_D:
+      case c_base_markup_attributes::ATTRIBUTE_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_DURATION:
+      case c_base_markup_attributes::ATTRIBUTE_FILL:
+      case c_base_markup_attributes::ATTRIBUTE_FILL_RULE:
+      case c_base_markup_attributes::ATTRIBUTE_FILL_STROKE:
+      case c_base_markup_attributes::ATTRIBUTE_FONT_SPECIFICATION:
+      case c_base_markup_attributes::ATTRIBUTE_FOR:
+      case c_base_markup_attributes::ATTRIBUTE_FORM:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_ACTION:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_TARGET:
+      case c_base_markup_attributes::ATTRIBUTE_FORMAT:
+      case c_base_markup_attributes::ATTRIBUTE_FROM:
+      case c_base_markup_attributes::ATTRIBUTE_GLYPH_REFERENCE:
+      case c_base_markup_attributes::ATTRIBUTE_GRADIANT_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_GRADIANT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_GRAPHICS:
+      case c_base_markup_attributes::ATTRIBUTE_HEADERS:
+      case c_base_markup_attributes::ATTRIBUTE_HEIGHT:
+      case c_base_markup_attributes::ATTRIBUTE_HREF:
+      case c_base_markup_attributes::ATTRIBUTE_HREF_NO:
+      case c_base_markup_attributes::ATTRIBUTE_HTTP_EQUIV:
+      case c_base_markup_attributes::ATTRIBUTE_ICON:
+      case c_base_markup_attributes::ATTRIBUTE_ID:
+      case c_base_markup_attributes::ATTRIBUTE_IN:
+      case c_base_markup_attributes::ATTRIBUTE_IN_2:
+      case c_base_markup_attributes::ATTRIBUTE_IS_MAP:
+      case c_base_markup_attributes::ATTRIBUTE_KEY_POINTS:
+      case c_base_markup_attributes::ATTRIBUTE_KEY_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_KIND:
+      case c_base_markup_attributes::ATTRIBUTE_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_LENGTH_ADJUST:
+      case c_base_markup_attributes::ATTRIBUTE_LIST:
+      case c_base_markup_attributes::ATTRIBUTE_LOCAL:
+      case c_base_markup_attributes::ATTRIBUTE_LONG_DESCRIPTION:
+      case c_base_markup_attributes::ATTRIBUTE_MARKERS:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MASK_CONTENT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MASK_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_MEDIA:
+      case c_base_markup_attributes::ATTRIBUTE_METHOD:
+      case c_base_markup_attributes::ATTRIBUTE_MODE:
+      case c_base_markup_attributes::ATTRIBUTE_MINIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ABORT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_AFTER_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_ITERATION:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_start:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ABORT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_AFTER_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_ITERATION:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_start:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BLUR:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CANCEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CLICK:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CONTEXT_MENU:
+      case c_base_markup_attributes::ATTRIBUTE_ON_COPY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CAN_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CAN_PLAY_THROUGH:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CUE_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DOUBLE_CLICK:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_ENTER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_LEAVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_OVER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DROP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DURATION_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_EMPTIED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ENDED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ERROR:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS_IN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS_OUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_HASH_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INPUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INSTALLED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INVALID:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_DOWN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_PRESS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_UP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOADED_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOADED_META_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOAD_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_DOWN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_ENTER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_LEAVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_MOVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_OVER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_OUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_UP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MESSAGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_WHEEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_OPEN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ONLINE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_OFFLINE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAGE_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAGE_HIDE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PASTE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAUSE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PLAYING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PROGRESS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_POP_STATE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RATED_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RESIZE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RESET:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RATE_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SCROLL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEARCH:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SELECT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SUBMIT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEEKED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEEKING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_STALLED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SUSPEND:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_ON_STORAGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TIME_UPDATE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TRANSITION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOGGLE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_CANCEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_MOVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_VOLUME_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_WAITING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_WHEEL:
+      case c_base_markup_attributes::ATTRIBUTE_OFFSET:
+      case c_base_markup_attributes::ATTRIBUTE_OPEN:
+      case c_base_markup_attributes::ATTRIBUTE_ORIENTATION:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_CONTENT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_PATH:
+      case c_base_markup_attributes::ATTRIBUTE_PATH_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_PLACE_HOLDER:
+      case c_base_markup_attributes::ATTRIBUTE_POINTS:
+      case c_base_markup_attributes::ATTRIBUTE_POSTER:
+      case c_base_markup_attributes::ATTRIBUTE_PRELOAD:
+      case c_base_markup_attributes::ATTRIBUTE_PRESERVE_ASPECT_RATIO:
+      case c_base_markup_attributes::ATTRIBUTE_RADIO_GROUP:
+      case c_base_markup_attributes::ATTRIBUTE_SANDBOX:
+      case c_base_markup_attributes::ATTRIBUTE_SCOPE:
+      case c_base_markup_attributes::ATTRIBUTE_SHAPE:
+      case c_base_markup_attributes::ATTRIBUTE_REL:
+      case c_base_markup_attributes::ATTRIBUTE_RENDERING_INTENT:
+      case c_base_markup_attributes::ATTRIBUTE_REPEAT_COUNT:
+      case c_base_markup_attributes::ATTRIBUTE_ROLE:
+      case c_base_markup_attributes::ATTRIBUTE_ROTATE:
+      case c_base_markup_attributes::ATTRIBUTE_SIZE:
+      case c_base_markup_attributes::ATTRIBUTE_SIZES:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_DOCUMENT:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_SET:
+      case c_base_markup_attributes::ATTRIBUTE_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_SPREAD_METHOD:
+      case c_base_markup_attributes::ATTRIBUTE_STOP_COLOR:
+      case c_base_markup_attributes::ATTRIBUTE_STOP_OPACITY:
+      case c_base_markup_attributes::ATTRIBUTE_STYLE:
+      case c_base_markup_attributes::ATTRIBUTE_TARGET:
+      case c_base_markup_attributes::ATTRIBUTE_TEXT_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_TEXT_CONTENT_ELEMENTS:
+      case c_base_markup_attributes::ATTRIBUTE_TITLE:
+      case c_base_markup_attributes::ATTRIBUTE_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_TRANSLATE:
+      case c_base_markup_attributes::ATTRIBUTE_TO:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_BUTTON:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_LIST:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_SVG:
+      case c_base_markup_attributes::ATTRIBUTE_USE_MAP:
+      case c_base_markup_attributes::ATTRIBUTE_VALUE:
+      case c_base_markup_attributes::ATTRIBUTE_VIEW_BOX:
+      case c_base_markup_attributes::ATTRIBUTE_WIDTH:
+      case c_base_markup_attributes::ATTRIBUTE_WRAP:
+      case c_base_markup_attributes::ATTRIBUTE_XML:
+      case c_base_markup_attributes::ATTRIBUTE_XMLNS:
+      case c_base_markup_attributes::ATTRIBUTE_XMLNS_XLINK:
+      case c_base_markup_attributes::ATTRIBUTE_XML_SPACE:
+      case c_base_markup_attributes::ATTRIBUTE_ZOOM_AND_PAN:
+        if ($body) {
+          return c_base_return_string::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_string::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ATOMIC:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_AUTOCOMPLETE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ACTIVE_DESCENDANT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_BUSY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_CHECKED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_CONTROLS:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DESCRIBED_BY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DISABLED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DROP_EFFECT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_EXPANDED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_FLOW_TO:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_GRABBED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_HAS_POPUP:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_HIDDEN:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_INVALID:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LABELLED_BY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LEVEL:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LIVE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_MULTI_LINE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_MULTI_SELECTABLE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ORIENTATION:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_OWNS:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_POSITION_INSET:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_PRESSED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_READONLY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_RELEVANT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_REQUIRED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SELECTED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SET_SIZE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SORT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MAXIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MINIMIM:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_NOW:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_TEXT:
+        if ($body) {
+          return c_base_return_string::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_string::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_ASYNCHRONOUS:
+      case c_base_markup_attributes::ATTRIBUTE_ATTRIBUTE_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_COMPLETE:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_FOCUS:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_CHALLENGE:
+      case c_base_markup_attributes::ATTRIBUTE_CONTROLS:
+      case c_base_markup_attributes::ATTRIBUTE_CHECKED:
+      case c_base_markup_attributes::ATTRIBUTE_DEFAULT:
+      case c_base_markup_attributes::ATTRIBUTE_DEFER:
+      case c_base_markup_attributes::ATTRIBUTE_DISABLED:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_NO_VALIDATE:
+      case c_base_markup_attributes::ATTRIBUTE_HIDDEN:
+      case c_base_markup_attributes::ATTRIBUTE_LOOP:
+      case c_base_markup_attributes::ATTRIBUTE_MULTIPLE:
+      case c_base_markup_attributes::ATTRIBUTE_MUTED:
+      case c_base_markup_attributes::ATTRIBUTE_NO_VALIDATE:
+      case c_base_markup_attributes::ATTRIBUTE_READONLY:
+      case c_base_markup_attributes::ATTRIBUTE_REQUIRED:
+      case c_base_markup_attributes::ATTRIBUTE_REVERSED:
+      case c_base_markup_attributes::ATTRIBUTE_SCOPED:
+      case c_base_markup_attributes::ATTRIBUTE_SELECTED:
+      case c_base_markup_attributes::ATTRIBUTE_SORTABLE:
+      case c_base_markup_attributes::ATTRIBUTE_SORTED:
+      case c_base_markup_attributes::ATTRIBUTE_SPELLCHECK:
+        if ($body) {
+          return c_base_return_bool::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_bool::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_ACCEPT:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_ENCODE_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_ENCODING_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE:
+        if ($body) {
+          return c_base_return_int::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_int::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET:
+      case c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET:
+        if ($body) {
+          return c_base_return_int::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_int::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_CENTER_X:
+      case c_base_markup_attributes::ATTRIBUTE_CENTER_Y:
+      case c_base_markup_attributes::ATTRIBUTE_COLUMNS:
+      case c_base_markup_attributes::ATTRIBUTE_COLUMN_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_D_X:
+      case c_base_markup_attributes::ATTRIBUTE_D_Y:
+      case c_base_markup_attributes::ATTRIBUTE_FOCUS_X:
+      case c_base_markup_attributes::ATTRIBUTE_FOCUS_Y:
+      case c_base_markup_attributes::ATTRIBUTE_HIGH:
+      case c_base_markup_attributes::ATTRIBUTE_HREF_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_LOW:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_HEIGHT:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_WIDTH:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_MINIMUM_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_OPTIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS_X:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS_Y:
+      case c_base_markup_attributes::ATTRIBUTE_REFERENCE_X:
+      case c_base_markup_attributes::ATTRIBUTE_REFERENCE_Y:
+      case c_base_markup_attributes::ATTRIBUTE_ROWS:
+      case c_base_markup_attributes::ATTRIBUTE_ROW_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_START:
+      case c_base_markup_attributes::ATTRIBUTE_STEP:
+      case c_base_markup_attributes::ATTRIBUTE_TAB_INDEX:
+      case c_base_markup_attributes::ATTRIBUTE_VALUE_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_X:
+      case c_base_markup_attributes::ATTRIBUTE_X_1:
+      case c_base_markup_attributes::ATTRIBUTE_X_2:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_ACTUATE:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_HREF:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_Y:
+      case c_base_markup_attributes::ATTRIBUTE_Y_1:
+      case c_base_markup_attributes::ATTRIBUTE_Y_2:
+        if ($body) {
+          return c_base_return_int::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_int::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_FORM_METHOD:
+        if ($body) {
+          return c_base_return_int::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_int::s_new($this->attributes[$attribute]);
+        }
+
+      case c_base_markup_attributes::ATTRIBUTE_CLASS:
+        if ($body) {
+          return c_base_return_array::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_array::s_new($this->attributes[$attribute]);
+        }
+
+      default:
+        return new c_base_return_false();
+    }
+
+    return new c_base_return_false();
+  }
+
+  /**
+   * Assign the specified tag.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   * @param $value
+   *   The value of the attribute.
+   *   The actual value type is specific to each attribute type.
+   * @param bool $body
+   *   (optional) When TRUE, the body attributes are assigned.
+   *   When FALSE, the normal attributes are assigned.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  private function p_set_attribute($attribute, $value, $body = FALSE) {
+    switch ($attribute) {
+      case c_base_markup_attributes::ATTRIBUTE_NONE:
+        unset($this->attribute[$attribute]);
         return new c_base_return_true();
-      self::VALUE_INHERITED:
-        if ($include_inherited) {
-          return new c_base_return_true();
+
+      case c_base_markup_attributes::ATTRIBUTE_ABBR:
+      case c_base_markup_attributes::ATTRIBUTE_ACCESS_KEY:
+      case c_base_markup_attributes::ATTRIBUTE_ACTION:
+      case c_base_markup_attributes::ATTRIBUTE_ALTERNATE:
+      case c_base_markup_attributes::ATTRIBUTE_BY:
+      case c_base_markup_attributes::ATTRIBUTE_CALCULATE_MODE:
+      case c_base_markup_attributes::ATTRIBUTE_CLIP_PATH:
+      case c_base_markup_attributes::ATTRIBUTE_CLIP_PATH_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_CITE:
+      case c_base_markup_attributes::ATTRIBUTE_COLOR:
+      case c_base_markup_attributes::ATTRIBUTE_COORDINATES:
+      case c_base_markup_attributes::ATTRIBUTE_CONTENT:
+      case c_base_markup_attributes::ATTRIBUTE_CONTENT_EDITABLE:
+      case c_base_markup_attributes::ATTRIBUTE_CROSS_ORIGIN:
+      case c_base_markup_attributes::ATTRIBUTE_D:
+      case c_base_markup_attributes::ATTRIBUTE_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_DURATION:
+      case c_base_markup_attributes::ATTRIBUTE_FILL:
+      case c_base_markup_attributes::ATTRIBUTE_FILL_RULE:
+      case c_base_markup_attributes::ATTRIBUTE_FILL_STROKE:
+      case c_base_markup_attributes::ATTRIBUTE_FONT_SPECIFICATION:
+      case c_base_markup_attributes::ATTRIBUTE_FOR:
+      case c_base_markup_attributes::ATTRIBUTE_FORM:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_ACTION:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_TARGET:
+      case c_base_markup_attributes::ATTRIBUTE_FORMAT:
+      case c_base_markup_attributes::ATTRIBUTE_FROM:
+      case c_base_markup_attributes::ATTRIBUTE_GLYPH_REFERENCE:
+      case c_base_markup_attributes::ATTRIBUTE_GRADIANT_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_GRADIANT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_GRAPHICS:
+      case c_base_markup_attributes::ATTRIBUTE_HEADERS:
+      case c_base_markup_attributes::ATTRIBUTE_HEIGHT:
+      case c_base_markup_attributes::ATTRIBUTE_HREF:
+      case c_base_markup_attributes::ATTRIBUTE_HREF_NO:
+      case c_base_markup_attributes::ATTRIBUTE_HTTP_EQUIV:
+      case c_base_markup_attributes::ATTRIBUTE_ICON:
+      case c_base_markup_attributes::ATTRIBUTE_ID:
+      case c_base_markup_attributes::ATTRIBUTE_IN:
+      case c_base_markup_attributes::ATTRIBUTE_IN_2:
+      case c_base_markup_attributes::ATTRIBUTE_IS_MAP:
+      case c_base_markup_attributes::ATTRIBUTE_KEY_POINTS:
+      case c_base_markup_attributes::ATTRIBUTE_KEY_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_KIND:
+      case c_base_markup_attributes::ATTRIBUTE_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_LENGTH_ADJUST:
+      case c_base_markup_attributes::ATTRIBUTE_LIST:
+      case c_base_markup_attributes::ATTRIBUTE_LOCAL:
+      case c_base_markup_attributes::ATTRIBUTE_LONG_DESCRIPTION:
+      case c_base_markup_attributes::ATTRIBUTE_MARKERS:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MASK_CONTENT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MASK_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_MEDIA:
+      case c_base_markup_attributes::ATTRIBUTE_METHOD:
+      case c_base_markup_attributes::ATTRIBUTE_MODE:
+      case c_base_markup_attributes::ATTRIBUTE_MINIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ABORT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_AFTER_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_ITERATION:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_start:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ABORT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_AFTER_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_ITERATION:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ANIMATION_start:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BEFORE_PRINT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_BLUR:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CANCEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CLICK:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CONTEXT_MENU:
+      case c_base_markup_attributes::ATTRIBUTE_ON_COPY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CAN_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CAN_PLAY_THROUGH:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_CUE_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DOUBLE_CLICK:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_ENTER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_LEAVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_OVER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DRAG_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DROP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_DURATION_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_EMPTIED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ENDED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ERROR:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS_IN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_FOCUS_OUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_HASH_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INPUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INSTALLED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_INVALID:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_DOWN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_PRESS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_KEY_UP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOADED_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOADED_META_DATA:
+      case c_base_markup_attributes::ATTRIBUTE_ON_LOAD_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_DOWN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_ENTER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_LEAVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_MOVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_OVER:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_OUT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_UP:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MESSAGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_MOUSE_WHEEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_OPEN:
+      case c_base_markup_attributes::ATTRIBUTE_ON_ONLINE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_OFFLINE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAGE_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAGE_HIDE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PASTE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PAUSE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PLAYING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_PROGRESS:
+      case c_base_markup_attributes::ATTRIBUTE_ON_POP_STATE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RATED_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RESIZE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RESET:
+      case c_base_markup_attributes::ATTRIBUTE_ON_RATE_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SCROLL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEARCH:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SELECT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SUBMIT:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEEKED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SEEKING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_STALLED:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SUSPEND:
+      case c_base_markup_attributes::ATTRIBUTE_ON_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_ON_STORAGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TIME_UPDATE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TRANSITION_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOGGLE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_CANCEL:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_END:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_MOVE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_TOUCH_START:
+      case c_base_markup_attributes::ATTRIBUTE_ON_UNLOAD:
+      case c_base_markup_attributes::ATTRIBUTE_ON_VOLUME_CHANGE:
+      case c_base_markup_attributes::ATTRIBUTE_ON_WAITING:
+      case c_base_markup_attributes::ATTRIBUTE_ON_WHEEL:
+      case c_base_markup_attributes::ATTRIBUTE_OFFSET:
+      case c_base_markup_attributes::ATTRIBUTE_OPEN:
+      case c_base_markup_attributes::ATTRIBUTE_ORIENTATION:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_CONTENT_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_PATTERN_UNITS:
+      case c_base_markup_attributes::ATTRIBUTE_PATH:
+      case c_base_markup_attributes::ATTRIBUTE_PATH_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_PLACE_HOLDER:
+      case c_base_markup_attributes::ATTRIBUTE_POINTS:
+      case c_base_markup_attributes::ATTRIBUTE_POSTER:
+      case c_base_markup_attributes::ATTRIBUTE_PRELOAD:
+      case c_base_markup_attributes::ATTRIBUTE_PRESERVE_ASPECT_RATIO:
+      case c_base_markup_attributes::ATTRIBUTE_RADIO_GROUP:
+      case c_base_markup_attributes::ATTRIBUTE_SANDBOX:
+      case c_base_markup_attributes::ATTRIBUTE_SCOPE:
+      case c_base_markup_attributes::ATTRIBUTE_SHAPE:
+      case c_base_markup_attributes::ATTRIBUTE_REL:
+      case c_base_markup_attributes::ATTRIBUTE_RENDERING_INTENT:
+      case c_base_markup_attributes::ATTRIBUTE_REPEAT_COUNT:
+      case c_base_markup_attributes::ATTRIBUTE_ROLE:
+      case c_base_markup_attributes::ATTRIBUTE_ROTATE:
+      case c_base_markup_attributes::ATTRIBUTE_SIZE:
+      case c_base_markup_attributes::ATTRIBUTE_SIZES:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_DOCUMENT:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_SET:
+      case c_base_markup_attributes::ATTRIBUTE_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_SPREAD_METHOD:
+      case c_base_markup_attributes::ATTRIBUTE_STOP_COLOR:
+      case c_base_markup_attributes::ATTRIBUTE_STOP_OPACITY:
+      case c_base_markup_attributes::ATTRIBUTE_STYLE:
+      case c_base_markup_attributes::ATTRIBUTE_TARGET:
+      case c_base_markup_attributes::ATTRIBUTE_TEXT_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_TEXT_CONTENT_ELEMENTS:
+      case c_base_markup_attributes::ATTRIBUTE_TITLE:
+      case c_base_markup_attributes::ATTRIBUTE_TRANSFORM:
+      case c_base_markup_attributes::ATTRIBUTE_TRANSLATE:
+      case c_base_markup_attributes::ATTRIBUTE_TO:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_BUTTON:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_LIST:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE_SVG:
+      case c_base_markup_attributes::ATTRIBUTE_USE_MAP:
+      case c_base_markup_attributes::ATTRIBUTE_VALUE:
+      case c_base_markup_attributes::ATTRIBUTE_VIEW_BOX:
+      case c_base_markup_attributes::ATTRIBUTE_WIDTH:
+      case c_base_markup_attributes::ATTRIBUTE_WRAP:
+      case c_base_markup_attributes::ATTRIBUTE_XML:
+      case c_base_markup_attributes::ATTRIBUTE_XMLNS:
+      case c_base_markup_attributes::ATTRIBUTE_XMLNS_XLINK:
+      case c_base_markup_attributes::ATTRIBUTE_XML_SPACE:
+      case c_base_markup_attributes::ATTRIBUTE_ZOOM_AND_PAN:
+        if (!is_string($value)) {
+          return c_base_return_false();
         }
         break;
-    }
 
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is an enumerated (or keyword) value.
-   *
-   * @param string $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#keywords-and-enumerated-attributes
-   */
-  public static function is_enumerated($value) {
-    if (is_string($value)) {
-      // an enumerated (or keyword) value is simply a fancy name for string/text.
-      return new c_base_return_true();
-    }
-
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is a number value.
-   *
-   * @param int $value
-   *   The value to validate.
-   * @param bool $as_unsigned
-   *   (optional) Wnen TRUE, number is treated as unsigned.
-   *   When FALSE, number is treated as signed.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#numbers
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#non-negative-integers
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#time-zones
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#global-dates-and-times
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#durations
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#colors
-   */
-  public static function is_number($value, $as_unsigned = FALSE) {
-    if (!is_bool($as_unsigned)) {
-      return c_base_return_error::s_false();
-    }
-
-    if ($as_unsigned) {
-      if (is_int($value)) {
-        if ($value >= 0) {
-          return new c_base_return_true();
-        }
-      }
-    }
-    else {
-      if (is_int($value)) {
-        return new c_base_return_true();
-      }
-    }
-
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is a float value.
-   *
-   * @param float $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#floating-point-numbers
-   */
-  public static function is_float($value) {
-    if (is_float($value)) {
-      return new c_base_return_true();
-    }
-
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is an unsigned number value.
-   *
-   * This is functionaly the same as a float or an unsigned integer.
-   *
-   * @param float $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: self::is_float()
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#percentages-and-dimensions
-   */
-  public static function is_dimension($value) {
-    if (is_int($value) || is_float($value)) {
-      if ($value >= 0) {
-        return new c_base_return_true();
-      }
-    }
-
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is a list of numbers.
-   *
-   * @param array $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#lists-of-integers
-   */
-  public static function is_number_list($value) {
-    if (!is_array($value)) {
-      return new c_base_return_false();
-    }
-
-    foreach ($value as $part) {
-      if (!is_int($part)) {
-        unset($part);
-        return c_base_return_false();
-      }
-    }
-    unset($part);
-
-    return new c_base_return_true();
-  }
-
-  /**
-   * Validate that value is a list of dimensions.
-   *
-   * @param array $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#lists-of-dimensions
-   */
-  public static function is_dimension_list($value) {
-    if (!is_array($value)) {
-      return new c_base_return_false();
-    }
-
-    foreach ($value as $part) {
-      if (!is_int($part) && !is_float($part)) {
-        unset($part);
-        return c_base_return_false();
-      }
-    }
-    unset($part);
-
-    return new c_base_return_true();
-  }
-
-  /**
-   * Validate that value is a date or time value.
-   *
-   * A date or time is expected to be a unix timestamp, which is a valid integer.
-   *
-   * @param int $value
-   *   The value to validate.
-   * @param bool $as_float
-   *   (optional) When TRUE, allow the date to be a float.
-   *   When FALSE, date is treated as an integer.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#dates-and-times
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#months
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#floating-dates-and-times
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#vaguer-moments-in-time
-   */
-  public static function is_date($value, $as_float = FALSE) {
-    if (!is_bool($as_float)) {
-      return c_base_return_error::s_false();
-    }
-
-    if ($as_float) {
-      if (is_float($value)) {
-        return new c_base_return_true();
-      }
-    }
-    else {
-      if (is_int($value)) {
-        return new c_base_return_true();
-      }
-    }
-
-    return new c_base_return_false();
-  }
-
-  /**
-   * Validate that value is a list of dates or times.
-   *
-   * @param array $value
-   *   The value to validate.
-   * @param bool $as_float
-   *   (optional) When TRUE, allow the date to be a float.
-   *   When FALSE, date is treated as an integer.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#dates
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#yearless-dates
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#times
-   */
-  public static function is_date_list($value, $as_float = FALSE) {
-    if (!is_bool($as_float)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_array($value)) {
-      return new c_base_return_false();
-    }
-
-    if ($as_float) {
-      foreach ($value as $part) {
-        if (!is_float($part)) {
-          unset($part);
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ATOMIC:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_AUTOCOMPLETE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ACTIVE_DESCENDANT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_BUSY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_CHECKED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_CONTROLS:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DESCRIBED_BY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DISABLED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_DROP_EFFECT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_EXPANDED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_FLOW_TO:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_GRABBED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_HAS_POPUP:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_HIDDEN:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_INVALID:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LABEL:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LABELLED_BY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LEVEL:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_LIVE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_MULTI_LINE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_MULTI_SELECTABLE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_ORIENTATION:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_OWNS:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_POSITION_INSET:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_PRESSED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_READONLY:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_RELEVANT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_REQUIRED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SELECTED:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SET_SIZE:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_SORT:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MAXIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MINIMIM:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_NOW:
+      case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_TEXT:
+        if (!is_string($value)) {
           return c_base_return_false();
         }
-      }
-      unset($part);
-    }
-    else {
-      foreach ($value as $part) {
-        if (!is_int($part)) {
-          unset($part);
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_ASYNCHRONOUS:
+      case c_base_markup_attributes::ATTRIBUTE_ATTRIBUTE_NAME:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_COMPLETE:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_FOCUS:
+      case c_base_markup_attributes::ATTRIBUTE_AUTO_PLAY:
+      case c_base_markup_attributes::ATTRIBUTE_CHALLENGE:
+      case c_base_markup_attributes::ATTRIBUTE_CONTROLS:
+      case c_base_markup_attributes::ATTRIBUTE_CHECKED:
+      case c_base_markup_attributes::ATTRIBUTE_DEFAULT:
+      case c_base_markup_attributes::ATTRIBUTE_DEFER:
+      case c_base_markup_attributes::ATTRIBUTE_DISABLED:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_NO_VALIDATE:
+      case c_base_markup_attributes::ATTRIBUTE_HIDDEN:
+      case c_base_markup_attributes::ATTRIBUTE_LOOP:
+      case c_base_markup_attributes::ATTRIBUTE_MULTIPLE:
+      case c_base_markup_attributes::ATTRIBUTE_MUTED:
+      case c_base_markup_attributes::ATTRIBUTE_NO_VALIDATE:
+      case c_base_markup_attributes::ATTRIBUTE_READONLY:
+      case c_base_markup_attributes::ATTRIBUTE_REQUIRED:
+      case c_base_markup_attributes::ATTRIBUTE_REVERSED:
+      case c_base_markup_attributes::ATTRIBUTE_SCOPED:
+      case c_base_markup_attributes::ATTRIBUTE_SELECTED:
+      case c_base_markup_attributes::ATTRIBUTE_SORTABLE:
+      case c_base_markup_attributes::ATTRIBUTE_SORTED:
+      case c_base_markup_attributes::ATTRIBUTE_SPELLCHECK:
+        if (!is_bool($value)) {
           return c_base_return_false();
         }
-      }
-      unset($part);
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_ACCEPT:
+      case c_base_markup_attributes::ATTRIBUTE_FORM_ENCODE_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_ENCODING_TYPE:
+      case c_base_markup_attributes::ATTRIBUTE_TYPE:
+        if (!$this->pr_validate_value_mime_type($value)) {
+          return c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET:
+      case c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET:
+        if (!$this->pr_validate_value_character_set($value)) {
+          return c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_CENTER_X:
+      case c_base_markup_attributes::ATTRIBUTE_CENTER_Y:
+      case c_base_markup_attributes::ATTRIBUTE_COLUMNS:
+      case c_base_markup_attributes::ATTRIBUTE_COLUMN_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_D_X:
+      case c_base_markup_attributes::ATTRIBUTE_D_Y:
+      case c_base_markup_attributes::ATTRIBUTE_FOCUS_X:
+      case c_base_markup_attributes::ATTRIBUTE_FOCUS_Y:
+      case c_base_markup_attributes::ATTRIBUTE_HIGH:
+      case c_base_markup_attributes::ATTRIBUTE_HREF_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_LOW:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_HEIGHT:
+      case c_base_markup_attributes::ATTRIBUTE_MARKER_WIDTH:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_MAXIMUM_LENGTH:
+      case c_base_markup_attributes::ATTRIBUTE_MINIMUM_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_OPTIMUM:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS_X:
+      case c_base_markup_attributes::ATTRIBUTE_RADIUS_Y:
+      case c_base_markup_attributes::ATTRIBUTE_REFERENCE_X:
+      case c_base_markup_attributes::ATTRIBUTE_REFERENCE_Y:
+      case c_base_markup_attributes::ATTRIBUTE_ROWS:
+      case c_base_markup_attributes::ATTRIBUTE_ROW_SPAN:
+      case c_base_markup_attributes::ATTRIBUTE_SOURCE_LANGUAGE:
+      case c_base_markup_attributes::ATTRIBUTE_START:
+      case c_base_markup_attributes::ATTRIBUTE_STEP:
+      case c_base_markup_attributes::ATTRIBUTE_TAB_INDEX:
+      case c_base_markup_attributes::ATTRIBUTE_VALUE_NUMBER:
+      case c_base_markup_attributes::ATTRIBUTE_X:
+      case c_base_markup_attributes::ATTRIBUTE_X_1:
+      case c_base_markup_attributes::ATTRIBUTE_X_2:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_ACTUATE:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_HREF:
+      case c_base_markup_attributes::ATTRIBUTE_X_LINK_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_Y:
+      case c_base_markup_attributes::ATTRIBUTE_Y_1:
+      case c_base_markup_attributes::ATTRIBUTE_Y_2:
+        if (!is_int($value)) {
+          return c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_CLASS:
+        if (!is_array($value)) {
+          return c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_FORM_METHOD:
+        if (!$this->pr_validate_value_http_method($value)) {
+          return c_base_return_false();
+        }
+        break;
+
+      default:
+        return new c_base_return_false();
+    }
+
+    if ($body) {
+      $this->attributes_body[$attribute] = $value;
+    }
+    else {
+      $this->attributes[$attribute] = $value;
     }
 
     return new c_base_return_true();
   }
+}
+
+/**
+ * A return class whose value is represented as a generic c_base_markup_tag_return.
+ */
+class c_base_html_return extends c_base_return_object {
+  use t_base_return_value_exact;
 
   /**
-   * Validate that value is a token value.
-   *
-   * This processes a single token.
-   * There are two types:
-   * 1) Space Separated
-   * 2) Comma Separated
-   *
-   * Perhaps I am misreading but the standard does not seem clear about other symbols.
-   * For now, I am just allowing them (I can come back later and fix this at any time).
-   *
-   * @param string $value
-   *   The value to validate.
-   * @param bool $comma_separated
-   *   (optional) When TRUE, token is treated as a comma separated token.
-   *   When FALSE, token is treated as space separated token.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#space-separated-tokens
-   * @see: https://www.w3.org/TR/html5/infrastructure.html#comma-separated-tokens
+   * @see: t_base_return_value::p_s_new()
    */
-  public static function is_token($value, $comma_separated = FALSE) {
-    if (!is_bool($comma_separated)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (is_string($value)) {
-      if ($comma_Separated) {
-        if (strpos($value, ',') !== FALSE) {
-          return new c_base_return_true();
-        }
-      }
-      else {
-        if (preg_match('/\s/i', $value) === 0) {
-          return new c_base_return_true();
-        }
-      }
-    }
-
-    return new c_base_return_false();
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
   }
 
   /**
-   * Validate that value is a list of syntax references.
-   *
-   * @param array $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * https://www.w3.org/TR/html5/infrastructure.html#syntax-references
+   * @see: t_base_return_value::p_s_value()
    */
-  public static function is_syntax_reference($value) {
-    if (!is_string($value)) {
-      return new c_base_return_false();
-    }
-
-    if (preg_match('/^#(^s)+/i', $value) > 0) {
-      return new c_base_return_true();
-    }
-
-    return new c_base_return_false();
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
   }
 
   /**
-   * Validate that value is a list of syntax references.
-   *
-   * @param array $value
-   *   The value to validate.
-   *
-   * @return c_base_return_status
-   *   TRUE on valid, FALSE on invalid.
-   *   FALSE with error bit set is returned on error.
-   *
-   * https://www.w3.org/TR/html5/infrastructure.html#urls
+   * @see: t_base_return_value_exact::p_s_value_exact()
    */
-  public static function is_url($value) {
-    if (!is_string($value)) {
-      return new c_base_return_false();
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, new c_base_html());
+  }
+
+  /**
+   * Assign the value.
+   *
+   * @param c_base_html $value
+   *   Any value so long as it is an resource.
+   *   NULL is not allowed.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value($value) {
+    if (!($value instanceof c_base_html)) {
+      return FALSE;
     }
 
-    // @todo.
+    $this->value = $value;
+    return TRUE;
+  }
 
-    return new c_base_return_false();
+  /**
+   * Return the value.
+   *
+   * @return c_base_html|null $value
+   *   The value c_base_html stored within this class.
+   *   NULL may be returned if there is no defined valid c_base_markup_tag.
+   */
+  public function get_value() {
+    if (!is_null($this->value) && !($this->value instanceof c_base_html)) {
+      $this->value = NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return c_base_html $value
+   *   The value c_base_html stored within this class.
+   */
+  public function get_value_exact() {
+    if (!($this->value instanceof c_base_html)) {
+      $this->value = new c_base_html();
+    }
+
+    return $this->value;
   }
 }

@@ -32,7 +32,7 @@ class c_base_cookie extends c_base_return_array {
   private $domain;
   private $http_only;
   private $first_only;
-  private $value;
+  private $data;
 
 
   /**
@@ -47,7 +47,7 @@ class c_base_cookie extends c_base_return_array {
     $this->domain = NULL;
     $this->http_only = FALSE;
     $this->first_only = TRUE;
-    $this->value = array();
+    $this->data = array();
 
     $this->p_set_lifetime_default();
 
@@ -66,7 +66,7 @@ class c_base_cookie extends c_base_return_array {
     unset($this->domain);
     unset($this->http_only);
     unset($this->first_only);
-    unset($this->value);
+    unset($this->data);
 
     parent::__destruct();
   }
@@ -420,165 +420,41 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Assign the value.
+   * Assign the data.
    *
    * Cookies values associated with this class are only stored as an array.
    * Be sure to wrap your values in an array.
    * The array key 'checksum' will be created if one does not already exist when building the cookie.
    *
-   * This overrides the parent class function of set_value().
-   * Expect return values to be of the form c_base_return_*.
-   *
-   * @param array $value
+   * @param array $data
    *   Any value so long as it is an array.
    *   NULL is not allowed.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_value($value) {
-    if (!is_array($value)) {
+  public function set_data($data) {
+    if (!is_array($data)) {
       return c_base_return_error::s_false();
     }
 
-    $this->value = $value;
+    $this->data = $data;
     return new c_base_return_true();
   }
 
   /**
-   * Return the value.
+   * Return the data.
    *
-   * This overrides the parent class function of set_value().
-   * Expect return values to be of the form c_base_return_*.
-   *
-   * @return c_base_return_array $value
+   * @return c_base_return_array $data
    *   The value array stored within this class.
    *   NULL may be returned if there is no defined valid array.
    */
-  public function get_value() {
-    if (!is_null($this->value) && !is_array($this->value)) {
-      $this->value = array();
+  public function get_data() {
+    if (!is_null($this->data) && !is_array($this->data)) {
+      $this->data = array();
     }
 
-    return c_base_return_array::s_new($this->value);
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return array $value
-   *   The value array stored within this class.
-   */
-  public function get_value_exact() {
-    // the value should not be changed into c_base_return_array because 'exact' should consistently mean 'exact'.
-    return parent::get_value_exact();
-  }
-
-  /**
-   * Return the value at a specific index in the array.
-   *
-   * This overrides the parent class function.
-   * Expect return values to be of the form c_base_return_*.
-   *
-   * @param string|null $key
-   *   A specific array key to load.
-   * @param string|null $type
-   *   (optional) Perform sanity checking of return value based on a known type.
-   *
-   *   If not provided, then a 'raw' type of c_base_return_value is returned.
-   *   - This may contain things like a normal PHP TRUE or FALSE.
-   *
-   *   Supported known types:
-   *     'bool': a boolean value, returns c_base_return_value.
-   *     'int': an integer value, returns c_base_return_int.
-   *     'float': a float value, returns c_base_return_float.
-   *     'string': a string value, return c_base_return_string.
-   *     'array': an array value, return c_base_return_array.
-   *     'object': an object value, return c_base_return_object.
-   *     'resource': a generic resource value, return c_base_return_resource.
-   *     'stream': a stream resource value, return c_base_return_stream.
-   *     'socket': a socket resource value, return c_base_return_socket.
-   *     'null': a NULL value, return c_base_return_value.
-   *
-   * @return c_base_return_status|c_base_return_value
-   *   A c_base_return_array is returned when no $key is defined.
-   *   A c_base_return_value, or more specific, is returned if $type is provided for known types.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function get_value_at($key, $type = NULL) {
-    if (!is_string($key) || empty($key)) {
-      return c_base_return_error::s_false();
-    }
-
-    // if type is supplied, it must be string.
-    if (!is_null($type) && (!is_string($type) || empty($type))) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_array($this->value)) {
-      $this->value = array();
-    }
-
-    if (!array_key_exists($key, $this->value)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_null($type)) {
-      if ($type == 'bool') {
-        if (is_bool($this->value[$key])) {
-          return c_base_return_bool::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'int') {
-        if (is_int($this->value[$key])) {
-          return c_base_return_int::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'float') {
-        if (is_float($this->value[$key])) {
-          return c_base_return_float::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'string') {
-        if (is_string($this->value[$key])) {
-          return c_base_return_string::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'array') {
-        if (is_array($this->value[$key])) {
-          return c_base_return_array::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'object') {
-        if (is_object($this->value[$key])) {
-          return c_base_return_object::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'resource') {
-        if (is_resource($this->value[$key])) {
-          return c_base_return_resource::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'stream') {
-        if (is_stream($this->value[$key])) {
-          return c_base_return_stream::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'socket') {
-        if (is_socket($this->value[$key])) {
-          return c_base_return_socket::s_new($this->value[$key]);
-        }
-      }
-      elseif ($type == 'null') {
-        if (is_null($this->value[$key])) {
-          return c_base_return_value::s_new($this->value[$key]);
-        }
-      }
-
-      return c_base_return_error::s_false();
-    }
-
-    return c_base_return_value::s_new($this->value[$key]);
+    return c_base_return_array::s_new($this->data);
   }
 
   /**
@@ -606,32 +482,32 @@ class c_base_cookie extends c_base_return_array {
    * @see: header()
    */
   public function do_push($checksum = TRUE) {
-    if (is_null($this->name) || is_null($this->value)) {
-      c_base_return_error::s_false();
+    if (is_null($this->name) || is_null($this->data)) {
+      return c_base_return_error::s_false();
     }
 
     if ($checksum) {
-      unset($this->value['checksum']);
-      $this->value['checksum'] = $this->p_build_checksum();
+      unset($this->data['checksum']);
+      $this->data['checksum'] = $this->p_build_checksum();
 
-      if (is_null($this->value['checksum'])) {
-        unset($this->value['checksum']);
+      if (is_null($this->data['checksum'])) {
+        unset($this->data['checksum']);
         return c_base_return_error::s_false();
       }
     }
 
     // @todo: consider adding support for assigning the json depth setting.
-    $json = json_encode($this->value);
+    $json = json_encode($this->data);
     if ($json === FALSE) {
       unset($json);
       return c_base_return_error::s_false();
     }
 
-    $value = rawurlencode(preg_replace('/(^\s+)|(\s+$)/us', '', $json));
+    $data = rawurlencode(preg_replace('/(^\s+)|(\s+$)/us', '', $json));
     unset($json);
 
-    //$result = setrawcookie($this->name, $value, $this->max_age, $this->path, $this->domain, $this->secure, $this->http_only);
-    $cookie = 'Set-Cookie: ' . rawurlencode($this->name) . '=' . $value . ';';
+    //$result = setrawcookie($this->name, $data, $this->max_age, $this->path, $this->domain, $this->secure, $this->http_only);
+    $cookie = 'Set-Cookie: ' . rawurlencode($this->name) . '=' . $data . ';';
 
     if (!is_null($this->domain)) {
       $cookie .= ' domain=' . $this->domain . ';';
@@ -669,7 +545,7 @@ class c_base_cookie extends c_base_return_array {
     header($cookie, FALSE);
 
     unset($cookie);
-    unset($value);
+    unset($data);
 
     return new c_base_return_true();
   }
@@ -706,7 +582,7 @@ class c_base_cookie extends c_base_return_array {
    * Retrieve the cookie from the HTTP headers sent by the client.
    *
    * This class object will be populated with the cookies settings.
-   * The cookie value will be cleared if the cookie exists.
+   * The cookie data will be cleared if the cookie exists.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -719,15 +595,15 @@ class c_base_cookie extends c_base_return_array {
     }
 
     $json = rawurldecode($_COOKIE[$this->name]);
-    $value = json_decode($json, TRUE);
+    $data = json_decode($json, TRUE);
     unset($json);
 
-    if ($value === FALSE) {
+    if ($data === FALSE) {
       return c_base_return_error::s_false();
     }
 
-    $this->value = $value;
-    unset($value);
+    $this->data = $data;
+    unset($data);
 
     return new c_base_return_true();
   }
@@ -750,7 +626,7 @@ class c_base_cookie extends c_base_return_array {
    *
    * This is only meaningful when called after self::do_pull() is used.
    *
-   * If a checksum key exists, will validate that the contents of the value are consistent with the checksum.
+   * If a checksum key exists, will validate that the contents of the data are consistent with the checksum.
    * This is useful to protect data from alterations, be it defect or accident.
    * This does not protect against malicious activities because the malicious user could simply regenerate the checksum after their changes.
    *
@@ -759,16 +635,16 @@ class c_base_cookie extends c_base_return_array {
    *   On error FALSE is returned with the error bit set.
    */
   public function validate() {
-    if (!is_array($this->value)) {
+    if (!is_array($this->data)) {
       return c_base_return_error::s_false();
     }
 
-    if (!array_key_exists('checksum', $this->value)) {
+    if (!array_key_exists('checksum', $this->data)) {
       return new c_base_return_false();
     }
 
     $checksum = $this->p_build_checksum();
-    if ($this->value['checksum'] == $checksum) {
+    if ($this->data['checksum'] == $checksum) {
       unset($checksum);
       return new c_base_return_true();
     }
@@ -778,7 +654,7 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Builds a checksum of the value array.
+   * Builds a checksum of the data array.
    *
    * This does not assign the checksum to the array.
    * The checksum is only assigned by the do_push() or do_pull() functions.
@@ -799,7 +675,7 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Generates a checksum of the value array.
+   * Generates a checksum of the data array.
    *
    * Any existing checksum key is preserved.
    *
@@ -809,21 +685,21 @@ class c_base_cookie extends c_base_return_array {
    * @see: hash()
    */
   private function p_build_checksum() {
-    if (!is_array($this->value)) {
-      $this->value = array();
+    if (!is_array($this->data)) {
+      $this->data = array();
     }
 
-    $has_checksum = array_key_exists('checksum', $this->value);
+    $has_checksum = array_key_exists('checksum', $this->data);
     $checksum = NULL;
     if ($has_checksum) {
-      $checksum = $this->value['checksum'];
-      unset($this->value['checksum']);
+      $checksum = $this->data['checksum'];
+      unset($this->data['checksum']);
     }
 
-    $json = json_encode($this->value);
+    $json = json_encode($this->data);
     if ($json === FALSE) {
       if ($has_checksum) {
-        $this->value['checksum'] = $checksum;
+        $this->data['checksum'] = $checksum;
       }
 
       unset($has_checksum);
@@ -834,7 +710,7 @@ class c_base_cookie extends c_base_return_array {
 
     $generated = hash(c_base_cookie::CHECKSUM_ALGORITHM, $json);
     if ($has_checksum) {
-      $this->value['checksum'] = $checksum;
+      $this->data['checksum'] = $checksum;
     }
 
     unset($has_checksum);

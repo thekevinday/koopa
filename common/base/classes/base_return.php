@@ -56,16 +56,6 @@ trait t_base_return_value {
   }
 
   /**
-   * Return the value.
-   *
-   * @return $value
-   *   This can be anything that is to be considered a return value.
-   */
-  public function get_value() {
-    return $this->value;
-  }
-
-  /**
    * Determine if this class has a value assigned to it.
    *
    * @return bool
@@ -211,16 +201,6 @@ trait t_base_return_value_exact {
 
     return $return->get_value_exact();
   }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * This guarantees that a specific type is returned.
-   *
-   * @return $value
-   *   The value of a specific type is returned.
-   */
-  abstract public function get_value_exact();
 }
 
 /**
@@ -341,6 +321,26 @@ class c_base_return {
     // when there is no error flag assigned, its value should be NULL so a simple existence check should be all that is needed.
     return $this->error instanceof c_base_error;
   }
+
+  /**
+   * Return the value.
+   *
+   * @return null $value
+   *   The value within this class.
+   */
+  public function get_value() {
+    return NULL;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return NULL $value
+   *   The value c_base_markup_tag stored within this class.
+   */
+  public function get_value_exact() {
+    return NULL;
+  }
 }
 
 /**
@@ -358,6 +358,26 @@ class c_base_return_status extends c_base_return {
  * This class will not have any values.
  */
 class c_base_return_true extends c_base_return_status {
+
+  /**
+   * Return the value.
+   *
+   * @return bool $value
+   *   The value within this class.
+   */
+  public function get_value() {
+    return TRUE;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return bool $value
+   *   The value c_base_markup_tag stored within this class.
+   */
+  public function get_value_exact() {
+    return TRUE;
+  }
 }
 
 /**
@@ -366,6 +386,26 @@ class c_base_return_true extends c_base_return_status {
  * This class will not have any values.
  */
 class c_base_return_false extends c_base_return_status {
+
+  /**
+   * Return the value.
+   *
+   * @return bool $value
+   *   The value within this class.
+   */
+  public function get_value() {
+    return FALSE;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return bool $value
+   *   The value c_base_markup_tag stored within this class.
+   */
+  public function get_value_exact() {
+    return FALSE;
+  }
 }
 
 /**
@@ -394,6 +434,49 @@ class c_base_return_value extends c_base_return {
    */
   public static function s_value($return) {
     return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * Assign the value.
+   *
+   * @param bool $value
+   *   Any value so long as it is a bool.
+   *   NULL is not allowed.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value($value) {
+    $this->value = $value;
+    return TRUE;
+  }
+
+  /**
+   * Return the value.
+   *
+   * @return $value
+   *   The value bool stored within this class.
+   */
+  public function get_value() {
+    if (!isset($this->value)) {
+      $this->value = NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return $value
+   *   The value bool stored within this class.
+   */
+  public function get_value_exact() {
+    if (!isset($this->value)) {
+      $this->value = NULL;
+    }
+
+    return $this->value;
   }
 }
 

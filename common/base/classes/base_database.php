@@ -69,7 +69,7 @@ class c_base_connection_string extends c_base_return_string {
 
     $this->error = NULL;
 
-    parent->__construct();
+    parent::__construct();
   }
 
   /**
@@ -91,7 +91,7 @@ class c_base_connection_string extends c_base_return_string {
 
     unset($this->error);
 
-    parent->__destruct();
+    parent::__destruct();
   }
 
   /**
@@ -304,7 +304,7 @@ class c_base_connection_string extends c_base_return_string {
   /**
    * Returns the password.
    *
-   * @return c_base_return_string|c_base_return_false
+   * @return c_base_return_string|c_base_return_status
    *   The password string.
    *   FALSE is returned if there is no assigned password.
    */
@@ -648,6 +648,7 @@ class c_base_database {
     }
 
     $this->connection_string = $connection_string;
+    $this->connection_string->build();
     return new c_base_return_true();
   }
 
@@ -872,7 +873,7 @@ class c_base_database {
    */
   public function is_connected() {
     if ($this->connected === TRUE && pg_connection_status($this->database) === PGSQL_CONNECTION_OK) {
-      return c_base_return_true();
+      return new c_base_return_true();
     }
 
     return new c_base_return_false();
