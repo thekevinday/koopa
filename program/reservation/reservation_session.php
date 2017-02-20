@@ -117,7 +117,7 @@
       return c_base_return_error::s_false();
     }
 
-    $connected = socket_connect($socket, $settings['database_create_account_host'], $settings['database_create_account_port']);
+    $connected = @socket_connect($socket, $settings['database_create_account_host'], $settings['database_create_account_port']);
     if ($connected === FALSE) {
       socket_close($socket);
       unset($socket);
