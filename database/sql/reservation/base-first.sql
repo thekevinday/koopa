@@ -52,5 +52,5 @@ grant reservation_users to reservation_user;
 create role public_users;
 create role public_user;
 
-grant public_users to public user;
+grant public_users to public_user;
 
