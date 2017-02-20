@@ -101,24 +101,33 @@
    *   FALSE with error bit set is returned on error.
    */
   function reservation_ensure_user_account($settings, $user_name) {
-    $socket_family = AF_INET;
-    $socket_protocol = SOL_TCP;
-    $socket_type = SOCK_STREAM;
+    if (!is_array($settings)) {
+      return c_base_return_error::s_false();
+    }
 
-    $packet_size_target = 63;
-    $packet_size_client = 1;
+    if (!is_string($user_name)) {
+      return c_base_return_error::s_false();
+    }
 
-    $socket = socket_create($socket_family, $socket_type, $socket_protocol);
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     if ($socket === FALSE) {
       socket_close($socket);
+      unset($socket);
+
       return c_base_return_error::s_false();
     }
 
     $connected = socket_connect($socket, $settings['database_create_account_host'], $settings['database_create_account_port']);
     if ($connected === FALSE) {
       socket_close($socket);
+      unset($socket);
+      unset($connected);
+
       return c_base_return_error::s_false();
     }
+
+    $packet_size_target = 63;
+    $packet_size_client = 1;
 
     $name_length = strlen(trim($user_name));
     $difference = $packet_size_target - $name_length;
@@ -132,20 +141,38 @@
     }
 
     $written = socket_write($socket, $packet, $packet_size_target);
+
+    unset($packet);
+    unset($packet_size_target);
+    unset($name_length);
+    unset($difference);
+
     if ($written === FALSE) {
       socket_close($socket);
+      unset($written);
+      unset($socket);
+      unset($packet_size_client);
+
       return c_base_return_error::s_false();
     }
+    unset($written);
 
     $response = socket_read($socket, $packet_size_client);
     socket_close($socket);
+    unset($socket);
+    unset($packet_size_client);
+
     if (!is_string($response) || strlen($response) == 0) {
+      unset($response);
+
       return c_base_return_error::s_false();
     }
 
     // an integer is expected to be returned by the socket.
     $response_packet = unpack('C', $response);
     $response_value = (int) $response_packet[1];
+
+    unset($response);
 
     // response codes as defined in the c source file:
     //    0 = no problems detected.
