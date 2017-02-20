@@ -22,10 +22,6 @@
  * Role created with:
  *   create role create_ldap_users createrole;
  *   alter role create_ldap_users login;
- *   grant fcs_users to create_ldap_users with admin option;
- *
- *   Alternatively, roles can be granted CREATEROLE, such as:
- *     grant createrole to create_ldap_users
  *
  * @todo: when implementing the init script, the pid can be created via: ps --no-headers -o pid -p $(cat fcs.pid)
  *
