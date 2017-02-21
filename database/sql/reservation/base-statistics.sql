@@ -6,7 +6,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
 set datestyle to us;
 
 
@@ -17,6 +17,8 @@ create table managers.t_statistics_http_status_codes (
   count bigint not null default 0,
 
   date_created timestamp default localtimestamp not null,
+  date_changed timestamp default localtimestamp not null,
+  date_deleted timestamp,
 
   constraint cp_statistics_http_status_codes_code primary key (code),
 
@@ -27,6 +29,7 @@ create table managers.t_statistics_http_status_codes (
 
 grant select,insert,update on managers.t_statistics_http_status_codes to reservation_users_administer;
 grant select,insert,update on managers.t_statistics_http_status_codes to reservation_users_manager;
+grant select on managers.t_statistics_http_status_codes to reservation_users_auditor;
 
 
 /** create an auto-update trigger. set the role to reservation_users_manager so that the function runs as that role when using "SECURITY DEFINER". The reservation_users_manager must also have the appropriate create privileges. **/
@@ -133,6 +136,8 @@ create table managers.t_statistics_request_path (
   count bigint not null default 0,
 
   date_created timestamp default localtimestamp not null,
+  date_changed timestamp default localtimestamp not null,
+  date_deleted timestamp,
 
   constraint cp_statistics_request_path_code primary key (path),
 
@@ -141,6 +146,7 @@ create table managers.t_statistics_request_path (
 
 grant select on managers.t_statistics_request_path to reservation_users_administer;
 grant select on managers.t_statistics_request_path to reservation_users_manager;
+grant select on managers.t_statistics_request_path to reservation_users_auditor;
 
 /** permissions prevent this from working as desired, so for now open up these stats to the following users (via a view) **/
 create view users.v_statistics_request_path with (security_barrier=true) as

@@ -9,6 +9,7 @@
 create role reservation_users inherit nologin;
 create role reservation_users_administer inherit nologin;
 create role reservation_users_manager inherit nologin;
+create role reservation_users_auditor inherit nologin;
 create role reservation_users_publisher inherit nologin;
 create role reservation_users_insurer inherit nologin;
 create role reservation_users_financer inherit nologin;
@@ -17,6 +18,7 @@ create role reservation_users_drafter inherit nologin;
 
 grant reservation_users to reservation_users_administer with admin option;
 grant reservation_users to reservation_users_manager with admin option;
+grant reservation_users to reservation_users_auditor;
 grant reservation_users to reservation_users_publisher;
 grant reservation_users to reservation_users_insurer;
 grant reservation_users to reservation_users_financer;
@@ -24,6 +26,9 @@ grant reservation_users to reservation_users_reviewer;
 grant reservation_users to reservation_users_drafter;
 
 grant reservation_users_manager to reservation_users_administer with admin option;
+
+grant reservation_users_auditor to reservation_users_administer with admin option;
+grant reservation_users_auditor to reservation_users_manager with admin option;
 
 grant reservation_users_publisher to reservation_users_administer with admin option;
 grant reservation_users_publisher to reservation_users_manager with admin option;
@@ -41,7 +46,6 @@ grant reservation_users_drafter to reservation_users_administer with admin optio
 grant reservation_users_drafter to reservation_users_manager with admin option;
 
 /** This is the role the database should use to connect to to perform system activity **/
-/** All users auto-created by the ldap helper should be creating users with this role. **/
 create role reservation_user;
 
 grant reservation_users to reservation_user;

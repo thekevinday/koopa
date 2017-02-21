@@ -15,7 +15,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
 set datestyle to us;
 
 
@@ -24,6 +24,7 @@ set datestyle to us;
 create schema system authorization reservation_user;
 create schema administers authorization reservation_users_administer;
 create schema managers authorization reservation_users_manager;
+create schema auditors authorization reservation_users_auditor;
 create schema publishers authorization reservation_users_publisher;
 create schema insurer authorization reservation_users_insurer;
 create schema financer authorization reservation_users_financer;
@@ -33,6 +34,7 @@ create schema users authorization reservation_users;
 
 revoke create on schema system from reservation_user;
 revoke create on schema administers from reservation_users_administer;
+revoke create on schema auditors from reservation_users_auditor;
 revoke create on schema managers from reservation_users_manager;
 revoke create on schema publishers from reservation_users_publisher;
 revoke create on schema insurer from reservation_users_insurer;
@@ -44,6 +46,7 @@ revoke create on schema users from reservation_users;
 grant usage on schema system to reservation_user;
 grant usage on schema administers to reservation_users_administer;
 grant usage on schema managers to reservation_users_manager;
+grant usage on schema auditors to reservation_users_auditor;
 grant usage on schema publishers to reservation_users_publisher;
 grant usage on schema insurer to reservation_users_insurer;
 grant usage on schema financer to reservation_users_financer;
@@ -54,6 +57,7 @@ grant usage on schema users to reservation_users;
 grant create,usage on schema system to postgres;
 grant create,usage on schema administers to postgres;
 grant create,usage on schema managers to postgres;
+grant create,usage on schema auditors to postgres;
 grant create,usage on schema publishers to postgres;
 grant create,usage on schema insurer to postgres;
 grant create,usage on schema financer to postgres;
@@ -87,6 +91,105 @@ create type public.ct_email as (
 create type public.ct_text as (
   content text,
   context bigint
+);
+
+create type public.ct_location as (
+  building bigint,
+  room bigint[]
+);
+
+create type public.ct_date as (
+  date timestamp,
+  time_start timestamp,
+  time_stop timestamp
+);
+
+create type public.ct_date_context as (
+  date timestamp,
+  time_start timestamp,
+  time_stop timestamp,
+  context bigint
+);
+
+create type public.ct_phone_number as (
+  country smallint,
+  area smallint,
+  number smallint,
+  extension smallint
+);
+
+create type public.ct_phone_number_context as (
+  country smallint,
+  area smallint,
+  number smallint,
+  extension smallint,
+  context bigint
+);
+
+create type public.ct_money_context as (
+  money money,
+  context bigint
+);
+
+create type public.ct_field_fees as (
+  needed bool,
+  quantity bigint,
+  days bigint,
+  hours bigint,
+  amount money
+);
+
+create type public.ct_field_used_with_contact as (
+  used bool,
+  email text,
+  name text,
+  phone public.ct_phone_number
+);
+
+create type public.ct_field_needed_with_total as (
+  needed bool,
+  total bigint
+);
+
+create type public.ct_field_needed_with_details as (
+  needed bool,
+  details text
+);
+
+create type public.ct_field_used_with_details as (
+  used bool,
+  details text
+);
+
+create type public.ct_field_used_with_designer as (
+  used bool,
+  designer text
+);
+
+create type public.ct_field_served_with_caterer as (
+  served bool,
+  caterer text
+);
+
+create type public.ct_field_generated_with_types as (
+  generated bool,
+  types bigint[]
+);
+
+create type public.ct_field_needed_with_types as (
+  needed bool,
+  types bigint[]
+);
+
+create type public.ct_field_needed_with_types_and_microphone as (
+  needed bool,
+  types bigint[],
+  microphone bigint
+);
+
+create type public.ct_field_insurance as (
+  needed bool,
+  provided bool
 );
 
 

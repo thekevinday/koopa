@@ -103,11 +103,11 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_name($name) {
     if (!is_string($name) || empty($name)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name')), i_base_error_messages::INVALID_ARGUMENT));
     }
 
     if (mb_strlen($name) == 0 || preg_match('/^(\w|-)+$/iu', $name) != 1) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'name')), i_base_error_messages::INVALID_FORMAT));
     }
 
     $this->name = preg_replace('/(^\s+)|(\s+$)/us', '', rawurlencode($name));
@@ -138,7 +138,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_secure($secure) {
     if (!is_bool($secure)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'secure')), i_base_error_messages::INVALID_ARGUMENT));
     }
 
     $this->secure = $secure;
@@ -180,15 +180,15 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_expires($expires) {
     if (!is_null($expires) && (!is_int($expires) || $this->expires < 0)) {
-      if (is_string($max_age) && is_numeric($expires)) {
+      if (is_string($this->max_age) && is_numeric($expires)) {
         $expires = (int) $expires;
 
         if ($expires < 0) {
-          return c_base_return_error::s_false();
+          return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'expires')), i_base_error_messages::INVALID_ARGUMENT));
         }
       }
       else {
-        return c_base_return_error::s_false();
+        return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'expires')), i_base_error_messages::INVALID_ARGUMENT));
       }
     }
 
@@ -238,11 +238,11 @@ class c_base_cookie extends c_base_return_array {
         $max_age = (int) $max_age;
 
         if ($max_age < 0) {
-          return c_base_return_error::s_false();
+          return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'max_age')), i_base_error_messages::INVALID_ARGUMENT));
         }
       }
       else {
-        return c_base_return_error::s_false();
+        return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'max_age')), i_base_error_messages::INVALID_ARGUMENT));
       }
     }
 
@@ -279,14 +279,14 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_path($path) {
     if (!is_string($path) || empty($path)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path')), i_base_error_messages::INVALID_ARGUMENT));
     }
 
     // sanitize the path string, only allowing the path portion of the url.
     $parsed = parse_url($path, PHP_URL_PATH);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'parse_url(path)')), i_base_error_messages::OPERATION_FAILURE));
     }
 
     $this->path = preg_replace('/(^\s+)|(\s+$)/us', '', $parsed);
@@ -321,14 +321,14 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_domain($domain) {
     if (!is_string($domain) || empty($domain)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'domain')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     // sanitize the domain string, only allowing the host portion of the url.
     $parsed = parse_url('stub://' . $domain, PHP_URL_HOST);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'parse_url(stub://domain, PHP_URL_HOST)')), i_base_error_messages::OPERATION_FAILURE);
     }
 
     $this->domain = preg_replace('/(^\s+)|(\s+$)/us', '', $parsed);
@@ -361,7 +361,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_http_only($http_only) {
     if (!is_bool($http_only)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http_only')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     $this->http_only = $http_only;
@@ -397,7 +397,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_first_only($first_only) {
     if (!is_bool($first_only)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'first_only')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     $this->first_only = $first_only;
@@ -435,7 +435,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_data($data) {
     if (!is_array($data)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'data')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     $this->data = $data;
@@ -482,8 +482,12 @@ class c_base_cookie extends c_base_return_array {
    * @see: header()
    */
   public function do_push($checksum = TRUE) {
-    if (is_null($this->name) || is_null($this->data)) {
-      return c_base_return_error::s_false();
+    if (is_null($this->name)) {
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name')), i_base_error_messages::INVALID_ARGUMENT);
+    }
+
+    if (is_null($this->data)) {
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'data')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     if ($checksum) {
@@ -492,7 +496,7 @@ class c_base_cookie extends c_base_return_array {
 
       if (is_null($this->data['checksum'])) {
         unset($this->data['checksum']);
-        return c_base_return_error::s_false();
+        return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_build_checksum()')), i_base_error_messages::OPERATION_FAILURE);
       }
     }
 
@@ -500,7 +504,7 @@ class c_base_cookie extends c_base_return_array {
     $json = json_encode($this->data);
     if ($json === FALSE) {
       unset($json);
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_encode(this->data)')), i_base_error_messages::OPERATION_FAILURE);
     }
 
     $data = rawurlencode(preg_replace('/(^\s+)|(\s+$)/us', '', $json));
@@ -599,7 +603,7 @@ class c_base_cookie extends c_base_return_array {
     unset($json);
 
     if ($data === FALSE) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_decode(json, TRUE)')), i_base_error_messages::OPERATION_FAILURE);
     }
 
     $this->data = $data;
@@ -636,7 +640,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function validate() {
     if (!is_array($this->data)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->data')), i_base_error_messages::INVALID_VARIABLE);
     }
 
     if (!array_key_exists('checksum', $this->data)) {
@@ -671,7 +675,7 @@ class c_base_cookie extends c_base_return_array {
     }
     unset($checksum);
 
-    return c_base_return_error::s_false();
+    return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_build_checksum()')), i_base_error_messages::OPERATION_FAILURE);
   }
 
   /**

@@ -67,7 +67,7 @@
 
     // configure default settings.
     $database->do_query('set bytea_output to hex;');
-    $database->do_query('set search_path to system,administers,managers,publishers,insurers,financers,reviewers,drafters,users,public;');
+    $database->do_query('set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;');
     $database->do_query('set datestyle to us;');
 
     return new c_base_return_true();

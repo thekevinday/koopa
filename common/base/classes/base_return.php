@@ -1313,22 +1313,22 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
-   * @todo: this is incomplete because the base_error class is not yet written.
-   *
-   * @param todo|null $error
-   *   (optional) a custom error setting.
+   * @param c_base_error|null $error
+   *   (optional) a custom error.
    *
    * @return c_base_return_true
    *   A c_base_return_true object with the error value populated.
    */
   public static function s_true($error = NULL) {
-    $object_error = new c_base_error();
-
     $object_return = new c_base_return_true();
-    $object_return->set_error($object_error);
 
-    if (!is_null($error)) {
-      // @todo: do something with the code.
+    if (is_null($error)) {
+      $object_error = new c_base_error();
+      $object_return->set_error($object_error);
+      unset($object_error);
+    }
+    else {
+      $object_return->set_error($error);
     }
 
     return $object_return;
@@ -1337,22 +1337,22 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
-   * @todo: this is incomplete because the base_error class is not yet written.
-   *
-   * @param todo|null $error
+   * @param c_base_error|null $error
    *   (optional) a custom error setting.
    *
    * @return c_base_return_false
    *   A c_base_return_true object with the error value populated.
    */
   public static function s_false($error = NULL) {
-    $object_error = new c_base_error();
-
     $object_return = new c_base_return_false();
-    $object_return->set_error($object_error);
 
-    if (!is_null($error)) {
-      // @todo: do something with the code.
+    if (is_null($error)) {
+      $object_error = new c_base_error();
+      $object_return->set_error($object_error);
+      unset($object_error);
+    }
+    else {
+      $object_return->set_error($error);
     }
 
     return $object_return;
@@ -1361,13 +1361,11 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
-   * @todo: this is incomplete because the base_error class is not yet written.
-   *
    * @param $value
    *   A value to provide
    * @param $class
    *   A custom class name.
-   * @param todo|null $error
+   * @param c_base_error|null $error
    *   (optional) a custom error setting.
    *
    * @return c_base_return_false|c_base_return_value
@@ -1379,16 +1377,18 @@ class c_base_return_error {
       return self::s_false($error);
     }
 
-    $object_error = new c_base_error();
-
     $object_return = new $class();
-    $object_return->set_error($object_error);
-    $object_return->set_value($value);
 
-    if (!is_null($error)) {
-      // @todo: do something with the code.
+    if (is_null($error)) {
+      $object_error = new c_base_error();
+      $object_return->set_error($object_error);
+      unset($object_error);
+    }
+    else {
+      $object_return->set_error($error);
     }
 
+    $object_return->set_value($value);
     return $object_return;
   }
 }

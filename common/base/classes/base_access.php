@@ -104,8 +104,12 @@ class c_base_roles {
    *   FALSE with error bit set is returned on error.
    */
   public function set_role($role, $value) {
-    if (!is_int($role) || !is_bool($value)) {
-      return c_base_return_error::s_false();
+    if (!is_int($role)) {
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'role')), i_base_error_messages::INVALID_ARGUMENT);
+    }
+
+    if (!is_bool($value)) {
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'value')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     if ($role === self::NONE) {
@@ -174,7 +178,7 @@ class c_base_roles {
    */
   public function get_role($role) {
     if (!is_int($role)) {
-      return c_base_return_error::s_false();
+      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'role')), i_base_error_messages::INVALID_ARGUMENT);
     }
 
     if ($role === self::NONE) {

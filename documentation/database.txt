@@ -1,0 +1,48 @@
+The database follows the naming structure explained in the naming.txt documentation.
+
+Much of my database design strategy is built around sacrificing storage space for performance and efficiency reasons.
+
+This system extensively uses postgresql's access control functionality to get as much of the access control out of PHP (or something else for that matter) and into the database.
+There are some limitations and there is a notable cost in performance.
+
+The database access control design strategy is based around ldap account names.
+Using postgresql's ldap functionality, accounts can be auto-used without restarting or reloading the database.
+There is a specific weakness (arguably) in postgresql's design that prevents ldap accounts from being auto-created.
+An experimental helper service called autocreate_ldap_accounts_in_postgresql is provided under the programs directory to help facilitate auto-creation of ldap accounts.
+Using this helper can also provide a way to auto-assign additional postgresql roles for users based on ldap information.
+By basing access control around postgresql ldap, passwords no longer need to be stored in the database and therefore significantly more secure.
+
+One of the problems with the current design is that the access control uses the current user name.
+This is all well in good, except that the access control tests need to be performed on what is essentially a string.
+String comparisons are expensive and should be avoided in favor of integers (which happens to be part of the development strategy of this project).
+To use the username while have integers would require performing appropriate inner joins on every view access check to get the username.
+To avoid using joins, a varchar(128), generally called name_machine or name_machine_user, is provided in many of the tables that include the user id.
+The idea here is that the cost of disk space is cheaper than the cost of time.
+
+Postgresql schemas are used as a form of organization, access control, and order of operations.
+As for organization, tables, views, and other database objects are assigned to their appropriate group (preferably, the highest necessary schema based on access control concepts and the purpose and intention of the table/view/etc..).
+For access control, most things in their appropriate schema a granted full access while limited access is required to reach a higher schema.
+For example, managers are not supposed to create administrator accounts and therefore the t_users table is placed in the administrators schema.
+However, the t_groups table has no such restrictions and can be safely placed in the managers schema.
+As for order of operations, postgresql provides a database environment variable called search_path.
+This search_path provides an order in which schemas may be searched.
+Because of a users access control, some schemas may not be available.
+This has the convenient effect of allowing multiple identically named tables to be used, but provide different content based on access restrictions.
+For example, there are at least two views filtering the user account infomration: managers.v_users and public.v_users.
+Users without access to the managers will at least see the public.v_users view.
+The view public.v_users provides a limited subset of user rows based on criteria such as if the account is not marked private and then only a limited set of columns are made visible.
+The view managers.v_users provides access to far more accounts and many more columns.
+This then allows the client software, such as PHP, to not need to understand the access control situation and to only need to select v_users to access user data.
+
+Postgresql materialized views are experimentally being used to provide a sort of live cache of information.
+With my previous database designs, I required multiple write operations for saving certain information that is cached.
+Materialized views seem to provide a way to have static (aka: materialized) data instead of using views (which requires building of the data on each request).
+This, once again, uses more disk space but improves performance.
+The materialized views can then be updated after commit operations or designed cron jobs via the refresh materialized view postgresql command.
+
+The t_users table (and a few others) are providing a column called 'id_sort'.
+Because user account (and similar) data can become massive, performing selects on an arbitrarily large users table can become slow.
+This can then slow down site response time, directly affecting the user experience.
+This id_sort column is used, in conjunction with custom indexing, to provide a sub-set of the arbitrarily large users table.
+The id_sort is simply an ordinal integer (as returned by PHPs ord() function) for the first (lower-cased) letter of the username.
+This is obviously not an optimal solution, in part because some alphabets will have more names than others, but I believe it is a good enough solution.

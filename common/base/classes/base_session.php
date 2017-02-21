@@ -18,7 +18,7 @@ require_once('common/base/classes/base_return.php');
  */
 class c_base_session {
   const PACKET_MAX_LENGTH = 8192;
-  const SOCKET_PATH_PREFIX = '/var/www/sockets/sessionize_accounts/';
+  const SOCKET_PATH_PREFIX = '/programs/sockets/sessionize_accounts/';
   const SOCKET_PATH_SUFFIX = '/sessions.socket';
   const PASSWORD_CLEAR_TEXT_LENGTH = 2048;
 
@@ -551,7 +551,7 @@ class c_base_session {
       return c_base_return_error::s_false();
     }
 
-    $connected = socket_connect($this->socket, $this->socket_path, 0);
+    $connected = @socket_connect($this->socket, $this->socket_path, 0);
     if ($connected === FALSE) {
       unset($connected);
 

@@ -550,6 +550,7 @@ class c_base_markup_tag {
    * @param $value
    *   The value of the attribute.
    *   The actual value type is specific to each attribute type.
+   *   May be set to NULL to unassign/remove any given attribute.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -560,9 +561,13 @@ class c_base_markup_tag {
       return c_base_return_error::s_false();
     }
 
+    if (is_null($value)) {
+      unset($this->attribute[$attribute]);
+      return new c_base_return_true();
+    }
+
     switch ($attribute) {
       case c_base_markup_attributes::ATTRIBUTE_NONE:
-        unset($this->attribute[$attribute]);
         return new c_base_return_true();
 
       case c_base_markup_attributes::ATTRIBUTE_ABBR:

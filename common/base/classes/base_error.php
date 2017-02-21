@@ -4,90 +4,87 @@
  * Provides a class for managing return values.
  */
 
-/*
-  const KERNEL = 0;
-  const USER = 1;
-  const MAIL = 2;
-  const DAEMON = 3;
-  const SECURITY = 4;
-  const MESSAGES = 5;
-  const PRINTER = 6;
-  const NETWORK = 7;
-  const UUCP = 8;
-  const CLOCK = 9;
-  const AUTHORIZATION = 10;
-  const FTP = 11;
-  const NTP = 12;
-  const AUDIT = 13;
-  const ALERT = 14;
-  const CRON = 15;
-  const LOCAL_0 = 16;
-  const LOCAL_1 = 17;
-  const LOCAL_2 = 18;
-  const LOCAL_3 = 19;
-  const LOCAL_4 = 20;
-  const LOCAL_5 = 21;
-  const LOCAL_6 = 22;
-  const LOCAL_7 = 23;
-*/
-
 /**
  * A generic class for managing errors.
  *
  * This class is a dependency of classes provided by base_return.php.
- * Therefore, it is an exception case to the use of base_return classes as a return value.
+ * Therefore, it is an exception case to the use of base_return classes as a return value and must instead return raw/native PHP values.
  *
- * @todo: write this based on my cf_error code.
+ * This provides a custom facility for syslog/openlog calls so that a 'none' facility can be supported.
  */
 class c_base_error {
-  const EMERGENCY = 0;
-  const ALERT = 1;
-  const CRITICAL = 2;
-  const ERROR = 3;
-  const WARNING = 4;
-  const NOTICE = 5;
-  const INFORMATIONAL = 6;
-  const DEBUG = 7;
-  const UNKNOWN = 8;
+  const SEVERITY_NONE          = 0;
+  const SEVERITY_EMERGENCY     = 1;
+  const SEVERITY_ALERT         = 2;
+  const SEVERITY_CRITICAL      = 3;
+  const SEVERITY_ERROR         = 4;
+  const SEVERITY_WARNING       = 5;
+  const SEVERITY_NOTICE        = 6;
+  const SEVERITY_INFORMATIONAL = 7;
+  const SEVERITY_DEBUG         = 8;
+  const SEVERITY_UNKNOWN       = 9;
+
+  const FACILITY_NONE          = 0;
+  const FACILITY_KERNEL        = 1;
+  const FACILITY_USER          = 2;
+  const FACILITY_MAIL          = 3;
+  const FACILITY_DAEMON        = 4;
+  const FACILITY_SECURITY      = 5;
+  const FACILITY_MESSAGES      = 6;
+  const FACILITY_PRINTER       = 7;
+  const FACILITY_NETWORK       = 8;
+  const FACILITY_UUCP          = 9;
+  const FACILITY_CLOCK         = 10;
+  const FACILITY_AUTHORIZATION = 11;
+  const FACILITY_FTP           = 12;
+  const FACILITY_NTP           = 13;
+  const FACILITY_AUDIT         = 14;
+  const FACILITY_ALERT         = 15;
+  const FACILITY_CRON          = 16;
+  const FACILITY_LOCAL_0       = 17;
+  const FACILITY_LOCAL_1       = 18;
+  const FACILITY_LOCAL_2       = 19;
+  const FACILITY_LOCAL_3       = 20;
+  const FACILITY_LOCAL_4       = 21;
+  const FACILITY_LOCAL_5       = 22;
+  const FACILITY_LOCAL_6       = 23;
+  const FACILITY_LOCAL_7       = 24;
 
   const DEFAULT_BACKTRACE_LIMIT = 4;
 
-  private $name;
   private $message;
   private $details;
   private $severity;
   private $limit;
   private $backtrace;
   private $code;
-  private $reported;
+  private $ignore_arguments;
 
 
   /**
    * Class constructor.
    */
   public function __construct() {
-    $this->name = NULL;
     $this->message = NULL;
     $this->details = NULL;
     $this->severity = NULL;
-    $this->limit = NULL;
-    $this->backtrace = NULL;
+    $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
+    $this->backtrace = array();
     $this->code = NULL;
-    $this->reported = NULL;
+    $this->ignore_arguments = TRUE;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->name);
     unset($this->message);
     unset($this->details);
     unset($this->severity);
     unset($this->limit);
     unset($this->backtrace);
     unset($this->code);
-    unset($this->reported);
+    unset($this->ignore_arguments);
   }
 
   /**
@@ -96,11 +93,6 @@ class c_base_error {
    * This will silently ignore invalid arguments, with the exception of the reporting controls.
    * For reporting information, use self::get_reporting().
    *
-   * @todo: this is incomplete.
-   *
-   * @param string|null $name
-   *   (optional) The name of something associated with a problem.
-   *   This is often a variable name or a function name.
    * @param string|null $message
    *   (optional) A message string describing the problem, in some manner.
    * @param array|null $details
@@ -109,32 +101,19 @@ class c_base_error {
    *   (optional) An integer identifying the message in some manner.
    * @param int|null $severity
    *   (optional) A number representing the severity level.
-   *   The c_base_error constants, such as EMERGENCY or ERROR should be use here.
-   *   This defaults to: self::ERROR.
+   *   The c_base_error constants, such as SEVERITY_SEVERITY_EMERGENCY or SEVERITY_SEVERITY_ERROR should be use here.
    * @param int|bool|null $limit
    *   (optional) A number representing the backtrace limit.
    *   If set to FALSE, then no backtrace is generated.
-   * @param bool $report
-   *   (optional) If TRUE, then report the error using the appropriate methods.
-   *   @fixme: it would probably be best to make this an object that knows how to report so that the object can do what it needs to do.
    *
    * @return c_base_error
    *   Always returns a newly created c_base_error object.
    *   No error status is ever returned.
-   *
-   * @see: self::get_reporting()
    */
-  public static function s_log($name = NULL, $message = NULL, $details = NULL, $code = NULL, $severity = NULL, $limit = NULL, $report = TRUE) {
+  public static function s_log($message = NULL, $details = NULL, $code = NULL, $severity = NULL, $limit = NULL) {
     $class = __CLASS__;
     $entry = new $class();
     unset($class);
-
-    if (is_string($name)) {
-      $entry->set_name($name);
-    }
-    elseif (is_null($this->name)) {
-      $entry->set_name('');
-    }
 
     if (is_string($message)) {
       $entry->set_message($message);
@@ -157,60 +136,21 @@ class c_base_error {
       $entry->set_code(0);
     }
 
-    if (is_int($severity) && $severity >= self::EMERGENCY && $severity < self::UNKNOWN) {
+    if (is_int($severity) && $severity >= self::SEVERITY_EMERGENCY && $severity < self::SEVERITY_UNKNOWN) {
       $entry->set_severity($severity);
     }
     elseif (is_null($this->message)) {
-      $entry->set_severity(self::ERROR);
+      $entry->set_severity(self::SEVERITY_ERROR);
     }
 
-    if ($limit === FALSE || (is_int($limit) && $limit >= 0)) {
+    if (is_int($limit) && $limit >= 0) {
       $entry->set_limit($limit);
     }
-    elseif (is_null($this->limit)) {
-      $entry->set_limit(self::DEFAULT_BACKTRACE_LIMIT);
-    }
 
-    // @todo: call self::p_backtrace() accordingly.
-
-    if (is_bool($report) && $report) {
-      // @todo: use the report object to report the problem.
-      // @fixme: this is setup as a bool, but I know I need to create and use a report object (which has yet to be created).
-      $this->reported = NULL;
-    }
-    else {
-      $this->reported = NULL;
-    }
+    // build the backtrace, but ignore this function call when generating.
+    $this->set_backtrace(1);
 
     return $entry;
-  }
-
-  /**
-   * Assign an error name string.
-   *
-   * @param string $name
-   *   An error name string
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_name($name) {
-    if (!is_string($name)) {
-      return FALSE;
-    }
-
-    $this->name = $name;
-  }
-
-  /**
-   * Returns the assigned name.
-   *
-   * @return string|null
-   *   A name to associate with the error, such as a variable or function name.
-   *   NULL is returned if not defined.
-   */
-  public function get_name() {
-    return $this->name;
   }
 
   /**
@@ -242,6 +182,8 @@ class c_base_error {
 
   /**
    * Assigns the details array.
+   *
+   * The details array is defined by the caller and may have any structure, so long as it is an array.
    *
    * @param array $details
    *   An array of details.
@@ -275,7 +217,7 @@ class c_base_error {
    *
    * @param int $severity
    *   A severity integer, representing the severity level.
-   *   Such as self::ERROR.
+   *   Such as self::SEVERITY_ERROR.
    */
   public function set_severity($severity) {
     if (!is_int($severity) || $severity < 0 || $severity > 7) {
@@ -291,11 +233,11 @@ class c_base_error {
    *
    * @return int
    *   The currently assigned severity level.
-   *   This defaults to self::ERROR when undefined.
+   *   This defaults to self::SEVERITY_ERROR when undefined.
    */
   public function get_severity() {
     if (is_null($this->severity)) {
-      $this->severity = self::ERROR;
+      $this->severity = self::SEVERITY_ERROR;
     }
 
     return $this->severity;
@@ -312,7 +254,7 @@ class c_base_error {
    * @see: c_base_error::set_backtrace()
    */
   public function set_limit($limit) {
-    if ($limit !== FALSE || !is_int($limit) || $limit < 0) {
+    if ($limit !== FALSE && (!is_int($limit) || $limit < 0)) {
       return FALSE;
     }
 
@@ -324,13 +266,14 @@ class c_base_error {
    * Returns the currently assigned limit.
    *
    * @return int|bool
-   *   The currently assigned limit.
+   *   The currently assigned limit integer.
+   *   FALSE is returned if backtracing is disabled.
    *   This defaults to self::DEFAULT_BACKTRACE_LIMIT.
    *
    * @see: c_base_error::set_backtrace()
    */
   public function get_limit() {
-    if ($limit !== FALSE || !is_int($limit) || $limit < 0) {
+    if ($limit !== FALSE && (!is_int($limit) || $limit < 0)) {
       $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
     }
 
@@ -343,13 +286,30 @@ class c_base_error {
    * This is auto-performed by the class.
    * All settings should be assigned prior to utilizing this.
    *
+   * @param int|false|null $count
+   *   (optional) assign a backtrace ignore account.
+   *   This is useful for when you have other debugging functions being called prior to this that should not appear in the backtrace.
+   *   This function auto-adds 1 to account for this function call to this value.
+   *   If set to FALSE, the backtrace will be reset to an empty array.
+   *
    * @return bool
    *   TRUE on success, FALSE otherwise.
    *
    * @see: c_base_error::set_limit()
    */
-  public function set_backtrace() {
-    $this->p_backtrace(1);
+  public function set_backtrace($count = NULL) {
+    if (is_null($count)) {
+      $this->p_backtrace(1);
+    }
+    elseif (is_int($count)) {
+      $this->p_backtrace($count + 1);
+    }
+    elseif ($count === FALSE) {
+      $this->backtrace = array();
+    }
+    else {
+      return FALSE;
+    }
 
     return TRUE;
   }
@@ -357,8 +317,8 @@ class c_base_error {
   /**
    * Returns the backtrace object.
    *
-   * @return object|null
-   *   A populate backtrace object or NULL if no backtrace is defined.
+   * @return array|null
+   *   A populate backtrace array of objects or NULL if no backtrace is defined.
    *
    * @see: c_base_error::set_limit()
    */
@@ -432,6 +392,34 @@ class c_base_error {
   }
 
   /**
+   * Assign an error ignore arguments boolean.
+   *
+   * @param bool $ignore_arguments
+   *   The ignore arguments boolean.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_ignore_arguments($ignore_arguments) {
+    if (!is_bool($ignore_arguments)) {
+      return FALSE;
+    }
+
+    $this->ignore_arguments = $ignore_arguments;
+  }
+
+  /**
+   * Returns the assigned ignore arguments boolean.
+   *
+   * @return bool|null
+   *   A boolean representing whether or not to get the arguments when building the backtrace.
+   *   NULL is returned if not defined.
+   */
+  public function get_ignore_arguments() {
+    return $this->ignore_arguments;
+  }
+
+  /**
    * Build the debug backtrace.
    *
    * This will not include this function in the backtrace.
@@ -446,30 +434,79 @@ class c_base_error {
    * @see: debug_backtrace()
    */
   private function p_backtrace($count = 0) {
+    $this->backtrace = array();
+
+    // when limit is set to FALSE, backtrace is disabled.
     if ($this->limit === FALSE) {
-      $this->backtrace = NULL;
       return;
+    }
+
+    if (is_null($this->limit)) {
+      $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
     }
 
     // Make sure unnecessary backtrace logs are not part of the count.
     $limit = $this->limit;
-    if ($this->limit > 0) {
-      $limit = $this->limit + 1;
-
-      if (is_int($count) && $count > 0) {
-        $limit += $count;
-      }
+    if ($limit > 0) {
+      $limit += $count;
     }
 
-    $this->backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $limit);
+    if ($this->ignore_arguments) {
+      $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, $limit);
+    }
+    else {
+      $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, $limit);
+    }
     unset($limit);
 
-    // Remove unecessary backtrace logs.
-    $count = $count + 1;
-    $i = 0;
-    for (; $i < $count; $i++) {
-      array_shift($this->backtrace);
+    if (is_array($backtrace)) {
+      // Remove the call to the debug_backtrace() from the backtrace log and this function call.
+      $total = $count + 2;
+      $i = 0;
+      for (; $i < $total; $i++) {
+        array_shift($backtrace);
+      }
+      unset($i);
+      unset($total);
+
+      $this->backtrace = $backtrace;
     }
-    unset($i);
+    unset($backtrace);
   }
+}
+
+/**
+ * A generic interface for providing basic error messages.
+ *
+ * This is for generating common error messages.
+ *
+ * @warning: this will be constantly updated and reogranized as the project is being developed.
+ *           it is expected that the number of codes will get very large.
+ *           expect major changes.
+ *
+ * @see: http://www.loc.gov/standards/iso639-2/php/code_list.php
+ */
+interface i_base_error_messages {
+  const NONE              = 0;
+  const ARGUMENT_INVALID  = 1;
+  const OPERATION_FAILURE = 2;
+  const INVALID_FORMAT    = 3;
+  const INVALID_VARIABLE  = 4;
+
+
+  /**
+   * Returns a standard error message associated with the given code.
+   *
+   * @param int $code
+   *   The error message code.
+   * @param bool $arguments
+   *   (optional) When TRUE, argument placeholders are added.
+   *   When FALSE, no placeholders are provided.
+   *   All placeholders should begin with a single colon ':'.
+   *
+   * @return string
+   *   An error message associated with the error code.
+   *   An empty sting is returned for unsupported or unknown codes.
+   */
+  static function s_get_message($code);
 }
