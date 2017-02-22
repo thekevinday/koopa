@@ -63,7 +63,8 @@ class c_base_html {
    */
   public function set_id($id) {
     if (!is_int($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->id = $id;
@@ -101,7 +102,8 @@ class c_base_html {
    */
   public function set_attribute($attribute, $value) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return $this->p_set_attribute($attribute, $value);
@@ -122,7 +124,8 @@ class c_base_html {
    */
   public function set_attribute_body($attribute, $value) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return $this->p_set_attribute($attribute, $value, TRUE);
@@ -156,7 +159,8 @@ class c_base_html {
    */
   public function get_attribute($attribute) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return $this->p_get_attribute($attribute);
@@ -177,7 +181,8 @@ class c_base_html {
    */
   public function get_attribute_body($attribute) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return $this->p_get_attribute($attribute, TRUE);
@@ -198,11 +203,13 @@ class c_base_html {
    */
   public function set_tag($tag, $delta = NULL) {
     if (!($tag instanceof c_base_markup_tag)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($delta) && !is_int($delta)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->body)) {
@@ -231,7 +238,8 @@ class c_base_html {
    */
   public function get_tag($delta) {
     if (!is_int($delta)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!array_key_exists($delta, $this->body)) {
@@ -271,11 +279,13 @@ class c_base_html {
    */
   public function set_header($header, $delta = NULL) {
     if (!($header instanceof c_base_markup_tag)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($delta) && !is_int($delta)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     // only certain header types are allowed.
@@ -319,7 +329,8 @@ class c_base_html {
    */
   public function get_header($delta) {
     if (!is_int($delta)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!array_key_exists($delta, $this->headers)) {
@@ -513,8 +524,7 @@ class c_base_html {
 
     switch ($attribute) {
       case c_base_markup_attributes::ATTRIBUTE_NONE:
-        // should not be possible, so consider this an error (attributes set to NONE are actually unset from the array).
-        return c_base_return_error::s_false();
+        return new c_base_return_null();
 
       case c_base_markup_attributes::ATTRIBUTE_ABBR:
       case c_base_markup_attributes::ATTRIBUTE_ACCESS_KEY:

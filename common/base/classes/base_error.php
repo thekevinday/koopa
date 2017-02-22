@@ -11,6 +11,9 @@
  * Therefore, it is an exception case to the use of base_return classes as a return value and must instead return raw/native PHP values.
  *
  * This provides a custom facility for syslog/openlog calls so that a 'none' facility can be supported.
+ *
+ * @todo: I either need to create a global/static (aka: non-threadsafe) class for assigning error settings OR I need to add a variable to each class object to assign error settings (uses more resources).
+ *        This needs to be done so that stuff like debug_backtrace() is called only once and is only called if needed.
  */
 class c_base_error {
   const SEVERITY_NONE          = 0;
@@ -59,6 +62,7 @@ class c_base_error {
   private $backtrace;
   private $code;
   private $ignore_arguments;
+  private $backtrace_performed;
 
 
   /**
@@ -72,6 +76,7 @@ class c_base_error {
     $this->backtrace = array();
     $this->code = NULL;
     $this->ignore_arguments = TRUE;
+    $this->backtrace_performed = FALSE;
   }
 
   /**
@@ -85,6 +90,7 @@ class c_base_error {
     unset($this->backtrace);
     unset($this->code);
     unset($this->ignore_arguments);
+    unset($this->backtrace_performed);
   }
 
   /**
@@ -118,28 +124,28 @@ class c_base_error {
     if (is_string($message)) {
       $entry->set_message($message);
     }
-    elseif (is_null($this->message)) {
+    elseif (is_null($message)) {
       $entry->set_message('');
     }
 
     if (is_array($details)) {
       $entry->set_details($details);
     }
-    elseif (is_null($this->details)) {
+    elseif (is_null($details)) {
       $entry->set_details(array());
     }
 
     if (is_int($code)) {
       $entry->set_code($code);
     }
-    elseif (is_null($this->message)) {
+    elseif (is_null($message)) {
       $entry->set_code(0);
     }
 
     if (is_int($severity) && $severity >= self::SEVERITY_EMERGENCY && $severity < self::SEVERITY_UNKNOWN) {
       $entry->set_severity($severity);
     }
-    elseif (is_null($this->message)) {
+    elseif (is_null($severity)) {
       $entry->set_severity(self::SEVERITY_ERROR);
     }
 
@@ -148,7 +154,7 @@ class c_base_error {
     }
 
     // build the backtrace, but ignore this function call when generating.
-    $this->set_backtrace(1);
+    $entry->set_backtrace(1);
 
     return $entry;
   }
@@ -472,6 +478,8 @@ class c_base_error {
       $this->backtrace = $backtrace;
     }
     unset($backtrace);
+
+    $this->backtrace_performed = TRUE;
   }
 }
 
@@ -487,11 +495,21 @@ class c_base_error {
  * @see: http://www.loc.gov/standards/iso639-2/php/code_list.php
  */
 interface i_base_error_messages {
-  const NONE              = 0;
-  const ARGUMENT_INVALID  = 1;
-  const OPERATION_FAILURE = 2;
-  const INVALID_FORMAT    = 3;
-  const INVALID_VARIABLE  = 4;
+  const NONE                          = 0;
+  const INVALID_ARGUMENT              = 1;
+  const INVALID_FORMAT                = 2;
+  const INVALID_VARIABLE              = 3;
+  const OPERATION_FAILURE             = 4;
+  const OPERATION_UNECESSARY          = 5;
+  const FUNCTION_FAILURE              = 6;
+  const NOT_FOUND_ARRAY_INDEX         = 7;
+  const NOT_FOUND_DIRECTORY           = 8;
+  const NOT_FOUND_FILE                = 9;
+  const NO_CONNECTION                 = 10;
+  const NO_SUPPORT                    = 11;
+  const POSTGRESQL_CONNECTION_FAILURE = 12;
+  const POSTGRESQL_NO_CONNECTION      = 13;
+  const POSTGRESQL_NO_RESOURCE        = 14;
 
 
   /**

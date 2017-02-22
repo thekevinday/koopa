@@ -42,7 +42,8 @@ class c_base_charset {
    */
   public static function s_is_valid($charset) {
     if (!is_int($charset)) {
-      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset')), i_base_error_messages::INVALID_ARGUMENT));
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($charset < self::ASCII || $charset > self::ISO_8859_16) {
@@ -64,7 +65,8 @@ class c_base_charset {
    */
   public static function s_to_string($charset) {
     if (!is_int($charset)) {
-      return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset')), i_base_error_messages::INVALID_ARGUMENT));
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     switch ($charset) {
@@ -110,6 +112,7 @@ class c_base_charset {
         return c_base_return_string::s_new('ISO-8859-16');
     }
 
-    return c_base_return_error::s_false(c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => __CLASS__ . '::' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE));
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '::' . __FUNCTION__), i_base_error_messages::FUNCTION_FAILURE));
+    return c_base_return_error::s_false($error);
   }
 }

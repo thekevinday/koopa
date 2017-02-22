@@ -164,7 +164,8 @@ class c_base_mime {
    */
   static function s_get_names_by_id($id, $category = NULL) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($category)) {
@@ -200,7 +201,8 @@ class c_base_mime {
     }
     else {
       if (!is_int($category)) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'category', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
       }
 
       if ($category == self::CATEGORY_PROVIDED) {
@@ -270,11 +272,13 @@ class c_base_mime {
    */
   static function s_identify($mime, $lowercase = FALSE) {
     if (!is_string($mime)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'mime', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($lowercase)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'lowercase', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($lowercase) {

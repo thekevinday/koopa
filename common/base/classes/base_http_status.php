@@ -91,7 +91,8 @@ class c_base_http_status {
    */
   public static function to_text($status) {
     if (!is_int($status)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'status', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $string = "";

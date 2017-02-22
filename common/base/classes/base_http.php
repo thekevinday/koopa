@@ -278,7 +278,8 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (!is_int($header_name) || !array_key_exists($header_name, $this->request)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->request[$header_name]);
@@ -307,7 +308,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_language_class($class_name) {
     if (!is_string($class_name) || !is_subclass_of('i_base_language', $class_name) ) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'class_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->language_class = $class_name;
@@ -662,7 +664,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_access_control_allow_origin($uri) {
     if (!is_string($uri)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($uri == c_base_ascii::ASTERISK) {
@@ -672,7 +675,8 @@ class c_base_http extends c_base_rfc_string {
       $parsed = $this->p_parse_uri($uri);
       if ($parsed['invalid']) {
         unset($parsed);
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_parse_uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
       }
       unset($parsed['invalid']);
 
@@ -701,7 +705,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_access_control_allow_credentials($allow_credentials) {
     if (!is_bool($allow_credentials)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'allowed_credentials', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS] = $allow_credentials;
@@ -729,20 +734,28 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_access_control_expose_headers($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_prepare_token($header_name);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS]) || !is_array($this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS])) {
+        $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] = array();
+      }
+
       $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS][$parsed] = $parsed;
     }
     else {
@@ -770,7 +783,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_access_control_max_age($timestamp) {
     if (!is_int($timestamp) && !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_ACCESS_CONTROL_MAX_AGE] = $timestamp;
@@ -796,15 +810,21 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
   public function set_response_access_control_allow_methods($method, $append = TRUE) {
-    if (!is_int($uri)) {
-      return c_base_return_error::s_false();
+    if (!is_int($method)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'method', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS]) || !is_array($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS])) {
+        $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] = array();
+      }
+
       $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS][$method] = $method;
     }
     else {
@@ -830,20 +850,28 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_access_control_allow_headers($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_prepare_token($header_name);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS]) || !is_array($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS])) {
+        $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] = array();
+      }
+
       $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS][$parsed] = $parsed;
     }
     else {
@@ -873,18 +901,21 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_accept_patch($media_type, $append = TRUE) {
     if (!is_string($media_type)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'media_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $text = $this->pr_rfc_string_prepare($media_type);
     if ($text['invalid']) {
       unset($text);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->pr_rfc_string_is_media_type($text['ordinals'], $text['characters']);
@@ -893,12 +924,17 @@ class c_base_http extends c_base_rfc_string {
     if ($parsed['invalid']) {
       unset($parsed);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_is_media_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
     unset($parsed['invalid']);
     unset($parsed['current']);
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_ACCEPT_PATCH]) || !is_array($this->response[self::RESPONSE_ACCEPT_PATCH])) {
+        $this->response[self::RESPONSE_ACCEPT_PATCH] = array();
+      }
+
       $this->response[self::RESPONSE_ACCEPT_PATCH][] = $parsed;
     }
     else {
@@ -929,13 +965,16 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_accept_ranges($ranges) {
     if (!is_string($ranges)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ranges', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_prepare_token($ranges);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_ACCEPT_RANGES] = $parsed;
@@ -958,7 +997,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_age($seconds) {
     if (!is_int($seconds)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'seconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_AGE] = $seconds;
@@ -986,11 +1026,13 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_allow($allow, $append = TRUE) {
     if (!is_int($allow)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'allow', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     switch ($allow) {
@@ -1008,7 +1050,8 @@ class c_base_http extends c_base_rfc_string {
       case self::HTTP_METHOD_DEBUG:
         break;
       default:
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'allow', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
     }
 
     if ($allow == self::HTTP_METHOD_NONE) {
@@ -1017,6 +1060,10 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_ALLOW]) || !is_array($this->response[self::RESPONSE_ALLOW])) {
+        $this->response[self::RESPONSE_ALLOW] = array();
+      }
+
       $this->response[self::RESPONSE_ALLOW][$allow] = $allow;
     }
     else {
@@ -1056,15 +1103,18 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_cache_control($directive_name, $directive_value = NULL, $append = TRUE) {
     if (!is_int($directive_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'directive_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($directive_value) && !is_string($directive_value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'directive_value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     switch($directive_name) {
@@ -1083,7 +1133,8 @@ class c_base_http extends c_base_rfc_string {
         break;
 
       default:
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'directive_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
     }
 
     $parsed_directive_value = NULL;
@@ -1092,7 +1143,8 @@ class c_base_http extends c_base_rfc_string {
       if ($text['invalid']) {
         unset($text);
 
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
       }
 
       $parsed = $this->pr_rfc_string_is_token_quoted($text['ordinals'], $text['characters']);
@@ -1101,12 +1153,17 @@ class c_base_http extends c_base_rfc_string {
       if ($parsed['invalid']) {
         unset($parsed);
 
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_is_token_quoted', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
       }
       unset($parsed);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_CACHE_CONTROL]) || !is_array($this->response[self::RESPONSE_CACHE_CONTROL])) {
+        $this->response[self::RESPONSE_CACHE_CONTROL] = array();
+      }
+
       $this->response[self::RESPONSE_CACHE_CONTROL][$directive_name] = $directive_value;
     }
     else {
@@ -1121,8 +1178,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: connection.
    *
-   * @param string $header_name
-   *   The header name to assign as a connection-specific field.
+   * @param string $connection_option
+   *   The connection option to assign as a connection-specific field.
    *   These header fields apply only to the immediate client.
    *   The header name format is:
    *   - 1*(tchar)
@@ -1136,22 +1193,30 @@ class c_base_http extends c_base_rfc_string {
    *
    * @see: https://tools.ietf.org/html/rfc7230#section-6.1
    */
-  public function set_response_connection($header_name, $append = TRUE) {
-    if (!is_string($header_name)) {
-      return c_base_return_error::s_false();
+  public function set_response_connection($connection_option, $append = TRUE) {
+    if (!is_string($connection_option)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'connection_option', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($header_name);
+    $parsed = $this->p_prepare_token($connection_option);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_CONNECTION]) || !is_array($this->response[self::RESPONSE_CONNECTION])) {
+        $this->response[self::RESPONSE_CONNECTION] = array();
+      }
+
       $this->response[self::RESPONSE_CONNECTION][$parsed] = $parsed;
     }
     else {
@@ -1189,15 +1254,18 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content($content, $append = TRUE, $is_file = FALSE) {
     if (!is_string($content)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'content', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($is_file)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_file', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
@@ -1253,7 +1321,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_disposition($disposition) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content disposition', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1315,9 +1385,6 @@ class c_base_http extends c_base_rfc_string {
    *
    * @param int $encoding
    *   The encoding to assign to the specified header.
-   * @param bool $append
-   *   (optional) If TRUE, then append the header name.
-   *   If FALSE, then assign the header name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -1328,13 +1395,15 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.2.2
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.1
    */
-  public function set_response_content_encoding($encoding, $append = TRUE) {
+  public function set_response_content_encoding($encoding) {
     if (!is_int($encoding)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     switch ($encoding) {
@@ -1351,7 +1420,8 @@ class c_base_http extends c_base_rfc_string {
       case self::ENCODING_PG:
         break;
       default:
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
@@ -1374,18 +1444,22 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_language($language = NULL) {
     if (!is_null($language) && !is_int($language)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'language', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($language)) {
       if (!is_object($this->language_class) || !($this->language_class instanceof i_base_language)) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->language_class', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        return c_base_return_error::s_false($error);
       }
 
       $default = $this->language_class->s_get_default_id();
       if ($default instanceof c_base_return_false) {
         unset($default);
-        return c_base_return_error::s_false();
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->language_class->s_get_default_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CONTENT_LANGUAGE] = $default;
@@ -1393,7 +1467,8 @@ class c_base_http extends c_base_rfc_string {
     }
     else {
       if ($language_class->s_get_names_by_id($language) instanceof c_base_return_false) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'language_class->s_get_names_by_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CONTENT_LANGUAGE] = $language;
@@ -1424,7 +1499,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_length($length = NULL) {
     if (!is_null($length) && !is_int($length) || $length < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     // From the RFC: "A sender MUST NOT send a Content-Length header field in any message that contains a Transfer-Encoding header field."
@@ -1443,8 +1519,9 @@ class c_base_http extends c_base_rfc_string {
           foreach ($this->content as $filename) {
             if (!file_exists($filename)) {
               unset($filename);
-              // @todo: provide a file not found error.
-              return c_base_return_error::s_false();
+
+              $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+              return c_base_return_error::s_false($error);
             }
 
             $this->response[self::RESPONSE_CONTENT_LENGTH] += filesize($filename);
@@ -1474,7 +1551,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_range($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content range', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1496,23 +1575,28 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_type($content_type, $charset = c_base_charset::UTF_8) {
     if (!is_string($content_type)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'content_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!c_base_charset::s_is_valid($charset)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     // perform a very basic syntax check.
     if (strpos($content_type, ';')) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'content_type', ':expected_format' => '. Semi-colons are not allowed.', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
     }
 
     $content_type_part = mb_split('/', $content_type);
 
     if (count($content_type_part) != 2) {
       unset($content_type_part);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'mb_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
     unset($content_type_part);
 
@@ -1548,7 +1632,8 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (!is_int($timestamp) && !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_DATE] = $timestamp;
@@ -1583,7 +1668,8 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (!is_int($timestamp) && !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_DATE_ACTUAL] = $timestamp;
@@ -1614,7 +1700,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_etag($entity_tag = NULL, $weak = FALSE) {
     if (!is_null($entity_tag) && !is_string($entity_tag) && $entity_tag !== FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'entity_tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $response = array(
@@ -1649,8 +1736,8 @@ class c_base_http extends c_base_rfc_string {
             unset($hash);
             unset($response);
 
-            // @todo: report file not found or other related errors.
-            return c_base_return_error::s_false();
+            $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+            return c_base_return_error::s_false($error);
           }
 
           $success = hash_update_file($hash, $filename);
@@ -1660,8 +1747,8 @@ class c_base_http extends c_base_rfc_string {
             unset($hash);
             unset($response);
 
-            // @todo: report failure to hash file.
-            return c_base_return_error::s_false();
+            $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+            return c_base_return_error::s_false($error);
           }
         }
         unset($filename);
@@ -1714,7 +1801,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_expires($timestamp) {
     if (!is_int($timestamp) && !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_EXPIRES] = $timestamp;
@@ -1735,7 +1823,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_last_modified($timestamp) {
     if (!is_int($timestamp) && !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_LAST_MODIFIED] = $timestamp;
@@ -1759,13 +1848,16 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_link($uri) {
     if (!is_string($uri)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     #$parsed = $this->p_parse_uri($uri);
 
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response link', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1784,13 +1876,15 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_location($uri) {
     if (!is_string($uri)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_parse_uri($uri);
     if ($parsed['invalid']) {
       unset($parsed);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_parse_uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     unset($parsed['invalid']);
@@ -1815,7 +1909,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_pragma($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response pragma', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1832,7 +1928,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_proxy_authenticate($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response proxy authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1849,7 +1947,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_public_key_pins($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response public key pins', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1872,7 +1972,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_refresh($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response refresh', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1892,12 +1994,14 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.3
    */
   public function set_response_retry_after($date, $seconds = FALSE) {
-    if (!is_int($date) || !is_float($timestamp)) {
-      return c_base_return_error::s_false();
+    if (!is_int($date)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'date', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($seconds)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'seconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_RETRY_AFTER] = array(
@@ -1922,22 +2026,54 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_server($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response server', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
-   * Assign HTTP response header: set_cookie.
+   * Assign HTTP response header: set-cookie.
    *
-   * @param ?? $value
-   *   The value to assign to the specified header.
+   * @param c_base_cookie $cookie
+   *   The cookie object to assign as a cookie.
+   *   These header fields apply only to the immediate client.
+   *   The header name format is:
+   *   - 1*(tchar)
+   * @param bool $append
+   *   (optional) If TRUE, then append the header name.
+   *   If FALSE, then assign the header name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
+   *
+   * @see: https://tools.ietf.org/html/rfc6265
    */
-  public function set_response_set_cookie($value) {
-    // @todo
-    return new c_base_return_false();
+  public function set_response_set_cookie($cookie, $append = TRUE) {
+    if (!($cookie instanceof c_base_cookie)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'cookie', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $cookie_name = $cookie->get_name()->get_value_exact();
+    if ($append) {
+      if (!isset($this->response[self::RESPONSE_SET_COOKIE]) || !is_array($this->response[self::RESPONSE_SET_COOKIE])) {
+        $this->response[self::RESPONSE_SET_COOKIE] = array();
+      }
+
+      $this->response[self::RESPONSE_SET_COOKIE][$cookie_name] = $cookie;
+    }
+    else {
+      $this->response[self::RESPONSE_SET_COOKIE] = array($cookie_name => $cookie);
+    }
+    unset($cookie_name);
+
+    return new c_base_return_true();
   }
 
   /**
@@ -1954,7 +2090,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_status($code) {
     if (!is_int($code)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'code', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_STATUS] = $code;
@@ -1973,7 +2110,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_strict_transport_security($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response strict transport security', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1988,7 +2127,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_trailer($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response trailer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2019,7 +2160,9 @@ class c_base_http extends c_base_rfc_string {
     // RESPONSE_TRANSFER_ENCODING
 
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response transfer encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2034,7 +2177,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_upgrade($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response upgrade', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2054,16 +2199,27 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_vary($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_prepare_token($header_name);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_VARY]) || !is_array($this->response[self::RESPONSE_VARY])) {
+        $this->response[self::RESPONSE_VARY] = array();
+      }
+
       $this->response[self::RESPONSE_VARY][$parsed] = $parsed;
     }
     else {
@@ -2088,7 +2244,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_warning($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response warning', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2105,7 +2263,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_www_authenticate($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response www authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2120,7 +2280,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_protocol($protocol) {
     if (!is_string($protocol)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'protocol', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_PROTOCOL] = $protocol;
@@ -2140,7 +2301,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_security_policy($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content security policy', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2155,7 +2318,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_x_content_type_options($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content type options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2170,7 +2335,9 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_x_ua_compatible($value) {
     // @todo
-    return new c_base_return_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response ua compatible', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2203,20 +2370,34 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_checksum_header($action = self::CHECKSUM_ACTION_AUTO, $what = NULL, $type = NULL, $checksum = NULL) {
     if (!is_int($action)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($action != self::CHECKSUM_ACTION_NONE && $action != self::CHECKSUM_ACTION_AUTO && $action != self::CHECKSUM_ACTION_MANUAL) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($action == self::CHECKSUM_ACTION_MANUAL) {
-      if (!is_int($what) || !is_int($type) || !is_string($checksum)) {
-        return c_base_return_error::s_false();
+      if (!is_int($what)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_int($type)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_string($checksum)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       if ($what != self::CHECKSUM_WHAT_PARTIAL && $what != self::CHECKSUM_WHAT_FULL) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       switch ($type) {
@@ -2232,7 +2413,8 @@ class c_base_http extends c_base_rfc_string {
         case CHECKSUM_PG:
           break;
         default:
-          return c_base_return_error::s_false();
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CHECKSUM_HEADER] = array(
@@ -2243,8 +2425,19 @@ class c_base_http extends c_base_rfc_string {
       );
     }
     else {
-      if (!is_null($what) || !is_null($type) || !is_null($checksum)) {
-        return c_base_return_error::s_false();
+      if (!is_int($what)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_int($type)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_string($checksum)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CHECKSUM_HEADER] = array(
@@ -2273,20 +2466,27 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_checksum_headers($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $parsed = $this->p_prepare_token($header_name);
     if ($parsed === FALSE) {
       unset($parsed);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($append) {
+      if (!isset($this->response[self::RESPONSE_CHECKSUM_HEADERS]) || !is_array($this->response[self::RESPONSE_CHECKSUM_HEADERS])) {
+        $this->response[self::RESPONSE_CHECKSUM_HEADERS] = array();
+      }
+
       $this->response[self::RESPONSE_CHECKSUM_HEADERS][$parsed] = $parsed;
     }
     else {
@@ -2328,20 +2528,34 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_checksum_content($action = self::CHECKSUM_ACTION_AUTO, $what = NULL, $type = NULL, $checksum = NULL) {
     if (!is_int($action)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($action != self::CHECKSUM_ACTION_NONE && $action != self::CHECKSUM_ACTION_AUTO && $action != self::CHECKSUM_ACTION_MANUAL) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($action == self::CHECKSUM_ACTION_MANUAL) {
-      if (!is_int($what) || !is_int($type) || !is_string($checksum)) {
-        return c_base_return_error::s_false();
+      if (!is_int($what)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_int($type)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_string($checksum)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       if ($what != self::CHECKSUM_WHAT_PARTIAL && $what != self::CHECKSUM_WHAT_FULL) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       switch ($type) {
@@ -2357,7 +2571,8 @@ class c_base_http extends c_base_rfc_string {
         case CHECKSUM_PG:
           break;
         default:
-          return c_base_return_error::s_false();
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CHECKSUM_CONTENT] = array(
@@ -2368,8 +2583,19 @@ class c_base_http extends c_base_rfc_string {
       );
     }
     else {
-      if (!is_null($what) || !is_null($type) || !is_null($checksum)) {
-        return c_base_return_error::s_false();
+      if (!is_int($what)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_int($type)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (!is_string($checksum)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
 
       $this->response[self::RESPONSE_CHECKSUM_CONTENT] = array(
@@ -2397,7 +2623,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function set_response_content_revision($revision) {
     if (!is_int($revision)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'revision', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->response[self::RESPONSE_CONTENT_REVISION] = $revision;
@@ -2417,7 +2644,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function unset_response_value($response_id) {
     if (!is_int($response_id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'response_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($response_id, $this->response)) {
@@ -2433,7 +2661,7 @@ class c_base_http extends c_base_rfc_string {
    * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
    *        More work is likely needed to be done with this and its structure is subject to change.
    *
-   * @return c_base_return_array|bool
+   * @return c_base_return_array|c_base_return_status
    *   A decoded uri split into its different parts inside an array.
    *   This array also contains a key called 'wildcard' which may be either TRUE or FALSE.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
@@ -2442,7 +2670,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_origin() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN]);
@@ -2462,7 +2691,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_credentials() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_bool::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS]);
@@ -2482,7 +2712,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_expose_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS]);
@@ -2502,7 +2733,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_max_age() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_MAX_AGE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_MAX_AGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_MAX_AGE]);
@@ -2514,14 +2746,15 @@ class c_base_http extends c_base_rfc_string {
    * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
    *        More work is likely needed to be done with this and its structure is subject to change.
    *
-   * @return c_base_return_array|bool
+   * @return c_base_return_array|c_base_return_status
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
   public function get_response_access_control_allow_methods() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS]);
@@ -2539,7 +2772,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS]);
@@ -2557,7 +2791,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_accept_patch() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_PATCH, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCEPT_PATCH]);
@@ -2580,7 +2815,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_accept_ranges() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_RANGES, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_RANGES, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_ACCEPT_RANGES]);
@@ -2597,7 +2833,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_age() {
     if (!array_key_exists(self::RESPONSE_AGE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_AGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_AGE]);
@@ -2614,7 +2851,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_allow() {
     if (!array_key_exists(self::RESPONSE_ALLOW, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ALLOW, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ALLOW]);
@@ -2647,7 +2885,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_cache_control() {
     if (!array_key_exists(self::RESPONSE_CACHE_CONTROL, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CACHE_CONTROL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CACHE_CONTROL]);
@@ -2656,7 +2895,7 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: connection.
    *
-   * @return c_base_return_array|bool
+   * @return c_base_return_array|c_base_return_status
    *   An array of header names assigned to the connection header.
    *   The header name format is:
    *   - 1*(tchar)
@@ -2667,7 +2906,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_connection() {
     if (!array_key_exists(self::RESPONSE_CONNECTION, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONNECTION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONNECTION]);
@@ -2683,11 +2923,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_disposition() {
     if (!array_key_exists(self::RESPONSE_CONTENT_DISPOSITION, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_DISPOSITION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content disposition', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2699,7 +2942,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_encoding() {
     if (!array_key_exists(self::RESPONSE_CONTENT_ENCODING, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_ENCODING, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_ENCODING]);
@@ -2716,7 +2960,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_language() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LANGUAGE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LANGUAGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_LANGUAGE]);
@@ -2731,7 +2976,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_length() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LENGTH, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LENGTH, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_LENGTH]);
@@ -2747,11 +2993,13 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_range() {
     if (!array_key_exists(self::RESPONSE_CONTENT_RANGE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_RANGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content range', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2767,7 +3015,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_type() {
     if (!array_key_exists(self::RESPONSE_CONTENT_TYPE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_TYPE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_TYPE]);
@@ -2784,7 +3033,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_date() {
     if (!array_key_exists(self::RESPONSE_DATE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_float($this->response[self::RESPONSE_DATE])) {
@@ -2809,7 +3059,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_date_actual() {
     if (!array_key_exists(self::RESPONSE_DATE_ACTUAL, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE_ACTUAL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_float($this->response[self::RESPONSE_DATE_ACTUAL])) {
@@ -2832,7 +3083,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_etag() {
     if (!array_key_exists(self::RESPONSE_ETAG, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ETAG, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ETAG]);
@@ -2849,7 +3101,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_expires() {
     if (!array_key_exists(self::RESPONSE_EXPIRES, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_EXPIRES, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_float($this->response[self::RESPONSE_EXPIRES])) {
@@ -2870,7 +3123,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_last_modified() {
     if (!array_key_exists(self::RESPONSE_LAST_MODIFIED, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LAST_MODIFIED, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_float($this->response[self::RESPONSE_LAST_MODIFIED])) {
@@ -2893,11 +3147,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_link() {
     if (!array_key_exists(self::RESPONSE_LINK, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LINK, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response link', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2913,7 +3170,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_location() {
     if (!array_key_exists(self::RESPONSE_LOCATION, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LOCATION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_LOCATION]);
@@ -2931,11 +3189,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_pragma() {
     if (!array_key_exists(self::RESPONSE_PRAGMA, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PRAGMA, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response pragma', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2951,11 +3212,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_proxy_authenticate() {
     if (!array_key_exists(self::RESPONSE_PROXY_AUTHENTICATE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PROXY_AUTHENTICATE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response proxy authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2971,11 +3235,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_public_key_pins() {
     if (!array_key_exists(self::RESPONSE_PUBLIC_KEY_PINS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PUBLIC_KEY_PINS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response public key pins', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -2994,11 +3261,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_refresh() {
     if (!array_key_exists(self::RESPONSE_REFRESH, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_REFRESH, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response refresh', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3015,10 +3285,28 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_retry_after() {
     if (!array_key_exists(self::RESPONSE_RETRY_AFTER, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_RETRY_AFTER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_RETRY_AFTER]);
+  }
+
+  /**
+   * Obtain HTTP response header: set-cookie.
+   *
+   * @return c_base_cookie|c_base_return_status
+   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *
+   * @see: https://tools.ietf.org/html/rfc6265
+   */
+  public function get_response_set_cookie() {
+    if (!array_key_exists(self::RESPONSE_SET_COOKIE, $this->response)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_SET_COOKIE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
+    }
+
+    return $this->response[self::RESPONSE_SET_COOKIE];
   }
 
   /**
@@ -3031,28 +3319,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_server() {
     if (!array_key_exists(self::RESPONSE_SERVER, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_SERVER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
-  }
 
-  /**
-   * Obtain HTTP response header: get_cookie.
-   *
-   * @todo: cookie might needs special handling because PHP handles it in a different way from other headers.
-   *
-   * @return ??|c_base_return_status
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
-   */
-  public function get_response_cookie() {
-    if (!array_key_exists(self::RESPONSE_COOKIE, $this->response)) {
-      return c_base_return_error::s_false();
-    }
-
-    // @todo
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response server', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3066,7 +3340,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_status() {
     if (!array_key_exists(self::RESPONSE_STATUS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STATUS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_STATUS]);
@@ -3083,11 +3358,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_strict_transport_security() {
     if (!array_key_exists(self::RESPONSE_STRICT_TRANSPORT_SECURITY, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STRICT_TRANSPORT_SECURITY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response strict transport security', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3106,11 +3384,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_trailer() {
     if (!array_key_exists(self::RESPONSE_TRAILER, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_TRAILER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response trailer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3124,11 +3405,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_transfer_encoding() {
     if (!array_key_exists(self::RESPONSE_TRANSFER_ENCODING, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_TRANSFER_ENCODING, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response transfer encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3141,11 +3425,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_upgrade() {
     if (!array_key_exists(self::RESPONSE_UPGRADE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_UPGRADE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response upgrade', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3159,7 +3446,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_vary() {
     if (!array_key_exists(self::RESPONSE_VARY, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_VARY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_VARY]);
@@ -3176,11 +3464,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_warning() {
     if (!array_key_exists(self::RESPONSE_WARNING, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_WARNING, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response warning', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3194,11 +3485,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_www_authenticate() {
     if (!array_key_exists(self::RESPONSE_WWW_AUTHENTICATE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_WWW_AUTHENTICATE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response www authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3210,7 +3504,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_protocol() {
     if (!array_key_exists(self::RESPONSE_PROTOCOL, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PROTOCOL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_PROTOCOL]);
@@ -3225,11 +3520,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_security_policy() {
     if (!array_key_exists(self::RESPONSE_X_CONTENT_SECURITY_POLICY, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_CONTENT_SECURITY_POLICY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content security policy', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3241,11 +3539,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_x_content_type_options() {
     if (!array_key_exists(self::RESPONSE_X_CONTENT_TYPE_OPTIONS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_CONTENT_TYPE_OPTIONS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content type options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3257,11 +3558,14 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_x_ua_compatible() {
     if (!array_key_exists(self::RESPONSE_X_UA_COMPATIBLE, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_UA_COMPATIBLE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     // @todo
-    return c_base_return_error::s_false();
+
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response ua compatible', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -3277,7 +3581,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_header() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADER, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADERS]);
@@ -3292,7 +3597,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_headers() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADERS, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADERS]);
@@ -3311,7 +3617,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_content() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_CONTENT, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_CONTENT, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_CONTENT]);
@@ -3326,7 +3633,8 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_revision() {
     if (!array_key_exists(self::RESPONSE_CONTENT_REVISION, $this->response)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_REVISION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_REVISION]);
@@ -3395,15 +3703,13 @@ class c_base_http extends c_base_rfc_string {
    */
   public function send_response_headers($shuffle = TRUE) {
     if (!is_bool($shuffle)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'shuffle', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    if ($this->headers_sent) {
-      return c_base_return_false;
-    }
-
-    if (headers_sent()) {
-      return c_base_return_error::s_false();
+    if ($this->headers_sent || headers_sent()) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'headers_sent()', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_UNECESSARY);
+      return c_base_return_error::s_false($error);
     }
 
     $header_id_to_names = $this->p_get_header_response_mapping(TRUE);
@@ -3481,9 +3787,7 @@ class c_base_http extends c_base_rfc_string {
     $this->p_prepare_header_response_refresh($header_output);
     $this->p_prepare_header_response_retry_after($header_output);
     $this->p_prepare_header_response_server($header_output);
-
-    // @todo: how is cookie going to be handled?
-
+    $this->p_prepare_header_response_set_cookie($header_output);
     $this->p_prepare_header_response_strict_transport_security($header_output);
     $this->p_prepare_header_response_trailer($header_output);
     $this->p_prepare_header_response_transfer_encoding($header_output);
@@ -3505,7 +3809,15 @@ class c_base_http extends c_base_rfc_string {
     // send header output.
     foreach ($headers as $header_id => $header_name) {
       if (array_key_exists($header_id, $header_output)) {
-        header($header_output[$header_id]);
+        if (is_array($header_output[$header_id])) {
+          foreach ($header_output[$header_id] as $sub_header) {
+            header($sub_header);
+          }
+          unset($sub_header);
+        }
+        else {
+          header($header_output[$header_id]);
+        }
       }
     }
     unset($output);
@@ -3575,11 +3887,13 @@ class c_base_http extends c_base_rfc_string {
    */
   public function encode_response_content($compression = NULL, $max_filesize = NULL) {
     if (!is_null($compression) && !is_int($compression)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'compression', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($max_filesize) && !(is_int($max_filesize) && $max_filesize > 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'max_filesize', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $encoding = $this->p_determine_response_encoding();
@@ -3597,8 +3911,9 @@ class c_base_http extends c_base_rfc_string {
             unset($encoding);
             unset($filename);
             unset($content);
-            // @todo: provide a warning about missing files.
-            return c_base_return_error::s_false();
+
+            $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+            return c_base_return_error::s_false($error);
           }
 
           $content .= file_get_contents($filename);
@@ -3623,8 +3938,9 @@ class c_base_http extends c_base_rfc_string {
             unset($encoding);
             unset($filename);
             unset($content);
-            // @todo: provide a warning about missing files.
-            return c_base_return_error::s_false();
+
+            $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+            return c_base_return_error::s_false($error);
           }
 
           $content_length += filesize($filename);
@@ -3677,15 +3993,17 @@ class c_base_http extends c_base_rfc_string {
       foreach ($this->content as $filename) {
         if (!file_exists($filename)) {
           unset($filename);
-          // @todo: provide a warning about missing files.
-          return c_base_return_error::s_false();
+
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+          return c_base_return_error::s_false($error);
         }
 
         $opened_file = fopen($filename, 'rb');
         if ($opened_file === FALSE) {
           unset($filename);
-          // @todo: provide a warning about unable to open file.
-          return c_base_return_error::s_false();
+
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+          return c_base_return_error::s_false($error);
         }
 
         fpassthru($opened_file);
@@ -4717,7 +5035,7 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $parsed = pr_rfc_string_is_digit($text['ordinals'], $text['characters']);
+    $parsed = $this->pr_rfc_string_is_digit($text['ordinals'], $text['characters']);
     unset($text);
 
     if ($parsed['invalid']) {
@@ -7297,6 +7615,34 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
+   * Prepare HTTP response header: set-cookie.
+   *
+   * @param array $header_output
+   *   The header output array to make changes to.
+   *
+   * @see: https://tools.ietf.org/html/rfc6265
+   */
+  private function p_prepare_header_response_set_cookie(&$header_output) {
+    if (!array_key_exists(self::RESPONSE_SET_COOKIE, $this->response) || !is_array($this->response[self::RESPONSE_SET_COOKIE])) {
+      return;
+    }
+
+    $header_output[self::RESPONSE_SET_COOKIE] = array();
+    foreach ($this->response[self::RESPONSE_SET_COOKIE] as $cookie) {
+      if (!($cookie instanceof c_base_cookie)) {
+        continue;
+      }
+
+      $cookie_string = $cookie->get_cookie();
+      if ($cookie_string instanceof c_base_return_string) {
+        $header_output[self::RESPONSE_SET_COOKIE][] = $cookie_string->get_value_exact();
+      }
+      unset($cookie_string);
+    }
+    unset($cookie);
+  }
+
+  /**
    * Prepare HTTP response header: server.
    *
    * @param array $header_output
@@ -7586,8 +7932,8 @@ class c_base_http extends c_base_rfc_string {
               unset($algorithm);
               unset($use_hash);
 
-              // @todo: report file not found or other related errors.
-              return c_base_return_error::s_false();
+              $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $filename, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+              return c_base_return_error::s_false($error);
             }
 
             $success = hash_update_file($hash, $filename);
@@ -7792,6 +8138,16 @@ class c_base_http extends c_base_rfc_string {
    *   (optional) Determine how the content-length HTTP header is to be calculated:
    *   - FALSE = do not calculate the content length.
    *   - TRUE = calculate and store the content length.
+   *
+   * @return bool
+   *   TRUE if content was encoded.
+   *   FALSE otherwise.
+   *
+   * @see: https://github.com/adsr/php-lzo
+   * @see: http://www.oberhumer.com/opensource/lzo/
+   * @see: http://content.gpwiki.org/index.php/LZO
+   * @see: https://github.com/payden/php-xz
+   * @see: https://github.com/choden/php-xz
    */
   private function p_encode_content($content, $encoding, $compression = NULL, $calculate_content_length = TRUE) {
     if ($encoding == self::ENCODING_GZIP) {
@@ -7810,6 +8166,7 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
       }
 
+      return TRUE;
     }
     elseif ($encoding == self::ENCODING_DEFLATE) {
       if (is_null($compression) || $compression < -1) {
@@ -7826,6 +8183,8 @@ class c_base_http extends c_base_rfc_string {
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
       }
+
+      return TRUE;
     }
     elseif ($encoding == self::ENCODING_BZIP) {
       if (is_null($compression) || $compression < -1) {
@@ -7842,6 +8201,8 @@ class c_base_http extends c_base_rfc_string {
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
       }
+
+      return TRUE;
     }
     elseif ($encoding == self::ENCODING_LZO) {
       switch ($compression) {
@@ -7895,9 +8256,11 @@ class c_base_http extends c_base_rfc_string {
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
       }
+
+      return TRUE;
     }
     elseif ($encoding == self::ENCODING_XZ) {
-      // @todo, see: https://github.com/payden/php-xz
+      // @fixme: php-xz module is currently not working.
     }
     elseif ($encoding == self::ENCODING_EXI) {
       // @todo, maybe? (cannot seem to find a php library at this time)
@@ -7912,8 +8275,11 @@ class c_base_http extends c_base_rfc_string {
       // @todo, using ascii armor on entire body.
       //        should be a header field containing the public key.
     }
+
+    return FALSE;
   }
 }
+
 /**
  * A return class whose value is represented as a generic c_base_markup_tag_return.
  */

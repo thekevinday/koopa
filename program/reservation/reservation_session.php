@@ -17,27 +17,26 @@
    *
    * @param array &$settings
    *   System settings.
-   * @param c_base_cookie &$cookie
-   *   Cookie setting.
+   * @param c_base_cookie &$cookie_login
+   *   A login cookie object.
    *
    * @param c_base_return_status|c_base_session
    *   Session information is returned on success.
    *   FALSE is returned when no session is defined.
    *   FALSE with error bit set is returned on error.
    */
-  function reservation_process_sessions(&$settings, &$cookie) {
-    // cookie is used to determine whether or not the user is logged in.
-    $cookie->set_name($settings['cookie_name']);
-    $cookie->set_path($settings['cookie_path']);
-    $cookie->set_domain($settings['cookie_domain']);
-    $cookie->set_secure(TRUE);
+  function reservation_process_sessions(&$settings, &$cookie_login) {
+    $cookie_login->set_name($settings['cookie_name']);
+    $cookie_login->set_path($settings['cookie_path']);
+    $cookie_login->set_domain($settings['cookie_domain']);
+    $cookie_login->set_secure(TRUE);
 
-    $pulled = $cookie->do_pull();
+    $pulled = $cookie_login->do_pull();
     if ($pulled instanceof c_base_return_true) {
-      $cookie_data = $cookie->get_data()->get_value_exact();
+      $cookie_data = $cookie_login->get_data()->get_value_exact();
 
-      if (!($cookie->validate() instanceof c_base_return_true) || empty($cookie_data['session_id'])) {
-        // cookie failed validation or the cookie contains no session id.
+      if (!($cookie_login->validate() instanceof c_base_return_true) || empty($cookie_data['session_id'])) {
+        // cookie_login failed validation or the cookie contains no session id.
         return new c_base_return_false();
       }
 
@@ -78,8 +77,8 @@
       }
       if ($session_expire > $cookie_data['expire']) {
         $cookie_data['expire'] = gmdate("D, d-M-Y H:i:s T", $session_expire);
-        $cookie->set_data($value);
-        $cookie->set_expires($session_expire);
+        $cookie_login->set_data($value);
+        $cookie_login->set_expires($session_expire);
       }
 
       return c_base_session_return::s_new($session);
@@ -102,11 +101,13 @@
    */
   function reservation_ensure_user_account($settings, $user_name) {
     if (!is_array($settings)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($user_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'user_name', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -114,7 +115,8 @@
       socket_close($socket);
       unset($socket);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $connected = @socket_connect($socket, $settings['database_create_account_host'], $settings['database_create_account_port']);
@@ -123,7 +125,8 @@
       unset($socket);
       unset($connected);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $packet_size_target = 63;
@@ -153,7 +156,8 @@
       unset($socket);
       unset($packet_size_client);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
     unset($written);
 
@@ -165,7 +169,8 @@
     if (!is_string($response) || strlen($response) == 0) {
       unset($response);
 
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     // an integer is expected to be returned by the socket.

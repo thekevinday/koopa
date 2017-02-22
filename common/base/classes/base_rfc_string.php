@@ -80,7 +80,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     unset($ordinals);
 
     $characters = c_base_utf8::s_ordinals_to_string_array($result['ordinals']);
-    if ($characters instanceof c_base_return_error) {
+    if ($characters instanceof c_base_return_false) {
       unset($characters);
       $result['invalid'] = TRUE;
       return $result;
@@ -117,7 +117,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     );
 
     $ordinals = c_base_utf8::s_string_to_ordinals($text);
-    if ($ordinals instanceof c_base_return_error) {
+    if ($ordinals instanceof c_base_return_false) {
       unset($ordinals);
       $result['invalid'] = TRUE;
       return $result;
@@ -190,6 +190,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     $comment_last = FALSE;
     $quote_closed = FALSE;
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if ($code == c_base_ascii::SLASH_BACKWARD) {
@@ -341,6 +347,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if ($code == c_base_ascii::QUOTE_DOUBLE) {
@@ -495,6 +507,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_digit($code)) {
@@ -550,6 +568,13 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_tchar($code)) {
@@ -605,6 +630,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_tchar68($code)) {
@@ -664,6 +695,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
     $not_quoted = FALSE;
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if ($code == c_base_ascii::QUOTE_DOUBLE) {
@@ -755,6 +792,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_digit($code)) {
@@ -812,6 +855,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_digit($code)) {
@@ -870,6 +919,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_vchar($code) && !$this->pr_rfc_char_is_wsp($code)) {
@@ -924,6 +979,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_text($code)) {
@@ -978,6 +1039,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_atext($code)) {
@@ -1032,6 +1099,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_dtext($code)) {
@@ -1086,6 +1159,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
       $code = $ordinals[$result['current']];
 
       if (!$this->pr_rfc_char_is_qtext($code)) {

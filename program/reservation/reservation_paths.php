@@ -163,15 +163,15 @@ function reservation_build_login_page(&$html, $problems = NULL) {
  *   The system settings array.
  * @param c_base_session &$session
  *   The current session.
- * @param c_base_cookie &$cookie
- *   Session cookie.
+ * @param c_base_cookie &$cookie_login
+ *   Session login cookie.
  *
  * @return c_base_return_array|c_base_return_status
  *   FALSE on success.
  *   An array of problems on failure.
  *   FALSE with error bit set is returned on error.
  */
-function reservation_attempt_login(&$database, &$settings, &$session, &$cookie) {
+function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_login) {
   $problems = array();
   if (empty($_POST['login_form-username'])) {
     $problems[] = array(
@@ -287,15 +287,15 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie) 
       $session->do_disconnect();
 
       $session_expire = $session->get_timeout_expire()->get_value_exact();
-      $cookie->set_expires($session_expire);
-      $cookie->set_max_age(NULL);
+      $cookie_login->set_expires($session_expire);
+      $cookie_login->set_max_age(NULL);
 
       if ($result instanceof c_base_return_true) {
         $data = array(
           'session_id' => $session->get_session_id()->get_value_exact(),
           'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unecessary, but provided for debug purposes.
         );
-        $cookie->set_data($data);
+        $cookie_login->set_data($data);
       }
       unset($result);
       unset($session_expire);

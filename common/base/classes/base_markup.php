@@ -550,7 +550,8 @@ class c_base_markup_tag {
    * @param $value
    *   The value of the attribute.
    *   The actual value type is specific to each attribute type.
-   *   May be set to NULL to unassign/remove any given attribute.
+   *   Set to NULL to unassign/remove any given attribute.
+   *   Set to c_base_markup_attributes::ATTRIBUTE_NONE to remove all attribute values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -558,7 +559,8 @@ class c_base_markup_tag {
    */
   public function set_attribute($attribute, $value) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($value)) {
@@ -568,6 +570,9 @@ class c_base_markup_tag {
 
     switch ($attribute) {
       case c_base_markup_attributes::ATTRIBUTE_NONE:
+        // when attribute none is specified, the entire attributes array is to be reset.
+        unset($this->attributes);
+        $this->attributes = array();
         return new c_base_return_true();
 
       case c_base_markup_attributes::ATTRIBUTE_ABBR:
@@ -965,7 +970,8 @@ class c_base_markup_tag {
    */
   public function get_attribute($attribute) {
     if (!is_int($attribute)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!isset($this->attributes) && !is_array($this->attributes)) {
@@ -975,8 +981,9 @@ class c_base_markup_tag {
     if (array_key_exists($attribute, $this->attributes)) {
       switch ($attribute) {
         case c_base_markup_attributes::ATTRIBUTE_NONE:
-          // should not be possible, so consider this an error (attributes set to NONE are actually unset from the array).
-          return c_base_return_error::s_false();
+          // should not be possible, so consider this an error (when attribute is set to NONE, the entire attributes array is unset).
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          return c_base_return_error::s_false($error);
 
         case c_base_markup_attributes::ATTRIBUTE_ABBR:
         case c_base_markup_attributes::ATTRIBUTE_ACCESS_KEY:
@@ -1337,11 +1344,13 @@ class c_base_markup_tag {
    */
   public function set_tag($tag, $index = NULL) {
     if (!($tag instanceof c_base_markup_tag)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($index) && (!is_int($index) && $index < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->tags)) {
@@ -1373,7 +1382,8 @@ class c_base_markup_tag {
    */
   public function unset_tag($index) {
     if (!is_null($index) && (!is_int($index) && $index < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->tags)) {
@@ -1414,7 +1424,8 @@ class c_base_markup_tag {
    */
   public function get_tag($index) {
     if (!is_int($index) && $index < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!array_key_exists($index, $this->tags)) {
@@ -1453,7 +1464,8 @@ class c_base_markup_tag {
    */
   public function set_text($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->text = $text;
@@ -1489,7 +1501,8 @@ class c_base_markup_tag {
    */
   public function set_type($type) {
     if (!is_int($type)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     switch ($type) {

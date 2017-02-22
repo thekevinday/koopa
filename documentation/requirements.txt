@@ -19,6 +19,7 @@ php-lzo:
 - see: http://www.oberhumer.com/opensource/lzo/
 - This must be added to the PHP source code during compile time.
 
-php-xz:
+php-xz: (currently not required because code is defunct.)
+- see: https://github.com/payden/php-xz
 - see: https://github.com/chobie/php-xz
 - This must be added to the PHP source code during compile time.

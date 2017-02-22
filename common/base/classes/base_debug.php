@@ -66,7 +66,8 @@ class c_base_debug {
    */
   public static function s_set_debugging($debug) {
     if (!is_bool($debug)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'debug', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     self::$ps_debugging = $debug;
@@ -162,11 +163,13 @@ class c_base_debug {
     }
 
     if (!is_bool($milliseconds)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'milliseconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->time_start) || is_null($this->time_stop)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($milliseconds) {
@@ -199,13 +202,20 @@ class c_base_debug {
       return new c_base_return_false();
     }
 
-    if (!is_int($option) || $option < 1 || $option > 3 || !is_bool($megabytes)) {
-      return c_base_return_error::s_false();
+    if (!is_int($option) || $option < 1 || $option > 3) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'option', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($megabytes)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'megabytes', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($option == 1) {
       if (is_null($this->memory_usage_peak)) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->memory_usage_peak', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      return c_base_return_error::s_false($error);
       }
 
       if ($megabytes) {
@@ -216,7 +226,8 @@ class c_base_debug {
     }
     elseif ($option == 2) {
       if (is_null($this->time_stop)) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        return c_base_return_error::s_false($error);
       }
 
       if ($megabytes) {
@@ -226,8 +237,14 @@ class c_base_debug {
       return c_base_return_int::s_new($this->memory_usage_stop);
     }
     else {
-      if (is_null($this->time_start) || is_null($this->time_stop)) {
-        return c_base_return_error::s_false();
+      if (is_null($this->time_start)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_start', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (is_null($this->time_stop)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        return c_base_return_error::s_false($error);
       }
 
       if ($megabytes) {

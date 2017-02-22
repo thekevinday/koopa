@@ -56,7 +56,7 @@
     $settings['session_max'] = 1800; // 30 minutes
 
     // ldap information
-    $settings['ldap_server'] = 'ldaps://ldap.example.com:1636/';
+    $settings['ldap_server'] = 'ldaps://127.0.0.1:1636/';
     $settings['ldap_base_dn'] = 'ou=users,ou=People';
     $settings['ldap_fields'] = array('mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber');
 
@@ -81,10 +81,8 @@
    *
    * @param c_base_http $http
    *   Http object.
-   * @param c_base_cookie $cookie
-   *   Cookie object.
    */
-  function reservation_send_response($http, $cookie) {
+  function reservation_send_response($http) {
     $old_output_buffering = ini_get('output_buffering');
     ini_set('output_buffering', 'off');
 
@@ -94,7 +92,6 @@
 
     // when the headers are sent, checksums are created, so at this point all error output should be stored and not sent.
     $http->send_response_headers();
-    $cookie->do_push();
     flush();
 
     // once the header are sent, send the content.
@@ -116,10 +113,10 @@
    *   System settings
    * @param c_base_session &$session
    *   Session information.
-   * @param c_base_cookie &$cookie
-   *   Session cookie.
+   * @param c_base_cookie &$cookie_login
+   *   Session login cookie.
    */
-  function reservation_process_request(&$http, &$database, &$settings, &$session, &$cookie) {
+  function reservation_process_request(&$http, &$database, &$settings, &$session, &$cookie_login) {
     $html = new c_base_html();
 
 
@@ -242,7 +239,7 @@
     elseif ($session === FALSE) {
       // check to see if user has filled out the login form.
       if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
-        $problems = reservation_attempt_login($database, $settings, $session, $cookie);
+        $problems = reservation_attempt_login($database, $settings, $session, $cookie_login);
 
         if ($problems instanceof c_base_return_false) {
           // @todo: render default page.
@@ -300,14 +297,14 @@
 
 
     // 3: process session information
-    $cookie = new c_base_cookie();
-    $session = reservation_process_sessions($settings, $cookie)->get_value_exact();
+    $cookie_login = new c_base_cookie();
+    $session = reservation_process_sessions($settings, $cookie_login)->get_value_exact();
     gc_collect_cycles();
 
 
     // 4: perform actions, process work.
     $database = new c_base_database();
-    $html = reservation_process_request($http, $database, $settings, $session, $cookie)->get_value();
+    $html = reservation_process_request($http, $database, $settings, $session, $cookie_login)->get_value();
     if (!($html instanceof c_base_html)) {
       $html = new c_base_html();
     }
@@ -327,19 +324,19 @@
 
     // 6: build response information.
     $http->set_response_content($markup);
+    $http->set_response_set_cookie($cookie_login);
     unset($markup);
+    unset($cookie_login);
     gc_collect_cycles();
 
 
     // 7: send HTTP response.
-    reservation_send_response($http, $cookie);
+    reservation_send_response($http);
     gc_collect_cycles();
 
     unset($settings);
     unset($http);
     unset($session);
-    unset($cookie);
-    unset($database);
     gc_collect_cycles();
   }
 

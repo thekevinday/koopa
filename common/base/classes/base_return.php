@@ -246,20 +246,20 @@ trait t_base_return_message {
  * @require class c_base_error
  */
 class c_base_return {
-  private $error;
+  private $errors;
 
   /**
    * Class constructor.
    */
   public function __construct() {
-    $this->error = NULL;
+    $this->errors = array();
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->error);
+    unset($this->errors);
   }
 
   /**
@@ -279,32 +279,69 @@ class c_base_return {
    *
    * @param null|c_base_error $error
    *   The error code class defining what the error is.
-   *   Setting this to NULL will clear the error flag.
+   *   Setting this to NULL will clear all errors.
+   * @param null|int $delta
+   *   (optional) When an integer, the error is assigned an explicit position in the errors array.
+   *   When NULL, the error is appended to the errors array.
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_error($error) {
+  public function set_error($error, $delta = NULL) {
     if (!is_null($error) && !($error instanceof c_base_error)) {
       return FALSE;
     }
 
-    $this->error = $error;
+    if (is_null($error)) {
+      $this->errors = array();
+      return TRUE;
+    }
+
+    if (!is_array($this->errors)) {
+      $this->errors = array();
+    }
+
+    if (is_null($delta)) {
+      $this->errors[] = $error;
+    }
+    elseif (is_int($delta) && $delta >= 0) {
+      $this->errors[$delta] = $error;
+    }
+    else {
+      return FALSE;
+    }
+
     return TRUE;
   }
 
   /**
    * Return the error code.
    *
-   * @return null|c_base_error
-   *   @todo: finish this once c_base_error is implemented.
+   * @param null|int $delta
+   *   (optional) When an integer, the error assigned at the specified position in the errors array is returned.
+   *   When NULL, the entire array of errors is retuned.
+   *
+   * @return null|array|c_base_error
+   *   When $delta is an integer, an error object is returned.
+   *   An array of errors are returned when $delta is NULL.
+   *   NULL is returned when there is no error or there is no error at the specified delta.
    */
-  public function get_error() {
-    if (!($this->error instanceof c_base_error)) {
-      $this->error = NULL;
+  public function get_error($delta = NULL) {
+    if (!is_array($this->errors)) {
+      $this->errors = array();
     }
 
-    return $this->error;
+    if (is_null($delta)) {
+      return $this->errors;
+    }
+
+    if (array_key_exists($delta, $this->errors)) {
+      if ($this->errors[$delta] instanceof c_base_error) {
+        return $this->errors[$delta];
+      }
+    }
+
+    return NULL;
   }
 
   /**
@@ -312,14 +349,22 @@ class c_base_return {
    *
    * This is similar to get_error(), but should instead be used to to check to see if there is an error and not check what the error is set to.
    *
+   * @param null|int $delta
+   *   (optional) When an integer, the error assigned at the specified position in the errors array is checked.
+   *   When NULL, the entire errors array is checked for any error.
+   *
    * @return bool
-   *   TRUE if an error is assigned and FALSE if no error is assigned.
+   *   TRUE if any error is assigned and FALSE if no errors are assigned.
    *
    * @see: get_error()
    */
-  public function has_error() {
+  public function has_error($delta = NULL) {
+    if (is_int($delta) && array_key_exists($delta, $this->errors)) {
+      return ($this->errors[$delta]) instanceof c_base_error;
+    }
+
     // when there is no error flag assigned, its value should be NULL so a simple existence check should be all that is needed.
-    return $this->error instanceof c_base_error;
+    return !empty($this->errors);
   }
 
   /**
@@ -1313,8 +1358,10 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
-   * @param c_base_error|null $error
+   * @param c_base_error|array|null $error
    *   (optional) a custom error.
+   *   Can be an array of c_base_error for returning multiple errors.
+   *   When NULL, no errors are defined.
    *
    * @return c_base_return_true
    *   A c_base_return_true object with the error value populated.
@@ -1327,6 +1374,13 @@ class c_base_return_error {
       $object_return->set_error($object_error);
       unset($object_error);
     }
+    elseif (is_array($error)) {
+      foreach ($error as $delta => $value) {
+        $object_return->set_error($error, $delta);
+      }
+      unset($delta);
+      unset($value);
+    }
     else {
       $object_return->set_error($error);
     }
@@ -1337,8 +1391,10 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
-   * @param c_base_error|null $error
+   * @param c_base_error|array|null $error
    *   (optional) a custom error setting.
+   *   Can be an array of c_base_error for returning multiple errors.
+   *   When NULL, no errors are defined.
    *
    * @return c_base_return_false
    *   A c_base_return_true object with the error value populated.
@@ -1350,6 +1406,13 @@ class c_base_return_error {
       $object_error = new c_base_error();
       $object_return->set_error($object_error);
       unset($object_error);
+    }
+    elseif (is_array($error)) {
+      foreach ($error as $delta => $value) {
+        $object_return->set_error($error, $delta);
+      }
+      unset($delta);
+      unset($value);
     }
     else {
       $object_return->set_error($error);
@@ -1367,6 +1430,8 @@ class c_base_return_error {
    *   A custom class name.
    * @param c_base_error|null $error
    *   (optional) a custom error setting.
+   *   Can be an array of c_base_error for returning multiple errors.
+   *   When NULL, no errors are defined.
    *
    * @return c_base_return_false|c_base_return_value
    *   A c_base_return_value object is returned with the error value populated
@@ -1383,6 +1448,13 @@ class c_base_return_error {
       $object_error = new c_base_error();
       $object_return->set_error($object_error);
       unset($object_error);
+    }
+    elseif (is_array($error)) {
+      foreach ($error as $delta => $value) {
+        $object_return->set_error($error, $delta);
+      }
+      unset($delta);
+      unset($value);
     }
     else {
       $object_return->set_error($error);

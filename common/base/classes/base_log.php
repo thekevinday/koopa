@@ -99,7 +99,8 @@ class c_base_log {
    */
   public function set_type($type) {
     if (!is_int($type) || $type < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->type = $type;
@@ -148,17 +149,21 @@ class c_base_log {
    */
   public function get_data_jsonized($options = 0, $depth = 512) {
     if (!is_int($options)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($depth) || $depth < 1) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'depth', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $encoded = json_encode($this->data, $options, $depth)
     if ($encoded === FALSE) {
       unset($encoded);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_encode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($encoded);
@@ -179,11 +184,13 @@ class c_base_log {
   protected function pr_set_data($key, $value) {
     if (is_int($key)) {
       if ($key < 0) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
       }
     }
     elseif (!is_string($key)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->data[$key] = $value;
@@ -204,15 +211,18 @@ class c_base_log {
   protected function pr_get_data($key) {
     if (is_int($key)) {
       if ($key < 0) {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
       }
     }
     elseif (!is_string($key)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!array_key_exists($key, $this->data)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $key, ':array_name' => 'this->data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_value::s_new($this->data[$key]);

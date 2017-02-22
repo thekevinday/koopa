@@ -22,13 +22,19 @@
    */
   function reservation_database_string(&$database, $settings) {
     if (!($database instanceof c_base_database)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $connection_string = new c_base_connection_string();
     $connection_string->set_host($settings['database_host']);
     $connection_string->set_port($settings['database_port']);
-    $connection_string->set_dbname($settings['database_name']);
+    $connection_string->set_database_name($settings['database_name']);
     $connection_string->set_user($settings['database_user']);
 
     if (!is_null($settings['database_password'])) {
@@ -56,7 +62,8 @@
    */
   function reservation_database_connect(&$database) {
     if (!($database instanceof c_base_database)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $status = $database->do_connect();
@@ -92,15 +99,18 @@
    */
   function reservation_database_get_user_data(&$database, $user_name, $ldap_data = NULL) {
     if (!($database instanceof c_base_database)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($user_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'user_name', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($ldap_data) && !is_array($ldap_data)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ldap_data', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $user_data = array(
@@ -219,11 +229,13 @@
    */
   function reservation_database_load_ldap_data($settings, $user_name) {
     if (!is_array($settings)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($user_name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'user_name', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $return_data = array(

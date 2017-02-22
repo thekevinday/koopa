@@ -635,7 +635,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
@@ -657,7 +658,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_names_by_alias($alias) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -679,7 +681,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_id_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
@@ -701,7 +704,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
@@ -723,7 +727,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -745,7 +750,8 @@ final class c_base_language_us_only implements i_base_language {
    */
   static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {
@@ -842,7 +848,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
@@ -864,7 +871,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_names_by_alias($alias) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -886,7 +894,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_id_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
@@ -908,7 +917,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
@@ -930,7 +940,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -952,7 +963,8 @@ final class c_base_language_us_limited implements i_base_language {
    */
   static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {
@@ -2677,7 +2689,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
@@ -2699,7 +2712,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_names_by_alias($alias) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -2721,7 +2735,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_id_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
@@ -2743,7 +2758,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
@@ -2765,7 +2781,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
@@ -2787,7 +2804,8 @@ final class c_base_language_us_all implements i_base_language {
    */
   static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {

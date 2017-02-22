@@ -77,7 +77,8 @@ class c_base_utf8 {
    */
   public static function s_is_UTF_8($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (mb_check_encoding($text, self::UTF_8)) {
@@ -100,13 +101,16 @@ class c_base_utf8 {
    */
   public static function s_character_to_ordinal($character) {
     if (!is_string($character)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $ordinal = self::p_s_character_to_ordinal($character);
     if ($ordinal === FALSE) {
       unset($ordinal);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_character_to_ordinal', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($ordinal);
@@ -124,7 +128,8 @@ class c_base_utf8 {
    */
   public static function s_ordinal_to_character($ordinal) {
     if (!is_int($ordinal)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinal', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new(self::p_s_ordinal_to_character($ordinal));
@@ -146,13 +151,16 @@ class c_base_utf8 {
    */
   public static function s_length_string($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $length = self::p_s_length_string($text);
     if ($length === FALSE) {
       unset($length);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_length_string', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($length);
@@ -173,17 +181,21 @@ class c_base_utf8 {
    */
   public static function s_clean($text, $remove_bom = FALSE) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($remove_bom)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'remove_bom', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $sanitized = self::p_s_clean($text);
     if ($sanitized === FALSE) {
       unset($sanitized);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_clean', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($sanitized);
@@ -203,17 +215,21 @@ class c_base_utf8 {
    */
   public static function s_split($text, $split_length = 1) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($split_length)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'split_length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $split = self::p_s_split($text, $split_length);
     if ($split === FALSE) {
       unset($split);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($split);
@@ -231,13 +247,16 @@ class c_base_utf8 {
    */
   public static function s_character_size_list($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $size_list = self::p_s_character_size_list($text);
     if ($size_list === FALSE) {
       unset($size_list);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_character_size_list', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($size_list);
@@ -257,13 +276,16 @@ class c_base_utf8 {
    */
   public static function s_character_max_width($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $size_list = self::p_s_character_size_list($text);
     if ($size_list === FALSE) {
       unset($size_list);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_character_size_list', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new(max($size_list));
@@ -283,13 +305,16 @@ class c_base_utf8 {
    */
   public static function s_encode_html_character($character) {
     if (!is_string($character)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $encoded = self::p_s_encode_html_character($character);
     if ($encoded === FALSE) {
       unset($encoded);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_encode_html_character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($encoded);
@@ -307,13 +332,16 @@ class c_base_utf8 {
    */
   public static function s_encode_html($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $split = self::p_s_split($text);
     if ($split === FALSE) {
       unset($split);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $new_array = array();
@@ -349,15 +377,18 @@ class c_base_utf8 {
    */
   public static function s_substring($text, $start = 0, $length = NULL) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($start)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'start', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($length) && !is_int($length)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new(self::p_s_substring($text, $start, $length));
@@ -376,7 +407,8 @@ class c_base_utf8 {
    */
   public static function s_is_bom($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (self::p_s_is_bom($text)) {
@@ -397,11 +429,13 @@ class c_base_utf8 {
    */
   public static function s_file_has_bom($file_path) {
     if (!is_string($file_path)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'file_path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!file_exists($file_path)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':file_name' => $file_path, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_FILE);
+      return c_base_return_error::s_false($error);
     }
 
     if (self::p_s_is_bom(file_get_contents($file_path, 0, NULL, -1, 3))) {
@@ -422,7 +456,8 @@ class c_base_utf8 {
    */
   public static function s_string_has_bom($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (self::p_s_is_bom(substr($text, 0, 3))) {
@@ -446,7 +481,8 @@ class c_base_utf8 {
    */
   public static function s_prepend_bom($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!s_is_bom(substr($text, 0, 3))) {
@@ -468,13 +504,16 @@ class c_base_utf8 {
    */
   public static function s_reverse($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $split = self::p_s_split($text);
     if ($split === FALSE) {
       unset($split);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new(implode(array_reverse($split)));
@@ -502,15 +541,18 @@ class c_base_utf8 {
    */
   public static function s_position_string($haystack, $needle, $offset = 0) {
     if (!is_string($haystack)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'haystack', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($needle) && !is_string($needle)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'needle', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($offset) || $offset < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'offset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $search_for = $needle;
@@ -536,7 +578,8 @@ class c_base_utf8 {
    */
   public static function s_string_to_ordinals($text) {
     if (!is_string($text) && !is_array($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new(self::p_s_string_to_ordinals($text));
@@ -549,19 +592,22 @@ class c_base_utf8 {
    *   An array of Unicode code points.
    *
    * @return c_base_return_string|c_base_return_status
-   *   A string represnting the ordinals array.
+   *   A string representing the ordinals array.
+   *   A string representing the ordinals array with error bit set is returned on error for non-critical string-processing errors.
    *   FALSE with error bit set is returned on error.
    */
   public static function s_ordinals_to_string($ordinals) {
     if (!is_array($ordinals)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinals', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
+    $errors = array();
     $string = '';
     foreach ($ordinals as $ordinal) {
       $character = self::p_s_ordinal_to_character($ordinal);
       if ($character === FALSE) {
-        // @todo: generate a warning or error of some sort.
+        $errors[] = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_s_ordinal_to_character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         continue;
       }
 
@@ -570,7 +616,20 @@ class c_base_utf8 {
     unset($ordinal);
     unset($character);
 
-    return c_base_return_string::s_new($string);
+    if (empty($errors)) {
+      unset($errors);
+
+      return c_base_return_string::s_new($string);
+    }
+
+    $return_string = c_base_return_string::s_new($string);
+    foreach ($errors as $error) {
+      $return_string->set_error($error);
+    }
+    unset($errors);
+    unset($error);
+
+    return $return_string;
   }
 
   /**
@@ -585,14 +644,16 @@ class c_base_utf8 {
    */
   public static function s_ordinals_to_string_array($ordinals) {
     if (!is_array($ordinals)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinals', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
+    $errors = array();
     $array = array();
     foreach ($ordinals as $ordinal) {
       $character = self::p_s_ordinal_to_character($ordinal);
       if ($character === FALSE) {
-        // @todo: generate a warning or error of some sort.
+        $errors[] = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_s_ordinal_to_character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         continue;
       }
 
@@ -601,7 +662,20 @@ class c_base_utf8 {
     unset($ordinal);
     unset($character);
 
-    return c_base_return_array::s_new($array);
+    if (empty($errors)) {
+      unset($errors);
+
+      return c_base_return_array::s_new($array);
+    }
+
+    $return_array = c_base_return_array::s_new($array);
+    foreach ($errors as $error) {
+      $return_array->set_error($error);
+    }
+    unset($errors);
+    unset($error);
+
+    return $return_array;
   }
 
   /**
@@ -616,7 +690,8 @@ class c_base_utf8 {
    */
   public static function s_ordinal_array_to_string($ordinals) {
     if (!is_array($ordinals)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinals', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $array = array();
@@ -641,13 +716,16 @@ class c_base_utf8 {
    */
   public static function s_ordinal_to_codepoint($ordinal) {
     if (!is_int($ordinal)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinal', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $codepoint = self::p_s_ordinal_to_codepoint($ordinal);
     if ($codepoint === FALSE) {
       unset($codepoint);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_orginal_to_codepoint', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($codepoint);
@@ -671,19 +749,23 @@ class c_base_utf8 {
    */
   public static function s_count_substrings($haystack, $needle, $offset = 0, $length = NULL) {
     if (!is_string($haystack)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'haystack', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($needle)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'needle', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($offset)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'offset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($length) && !is_int($length)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if ($offset || $length) {
@@ -709,7 +791,8 @@ class c_base_utf8 {
    */
   public static function s_is_ascii($text) {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (preg_match('/[\x80-\xff]/', $text)) {
@@ -733,18 +816,22 @@ class c_base_utf8 {
    */
   public static function s_strip_tags($text, $allowable_tags = '') {
     if (!is_string($text)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($allowable_tags)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'allowable_tags', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     // clean broken UTF_8.
     $sanitized = self::p_s_clean($text);
     if ($sanitized === FALSE) {
       unset($sanitized);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_clean', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new(strip_tags($sanitized, $allowable_tags));

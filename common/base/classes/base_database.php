@@ -42,7 +42,7 @@ class c_base_connection_string extends c_base_return_string {
   private $host;
   private $host_addr;
   private $port;
-  private $dbname;
+  private $database_name;
   private $user;
   private $password;
   private $connect_timeout;
@@ -59,7 +59,7 @@ class c_base_connection_string extends c_base_return_string {
     $this->host = NULL;
     $this->host_addr = NULL;
     $this->port = NULL;
-    $this->dbname = NULL;
+    $this->database_name = NULL;
     $this->user = NULL;
     $this->password = NULL;
     $this->connect_timeout = NULL;
@@ -81,7 +81,7 @@ class c_base_connection_string extends c_base_return_string {
     unset($this->host);
     unset($this->host_addr);
     unset($this->port);
-    unset($this->dbname);
+    unset($this->database_name);
     unset($this->user);
     unset($this->password);
     unset($this->connect_timeout);
@@ -123,10 +123,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_host($host) {
     if (!is_string($host)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->host = $host;
@@ -138,6 +140,7 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_string
    *   The host information string.
+   *   The error bit set is on error.
    */
   public function get_host() {
     if (!is_string($this->host)) {
@@ -155,10 +158,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_host_addr($host_addr) {
     if (!is_string($host_addr)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'host_addr', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->host_addr = $host_addr;
@@ -170,6 +175,7 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_string
    *   The host address information string.
+   *   The error bit set is on error.
    */
   public function get_host_addr() {
     if (!is_string($this->host_addr)) {
@@ -187,17 +193,20 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_port($port) {
     if (!is_int($port)) {
       if (is_string($port) && is_numeric($port)) {
         $port = (int) $port;
         if ($port < 0) {
-          return c_base_return_error::s_false();
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'port', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          return c_base_return_error::s_false($error);
         }
       }
       else {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'port', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
     }
 
@@ -209,7 +218,8 @@ class c_base_connection_string extends c_base_return_string {
    * Returns the port number.
    *
    * @return c_base_return_int
-   *   The port number.
+   *   The port number on success.
+   *   The error bit set is on error.
    */
   public function get_port() {
     if (!is_int($this->port)) {
@@ -222,18 +232,20 @@ class c_base_connection_string extends c_base_return_string {
   /**
    * Assign database name.
    *
-   * @param string $dbname
+   * @param string $database_name
    *   The database name string.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
-  public function set_dbname($dbname) {
-    if (!is_string($dbname)) {
-      return c_base_return_error::s_false();
+  public function set_database_name($database_name) {
+    if (!is_string($database_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    $this->dbname = $dbname;
+    $this->database_name = $database_name;
     return new c_base_return_true();
   }
 
@@ -241,14 +253,15 @@ class c_base_connection_string extends c_base_return_string {
    * Returns the database name.
    *
    * @return c_base_return_string
-   *   The database name string.
+   *   The database name string on success.
+   *   The error bit set is on error.
    */
-  public function get_dbname() {
-    if (!is_string($this->dbname)) {
-      $this->dbname = '';
+  public function get_database_name() {
+    if (!is_string($this->database_name)) {
+      $this->database_name = '';
     }
 
-    return c_base_return_string::s_new($this->dbname);
+    return c_base_return_string::s_new($this->database_name);
   }
 
   /**
@@ -259,10 +272,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_user($user) {
     if (!is_string($user)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'user', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->user = $user;
@@ -273,7 +288,8 @@ class c_base_connection_string extends c_base_return_string {
    * Returns the user name.
    *
    * @return c_base_return_string
-   *   The user name string.
+   *   The user name string on success.
+   *   The error bit set is on error.
    */
   public function get_user() {
     if (!is_string($this->user)) {
@@ -291,10 +307,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_password($password) {
     if (!is_null($password) && !is_string($password)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'password', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->password = $password;
@@ -304,9 +322,10 @@ class c_base_connection_string extends c_base_return_string {
   /**
    * Returns the password.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   The password string.
    *   FALSE is returned if there is no assigned password.
+   *   The error bit set is on error.
    */
   public function get_password() {
     if (is_null($this->password)) {
@@ -328,17 +347,20 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_connect_timeout($connect_timeout) {
     if (!is_int($connect_timeout)) {
       if (is_string($connect_timeout) && is_numeric($connect_timeout)) {
         $connect_timeout = (int) $connect_timeout;
         if ($connect_timeout < 0) {
-          return c_base_return_error::s_false();
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'connect_timeout', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          return c_base_return_error::s_false($error);
         }
       }
       else {
-        return c_base_return_error::s_false();
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'connect_timeout', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
       }
     }
 
@@ -351,6 +373,7 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_int
    *   The connect timeout number.
+   *   The error bit set is on error.
    */
   public function get_connect_timeout() {
     if (!is_int($this->connect_timeout)) {
@@ -368,10 +391,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_options($options) {
     if (!is_string($options)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->options = $options;
@@ -382,7 +407,8 @@ class c_base_connection_string extends c_base_return_string {
    * Returns the options information.
    *
    * @return c_base_return_string
-   *   The options information string.
+   *   The options information string on success.
+   *   The error bit set is on error.
    */
   public function get_options() {
     if (!is_string($this->options)) {
@@ -405,10 +431,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_ssl_mode($ssl_mode) {
     if (!is_string($ssl_mode)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ssl_mode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->ssl_mode = $ssl_mode;
@@ -420,6 +448,7 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_string
    *   The ssl mode information string.
+   *   The error bit set is on error.
    */
   public function get_ssl_mode() {
     if (!is_string($this->ssl_mode)) {
@@ -437,10 +466,12 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_service($service) {
     if (!is_string($service)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'service', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->service = $service;
@@ -452,6 +483,7 @@ class c_base_connection_string extends c_base_return_string {
    *
    * @return c_base_return_string
    *   The service information string.
+   *   The error bit set is on error.
    */
   public function get_service() {
     if (!is_string($this->service)) {
@@ -481,8 +513,8 @@ class c_base_connection_string extends c_base_return_string {
       $this->value .= ' port=' . $this->p_escape_string($this->port);
     }
 
-    if (!empty($this->dbname)) {
-      $this->value .= ' dbname=' . $this->p_escape_string($this->dbname);
+    if (!empty($this->database_name)) {
+      $this->value .= ' database_name=' . $this->p_escape_string($this->database_name);
     }
 
     if (!empty($this->user)) {
@@ -610,10 +642,12 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_session($session) {
     if (!is_object($session) || !($session instanceof c_base_session)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->session = $session;
@@ -624,6 +658,8 @@ class c_base_database {
    * Returns the session information.
    *
    * @return c_base_session_return
+   *   A session object on success.
+   *   The error bit set is on error.
    */
   public function get_session() {
     if (!is_object($session) || !($session instanceof c_base_session)) {
@@ -641,24 +677,29 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_connection_string($connection_string) {
     if (!is_object($connection_string) || !($connection_string instanceof c_base_connection_string)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'connection_string', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->connection_string = $connection_string;
     $this->connection_string->build();
+
     return new c_base_return_true();
   }
 
   /**
    * Returns the connection string.
    *
-   * @return c_base_connection_string_return
+   * @return c_base_connection_string
+   *   A connection string object on success.
+   *   The error bit set is on error.
    */
   public function get_connection_string() {
-    if (!is_object($connection_string) || !($connection_string instanceof c_base_connection_string)) {
+    if (!is_object($this->connection_string) || !($this->connection_string instanceof c_base_connection_string)) {
       $this->connection_string = new c_base_connection_string();
     }
 
@@ -682,11 +723,13 @@ class c_base_database {
    *   TRUE to enable a persistent connection, FALSE otherwise.
    *
    * @param c_base_return_status
-   *   TRUE on success, FALSE otherwise
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_persistent($persistent) {
     if (!is_bool($persistent)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'persistent', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->persistent = $persistent;
@@ -699,6 +742,7 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on enabled, FALSE on disabled.
+   *   The error bit set is on error.
    */
   public function get_persistent() {
     if (!is_bool($this->persistent)) {
@@ -719,11 +763,13 @@ class c_base_database {
    *   TRUE to enable a asynchronous connection, FALSE otherwise.
    *
    * @param c_base_return_status
-   *   TRUE on success, FALSE otherwise
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function set_asynchronous($asynchronous) {
     if (!is_bool($asynchronous)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'asynchronous', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $this->asynchronous = $asynchronous;
@@ -734,6 +780,7 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on enabled, FALSE on disabled.
+   *   The error bit set is on error.
    */
   public function get_asynchronous() {
     if (!is_bool($this->asynchronous)) {
@@ -759,22 +806,25 @@ class c_base_database {
    *   TRUE on success, FALSE otherwise
    *   c_base_return_true is returned if the database is connected.
    *   c_base_return_false is returned if the database is disconnected.
-   *   The error flag is set if there is a problem.
-   *   If the database is already connected when this is called, c_base_return_true is returned with the error flag set.
+   *   FALSE with the error bit set is returned on error.
+   *   If the database is already connected when this is called, c_base_return_true is returned with the error bit set.
    *
    * @see: pg_connect()
    */
   public function do_connect($force = FALSE) {
     if (!is_bool($force)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'force', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->connection_string)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'connection_string', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_resource($this->database)) {
-      return c_base_return_error::s_true();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_UNECESSARY);
+      return c_base_return_error::s_true($error);
     }
 
     $type = 0;
@@ -802,7 +852,9 @@ class c_base_database {
     unset($type);
     if ($database === FALSE) {
       unset($database);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $this->connection_string->get_database_name()->get_value_exact(), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $this->database = $database;
@@ -822,13 +874,17 @@ class c_base_database {
    *   If there is open large object resource on the connection, do not close the connection before closing all large object resources.
    *
    * @param c_base_return_status
-   *   TRUE on success, FALSE otherwise
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_close()
    */
   public function do_disconnect() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (pg_close($this->database)) {
@@ -836,7 +892,8 @@ class c_base_database {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_close', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -844,13 +901,16 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE on partial flush.
-   *   FALSE with error flag set on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_flush()
    */
   public function do_flush() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_flush($this->database);
@@ -859,7 +919,8 @@ class c_base_database {
     }
 
     if ($result === FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_flush', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return new c_base_return_false();
@@ -870,6 +931,7 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on connected, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function is_connected() {
     if ($this->connected === TRUE && pg_connection_status($this->database) === PGSQL_CONNECTION_OK) {
@@ -892,7 +954,8 @@ class c_base_database {
    */
   public function is_busy() {
     if (!$this->asynchronous) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->asynchronous', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      return c_base_return_error::s_false($error);
     }
 
     if (pg_connection_busy($this->database)) {
@@ -910,18 +973,21 @@ class c_base_database {
    *
    * @return c_base_return_status|c_base_return_string
    *   String containing the status or FALSE on failure.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_parameter_status()
    */
   public function get_parameter_status($name) {
     if (!is_string($name) || empty($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_parameter_status($this->database, $name);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_parameter_status', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -932,15 +998,17 @@ class c_base_database {
    *
    * This is used for asynchronous connections.
    *
-   * @return c_base_return_int
+   * @return c_base_return_int|c_base_return_status
    *   The integer is returned on success or failure.
    *   The failure flag will be set accordingly.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_connect_poll()
    */
   public function do_poll() {
     if (!$this->asynchronous) {
-      return c_base_return_error::value(0, 'c_base_return_int');
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_value_exact(pg_connect_poll($this->database));
@@ -951,19 +1019,24 @@ class c_base_database {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_connection_reset()
    */
   public function do_reset() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (pg_connection_reset($this->database)) {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_connection_reset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -971,6 +1044,7 @@ class c_base_database {
    *
    * @return c_base_return_int
    *   PGSQL_CONNECTION_OK or PGSQL_CONNECTION_BAD.
+   *   The error bit set is on error.
    *
    * @see: pg_connection_status()
    */
@@ -993,7 +1067,10 @@ class c_base_database {
    */
   public function do_ping() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (pg_status($this->database) === PGSQL_CONNECTION_OK) {
@@ -1004,7 +1081,8 @@ class c_base_database {
       return new c_base_return_false();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::FUNCTION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1024,11 +1102,15 @@ class c_base_database {
    */
   public function escape_literal($literal) {
     if (!is_string($literal)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'literal', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_value_exact(pg_escape_literal($this->database, $literal));
@@ -1051,11 +1133,15 @@ class c_base_database {
    */
   public function escape_bytea($bytea) {
     if (!is_string($bytea)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'bytea', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_value_exact(pg_escape_bytea($this->database, $bytea));
@@ -1078,11 +1164,15 @@ class c_base_database {
    */
   public function escape_identifier($identifier) {
     if (!is_string($identifier)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'identifier', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_value_exact(pg_escape_identifier($this->database, $identifier));
@@ -1105,11 +1195,15 @@ class c_base_database {
    */
   public function unescape_bytea($bytea) {
     if (!is_string($bytea)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'bytea', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_value_exact(pg_unescape_bytea($this->database, $bytea));
@@ -1129,11 +1223,15 @@ class c_base_database {
    */
   public function set_client_encoding($encoding) {
     if (!is_string($encoding)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     // this function has a strange return status.
@@ -1142,7 +1240,8 @@ class c_base_database {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_set_client_encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1150,19 +1249,24 @@ class c_base_database {
    *
    * @return c_base_return_string|c_base_return_status
    *   The string to be returned.
-   *   FALSE is returned on error
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_client_encoding()
    */
   public function get_client_encoding() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $encoding = pg_client_encoding($this->database);
     if ($encoding === FALSE) {
       unset($encoding);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_client_encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_value_exact($encoding);
@@ -1184,14 +1288,18 @@ class c_base_database {
    */
   public function consume_input() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (pg_consume_input($this->database)) {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_consume_input', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1214,25 +1322,32 @@ class c_base_database {
    */
   public function do_convert($table, $array, $options = 0) {
     if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($array)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'array', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($options)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $converted = pg_connect_status($this->database, $table, $array, $options);
     if ($converted === FALSE) {
       unset($converted);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_connect_status', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_value_exact($converted);
@@ -1265,15 +1380,20 @@ class c_base_database {
    */
   public function do_execute($name, $parameters = array()) {
     if (!is_string($name) || empty($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($parameters)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameters', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if ($this->asynchronous) {
@@ -1288,7 +1408,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => ($this->asynchronous ? 'pg_send_execute' : 'pg_execute'), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1321,15 +1442,20 @@ class c_base_database {
    */
   public function do_query($query, $parameters = array()) {
     if (!is_string($query) || empty($query)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($parameters)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameters', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if ($this->asynchronous) {
@@ -1354,7 +1480,24 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    if ($this->asynchronous) {
+      if (empty($parameters)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_send_query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      }
+      else {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_send_query_params', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      }
+    }
+    else {
+      if (empty($parameters)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      }
+      else {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_query_params', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      }
+    }
+
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1377,21 +1520,22 @@ class c_base_database {
    * @see: pg_prepare()
    * @see: pg_send_prepare()
    */
-  public function do_prepare($name) {
+  public function do_prepare($name, $query) {
     if (!is_string($name) || empty($name)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($query) || empty($query)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_array($parameters)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if ($this->asynchronous) {
@@ -1406,7 +1550,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => ($this->asynchronous ? 'pg_send_prepare' :'pg_prepare'), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1416,12 +1561,15 @@ class c_base_database {
    *
    * @return c_base_database_result|c_base_return_status
    *   A database result is returned on success.
-   *   FALSE is returned on failure.
+   *   FALSE with the error bit set is returned on error.
    *   When asynchronous is not enabled, FALSE is returned without an error flag set.
    */
   public function get_result() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (!$this->asynchronous) {
@@ -1434,7 +1582,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_get_result', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1470,7 +1619,10 @@ class c_base_database {
    */
   public function do_cancel() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (!$this->asynchronous) {
@@ -1481,7 +1633,8 @@ class c_base_database {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_cancel_query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1527,19 +1680,25 @@ class c_base_database {
    */
   public function do_insert($table, $values, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($values)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'values', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    if (!is_null($values) || !is_int($options)) {
-      return c_base_return_error::s_false();
+    if (!is_null($options) && !is_int($options)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $this->p_handle_asynchronous_options_parameter($options);
@@ -1562,7 +1721,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_insert', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1604,23 +1764,30 @@ class c_base_database {
    */
   function do_update($table, $values, $conditions, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($values)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'values', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'conditions', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    if (!is_null($values) || !is_int($options)) {
-      return c_base_return_error::s_false();
+    if (!is_null($options) && !is_int($options)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $this->p_handle_asynchronous_options_parameter($options);
@@ -1643,7 +1810,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_update', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1686,19 +1854,25 @@ class c_base_database {
    */
   function do_select($table, $conditions, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_array($values)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'conditions', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($options) && !is_int($options)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $this->p_handle_asynchronous_options_parameter($options);
@@ -1724,7 +1898,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_select', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1761,21 +1936,27 @@ class c_base_database {
    *
    * @see: pg_delete()
    */
-  function do_delete() {
-    if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
-    }
-
-    if (!is_array($values)) {
-      return c_base_return_error::s_false();
+  function do_delete($table, $conditions, $options = NULL) {
+        if (!is_string($table) || empty($table)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'conditions', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($options) && !is_int($options)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $this->p_handle_asynchronous_options_parameter($options);
@@ -1798,7 +1979,8 @@ class c_base_database {
     }
     unset($result);
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_select', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -1812,27 +1994,35 @@ class c_base_database {
    *   TRUE for extended additional information, FALSE for normal additional information.
    *
    * @return c_base_return_status|c_base_return_array
-   *   An array containing the additional information or FALSE on error.
+   *   An array containing the additional information.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_meta_data()
    */
   public function get_meta_data($table, $extended = FALSE) {
     if (!is_string($table) || empty($table)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($extended)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'extended', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_meta_data($this->database, $table, $extended);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_meta_data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($result);
@@ -1854,11 +2044,15 @@ class c_base_database {
    */
   public function set_error_verbosity($verbosity) {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($verbosity)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'verbosity', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new(pg_set_error_verbosity($this->database, $verbosity));
@@ -1869,18 +2063,24 @@ class c_base_database {
    *
    * @return c_base_return_status|c_base_return_string
    *   Message string on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_last_error()
    */
   public function get_last_error() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_last_error($this->database);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_last_error', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -1891,18 +2091,24 @@ class c_base_database {
    *
    * @return c_base_return_status|c_base_return_string
    *   Message string on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_last_notice()
    */
   public function get_last_notice() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_last_notice($this->database);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_last_notice', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -1920,18 +2126,24 @@ class c_base_database {
    *   - PGSQL_TRANSACTION_INERROR: idle, in a failed transaction block.
    *   - PGSQL_TRANSACTION_UNKNOWN: invalid connection.
    *   - PGSQL_TRANSACTION_ACTIVE: query sent to server, but not yet completed.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_transaction_status()
    */
   public function get_transaction_status() {
     if (!is_resource($this->database)) {
-      return c_base_return_error::s_false();
+      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_transaction_status($this->database);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_transaction_status', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -2004,7 +2216,7 @@ class c_base_database_result extends c_base_return_resource {
    * Fetch all columns in result set.
    *
    * This is not fetching all columns in the result set as in all column names.
-   * Instead it is fetch all values from every row that belongs to a single column.
+   * Instead it will fetch all values from every row that belongs to a single column.
    *
    * This would be more aptly named something like fetch_all_column_rows($column).
    * But even that is not the best of names.
@@ -2023,8 +2235,22 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_all_columns($column) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
+
+    if (!is_int($column) || $column < 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $result = pg_fetch_all_columns($this->value, $column);
+    if ($result === FALSE) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_all_columns', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+
+    return c_base_return_array::s_new($result);
   }
 
   /**
@@ -2037,12 +2263,14 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_all() {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_fetch_all($this->value);
     if ($result === FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_all', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($result);
@@ -2067,16 +2295,24 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_array($row = NULL, $type = PGSQL_ASSOC) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    $result = pg_fetch_array($this->value, $row, $column);
+    if (!is_int($type)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $result = pg_fetch_array($this->value, $row, $type);
     if ($result === FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_array', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_array::s_new($result);
@@ -2104,19 +2340,23 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_object($row = NULL, $class = NULL, $parameters = NULL) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($class) && !is_string($class)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'class', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($parameters) && !is_array($parameters)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameters', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_string($class) && !empty($class)) {
@@ -2127,7 +2367,8 @@ class c_base_database_result extends c_base_return_resource {
     }
 
     if ($result === FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_object', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_object::s_new($result);
@@ -2149,15 +2390,18 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_result($row, $column) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
-    if (!is_null($row) && !is_int($row)) {
-      return c_base_return_error::s_false();
+    if (!is_null($row) && (!is_int($row) || $row < 0)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    if (!is_int($row) && !is_string($row) || is_int($row) && $row < 0 || is_string($row) && empty($row)) {
-      return c_base_return_error::s_false();
+    if (!is_int($column) && !is_string($column) || is_int($column) && $column < 0 || is_string($column) && empty($column)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row)) {
@@ -2169,7 +2413,8 @@ class c_base_database_result extends c_base_return_resource {
 
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_result', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_value::s_new($result);
@@ -2189,16 +2434,19 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_row($row = NULL) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_fetch_row($this->value, $row);
     if ($result === FALSE) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_fetch_row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_value::s_new($result);
@@ -2230,11 +2478,13 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function error($code = NULL) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($code) && !is_int($code)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'code', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($code)) {
@@ -2263,7 +2513,8 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function affected_rows() {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new(pg_affected_rows($this->value));
@@ -2274,17 +2525,20 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The number of rows or FALSE on failure.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_num_rows()
    */
   public function number_of_rows() {
     if (!is_resource($this->value)) {
-      return new c_base_return_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_num_rows($this->value);
     if ($result < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_num_rows', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2295,17 +2549,20 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The number of rows or FALSE on failure.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_num_fields()
    */
   public function number_of_columns() {
     if (!is_resource($this->value)) {
-      return new c_base_return_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_num_fields($this->value);
     if ($result < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_num_fields', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2319,22 +2576,26 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_string
    *   The name of the field or FALSE on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_field_name()
    */
   public function field_name($number) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($number) || $number < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'number', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_name($this->value, $number);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -2348,23 +2609,27 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The number of the field or FALSE on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_field_num()
    */
   public function field_number($name) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($name) || mb_strlen($name) == 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     // this returnes -1 on error and >= 0 on success, so translate the codes appropriately.
     $result = pg_field_number($this->value, $name);
     if ($result < 0) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_number', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2385,21 +2650,25 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The printed length of the 'field' or FALSE on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: self::field_bytes()
    * @see: pg_field_prtlen()
    */
   public function field_length($row, $name_or_number) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'row', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($name_or_number) && !(is_string($name_or_number) && mb_strlen($name) > 0)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name_or_number', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (is_null($row)) {
@@ -2411,7 +2680,8 @@ class c_base_database_result extends c_base_return_resource {
 
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_prtlen', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2426,23 +2696,27 @@ class c_base_database_result extends c_base_return_resource {
    * @return c_base_return_status|c_base_return_int
    *   The size of the column or FALSE on error.
    *   The returned size may be -1, in which case means the size is variable.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: self::field_length()
    * @see: pg_field_size()
    */
   public function field_bytes($column) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_size($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_size', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2463,27 +2737,32 @@ class c_base_database_result extends c_base_return_resource {
    * @return c_base_return_status|c_base_return_int|c_base_return_string
    *   The name of the table that the given column belongs to or FALSE on error.
    *   If oid is set to TRUE, then the oid.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_field_table()
    * @see: http://www.postgresql.org/docs/current/static/datatype-oid.html
    */
   public function field_table($column, $oid = FALSE) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($oid)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'oid', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_table($this->value, $column, $oid);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_table', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     if ($oid) {
@@ -2501,23 +2780,27 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The oid of the requested column to or FALSE on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_field_type_oid()
    * @see: http://www.postgresql.org/docs/current/static/datatype-oid.html
    */
   public function field_type_oid($column) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_type_oid($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_type_oid', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_int::s_new($result);
@@ -2531,6 +2814,7 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_string
    *   A string containing the oid assigned to the most recently inserted row on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_last_oid()
    * @see: pg_result_status()
@@ -2538,13 +2822,15 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function last_oid() {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_last_oid($this->database);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_last_oid', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -2558,22 +2844,26 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_int
    *   The oid of the requested column to or FALSE on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_field_type()
    */
   public function field_type($column) {
     if (!is_resource($this->value)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'column', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_type($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'pg_field_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($result);
@@ -2584,7 +2874,7 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status
    *   TRUE is returned on success, FALSE is returned if nothing to free.
-   *   FALSE with the error flag set is returned on error.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_free_result()
    */
@@ -2597,7 +2887,8 @@ class c_base_database_result extends c_base_return_resource {
       return new c_base_return_true();
     }
 
-    return c_base_return_error::s_false();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::FUNCTION_FAILURE);
+    return c_base_return_error::s_false($error);
   }
 }
 
@@ -2662,15 +2953,18 @@ class c_base_database_query extends c_base_return_array {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    */
   public function import($import) {
     if (!is_string($import) || empty($import)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'import', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     $decoded = json_decode($import, TRUE);
     if (!is_array($decoded) || empty($decoded)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_decode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     $this->p_initialize();
@@ -2686,6 +2980,7 @@ class c_base_database_query extends c_base_return_array {
    * @return c_base_return_status|c_base_return_string
    *   FALSE is returned when there is no content to export.
    *   Otherwise, a json encoded string is returned.
+   *   FALSE with the error bit set is returned on error.
    */
   public function export() {
     if ($this->count_table == 0 || empty($this->value)) {
@@ -2696,7 +2991,8 @@ class c_base_database_query extends c_base_return_array {
     // everything else has to be re-created on import for security reasons.
     $encoded = json_encode($this->value);
     if (!is_string($encoded)) {
-      return c_base_return_error::s_false();
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_encode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
     }
 
     return c_base_return_string::s_new($encoded);
