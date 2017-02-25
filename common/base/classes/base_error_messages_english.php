@@ -10,7 +10,7 @@ require_once('common/base/classes/base_languages.php');
 /**
  * English language version of common error messages.
  */
-class c_base_error_messages_eng extends i_base_error_messages {
+final class c_base_error_messages_english extends i_base_error_messages {
 
   /**
    * Returns a standard error message associated with the given code.

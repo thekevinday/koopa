@@ -42,7 +42,7 @@ class c_base_connection_string extends c_base_return_string {
   private $host;
   private $host_addr;
   private $port;
-  private $database_name;
+  private $database;
   private $user;
   private $password;
   private $connect_timeout;
@@ -56,10 +56,12 @@ class c_base_connection_string extends c_base_return_string {
    * Class destructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->host = NULL;
     $this->host_addr = NULL;
     $this->port = NULL;
-    $this->database_name = NULL;
+    $this->database = NULL;
     $this->user = NULL;
     $this->password = NULL;
     $this->connect_timeout = NULL;
@@ -68,8 +70,6 @@ class c_base_connection_string extends c_base_return_string {
     $this->service = NULL;
 
     $this->error = NULL;
-
-    parent::__construct();
   }
 
   /**
@@ -81,7 +81,7 @@ class c_base_connection_string extends c_base_return_string {
     unset($this->host);
     unset($this->host_addr);
     unset($this->port);
-    unset($this->database_name);
+    unset($this->database);
     unset($this->user);
     unset($this->password);
     unset($this->connect_timeout);
@@ -232,20 +232,20 @@ class c_base_connection_string extends c_base_return_string {
   /**
    * Assign database name.
    *
-   * @param string $database_name
+   * @param string $database
    *   The database name string.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_database_name($database_name) {
-    if (!is_string($database_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_database($database) {
+    if (!is_string($database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->database_name = $database_name;
+    $this->database = $database;
     return new c_base_return_true();
   }
 
@@ -256,12 +256,12 @@ class c_base_connection_string extends c_base_return_string {
    *   The database name string on success.
    *   The error bit set is on error.
    */
-  public function get_database_name() {
-    if (!is_string($this->database_name)) {
-      $this->database_name = '';
+  public function get_database() {
+    if (!is_string($this->database)) {
+      $this->database = '';
     }
 
-    return c_base_return_string::s_new($this->database_name);
+    return c_base_return_string::s_new($this->database);
   }
 
   /**
@@ -513,8 +513,8 @@ class c_base_connection_string extends c_base_return_string {
       $this->value .= ' port=' . $this->p_escape_string($this->port);
     }
 
-    if (!empty($this->database_name)) {
-      $this->value .= ' database_name=' . $this->p_escape_string($this->database_name);
+    if (!empty($this->database)) {
+      $this->value .= ' dbname=' . $this->p_escape_string($this->database);
     }
 
     if (!empty($this->user)) {
@@ -579,20 +579,10 @@ class c_base_connection_string extends c_base_return_string {
 /**
  * A generic class for managing database connections.
  *
- * errata:
- *   There are a number of cases where PHP's postgresql documentation is unclear on what 'failure' is.
- *   In certain cases, it mentions failure as an error.
- *   In other cases, it just says failure.
- *   If failure happens as a part of normal, expected behavior, then it should not be construed as an error because failure is expected behavior.
- *   If failure happens due to something unexpected or invalid, then it should be construed as an error.
- *   This is a context issue and I may be overthinking it.
- *   I will need to come back later and review my return results.
- *   For now, I am assuming failure means error as that seems like the most obvious interpretation.
- *
  * @require class c_base_return
  * @require class c_base_session
  */
-class c_base_database {
+class c_base_database extends c_base_return {
   private $session;
   private $persistent;
   private $database;
@@ -605,6 +595,8 @@ class c_base_database {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->session = NULL;
     $this->persistent = NULL;
     $this->database = NULL;
@@ -632,6 +624,29 @@ class c_base_database {
     unset($this->connection_string);
 
     unset($this->connected);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, array());
   }
 
   /**
@@ -657,7 +672,7 @@ class c_base_database {
   /**
    * Returns the session information.
    *
-   * @return c_base_session_return
+   * @return c_base_session
    *   A session object on success.
    *   The error bit set is on error.
    */
@@ -666,7 +681,7 @@ class c_base_database {
       $this->session = new c_base_session();
     }
 
-    return c_base_session_return::s_value_exact($this->session);
+    return $this->session;
   }
 
   /**
@@ -853,7 +868,7 @@ class c_base_database {
     if ($database === FALSE) {
       unset($database);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $this->connection_string->get_database_name()->get_value_exact(), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $this->connection_string->get_database()->get_value_exact(), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -881,9 +896,9 @@ class c_base_database {
    */
   public function do_disconnect() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -907,9 +922,9 @@ class c_base_database {
    */
   public function do_flush() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1025,9 +1040,9 @@ class c_base_database {
    */
   public function do_reset() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1067,9 +1082,9 @@ class c_base_database {
    */
   public function do_ping() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1107,9 +1122,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1138,9 +1153,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1169,9 +1184,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1200,9 +1215,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1228,9 +1243,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1255,9 +1270,9 @@ class c_base_database {
    */
   public function get_client_encoding() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1288,9 +1303,9 @@ class c_base_database {
    */
   public function consume_input() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1337,9 +1352,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1390,9 +1405,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1452,9 +1467,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1532,9 +1547,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1566,9 +1581,9 @@ class c_base_database {
    */
   public function get_result() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1619,9 +1634,9 @@ class c_base_database {
    */
   public function do_cancel() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1695,9 +1710,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1784,9 +1799,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1869,9 +1884,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -1953,9 +1968,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2011,9 +2026,9 @@ class c_base_database {
     }
 
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2044,9 +2059,9 @@ class c_base_database {
    */
   public function set_error_verbosity($verbosity) {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2069,9 +2084,9 @@ class c_base_database {
    */
   public function get_last_error() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2097,9 +2112,9 @@ class c_base_database {
    */
   public function get_last_notice() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2132,9 +2147,9 @@ class c_base_database {
    */
   public function get_transaction_status() {
     if (!is_resource($this->database)) {
-      $database_name = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database_name()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
-      unset($database_name);
+      $database = ($this->connection_string instanceof c_base_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database);
       return c_base_return_error::s_false($error);
     }
 
@@ -2185,6 +2200,13 @@ class c_base_database {
  * It is recommended that only the c_base_return_value::get_value() call be used when accessing the result value.
  */
 class c_base_database_result extends c_base_return_resource {
+
+  /**
+   * Class constructor.
+   */
+  public function __construct() {
+    parent::__construct();
+  }
 
   /**
    * Class destructor.
@@ -2909,9 +2931,9 @@ class c_base_database_query extends c_base_return_array {
    * Class constructor.
    */
   public function __construct() {
-    $this->p_initialize();
-
     parent::__construct();
+
+    $this->p_initialize();
   }
 
   /**

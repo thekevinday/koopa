@@ -3,10 +3,11 @@
  * @file
  * Provides reservation database functions.
  */
-  #require_once('../../common/base/classes/base_error.php');
-  #require_once('../../common/base/classes/base_return.php');
-  #require_once('../../common/base/classes/base_session.php');
-  #require_once('../../common/base/classes/base_database.php');
+  require_once('common/base/classes/base_error.php');
+  require_once('common/base/classes/base_return.php');
+  require_once('common/base/classes/base_session.php');
+  require_once('common/base/classes/base_database.php');
+  require_once('common/base/classes/base_access.php');
 
   /**
    * Build the database connection string.
@@ -34,7 +35,7 @@
     $connection_string = new c_base_connection_string();
     $connection_string->set_host($settings['database_host']);
     $connection_string->set_port($settings['database_port']);
-    $connection_string->set_database_name($settings['database_name']);
+    $connection_string->set_database($settings['database_name']);
     $connection_string->set_user($settings['database_user']);
 
     if (!is_null($settings['database_password'])) {
@@ -74,7 +75,7 @@
 
     // configure default settings.
     $database->do_query('set bytea_output to hex;');
-    $database->do_query('set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;');
+    $database->do_query('set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;');
     $database->do_query('set datestyle to us;');
 
     return new c_base_return_true();
@@ -113,12 +114,12 @@
       return c_base_return_error::s_false($error);
     }
 
+    $id_sort = (int) ord($user_name[0]);
+
     $user_data = array(
       'id_user' => NULL,
       'id_sort' => $id_sort,
     );
-
-    $id_sort = (int) ord($user_name[0]);
 
     $parameters = array(
       $id_sort,
@@ -301,4 +302,114 @@
     unset($entries);
 
     return c_base_return_array::s_new($return_data);
+  }
+
+  /**
+   * Get all roles assigned to the current user.
+   *
+   * @param c_base_database &$database
+   *   The database object.
+   * @param array &$settings
+   *   The system settings array.
+   * @param c_base_session &$session
+   *   The current session.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  function reservation_get_current_roles($database, $settings, &$session) {
+    $connected = $database->is_connected();
+    if ($connected instanceof c_base_return_false) {
+      $connected = reservation_database_connect($database);
+    }
+
+    $roles = new c_base_roles();
+
+
+    // if there is no session, then assume that this is a public account.
+    if (empty($session->get_session_id()->get_value_exact())) {
+      $roles->set_role(c_base_roles::PUBLIC, TRUE);
+      $session->set_setting('roles', $roles);
+      unset($roles);
+
+      return new c_base_return_true();
+    }
+
+
+    // if unable to connect to database to retrieve other roles, just return the ppublic role.
+    if ($connected instanceof c_base_return_false) {
+      $roles->set_role(c_base_roles::PUBLIC, TRUE);
+      $session->set_setting('roles', $roles);
+      unset($roles);
+
+      $connection_string = $database->get_connection_string();
+      $database_name = ($connection_string instanceof c_base_connection_string) ? $connection_string->get_database()->get_value_exact() : '';
+      unset($connection_string);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $database_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      unset($database_name);
+
+      return c_base_return_error::s_false($error);
+    }
+    unset($connected);
+
+
+    // assign default roles.
+    $roles->set_role(c_base_roles::PUBLIC, FALSE);
+    $roles->set_role(c_base_roles::USER, TRUE);
+
+
+    // load all postgresql roles.
+    $result = $database->do_query('SELECT role_name FROM information_schema.enabled_roles');
+    if ($result instanceof c_base_database_result) {
+      $rows = $result->fetch_all()->get_value_exact();
+
+      foreach ($rows as $row) {
+        if (!array_key_exists('role_name', $row)) {
+          continue;
+        }
+
+        switch ($row['role_name']) {
+          case $settings['database_name'] . '_requester':
+            $roles->set_role(c_base_roles::REQUESTER, TRUE);
+            break;
+          case $settings['database_name'] . '_drafter':
+            $roles->set_role(c_base_roles::DRAFTER, TRUE);
+            break;
+          case $settings['database_name'] . '_editor':
+            $roles->set_role(c_base_roles::EDITOR, TRUE);
+            break;
+          case $settings['database_name'] . '_reviewer':
+            $roles->set_role(c_base_roles::REVIEWER, TRUE);
+            break;
+          case $settings['database_name'] . '_financer':
+            $roles->set_role(c_base_roles::FINANCER, TRUE);
+            break;
+          case $settings['database_name'] . '_insurer':
+            $roles->set_role(c_base_roles::INSURER, TRUE);
+            break;
+          case $settings['database_name'] . '_publisher':
+            $roles->set_role(c_base_roles::PUBLISHER, TRUE);
+            break;
+          case $settings['database_name'] . '_auditor':
+            $roles->set_role(c_base_roles::AUDITOR, TRUE);
+            break;
+          case $settings['database_name'] . '_manager':
+            $roles->set_role(c_base_roles::MANAGER, TRUE);
+            break;
+          case $settings['database_name'] . '_administer':
+            $roles->set_role(c_base_roles::ADMINISTER, TRUE);
+            break;
+        }
+      }
+      unset($row);
+      unset($rows);
+    }
+    unset($result);
+
+    $session->set_setting('roles', $roles);
+    unset($roles);
+
+    return new c_base_return_true();
   }

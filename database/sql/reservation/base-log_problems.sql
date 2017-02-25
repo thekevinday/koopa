@@ -6,7 +6,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
 set datestyle to us;
 
 
@@ -29,9 +29,9 @@ create table managers.t_log_problems (
   constraint cu_log_problems_name_machine unique (name_machine)
 );
 
-grant select on managers.t_log_activity to reservation_users_administer;
-grant select on managers.t_log_activity to reservation_users_manager;
-grant select on managers.t_log_activity to reservation_users_auditor;
+grant select on managers.t_log_problems to reservation_users_administer;
+grant select on managers.t_log_problems to reservation_users_manager;
+grant select on managers.t_log_problems to reservation_users_auditor;
 
 
 
@@ -66,7 +66,7 @@ create view users.v_log_problems_users_self with (security_barrier=true) as
   select id_problem, id_user, date_created, log_details from managers.t_log_problems_users
     where (name_machine_user)::text = (current_user)::text;
 
-grant select on users.v_log_activity_self to reservation_users;
+grant select on users.v_log_problems_users_self to reservation_users;
 
 create view users.v_log_problems_users_self_insert with (security_barrier=true) as
   select id_problem, id_user, name_machine_user, log_details from managers.t_log_problems_users

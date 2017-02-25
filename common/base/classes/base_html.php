@@ -20,7 +20,7 @@ require_once('common/base/classes/base_markup.php');
  *
  * @todo: add support for non-standard tag attributes, which will just be a string or NULL.
  */
-class c_base_html {
+class c_base_html extends c_base_return {
   private $id;
   private $attributes;
   private $attributes_body;
@@ -33,6 +33,8 @@ class c_base_html {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->id = NULL;
     $this->attributes = array();
     $this->attributes_body = array();
@@ -49,6 +51,29 @@ class c_base_html {
     unset($this->attributes_body);
     unset($this->headers);
     unset($this->body);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
@@ -231,7 +256,7 @@ class c_base_html {
    * @param int $delta
    *   The position in the array of the tag to get.
    *
-   * @return c_base_markup_tag_return|c_base_return_status
+   * @return c_base_markup_tag|c_base_return_status
    *   The tag, if found at delta.
    *   FALSE is returned if no tag is at delta.
    *   FALSE with error bit set is returned on error.
@@ -246,7 +271,7 @@ class c_base_html {
       return new c_base_return_false();
     }
 
-    return c_base_markup_tag_return::s_new($this->body[$delta]);
+    return $this->body[$delta];
   }
 
   /**
@@ -322,7 +347,7 @@ class c_base_html {
    * @param int $delta
    *   The position in the array of the header to get.
    *
-   * @return c_base_markup_tag_return|c_base_return_status
+   * @return c_base_markup_tag|c_base_return_status
    *   The header, if found at delta.
    *   FALSE is returned if no header is at delta.
    *   FALSE with error bit set is returned on error.
@@ -337,7 +362,7 @@ class c_base_html {
       return new c_base_return_false();
     }
 
-    return c_base_markup_tag_return::s_new($this->headers[$delta]);
+    return $this->headers[$delta];
   }
 
   /**
@@ -482,8 +507,6 @@ class c_base_html {
 
     return TRUE;
   }
-
-
 
   /**
    * Get the value of a single attribute assigned to this object.
@@ -1301,81 +1324,5 @@ class c_base_html {
     }
 
     return new c_base_return_true();
-  }
-}
-
-/**
- * A return class whose value is represented as a generic c_base_markup_tag_return.
- */
-class c_base_html_return extends c_base_return_object {
-  use t_base_return_value_exact;
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, new c_base_html());
-  }
-
-  /**
-   * Assign the value.
-   *
-   * @param c_base_html $value
-   *   Any value so long as it is an resource.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_value($value) {
-    if (!($value instanceof c_base_html)) {
-      return FALSE;
-    }
-
-    $this->value = $value;
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return c_base_html|null $value
-   *   The value c_base_html stored within this class.
-   *   NULL may be returned if there is no defined valid c_base_markup_tag.
-   */
-  public function get_value() {
-    if (!is_null($this->value) && !($this->value instanceof c_base_html)) {
-      $this->value = NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return c_base_html $value
-   *   The value c_base_html stored within this class.
-   */
-  public function get_value_exact() {
-    if (!($this->value instanceof c_base_html)) {
-      $this->value = new c_base_html();
-    }
-
-    return $this->value;
   }
 }

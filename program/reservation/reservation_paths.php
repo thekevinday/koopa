@@ -8,6 +8,7 @@
   require_once('common/base/classes/base_markup.php');
   require_once('common/base/classes/base_html.php');
   require_once('common/base/classes/base_charset.php');
+  require_once('common/base/classes/base_form.php');
 
   require_once('program/reservation/reservation_database.php');
   require_once('program/reservation/reservation_session.php');
@@ -17,17 +18,17 @@
  *
  * @param c_base_html &$html
  *   The html page object.
- * @param null|array $problems
- *   (optional) An array of problems to report when building the form.
- *   This is specified only after a form is submitted.
- *
- * @return c_base_html_return
- *   The markup tags object.
+ * @param array $settings
+ *   The system settings array.
+ * @param c_base_session &$session
+ *   The current session.
  */
-function reservation_build_login_page(&$html, $problems = NULL) {
+function reservation_build_login_page(&$html, $settings, $session) {
   $problem_fields = array();
   $problem_messages = array();
 
+  // @fixme: create a form problems array in session and use that.
+  $problems = $session->get_problems();
   if (is_array($problems)) {
     foreach ($problems as $problem) {
       if (!empty($problem['fields']) && is_array($problem['fields'])) {
@@ -43,16 +44,17 @@ function reservation_build_login_page(&$html, $problems = NULL) {
     }
     unset($problem);
   }
+  unset($problems);
 
   if (!empty($problem_messages)) {
-    $messages = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems', array('form_problems'))->get_value_exact();
+    $messages = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems', array('form_problems'));
     foreach ($problem_messages as $problem_delta => $problem_message) {
       $class = array(
         'form_problems-problem',
         'form_problems-problem-' . $problem_delta,
       );
 
-      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems-problem-' . $problem_delta, $class)->get_value_exact();
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems-problem-' . $problem_delta, $class);
       $tag->set_text($problem_message);
       unset($class);
 
@@ -68,28 +70,28 @@ function reservation_build_login_page(&$html, $problems = NULL) {
   unset($problem_messages);
 
   // login form
-  $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', array('login_form'))->get_value_exact();
+  $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', array('login_form'));
   $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_METHOD, 'post');
   $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ROLE, 'form');
   $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET, c_base_charset::UTF_8);
 
 
   // H1
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1)->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
   $tag->set_text('Login to System');
   $form->set_tag($tag);
   unset($tag);
 
 
   // hidden form data
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id', array('login_form-id'))->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id', array('login_form-id'));
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'login_form');
   $form->set_tag($tag);
   unset($tag);
 
 
   // label: username
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-username'))->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-username'));
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-username');
   $tag->set_text('Username');
   $form->set_tag($tag);
@@ -104,7 +106,7 @@ function reservation_build_login_page(&$html, $problems = NULL) {
     $class[] = 'field_has_problem';
   }
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TEXT, 'login_form-username', $class)->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TEXT, 'login_form-username', $class);
   unset($class);
 
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
@@ -113,7 +115,7 @@ function reservation_build_login_page(&$html, $problems = NULL) {
 
 
   // label: password
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'))->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'));
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-password');
   $tag->set_text('Password');
   $form->set_tag($tag);
@@ -128,7 +130,7 @@ function reservation_build_login_page(&$html, $problems = NULL) {
     $class[] = 'field_has_problem';
   }
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_PASSWORD, 'login_form-password', $class)->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_PASSWORD, 'login_form-password', $class);
   unset($class);
 
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
@@ -137,14 +139,14 @@ function reservation_build_login_page(&$html, $problems = NULL) {
 
 
   // button: reset
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'))->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'));
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Reset');
   $form->set_tag($tag);
   unset($tag);
 
 
   // button: submit
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'))->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
   $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Login');
   $form->set_tag($tag);
   unset($tag);
@@ -163,36 +165,40 @@ function reservation_build_login_page(&$html, $problems = NULL) {
  *   The system settings array.
  * @param c_base_session &$session
  *   The current session.
- * @param c_base_cookie &$cookie_login
- *   Session login cookie.
  *
  * @return c_base_return_array|c_base_return_status
  *   FALSE on success.
  *   An array of problems on failure.
  *   FALSE with error bit set is returned on error.
  */
-function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_login) {
+function reservation_attempt_login(&$database, &$settings, &$session) {
   $problems = array();
   if (empty($_POST['login_form-username'])) {
-    $problems[] = array(
-      'fields' => array('login_form-username'),
-      'messages' => 'No valid username has been supplied.',
-    );
+    $problem = new c_base_form_problem();
+    $problem->set_field('login_form-username');
+    $problem->set_value('No valid username has been supplied.');
+
+    $problems[] = $problem;
+    unset($problem);
   }
 
   if (empty($_POST['login_form-password'])) {
-    $problems[] = array(
-      'fields' => array('login_form-password'),
-      'messages' => 'No valid password has been supplied.',
-    );
+    $problem = new c_base_form_problem();
+    $problem->set_field('login_form-password');
+    $problem->set_value('No valid password has been supplied.');
+
+    $problems[] = $problem;
+    unset($problem);
   }
 
   // explicitly deny access to internal user accounts
   if ($_POST['login_form-username'] == 'public_user') {
-    $problems[] = array(
-      'fields' => array('login_form-username'),
-      'messages' => 'Unable to login, an incorrect user name or password has been specified.',
-    );
+    $problem = new c_base_form_problem();
+    $problem->set_field('login_form-username');
+    $problem->set_value('Unable to login, an incorrect user name or password has been specified.');
+
+    $problems[] = $problem;
+    unset($problem);
   }
 
   // return current list of problems before continuing to login attempt with credentials.
@@ -200,20 +206,6 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
     return c_base_return_array::s_new($problems);
   }
 
-
-  // assign username and password to both session and database.
-  if (!($session instanceof c_base_session)) {
-    $session = new c_base_session();
-  }
-
-  if (empty($_SERVER['REMOTE_ADDR'])) {
-    $session->set_host('0.0.0.0');
-  }
-  else {
-    $session->set_host($_SERVER['REMOTE_ADDR']);
-  }
-
-  $session->set_system_name($settings['session_system']);
   $session->set_name($_POST['login_form-username']);
   $session->set_password($_POST['login_form-password']);
   $settings['database_user'] = $_POST['login_form-username'];
@@ -248,10 +240,12 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
   }
 
   if ($connected instanceof c_base_return_false) {
-    $problems[] = array(
-      'fields' => array('login_form-username'),
-      'messages' => 'Unable to login, an incorrect user or password has been specified.',
-    );
+    $problem = new c_base_form_problem();
+    $problem->set_field('login_form-username');
+    $problem->set_value('Unable to login, an incorrect user or password has been specified.');
+
+    $problems[] = $problem;
+    unset($problem);
   }
   else {
     // @todo: add log entry.
@@ -263,7 +257,15 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
 
     // the session needs to be opened and the data needs to be saved on successful login.
     $result = $session->do_connect();
-    if (!c_base_return::s_has_error($result)) {
+    if (c_base_return::s_has_error($result)) {
+      // @todo: process each error message.
+      $problem = new c_base_form_problem();
+      $problem->set_value('Failed to load session.');
+
+      $problems[] = $problem;
+      unset($problem);
+    }
+    else {
       $ldap = reservation_database_load_ldap_data($settings, $_POST['login_form-username'])->get_value();
       if ($ldap instanceof c_base_return_false || !is_array($ldap)) {
         $ldap = array(
@@ -273,6 +275,12 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
 
       if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
         // @todo: handle error situation.
+        $problem = new c_base_form_problem();
+        $problem->set_field('login_form-username');
+        $problem->set_value('Failed to retrieve ldap information for specified user.');
+
+        $problems[] = $problem;
+        unset($problem);
       }
 
       $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();
@@ -283,22 +291,29 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
 
       // @todo: get and use user id from $user_data.
 
-      $result = $session->do_push($settings['session_expire'], $settings['session_max']);
+      $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
       $session->do_disconnect();
 
       $session_expire = $session->get_timeout_expire()->get_value_exact();
-      $cookie_login->set_expires($session_expire);
-      $cookie_login->set_max_age(NULL);
+      $cookie_login = $session->get_cookie();
 
-      if ($result instanceof c_base_return_true) {
-        $data = array(
-          'session_id' => $session->get_session_id()->get_value_exact(),
-          'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unecessary, but provided for debug purposes.
-        );
-        $cookie_login->set_data($data);
+      if ($cookie_login instanceof c_base_cookie) {
+        $cookie_login->set_expires($session_expire);
+        $cookie_login->set_max_age(NULL);
+
+        if ($pushed instanceof c_base_return_true) {
+          $data = array(
+            'session_id' => $session->get_session_id()->get_value_exact(),
+            'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unecessary, but provided for debug purposes.
+          );
+
+          $cookie_login->set_value($data);
+          $session->set_cookie($cookie_login);
+        }
       }
-      unset($result);
+      unset($cookie_login);
       unset($session_expire);
+      unset($pushed);
     }
     unset($result);
 
@@ -315,36 +330,162 @@ function reservation_attempt_login(&$database, &$settings, &$session, &$cookie_l
 
 /**
  * Build the HTTPS requirement page.
+ *
  * @param c_base_html &$html
  *   The html page object.
- *
- * @return c_base_html_return
- *   The markup tags object.
+ * @param array $settings
+ *   The system settings array.
+   * @param c_base_session &$session
+   *   The current session.
  */
-function reservation_build_page_require_https(&$html) {
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1)->get_value_exact();
+function reservation_build_page_require_https(&$html, $settings, &$session) {
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
   $tag->set_text('HTTPS Connection is Required');
   $html->set_tag($tag);
+  unset($tag);
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER)->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
   $tag->set_text('Please use a secure connection to access this website.');
   $html->set_tag($tag);
+  unset($tag);
 }
 
 /**
  * Build the dashboard page.
+ *
  * @param c_base_html &$html
  *   The html page object.
- *
- * @return c_base_html_return
- *   The markup tags object.
+ * @param array $settings
+ *   The system settings array.
+ * @param c_base_session &$session
+ *   The current session.
  */
-function reservation_build_page_dashboard(&$html) {
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1)->get_value_exact();
+function reservation_build_page_dashboard(&$html, $settings, &$session) {
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
   $tag->set_text('Dashboard');
   $html->set_tag($tag);
+  unset($tag);
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER)->get_value_exact();
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
   $tag->set_text('All links will go here.');
   $html->set_tag($tag);
+  unset($tag);
+
+  $roles = array();
+  $roles_object = $session->get_setting('roles');
+  if ($roles_object instanceof c_base_roles) {
+    $roles = $roles_object->get_roles()->get_value_exact();
+  }
+  unset($roles_object);
+
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
+  $tag->set_text('You are currently logged in as: ' . $settings['database_user']);
+  $html->set_tag($tag);
+  unset($tag);
+
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
+  $tag->set_text('You are currently assigned the following roles:');
+  $html->set_tag($tag);
+  unset($tag);
+
+  $tag_ul = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNORDERED_LIST);
+
+  foreach ($roles as $role) {
+    $tag_li = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LIST_ITEM);
+
+    switch ($role) {
+      case c_base_roles::PUBLIC:
+        $tag_li->set_text('Public');
+        break;
+      case c_base_roles::USER:
+        $tag_li->set_text('User');
+        break;
+      case c_base_roles::REQUESTER:
+        $tag_li->set_text('Requester');
+        break;
+      case c_base_roles::DRAFTER:
+        $tag_li->set_text('Drafter');
+        break;
+      case c_base_roles::EDITOR:
+        $tag_li->set_text('Editor');
+        break;
+      case c_base_roles::REVIEWER:
+        $tag_li->set_text('Reviewer');
+        break;
+      case c_base_roles::FINANCER:
+        $tag_li->set_text('Financer');
+        break;
+      case c_base_roles::INSURER:
+        $tag_li->set_text('Insurer');
+        break;
+      case c_base_roles::PUBLISHER:
+        $tag_li->set_text('Publisher');
+        break;
+      case c_base_roles::AUDITOR:
+        $tag_li->set_text('Auditor');
+        break;
+      case c_base_roles::MANAGER:
+        $tag_li->set_text('Manager');
+        break;
+      case c_base_roles::ADMINISTER:
+        $tag_li->set_text('Administer');
+        break;
+    }
+
+    $tag_ul->set_tag($tag_li);
+    unset($tag_li);
+  }
+  unset($role);
+
+  $html->set_tag($tag_ul);
+}
+
+/**
+ * Process and build requested forms.
+ *
+ * @param c_base_html &$html
+ *   The html page object.
+ * @param array $settings
+ *   The system settings array.
+ * @param c_base_session &$session
+ *   The current session.
+ */
+function reservation_process_forms(&$html, $settings, &$session) {
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
+  $tag->set_text('Form Processing');
+  $html->set_tag($tag);
+  unset($tag);
+
+  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
+  $tag->set_text('This function is called to process specific forms.');
+  $html->set_tag($tag);
+  unset($tag);
+}
+
+/**
+ * Process request path and determine what to do.
+ *
+ * @param c_base_html &$html
+ *   The html page object.
+ * @param array $settings
+ *   The system settings array.
+ * @param c_base_session &$session
+ *   The current session.
+ */
+function reservation_process_path(&$html, $settings, &$session) {
+  reservation_build_page_dashboard($html, $settings, $session);
+}
+
+/**
+ * Process request path for public users and determine what to do.
+ *
+ * @param c_base_html &$html
+ *   The html page object.
+ * @param array $settings
+ *   The system settings array.
+ * @param c_base_session &$session
+ *   The current session.
+ */
+function reservation_process_path_public(&$html, $settings, &$session) {
+  reservation_build_login_page($html, $settings, $session);
 }

@@ -15,76 +15,119 @@
   /**
    * Process session information.
    *
+   * @param c_base_http &$http
+   *   Http object.
    * @param array &$settings
    *   System settings.
-   * @param c_base_cookie &$cookie_login
-   *   A login cookie object.
    *
-   * @param c_base_return_status|c_base_session
+   * @param c_base_session
    *   Session information is returned on success.
-   *   FALSE is returned when no session is defined.
-   *   FALSE with error bit set is returned on error.
+   *   Session information with error bit set is returned on error.
    */
-  function reservation_process_sessions(&$settings, &$cookie_login) {
+  function reservation_process_sessions(&$http, &$settings) {
+    $cookie_login = $http->get_request(c_base_http::REQUEST_COOKIE, $settings['cookie_name']);
+
+    $no_session = FALSE;
+    if (!($cookie_login instanceof c_base_cookie)) {
+      $cookie_login = new c_base_cookie();
+
+      $no_session = TRUE;
+    }
+
+    // create a session object regardless of login session cookie.
+    $session = new c_base_session();
+    $session->set_socket_directory($settings['session_socket']);
+    $session->set_system_name($settings['session_system']);
+
+    // the requester should not have any control over specifying/changing these settings, so overwrite whatever is defined by the request cookie.
     $cookie_login->set_name($settings['cookie_name']);
     $cookie_login->set_path($settings['cookie_path']);
     $cookie_login->set_domain($settings['cookie_domain']);
+    $cookie_login->set_http_only($settings['cookie_http_only']);
+    $cookie_login->set_host_only($settings['cookie_host_only']);
+    $cookie_login->set_same_site($settings['cookie_same_site']);
     $cookie_login->set_secure(TRUE);
 
-    $pulled = $cookie_login->do_pull();
-    if ($pulled instanceof c_base_return_true) {
-      $cookie_data = $cookie_login->get_data()->get_value_exact();
-
-      if (!($cookie_login->validate() instanceof c_base_return_true) || empty($cookie_data['session_id'])) {
-        // cookie_login failed validation or the cookie contains no session id.
-        return new c_base_return_false();
-      }
-
-      $session = new c_base_session();
-      $session->set_system_name($settings['session_system']);
-      $session->set_session_id($cookie_data['session_id']);
-
-      if (empty($_SERVER['REMOTE_ADDR'])) {
-        $session->set_host('0.0.0.0');
-      }
-      else {
-        $session->set_host($_SERVER['REMOTE_ADDR']);
-      }
-
-      $session_connection = $session->do_connect();
-      if (c_base_return::s_has_error($session_connection)) {
-        return $session_connection;
-      }
-
-      $result = $session->do_pull();
-      $session->do_disconnect();
-
-      if ($result instanceof c_base_return_true) {
-        $user_name = $session->get_name()->get_value();
-        $password = $session->get_password()->get_value();
-
-        if (is_string($user_name) && is_string($password)) {
-          $settings['database_user'] = $user_name;
-          $settings['database_password'] = $password;
-        }
-      }
-
-      // check to see if the session timeout has been extended and if so, then update the cookie.
-      $session_expire = $session->get_timeout_expire()->get_value_exact();
-      $session_seconds = $session_expire - time();
-      if ($session_seconds == 0) {
-        $session_seconds = -1;
-      }
-      if ($session_expire > $cookie_data['expire']) {
-        $cookie_data['expire'] = gmdate("D, d-M-Y H:i:s T", $session_expire);
-        $cookie_login->set_data($value);
-        $cookie_login->set_expires($session_expire);
-      }
-
-      return c_base_session_return::s_new($session);
+    if (empty($_SERVER['REMOTE_ADDR'])) {
+      $session->set_host('0.0.0.0');
+    }
+    else {
+      $session->set_host($_SERVER['REMOTE_ADDR']);
     }
 
-    return new c_base_return_false();
+    // no session cookie has been defined, so there is no existing session to load.
+    if ($no_session) {
+      $session->set_cookie($cookie_login);
+      unset($cookie_login);
+      unset($no_session);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':session_name' => $settings['cookie_name'], ':function_name' => __FUNCTION__)), i_base_error_messages::NO_SESSION);
+      $session->set_error($error);
+      unset($error);
+
+      return $session;
+    }
+    unset($no_session);
+
+    $cookie_data = $cookie_login->get_value_exact();
+    if (!($cookie_login->validate() instanceof c_base_return_true) || empty($cookie_data['session_id'])) {
+      $session->set_cookie($cookie_login);
+      unset($cookie_login);
+
+      // cookie_login failed validation or the cookie contains no session id.
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':session_name' => $settings['cookie_name'], ':function_name' => __FUNCTION__)), i_base_error_messages::SESSION_INVALID);
+      $session->set_error($error);
+      unset($error);
+
+      return $session;
+    }
+
+    $session->set_session_id($cookie_data['session_id']);
+
+
+    // connect to the session using the given session id.
+    $session_connection = $session->do_connect();
+    if (c_base_return::s_has_error($session_connection)) {
+      $session->set_cookie($cookie_login);
+      unset($cookie_login);
+
+      $session->set_error($session_connection->get_error());
+      unset($error);
+
+      return $session;
+    }
+
+    $result = $session->do_pull();
+    $session->do_disconnect();
+
+    if ($result instanceof c_base_return_true) {
+      $user_name = $session->get_name()->get_value();
+      $password = $session->get_password()->get_value();
+
+      if (is_string($user_name) && is_string($password)) {
+        $settings['database_user'] = $user_name;
+        $settings['database_password'] = $password;
+      }
+    }
+
+
+    // check to see if the session timeout has been extended and if so, then update the cookie.
+    $session_expire = $session->get_timeout_expire()->get_value_exact();
+    $session_seconds = $session_expire - time();
+    if ($session_seconds == 0) {
+      $session_seconds = -1;
+    }
+
+    if ($session_expire > $cookie_data['expire']) {
+      $cookie_data['expire'] = gmdate("D, d-M-Y H:i:s T", $session_expire);
+      $cookie_login->set_value($cookie_data);
+      $cookie_login->set_expires($session_expire);
+    }
+
+    $session->set_cookie($cookie_login);
+    unset($cookie_login);
+
+    return $session;
   }
 
   /**
@@ -161,7 +204,7 @@
     }
     unset($written);
 
-    $response = socket_read($socket, $packet_size_client);
+    $response = @socket_read($socket, $packet_size_client);
     socket_close($socket);
     unset($socket);
     unset($packet_size_client);

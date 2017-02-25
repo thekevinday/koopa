@@ -15,7 +15,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
 set datestyle to us;
 
 
@@ -29,7 +29,9 @@ create schema publishers authorization reservation_users_publisher;
 create schema insurer authorization reservation_users_insurer;
 create schema financer authorization reservation_users_financer;
 create schema reviewers authorization reservation_users_reviewer;
+create schema editors authorization reservation_users_editor;
 create schema drafters authorization reservation_users_drafter;
+create schema requesters authorization reservation_users_requester;
 create schema users authorization reservation_users;
 
 revoke create on schema system from reservation_user;
@@ -40,7 +42,9 @@ revoke create on schema publishers from reservation_users_publisher;
 revoke create on schema insurer from reservation_users_insurer;
 revoke create on schema financer from reservation_users_financer;
 revoke create on schema reviewers from reservation_users_reviewer;
+revoke create on schema editors from reservation_users_editor;
 revoke create on schema drafters from reservation_users_drafter;
+revoke create on schema requesters from reservation_users_requester;
 revoke create on schema users from reservation_users;
 
 grant usage on schema system to reservation_user;
@@ -51,7 +55,9 @@ grant usage on schema publishers to reservation_users_publisher;
 grant usage on schema insurer to reservation_users_insurer;
 grant usage on schema financer to reservation_users_financer;
 grant usage on schema reviewers to reservation_users_reviewer;
+grant usage on schema editors to reservation_users_editor;
 grant usage on schema drafters to reservation_users_drafter;
+grant usage on schema requesters to reservation_users_requester;
 grant usage on schema users to reservation_users;
 
 grant create,usage on schema system to postgres;
@@ -62,7 +68,9 @@ grant create,usage on schema publishers to postgres;
 grant create,usage on schema insurer to postgres;
 grant create,usage on schema financer to postgres;
 grant create,usage on schema reviewers to postgres;
+grant create,usage on schema editors to postgres;
 grant create,usage on schema drafters to postgres;
+grant create,usage on schema requesters to postgres;
 grant create,usage on schema users to postgres;
 
 

@@ -16,10 +16,12 @@ require_once('common/base/classes/base_return.php');
  * This class overrides c_base_return_array() such that some of its return values are in a different form than expected.
  * This will utilize c_base_return_* as return values.
  *
- * @todo: review this class, for some reason I decided to use c_base_return_array as this class supertype.
- *        Is that a good idea, because it feels a bit abusive?
+ * @todo: there seems to be a non-standard cookie flag called 'storeid'.
+ *        I cannot find any decent documentation, so I will not implement it at this time.
  *
  * @see: http://us.php.net/manual/en/features.cookies.php
+ * @see: https://tools.ietf.org/html/rfc6265
+ * @see: https://tools.ietf.org/html/draft-west-first-party-cookies
  * @see: setcookie()
  */
 class c_base_cookie extends c_base_return_array {
@@ -27,6 +29,11 @@ class c_base_cookie extends c_base_return_array {
   const DEFAULT_PATH = '/';
   const DEFAULT_JSON_ENCODE_DEPTH = 512;
   const CHECKSUM_ALGORITHM = 'sha256';
+
+  const SAME_SITE_NONE    = 0;
+  const SAME_SITE_RELAXED = 1;
+  const SAME_SITE_STRICT  = 2;
+
 
   private $name;
   private $secure;
@@ -36,7 +43,8 @@ class c_base_cookie extends c_base_return_array {
   private $domain;
   private $http_only;
   private $first_only;
-  private $data;
+  private $host_only;
+  private $same_site;
   private $json_encode_depth;
 
 
@@ -44,6 +52,8 @@ class c_base_cookie extends c_base_return_array {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->name = NULL;
     $this->secure = TRUE;
     $this->max_age = NULL;
@@ -52,12 +62,11 @@ class c_base_cookie extends c_base_return_array {
     $this->domain = NULL;
     $this->http_only = FALSE;
     $this->first_only = TRUE;
-    $this->data = array();
+    $this->host_only = TRUE;
+    $this->same_site = TRUE;
     $this->json_encode_depth = self::DEFAULT_JSON_ENCODE_DEPTH;
 
     $this->p_set_lifetime_default();
-
-    parent::__construct();
   }
 
   /**
@@ -72,7 +81,8 @@ class c_base_cookie extends c_base_return_array {
     unset($this->domain);
     unset($this->http_only);
     unset($this->first_only);
-    unset($this->data);
+    unset($this->host_only);
+    unset($this->same_site);
     unset($this->json_encode_depth);
 
     parent::__destruct();
@@ -366,13 +376,13 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Assigns the cookie http only flag.
+   * Assigns the cookie httponly flag.
    *
    * Set this to TRUE to only allow http protocol to utilize this cookie.
    * According to the PHP documentation, this prohibits javascript from accessing the cookie.
    *
    * @param bool $http_only
-   *   The http-only status for the cookie.
+   *   The httponly status for the cookie.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -388,10 +398,10 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Returns the stored cookie http only flag.
+   * Returns the stored cookie httponly flag.
    *
    * @return c_base_return_bool
-   *   The cookie http only flag.
+   *   The cookie httponly flag.
    */
   public function get_http_only() {
     // this flag should never be undefined, if it is NULL, then force the default.
@@ -403,13 +413,13 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Assigns the cookie http firsty-party flag.
+   * Assigns the cookie http first-party flag.
    *
    * Set this to TRUE to only allow the cookie to be used as first party only.
    * According to the PHP documentation, this tells browsers to never allow this to be used as a thirdy-party cookie.
    *
    * @param bool $first_only
-   *   The first-only status for the cookie.
+   *   The first-party status for the cookie.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -425,59 +435,106 @@ class c_base_cookie extends c_base_return_array {
   }
 
   /**
-   * Returns the stored cookie http only flag.
+   * Returns the stored cookie first-party flag.
    *
    * @return c_base_return_bool
-   *   The cookie http only flag.
+   *   The cookie first-party flag.
    */
   public function get_first_only() {
     // this flag should never be undefined, if it is NULL, then force the default.
-    if (is_null($this->http_only)) {
-      $this->http_only = FALSE;
+    if (is_null($this->first_only)) {
+      $this->first_only = FALSE;
     }
 
-    return c_base_return_bool::s_new($this->http_only);
+    return c_base_return_bool::s_new($this->first_only);
   }
 
   /**
-   * Assign the data.
+   * Assigns the cookie hostyonly flag.
    *
-   * Cookies values associated with this class are only stored as an array.
-   * Be sure to wrap your values in an array.
-   * The array key 'checksum' will be created if one does not already exist when building the cookie.
+   * Set this to TRUE to only allow the cookie to be used as host party only.
    *
-   * @param array $data
-   *   Any value so long as it is an array.
-   *   NULL is not allowed.
-   *   FALSE with the error bit set is returned on error.
+   * @param bool $host_only
+   *   The hostonly status for the cookie.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *
+   * @see: https://tools.ietf.org/html/rfc6265#section-5.4
    */
-  public function set_data($data) {
-    if (!is_array($data)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_host_only($host_only) {
+    if (!is_bool($host_only)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'host_only', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->data = $data;
+    $this->host_only = $host_only;
     return new c_base_return_true();
   }
 
   /**
-   * Return the data.
+   * Returns the stored cookie hostonly flag.
    *
-   * @return c_base_return_array
-   *   The value array stored within this class.
-   *   NULL may be returned if there is no defined valid array.
-   *   FALSE with the error bit set is returned on error.
+   * @return c_base_return_bool
+   *   The cookie hostonly flag.
    */
-  public function get_data() {
-    if (!is_null($this->data) && !is_array($this->data)) {
-      $this->data = array();
+  public function get_host_only() {
+    // this flag should never be undefined, if it is NULL, then force the default.
+    if (is_null($this->host_only)) {
+      $this->host_only = FALSE;
     }
 
-    return c_base_return_array::s_new($this->data);
+    return c_base_return_bool::s_new($this->host_only);
+  }
+
+  /**
+   * Assigns the cookie samesite flag.
+   *
+   * This also assignes the 'samesite' cookie setting which is functionality similar to hostonly.
+   *
+   * @param bool $same_site
+   *   The samesite status for the cookie.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *
+   * @see: https://tools.ietf.org/html/draft-west-first-party-cookies
+   */
+  public function set_same_site($same_site) {
+    if (!is_int($same_site)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'same_site', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    switch ($same_site) {
+      case self::SAME_SITE_NONE:
+      case self::SAME_SITE_RELAXED:
+      case self::SAME_SITE_STRICT:
+        $this->same_site = $same_site;
+        break;
+      default:
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'same_site', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+    }
+
+    return new c_base_return_true();
+  }
+
+  /**
+   * Returns the stored cookie samesite flag.
+   *
+   * @return c_base_return_bool
+   *   The cookie hostonly flag.
+   *
+   * @see: https://tools.ietf.org/html/draft-west-first-party-cookies
+   */
+  public function get_same_site() {
+    // this flag should never be undefined, if it is NULL, then force the default.
+    if (is_null($this->same_site)) {
+      $this->same_site = self::SAME_SITE_RELAXED;
+    }
+
+    return c_base_return_int::s_new($this->same_site);
   }
 
   /**
@@ -498,17 +555,17 @@ class c_base_cookie extends c_base_return_array {
       return c_base_return_error::s_false($error);
     }
 
-    if (is_null($this->data)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+    if (is_null($this->value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
-    $cookie = $this->p_build_cookie($checksum);
-    if ($cookie instanceof c_base_return_false) {
-      return c_base_return_error::s_false($cookie->get_error());
+    $set_cookie = $this->p_build_set_cookie($checksum);
+    if ($set_cookie instanceof c_base_return_false) {
+      return c_base_return_error::s_false($set_cookie->get_error());
     }
 
-    return $cookie;
+    return $set_cookie;
   }
 
   /**
@@ -584,13 +641,13 @@ class c_base_cookie extends c_base_return_array {
       return c_base_return_error::s_false($error);
     }
 
-    if (is_null($this->data)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+    if (is_null($this->value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
-    $cookie = $this->p_build_cookie($checksum);
-    if ($cookie instanceof c_base_return_false) {
+    $set_cookie = $this->p_build_set_cookie($checksum);
+    if ($set_cookie instanceof c_base_return_false) {
       return c_base_return_error::s_false($cookie->get_error());
     }
 
@@ -598,9 +655,9 @@ class c_base_cookie extends c_base_return_array {
       return new c_base_return_false();
     }
 
-    header($cookie->get_value_exact(), FALSE);
+    header($set_cookie->get_value_exact(), FALSE);
 
-    unset($cookie);
+    unset($set_cookie);
     unset($data);
 
     return new c_base_return_true();
@@ -616,7 +673,7 @@ class c_base_cookie extends c_base_return_array {
    *   TRUE on success, FALSE otherwise.
    */
   public function do_pull() {
-    if (!isset($_COOKIE) || !array_key_exists($this->name, $_COOKIE)) {
+    if (!isset($_COOKIE) || !is_array($_COOKIE) || !array_key_exists($this->name, $_COOKIE)) {
       // This is not an error, but there is no cookie to pull.
       // simply return false without the error flag set.
       return new c_base_return_false();
@@ -631,7 +688,7 @@ class c_base_cookie extends c_base_return_array {
       return c_base_return_error::s_false($error);
     }
 
-    $this->data = $data;
+    $this->value = $data;
     unset($data);
 
     return new c_base_return_true();
@@ -651,17 +708,17 @@ class c_base_cookie extends c_base_return_array {
    *   On error FALSE is returned with the error bit set.
    */
   public function validate() {
-    if (!is_array($this->data)) {
+    if (!is_array($this->value)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->data')), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
-    if (!array_key_exists('checksum', $this->data)) {
+    if (!array_key_exists('checksum', $this->value)) {
       return new c_base_return_false();
     }
 
     $checksum = $this->p_build_checksum();
-    if ($this->data['checksum'] == $checksum) {
+    if ($this->value['checksum'] == $checksum) {
       unset($checksum);
       return new c_base_return_true();
     }
@@ -744,21 +801,21 @@ class c_base_cookie extends c_base_return_array {
    * @see: hash()
    */
   private function p_build_checksum() {
-    if (!is_array($this->data)) {
-      $this->data = array();
+    if (!is_array($this->value)) {
+      $this->value = array();
     }
 
-    $has_checksum = array_key_exists('checksum', $this->data);
+    $has_checksum = array_key_exists('checksum', $this->value);
     $checksum = NULL;
     if ($has_checksum) {
-      $checksum = $this->data['checksum'];
-      unset($this->data['checksum']);
+      $checksum = $this->value['checksum'];
+      unset($this->value['checksum']);
     }
 
-    $json = json_encode($this->data, 0, $this->json_encode_depth);
+    $json = json_encode($this->value, 0, $this->json_encode_depth);
     if ($json === FALSE) {
       if ($has_checksum) {
-        $this->data['checksum'] = $checksum;
+        $this->value['checksum'] = $checksum;
       }
 
       unset($has_checksum);
@@ -770,7 +827,7 @@ class c_base_cookie extends c_base_return_array {
 
     $generated = hash(c_base_cookie::CHECKSUM_ALGORITHM, $json);
     if ($has_checksum) {
-      $this->data['checksum'] = $checksum;
+      $this->value['checksum'] = $checksum;
     }
 
     unset($has_checksum);
@@ -807,19 +864,19 @@ class c_base_cookie extends c_base_return_array {
    * @see: header()
    * @see: headers_sent().
    */
-  private function p_build_cookie($checksum = TRUE) {
+  private function p_build_set_cookie($checksum = TRUE) {
     if ($checksum) {
-      unset($this->data['checksum']);
-      $this->data['checksum'] = $this->p_build_checksum();
+      unset($this->value['checksum']);
+      $this->value['checksum'] = $this->p_build_checksum();
 
-      if (is_null($this->data['checksum'])) {
-        unset($this->data['checksum']);
+      if (is_null($this->value['checksum'])) {
+        unset($this->value['checksum']);
         $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_build_checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         return c_base_return_error::s_false($error);
       }
     }
 
-    $json = json_encode($this->data, 0, $this->json_encode_depth);
+    $json = json_encode($this->value, 0, $this->json_encode_depth);
     if ($json === FALSE) {
       unset($json);
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_encode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
@@ -862,6 +919,24 @@ class c_base_cookie extends c_base_return_array {
 
     if ($this->first_only) {
       $cookie .= ' first-party;';
+    }
+
+    // the rfc is unclear as it calls the hostonly flag by the name of host-only-flag.
+    // it does not seem to directly state that the host-only-flag should be defined as 'hostonly' and not 'host-only-flag'.
+    if ($this->host_only) {
+      $cookie .= ' hostonly;';
+    }
+
+    switch ($this->same_site) {
+      case self::SAME_SITE_NONE:
+        $cookie .= ' samesite=no_restriction;';
+        break;
+      case self::SAME_SITE_RELAXED:
+        $cookie .= ' samesite=lax;';
+        break;
+      case self::SAME_SITE_STRICT:
+        $cookie .= ' samesite=strict;';
+        break;
     }
 
     return c_base_return_string::s_new($cookie);

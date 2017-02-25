@@ -27,7 +27,7 @@ class c_theme_dom extends DOMDocument {
    * Class constructor.
    */
   public function __construct() {
-    super.__construct('1.0', 'UTF-8');
+    parent::__construct('1.0', 'UTF-8');
   }
 
   /**

@@ -6,7 +6,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
 set datestyle to us;
 
 

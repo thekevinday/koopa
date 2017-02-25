@@ -34,6 +34,27 @@ class c_base_email extends c_base_rfc_string {
 
 
   /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
+  }
+
+  /**
    * Decode and check that the given e-mail address is valid.
    *
    * Validation is done according to rfc5322, rfc6854, and rfc7231.
@@ -374,7 +395,7 @@ class c_base_email extends c_base_rfc_string {
         // there may be multiple comments, so do not break at this point.
       }
       elseif (!$this->pr_rfc_char_is_fws($code)) {
-        // the first non-comment, non-fws char should be the start of the [machine_name].
+        // the first non-comment, non-fws char should be the start of the [name_machine].
         break;
       }
     }
@@ -388,7 +409,7 @@ class c_base_email extends c_base_rfc_string {
       return $result;
     }
 
-    // process [machine_name].
+    // process [name_machine].
     $started = FALSE;
     $stopped = FALSE;
     $comments = FALSE;

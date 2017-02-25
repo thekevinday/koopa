@@ -11,7 +11,7 @@ require_once('common/base/classes/base_return.php');
 /**
  * A generic class for performing debugging.
  */
-class c_base_debug {
+class c_base_debug extends c_base_return {
   private static $ps_debugging = FALSE;
 
   private $time_start;
@@ -29,6 +29,8 @@ class c_base_debug {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->time_start = NULL;
     $this->time_stop = NULL;
 
@@ -53,6 +55,29 @@ class c_base_debug {
     unset($this->memory_allocated_start);
     unset($this->memory_allocated_stop);
     unset($this->memory_allocated_peak);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**

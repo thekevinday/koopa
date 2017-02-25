@@ -34,9 +34,18 @@ The roles:
   - This role is intended for users who need to approve, deny, or otherwise be involved in some sort of workflow process.
   - It should be very common for projects to have a sub-set of reviewer access roles via tables.
 
+- editor:
+  - This role is intended for users who need to make changes (edit content).
+  - This role does not grant the access to create any content or make any requests.
+  - With the reservation system example. thos would be a request for a reservation.
+
 - drafter:
   - This role is intended for users who create content but are not allowed to publish that content.
   - This is primarily used for workflow.
+
+- requester:
+  - This role is intended for users who need to make a request.
+  - With the reservation system example. thos would be a request for a reservation.
 
 - (system)_users:
   - Replace (system) with the appropriate name for the system, generally the database name (for example, the reservation system, this would be reservation_users).

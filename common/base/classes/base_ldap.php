@@ -13,7 +13,7 @@ require_once('common/base/classes/base_return.php');
 /**
  * A class for managing ldap connections.
  */
-class c_base_ldap {
+class c_base_ldap extends c_base_return {
   private $ldap;
   private $name;
 
@@ -25,6 +25,8 @@ class c_base_ldap {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->ldap = NULL;
     $this->name = NULL;
 
@@ -41,6 +43,29 @@ class c_base_ldap {
 
     unset($this->bind_name);
     unset($this->bind_password);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
@@ -623,6 +648,8 @@ class c_base_ldap_result extends c_base_return_resource {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->ldap = NULL;
     $this->entry = NULL;
   }

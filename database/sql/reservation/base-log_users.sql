@@ -4,6 +4,13 @@ start transaction;
 
 
 
+/** Custom database specific settings (do this on every connection made) **/
+set bytea_output to hex;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
+set datestyle to us;
+
+
+
 /*** provide user activity logging ***/
 create table managers.t_log_users (
   id bigint not null,
@@ -110,19 +117,16 @@ create index ci_log_users_response_code_redirects on managers.t_log_users (id)
 create index ci_log_users_response_code_notable on managers.t_log_users (id)
   where response_code in (400, 403, 404, 410, 500, 503);
 
-/** when using current_user reserved function/word the index gets ignored. To prevent this, create a manual/custom index and alter the behavior of the views to be more explicit. **/
-create unique index ci_log_users_current_user on managers.t_log_users (name_machine_user) with (fillfactor = 100);
-
 
 /** only allow select and insert for users when user id is current user **/
 create view users.v_log_users_self with (security_barrier=true) as
-  select id, id_user, log_title, log_type, log_severity, log_details, log_date, request_client from managers.t_log_users
+  select id, id_user, log_title, log_type, log_severity, log_details, log_date, request_client, response_code from managers.t_log_users
     where (name_machine_user)::text = (current_user)::text;
 
 grant select on users.v_log_users_self to reservation_users;
 
 create view users.v_log_users_self_insert with (security_barrier=true) as
-  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client from managers.t_log_users
+  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client, response_code from managers.t_log_users
     where (name_machine_user)::text = (current_user)::text
     with check option;
 
@@ -131,7 +135,7 @@ grant insert on users.v_log_users_self_insert to reservation_users;
 
 /** only allow insert for the public user **/
 create view public.v_log_users_self_insert with (security_barrier=true) as
-  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client from managers.t_log_users
+  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client, response_code from managers.t_log_users
     where id_user = 1 and name_machine_user = 'unknown'
     with check option;
 
@@ -140,7 +144,7 @@ grant insert on public.v_log_users_self_insert to public_users;
 
 /** only allow insert for the system user **/
 create view system.v_log_users_self_insert with (security_barrier=true) as
-  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client from managers.t_log_users
+  select id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client, response_code from managers.t_log_users
     where id_user = 2 and name_machine_user = 'system'
     with check option;
 
@@ -206,8 +210,6 @@ create index ci_log_activity_response_code_503 on managers.t_log_activity (id)
 create index ci_log_activity_response_code_notable on managers.t_log_activity (id)
   where response_code in (403, 404, 410, 500, 503);
 
-/** when using current_user reserved function/word the index gets ignored. To prevent this, create a manual/custom index and alter the behavior of the views to be more explicit. **/
-create unique index ci_log_activity_current_user on managers.t_log_activity (name_machine_user) with (fillfactor = 100);
 
 
 /** only allow select and insert for users when user id is current user **/

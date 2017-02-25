@@ -6,7 +6,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
 set datestyle to us;
 
 
@@ -61,9 +61,6 @@ create index ci_users_private_not on administers.t_users (id)
 
 create index ci_users_private_email_not on administers.t_users (id)
   where is_deleted is not true and is_private is not true and (address_email).private is not true;
-
-/** when using current_user reserved function/word the index gets ignored. To prevent this, create a manual/custom index and alter the behavior of the views to be more explicit. **/
-create unique index ci_users_current_user on administers.t_users (name_machine) with (fillfactor = 100);
 
 create index ci_users_id_sort_a on administers.t_users (id_sort) with (fillfactor = 100) where id_sort = 97;
 create index ci_users_id_sort_b on administers.t_users (id_sort) with (fillfactor = 100) where id_sort = 98;
@@ -227,6 +224,7 @@ grant select on administers.vm_users_date_synced_previous_year to reservation_us
 grant select on administers.vm_users_date_synced_previous_year to reservation_users_manager;
 
 
+
 /*** provide sequence id preservation table ***/
 create table administers.t_users_sequences (
   id bigint not null,
@@ -245,9 +243,6 @@ create table administers.t_users_sequences (
 
 grant select,insert,update,delete on administers.t_users_sequences to reservation_users_administer;
 grant select on administers.t_users_sequences to reservation_users_auditor;
-
-/** when using current_user reserved function/word the index gets ignored. To prevent this, create a manual/custom index and alter the behavior of the views to be more explicit. **/
-create unique index ci_users_sequences_current_user on administers.t_users_sequences (name_machine) with (fillfactor = 40);
 
 create view public.v_users_sequences_locked with (security_barrier=true) as
   select id, id_user, name_machine, is_locked, date_expire from administers.t_users_sequences

@@ -7,7 +7,7 @@
 /**
  * A generic class for managing the logs.
  */
-class c_base_log {
+class c_base_log extends c_base_return {
   const TYPE_NONE       = 0;
   const TYPE_BASE       = 1; // for low-level entries.
   const TYPE_REQUEST    = 2; // accessing the site (generally page requests).
@@ -75,6 +75,8 @@ class c_base_log {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->type = self::TYPE_NONE;
     $this->data = array();
   }
@@ -85,6 +87,29 @@ class c_base_log {
   public function __destruct() {
     unset($this->type);
     unset($this->data);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
@@ -212,7 +237,7 @@ class c_base_log {
     if (is_int($key)) {
       if ($key < 0) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+        return c_base_return_error::s_false($error);
       }
     }
     elseif (!is_string($key)) {
@@ -223,6 +248,10 @@ class c_base_log {
     if (!array_key_exists($key, $this->data)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $key, ':array_name' => 'this->data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
+    }
+
+    if ($this->data[$key] instanceof c_base_return) {
+      return $this->data[$key];
     }
 
     return c_base_return_value::s_new($this->data[$key]);

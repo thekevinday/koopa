@@ -51,6 +51,10 @@
     $settings['cookie_name'] = 'reservation-session';
     $settings['cookie_path'] = '/';
     $settings['cookie_domain'] = '.localhost';
+    $settings['cookie_http_only'] = FALSE; // setting this to false will allow javascript to access this cookie, such as for ajax.
+    $settings['cookie_host_only'] = TRUE;
+    $settings['cookie_same_site'] = c_base_cookie::SAME_SITE_STRICT;
+    $settings['session_socket'] = '/program/sockets/sessionize_accounts/';
     $settings['session_system'] = 'reservation';
     $settings['session_expire'] = 600; // 10 minutes
     $settings['session_max'] = 1800; // 30 minutes
@@ -113,10 +117,8 @@
    *   System settings
    * @param c_base_session &$session
    *   Session information.
-   * @param c_base_cookie &$cookie_login
-   *   Session login cookie.
    */
-  function reservation_process_request(&$http, &$database, &$settings, &$session, &$cookie_login) {
+  function reservation_process_request(&$http, &$database, &$settings, &$session) {
     $html = new c_base_html();
 
 
@@ -152,14 +154,14 @@
 
 
     // assign base header tag
-    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BASE)->get_value_exact();
+    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BASE);
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, 'http://localhost/');
     #$html->set_header($tag);
     #unset($tag);
 
 
     // assign http-equiv header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HTTP_EQUIV, 'Content-Type');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, 'text/html; charset=utf-8');
     $html->set_header($tag);
@@ -167,14 +169,14 @@
 
 
     // assign charset header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET, c_base_charset::UTF_8);
     $html->set_header($tag);
     unset($tag);
 
 
     // assign canonical header tag
-    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, 'http://localhost/');
     #$html->set_header($tag);
@@ -182,7 +184,7 @@
 
 
     // assign shortlink header tag
-    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'shortlink');
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, '/');
     #$html->set_header($tag);
@@ -190,7 +192,7 @@
 
 
     // assign description header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_NAME, 'description');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, 'A reservation/scheduling system.');
     $html->set_header($tag);
@@ -198,7 +200,7 @@
 
 
     // assign distribution header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_NAME, 'distribution');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, 'web');
     $html->set_header($tag);
@@ -206,7 +208,7 @@
 
 
     // assign robots header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_NAME, 'robots');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, 'INDEX,FOLLOW');
     $html->set_header($tag);
@@ -214,7 +216,7 @@
 
 
     // assign expires header tag
-    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HTTP_EQUIV, 'expires');
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, date('r', strtotime('+30 minutes')));
     #$html->set_header($tag);
@@ -222,47 +224,68 @@
 
 
     // assign viewport header tag
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META)->get_value_exact();
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_NAME, 'viewport');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, 'width=device-width, initial-scale=1');
     $html->set_header($tag);
     unset($tag);
 
-
-    // define any global css/javascript here as appropriate link/script c_base_markup_tag tag types.
-
-
     // finish building pages.
     if (!isset($_SERVER["HTTPS"])) {
-      reservation_build_page_require_https($html);
+      reservation_build_page_require_https($html, $settings, $session);
     }
-    elseif ($session === FALSE) {
-      // check to see if user has filled out the login form.
-      if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
-        $problems = reservation_attempt_login($database, $settings, $session, $cookie_login);
+    elseif ($settings['database_user'] == 'public_user') {
+      // if the session cookie exists, but the user is still public_user, then the cookie is no longer valid.
+      if (empty($session->get_session_id()->get_value_exact())) {
+        // check to see if user has filled out the login form.
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
+          $problems = reservation_attempt_login($database, $settings, $session);
 
-        if ($problems instanceof c_base_return_false) {
-          // @todo: render default page.
-          reservation_build_page_dashboard($html);
-          // @todo: process and handle different paths here and load page as requested.
+          if ($problems instanceof c_base_return_false) {
+            reservation_build_page_dashboard($html, $settings, $session);
+            // @todo: process and handle different paths here and load page as requested.
+          }
+          else {
+            // store the problems in the session object (because session as a subclass of c_base_return).
+            $session->set_problems($problems);
+
+            // @todo: render login failure.
+            reservation_process_path_public($html, $settings, $session);
+          }
+          unset($problems);
         }
         else {
-
-          // @todo: render login failure.
-          // $logged_in should be an array of error messages.
-          reservation_build_login_page($html, $problems->get_value());
+          reservation_process_path_public($html, $settings, $session);
         }
       }
       else {
-        reservation_build_login_page($html);
+        $cookie_login = $session->get_cookie();
+
+        // delete the cookie.
+        $cookie_login->set_expires(-1);
+        $cookie_login->set_max_age(-1);
+        $session->set_cookie($cookie_login);
+        unset($cookie_login);
+
+        reservation_process_path_public($html, $settings, $session);
       }
     }
     else {
-      reservation_build_page_dashboard($html);
-      // @todo: process and handle different paths here and load page as requested.
+      // load current database settings.
+      reservation_database_string($database, $settings);
+
+      // load current user roles
+      reservation_get_current_roles($database, $settings, $session); // @todo: handle returnr result errors.
+
+      if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id'])) {
+        reservation_process_forms($html, $settings, $session);
+      }
+      else {
+        reservation_process_path($html, $settings, $session);
+      }
     }
 
-    return c_base_html_return::s_new($html);
+    return $html;
   }
 
   /**
@@ -283,6 +306,35 @@
   }
 
   /**
+   * Build the HTTP response.
+   *
+   * @param c_base_http &$http
+   *   Http object.
+   * @param c_base_session &$session
+   *   Session information.
+   * @param string $markup
+   *   The HTML markup.
+   */
+  function reservation_build_response(&$http, &$session, $markup) {
+    $http->set_response_content($markup);
+
+
+    // send the session cookie if a session id is specified.
+    $session_id = $session->get_session_id()->get_value_exact();
+    if (!empty($session_id)) {
+      $cookie_login = $session->get_cookie();
+
+      if ($cookie_login instanceof c_base_cookie) {
+        $http->set_response_set_cookie($cookie_login);
+      }
+      unset($cookie_login);
+    }
+    unset($session_id);
+
+    return new c_base_return_true();
+  }
+
+  /**
    * Main Program Function
    */
   function reservation_main() {
@@ -297,14 +349,13 @@
 
 
     // 3: process session information
-    $cookie_login = new c_base_cookie();
-    $session = reservation_process_sessions($settings, $cookie_login)->get_value_exact();
+    $session = reservation_process_sessions($http, $settings);
     gc_collect_cycles();
 
 
     // 4: perform actions, process work.
     $database = new c_base_database();
-    $html = reservation_process_request($http, $database, $settings, $session, $cookie_login)->get_value();
+    $html = reservation_process_request($http, $database, $settings, $session);
     if (!($html instanceof c_base_html)) {
       $html = new c_base_html();
     }
@@ -323,10 +374,8 @@
 
 
     // 6: build response information.
-    $http->set_response_content($markup);
-    $http->set_response_set_cookie($cookie_login);
+    reservation_build_response($http, $session, $markup);
     unset($markup);
-    unset($cookie_login);
     gc_collect_cycles();
 
 

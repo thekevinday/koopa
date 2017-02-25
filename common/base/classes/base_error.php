@@ -499,17 +499,19 @@ interface i_base_error_messages {
   const INVALID_ARGUMENT              = 1;
   const INVALID_FORMAT                = 2;
   const INVALID_VARIABLE              = 3;
-  const OPERATION_FAILURE             = 4;
-  const OPERATION_UNECESSARY          = 5;
-  const FUNCTION_FAILURE              = 6;
-  const NOT_FOUND_ARRAY_INDEX         = 7;
-  const NOT_FOUND_DIRECTORY           = 8;
-  const NOT_FOUND_FILE                = 9;
-  const NO_CONNECTION                 = 10;
-  const NO_SUPPORT                    = 11;
-  const POSTGRESQL_CONNECTION_FAILURE = 12;
-  const POSTGRESQL_NO_CONNECTION      = 13;
-  const POSTGRESQL_NO_RESOURCE        = 14;
+  const INVALID_SESSION               = 4;
+  const OPERATION_FAILURE             = 5;
+  const OPERATION_UNECESSARY          = 6;
+  const FUNCTION_FAILURE              = 7;
+  const NOT_FOUND_ARRAY_INDEX         = 8;
+  const NOT_FOUND_DIRECTORY           = 9;
+  const NOT_FOUND_FILE                = 10;
+  const NO_CONNECTION                 = 11;
+  const NO_SUPPORT                    = 12;
+  const NO_SESSION                    = 13;
+  const POSTGRESQL_CONNECTION_FAILURE = 14;
+  const POSTGRESQL_NO_CONNECTION      = 15;
+  const POSTGRESQL_NO_RESOURCE        = 16;
 
 
   /**

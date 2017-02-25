@@ -28,22 +28,28 @@ require_once('common/base/classes/base_ldap.php');
  * - Drafter: account is for making templates, drafts, ideas, etc.. (this is a lesser form of "editer").
  * - Editer: account is for editors who add/manage/create content.
  * - Reviewer: account is for users who review something (such as a user who approves content for publishing).
+ * - Insurer: account is for users who deal with insurance related information.
+ * - Financer: account is for users who deal with financial related information.
  * - Publisher: account is for users who perform publishing (marking content available and complete).
+ * - Auditor: account is for users who perform auditing. This account has read access to almost all data on the system.
  * - Manager: account is for users who manager the entire system. This is a non-technical administration account.
  * - Administer: account is for users who have full administrative access to the system. This is a technical administration account and supercedes Manager.
  */
-class c_base_roles {
+class c_base_roles extends c_base_return {
   const NONE       = 0;
   const PUBLIC     = 1;
   const SYSTEM     = 2;
   const USER       = 3;
   const REQUESTER  = 4;
   const DRAFTER    = 5;
-  const EDITER     = 6;
+  const EDITOR     = 6;
   const REVIEWER   = 7;
-  const PUBLISHER  = 8;
-  const MANAGER    = 9;
-  const ADMINISTER = 10;
+  const INSURER    = 8;
+  const FINANCER   = 9;
+  const PUBLISHER  = 10;
+  const AUDITOR    = 11;
+  const MANAGER    = 12;
+  const ADMINISTER = 13;
 
   private $public;
   private $system;
@@ -52,7 +58,10 @@ class c_base_roles {
   private $drafter;
   private $editer;
   private $reviewer;
+  private $insurer;
+  private $financer;
   private $publisher;
+  private $auditor;
   private $manager;
   private $administer;
 
@@ -60,6 +69,8 @@ class c_base_roles {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->public     = TRUE;
     $this->system     = FALSE;
     $this->user       = FALSE;
@@ -67,7 +78,10 @@ class c_base_roles {
     $this->drafter    = FALSE;
     $this->editer     = FALSE;
     $this->reviewer   = FALSE;
+    $this->financer   = FALSE;
+    $this->insurer    = FALSE;
     $this->publisher  = FALSE;
+    $this->auditor    = FALSE;
     $this->manager    = FALSE;
     $this->administer = FALSE;
   }
@@ -83,9 +97,35 @@ class c_base_roles {
     unset($this->drafter);
     unset($this->editer);
     unset($this->reviewer);
+    unset($this->financer);
+    unset($this->insurer);
     unset($this->publisher);
+    unset($this->auditor);
     unset($this->manager);
     unset($this->administer);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, array());
   }
 
   /**
@@ -124,6 +164,7 @@ class c_base_roles {
         $this->editer     = FALSE;
         $this->reviewer   = FALSE;
         $this->publisher  = FALSE;
+        $this->auditor    = FALSE;
         $this->manager    = FALSE;
         $this->administer = FALSE;
       }
@@ -143,14 +184,23 @@ class c_base_roles {
     elseif ($role === self::DRAFTER) {
       $this->drafter = $value;
     }
-    elseif ($role === self::EDITER) {
+    elseif ($role === self::EDITOR) {
       $this->editer = $value;
     }
     elseif ($role === self::REVIEWER) {
       $this->reviewer = $value;
     }
+    elseif ($role === self::FINANCER) {
+      $this->financer = $value;
+    }
+    elseif ($role === self::INSURER) {
+      $this->insurer = $value;
+    }
     elseif ($role === self::PUBLISHER) {
       $this->publisher = $value;
+    }
+    elseif ($role === self::AUDITOR) {
+      $this->auditor = $value;
     }
     elseif ($role === self::MANAGER) {
       $this->manager = $value;
@@ -185,7 +235,7 @@ class c_base_roles {
     }
 
     if ($role === self::NONE) {
-      if (!($this->public || $this->system || $this->user || $this->requester || $this->drafter || $this->editer || $this->reviewer || $this->publisher || $this->manager || $this->administer)) {
+      if (!($this->public || $this->system || $this->user || $this->requester || $this->drafter || $this->editer || $this->reviewer || $this->publisher || $this->auditor || $this->manager || $this->administer)) {
         return new c_base_return_true();
       }
     }
@@ -214,7 +264,7 @@ class c_base_roles {
         return new c_base_return_true();
       }
     }
-    elseif ($role === self::EDITER) {
+    elseif ($role === self::EDITOR) {
       if ($this->editer) {
         return new c_base_return_true();
       }
@@ -224,8 +274,23 @@ class c_base_roles {
         return new c_base_return_true();
       }
     }
+    elseif ($role === self::FINANCER) {
+      if ($this->financer) {
+        return new c_base_return_true();
+      }
+    }
+    elseif ($role === self::INSURER) {
+      if ($this->insurer) {
+        return new c_base_return_true();
+      }
+    }
     elseif ($role === self::PUBLISHER) {
       if ($this->publisher) {
+        return new c_base_return_true();
+      }
+    }
+    elseif ($role === self::AUDITOR) {
+      if ($this->auditor) {
         return new c_base_return_true();
       }
     }
@@ -241,5 +306,70 @@ class c_base_roles {
     }
 
     return new c_base_return_false();
+  }
+
+  /**
+   * Get an array of all currently assigned roles.
+   *
+   * @return c_base_return_array
+   *   An array of roles are returned.
+   *   An array with error bit set is returned on error.
+   */
+  public function get_roles() {
+    $roles = array();
+
+    if ($this->public) {
+      $roles[self::PUBLIC] = self::PUBLIC;
+    }
+
+    if ($this->system) {
+      $roles[self::SYSTEM] = self::SYSTEM;
+    }
+
+    if ($this->user) {
+      $roles[self::USER] = self::USER;
+    }
+
+    if ($this->requester) {
+      $roles[self::REQUESTER] = self::REQUESTER;
+    }
+
+    if ($this->drafter) {
+      $roles[self::DRAFTER] = self::DRAFTER;
+    }
+
+    if ($this->editer) {
+      $roles[self::EDITOR] = self::EDITOR;
+    }
+
+    if ($this->reviewer) {
+      $roles[self::REVIEWER] = self::REVIEWER;
+    }
+
+    if ($this->financer) {
+      $roles[self::FINANCER] = self::FINANCER;
+    }
+
+    if ($this->insurer) {
+      $roles[self::INSURER] = self::INSURER;
+    }
+
+    if ($this->publisher) {
+      $roles[self::PUBLISHER] = self::PUBLISHER;
+    }
+
+    if ($this->auditor) {
+      $roles[self::AUDITOR] = self::AUDITOR;
+    }
+
+    if ($this->manager) {
+      $roles[self::MANAGER] = self::MANAGER;
+    }
+
+    if ($this->administer) {
+      $roles[self::ADMINISTER] = self::ADMINISTER;
+    }
+
+    return c_base_return_array::s_new($roles);
   }
 }

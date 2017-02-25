@@ -24,7 +24,7 @@ require_once('common/base/classes/base_mime.php');
  * There are amazing levels of inconsistency in HTML5, but for now this class implements HTML5 as closely as possible.
  * Future versions of this may violate the standard in favor of consistency and sanity.
  */
-class c_theme_html {
+class c_theme_html extends c_base_return {
   const DEFAULT_MAX_RECURSION_DEPTH = 16384;
 
   private $html;
@@ -36,6 +36,8 @@ class c_theme_html {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->html = NULL;
     $this->markup = NULL;
     $this->http = NULL;
@@ -50,6 +52,29 @@ class c_theme_html {
     unset($this->markup);
     unset($this->http);
     unset($this->max_recursion_depth);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
@@ -62,7 +87,7 @@ class c_theme_html {
    * @param array|null $classes
    *   (optional) An array of strings representing additional classes to append.
    *
-   * @return c_base_markup_tag_return|c_base_return_status
+   * @return c_base_markup_tag|c_base_return_status
    *   A newly created tag is returned on success.
    *   FALSE with the error bit set is returned on error.
    */
@@ -111,7 +136,7 @@ class c_theme_html {
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class);
     unset($class);
 
-    return c_base_markup_tag_return::s_new($tag);
+    return $tag;
   }
 
   /**
@@ -137,7 +162,7 @@ class c_theme_html {
   /**
    * Get the markup html assigned to this object.
    *
-   * @return c_base_html_return|c_base_return_status
+   * @return c_base_html|c_base_return_status
    *   The markup html object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
@@ -147,7 +172,7 @@ class c_theme_html {
       $this->html = new c_base_html();
     }
 
-    return c_base_html_return::s_new($this->html);
+    return $this->html;
   }
 
   /**
@@ -210,7 +235,7 @@ class c_theme_html {
   /**
    * Get the HTTP information
    *
-   * @return c_base_html_return|c_base_return_status
+   * @return c_base_http|c_base_return_status
    *   The markup tags object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
@@ -220,7 +245,7 @@ class c_theme_html {
       $this->http = new c_base_http();
     }
 
-    return c_base_http_return::s_new($this->http);
+    return $this->http;
   }
 
   /**
@@ -244,9 +269,9 @@ class c_theme_html {
   }
 
   /**
-   * Get the markup html assigned to this object.
+   * Get the maximum recursion depth integer assigned to this object.
    *
-   * @return c_base_html_return|c_base_return_status
+   * @return c_base_return_int|c_base_return_status
    *   The markup html object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.

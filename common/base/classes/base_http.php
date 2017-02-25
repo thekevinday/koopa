@@ -230,6 +230,8 @@ class c_base_http extends c_base_rfc_string {
    * Class constructor.
    */
   public function __construct() {
+    parent::__construct();
+
     $this->headers = NULL;
     $this->headers_sent = FALSE;
     $this->request = array();
@@ -258,6 +260,29 @@ class c_base_http extends c_base_rfc_string {
     unset($this->buffer_enabled);
 
     unset($this->language_class);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
@@ -267,18 +292,45 @@ class c_base_http extends c_base_rfc_string {
    *
    * @param int|null $header_name
    *   (optional) The numeric id of the request or NULL to load all requests.
+   * @param int|string|null $delta
+   *   (optional) For headers that have an array of data, this represents and index position within that array.
+   *   For all other headers, this does nothing.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array|c_base_return_value|c_base_return_status
    *   The HTTP request array or an array containing the request field information.
+   *   FALSE without error bit set is returned when the requested header name is undefined.
    *   FALSE with error bit set is returned on error.
    */
-  public function get_request($header_name = NULL) {
+  public function get_request($header_name = NULL, $delta = NULL) {
+    if (!is_null($header_name) && !is_int($header_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($delta) && !is_int($delta) && !is_string($delta)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
     if (is_null($header_name)) {
       return c_base_return_array::s_new($this->request);
     }
 
-    if (!is_int($header_name) || !array_key_exists($header_name, $this->request)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+    if (!array_key_exists($header_name, $this->request)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $header_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($delta)) {
+      if (isset($this->request[$header_name]['data']) && is_array($this->request[$header_name]['data']) && array_key_exists($delta, $this->request[$header_name]['data'])) {
+        if ($this->request[$header_name]['data'][$delta] instanceof c_base_return) {
+          return $this->request[$header_name]['data'][$delta];
+        }
+
+        return c_base_return_value::s_new($this->request[$header_name]['data'][$delta]);
+      }
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -288,13 +340,57 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Get the HTTP response array.
    *
-   * Load the entire HTTP response array.
+   * Load the entire HTTP response array or a specific response field.
    *
-   * @return c_base_return_array
-   *   The HTTP response array.
+   * @param int|null $header_name
+   *   (optional) The numeric id of the response or NULL to load all responses.
+   * @param int|string|null $delta
+   *   (optional) For headers that have an array of data, this represents and index position within that array.
+   *   For all other headers, this does nothing.
+   *
+   * @return c_base_return_array|c_base_return_string|c_base_return_value|c_base_return_status
+   *   The HTTP response array or string for a given field or the entire HTTP response array.
+   *   FALSE without error bit set is returned when the requested header name is undefined.
+   *   FALSE with error bit set is returned on error.
    */
-  public function get_response() {
-    return c_base_return_array::s_new($this->response);
+  public function get_response($header_name = NULL, $delta = NULL) {
+    if (!is_null($header_name) && !is_int($header_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($delta) && !is_int($delta) && !is_string($delta)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($header_name)) {
+      return c_base_return_array::s_new($this->response);
+    }
+
+    if (!array_key_exists($header_name, $this->response)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $header_name, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_array($this->response[$header_name])) {
+      if (is_null($delta)) {
+        return c_base_return_array::s_new($this->response[$header_name]);
+      }
+
+      if (isset($this->response[$header_name]) && is_array($this->response[$header_name]) && array_key_exists($delta, $this->response[$header_name])) {
+        if ($this->response[$header_name][$delta] instanceof c_base_return) {
+          return $this->response[$header_name][$delta];
+        }
+
+        return c_base_return_value::s_new($this->response[$header_name][$delta]);
+      }
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
+    }
+
+    return c_base_return_string::s_new($this->response[$header_name]);
   }
 
   /**
@@ -305,6 +401,7 @@ class c_base_http extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_language_class($class_name) {
     if (!is_string($class_name) || !is_subclass_of('i_base_language', $class_name) ) {
@@ -321,6 +418,7 @@ class c_base_http extends c_base_rfc_string {
    *
    * @return c_base_return_string
    *   The language class string.
+   *   FALSE with error bit set is returned on error.
    */
   public function get_language_class() {
     if (is_null($this->language_class)) {
@@ -337,6 +435,7 @@ class c_base_http extends c_base_rfc_string {
    * @return c_base_return_float|c_base_return_status
    *   The HTTP request time.
    *   FALSE without error bit is returned when the request timestamp has not yet been loaded
+   *   FALSE with error bit set is returned on error.
    */
   public function get_request_time() {
     if (is_null($this->request_time)) {
@@ -348,6 +447,10 @@ class c_base_http extends c_base_rfc_string {
 
   /**
    * Load, process, and interpret all of the supported http request headers.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function do_load_request() {
     if (!is_array($this->headers)) {
@@ -8277,81 +8380,5 @@ class c_base_http extends c_base_rfc_string {
     }
 
     return FALSE;
-  }
-}
-
-/**
- * A return class whose value is represented as a generic c_base_markup_tag_return.
- */
-class c_base_http_return extends c_base_return_object {
-  use t_base_return_value_exact;
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, new c_base_http());
-  }
-
-  /**
-   * Assign the value.
-   *
-   * @param c_base_http $value
-   *   Any value so long as it is an resource.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_value($value) {
-    if (!($value instanceof c_base_http)) {
-      return FALSE;
-    }
-
-    $this->value = $value;
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return c_base_http|null $value
-   *   The value c_base_http stored within this class.
-   *   NULL may be returned if there is no defined valid c_base_markup_tag.
-   */
-  public function get_value() {
-    if (!is_null($this->value) && !($this->value instanceof c_base_http)) {
-      $this->value = NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return c_base_http $value
-   *   The value c_base_html stored within this class.
-   */
-  public function get_value_exact() {
-    if (!($this->value instanceof c_base_http)) {
-      $this->value = new c_base_html();
-    }
-
-    return $this->value;
   }
 }

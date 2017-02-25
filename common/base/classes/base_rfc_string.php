@@ -45,6 +45,27 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
   const STOP_AT_CLOSING_CHARACTER = -1;
 
   /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, '');
+  }
+
+  /**
    * Converts a string into a ordinals array and a characters array.
    *
    * The ordinals and characters returned by this are utf8-friendly such that the caller need only use a counter to navigate.

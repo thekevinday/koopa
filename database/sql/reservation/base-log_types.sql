@@ -6,7 +6,7 @@ start transaction;
 
 /** Custom database specific settings (do this on every connection made) **/
 set bytea_output to hex;
-set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,drafters,users,public;
+set search_path to system,administers,managers,auditors,publishers,insurers,financers,reviewers,editors,drafters,requesters,users,public;
 set datestyle to us;
 
 
@@ -18,6 +18,7 @@ create table managers.t_log_types (
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
 
+  is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
   date_created timestamp default localtimestamp not null,
@@ -39,8 +40,15 @@ grant select on managers.t_log_types to reservation_users_manager;
 grant select on managers.t_log_types to reservation_users_auditor;
 grant select,usage on managers.s_log_types_id to reservation_users_administer;
 
+create index ci_log_types_deleted_not on managers.t_log_types (id)
+  where is_deleted is not true;
+
+create index ci_log_types_public on managers.t_log_types (id)
+  where is_deleted is not true and is_locked is not true;
+
 create view public.v_log_types with (security_barrier=true) as
-  select id, name_machine, name_human from managers.t_log_types;
+  select id, name_machine, name_human from managers.t_log_types
+  where is_deleted is not true and is_locked is not true;
 
 grant select on public.v_log_types to reservation_users;
 grant select on public.v_log_types to public_users;
