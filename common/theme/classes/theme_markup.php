@@ -164,7 +164,7 @@ class c_theme_tag {
     }
 
     // prevent the assigned text from including markup by translating everything to html entities.
-    $this->text = htmlspecialchars($text, ENT_HTML5 | ENT_NOQUOTES | ENT_IGNORE, 'UTF-8');
+    $this->text = htmlspecialchars($text, ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8');
 
     return new c_base_return_true();
   }
@@ -1080,7 +1080,7 @@ class c_theme_tag {
     }
 
     // require the non-null string to not be empty.
-    // multi-byte is unecessary here because this is a test not for characters but instead for a non-empty string.
+    // multi-byte is unnecessary here because this is a test not for characters but instead for a non-empty string.
     if (!is_string($attribute_value) || strlen($attribute_value) < 1) {
       return c_base_return_error::s_false();
     }

@@ -8,9 +8,59 @@
   require_once('common/base/classes/base_cookie.php');
   require_once('common/base/classes/base_database.php');
   require_once('common/base/classes/base_ldap.php');
+  require_once('common/base/classes/base_http.php');
 
 
-  function headers($stuff) {
+  // create an alias for the default language for error messages.
+  #class_alias('c_base_error_messages_english', 'c_base_error_messages');
+
+
+  function process_received_headers(&$stuff) {
+    $stuff['http'] = new c_base_http();
+    $stuff['http']->do_load_request();
+
+    // test error message handling using english or japanese.
+    $supported_languages = array(
+      i_base_language::ENGLISH => 'c_base_error_messages_english',
+      i_base_language::JAPANESE => 'c_base_error_messages_japanese',
+    );
+
+    $language_chosen = i_base_language::ENGLISH;
+    $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
+    if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
+      foreach ($languages_accepted['data']['weight'] as $weight => $language) {
+        $language_code = array_pop(array_keys($language));
+        if (array_key_exists($language_code, $supported_languages)) {
+          $language_chosen = $language_code;
+          break;
+        }
+      }
+      unset($weight);
+      unset($language);
+      unset($language_code);
+    }
+    unset($languages_accepted);
+
+    if ($language_chosen === i_base_language::ENGLISH) {
+      require_once('common/base/classes/base_error_messages_english.php');
+    }
+    elseif ($language_chosen === i_base_language::JAPANESE) {
+      require_once('common/base/classes/base_error_messages_japanese.php');
+    }
+
+    $stuff['error_messages'] = new $supported_languages[$language_chosen];
+
+    unset($supported_languages);
+    unset($language_chosen);
+  }
+
+  $stuff = array(
+    'resources' => array(
+      'time' => microtime(TRUE),
+     ),
+  );
+
+  function send_prepared_headers($stuff) {
     if (isset($stuff['cookie_existence']['cookie'])) {
       $stuff['cookie_existence']['cookie']->do_push();
     }
@@ -21,9 +71,31 @@
   }
 
   function theme($stuff) {
+    // @todo: call the appropriate http send function from $stuff['http']. this requires rewriting this entire theme function.
+    // note: not changing language here because most of the page is in english, regardless of the http accept-language setting.
+    print('<html lang="en-US">');
+    print('<head>');
+    print('<title>Testing Koopa</title>');
+    print('<meta content="A simple and rough test of various functionality provided by the koopa project." name="description">');
+    print('<meta content="text/html; charset=utf-8" http-equiv="Content-Type">');
+    print('<meta charset="UTF-8">');
+    print('<meta content="web" name="distribution">');
+    print('<meta content="INDEX,FOLLOW" name="robots">');
+    print('<meta content="width=device-width, initial-scale=1" name="viewport">');
+    print('<style type="text/css" rel="stylesheet" media="all">');
+    print('.error_message > .error_message-argument { display: inline-block; vertical-align: baseline; }');
+    print('</style>');
+    print('</head>');
+
+    print('<body>');
     print("<h1>Testing</h1>\n");
     print("The following is a test of the database design and base database and cookied functionality.<br>");
     print("<br>");
+
+    if (isset($stuff['errors'])) {
+      print("0) The following errors have been detected:<br>");
+      print('<ol>' . $stuff['errors'] . '</ol>');
+    }
 
     if (isset($_SERVER["HTTPS"])) {
       print("1) You are using HTTPS.<br>");
@@ -42,6 +114,38 @@
     unset($key);
     unset($value);
     print("<br>");
+
+    print("3) Language Test: <br>");
+
+    // disclaimer: I used translate.google.com to generate the languages and provided only the default translation (expect translation errors).
+    $test_strings = array(
+      i_base_language::ENGLISH => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
+      i_base_language::JAPANESE => 'これは、ブラウザのデフォルト言語を使用したテストです。 現在、英語（デフォルト）、スペイン語、日本語、ロシア語がテストされています。',
+      i_base_language::RUSSIAN => 'Это тест с помощью браузера по умолчанию язык. В настоящее время английский (по умолчанию), испанский, японский и русский тестируются.',
+      i_base_language::SPANISH => 'Se trata de una prueba que utiliza el idioma predeterminado de su navegador. Actualmente se ponen a prueba el inglés (predeterminado), el español, el japonés y el ruso.',
+    );
+
+    $language_chosen = i_base_language::ENGLISH;
+    $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
+    if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
+      foreach ($languages_accepted['data']['weight'] as $weight => $language) {
+        $language_code = array_pop(array_keys($language));
+        if (array_key_exists($language_code, $test_strings)) {
+          $language_chosen = $language_code;
+          break;
+        }
+      }
+      unset($weight);
+      unset($language);
+      unset($language_code);
+    }
+
+    print(' - ' . $test_strings[$language_chosen] . "<br>");
+    print("<br>");
+
+    unset($language_chosen);
+    unset($languages_accepted);
+    unset($test_strings);
 
     // Useful _SERVER Variables:
     //   REQUEST_TIME, REQUEST_TIME_FLOAT
@@ -67,37 +171,37 @@
 
     print("<h2>Cookie Test</h2>\n");
     if (isset($stuff['cookie_existence']['new'])) {
-      print("3) A new existence cookie has been created.<br>");
+      print("4) A new existence cookie has been created.<br>");
       print($stuff['cookie_existence']['new']);
     }
     elseif (isset($stuff['cookie_existence']['exists'])) {
-      print("3) The existence cookie has been loaded.<br>");
+      print("4) The existence cookie has been loaded.<br>");
       print($stuff['cookie_existence']['exists']);
-    }
-    else {
-      print("3) Disabled<br>");
-    }
-
-
-    print("<h2>Login, Session, and Database Connection Test</h2>\n");
-    if (isset($stuff['login']) && isset($_SERVER["HTTPS"])) {
-      print("4) Login<br>");
-      print($stuff['login']);
     }
     else {
       print("4) Disabled<br>");
     }
 
 
+    print("<h2>Login, Session, and Database Connection Test</h2>\n");
+    if (isset($stuff['login']) && isset($_SERVER["HTTPS"])) {
+      print("5) Login<br>");
+      print($stuff['login']);
+    }
+    else {
+      print("5) Disabled<br>");
+    }
+
+
     print("<h2>LDAP Test</h2>\n");
     if (isset($stuff['ldap']) && isset($_SERVER["HTTPS"])) {
-      print("5) LDAP<br>");
+      print("6) LDAP<br>");
       if (isset($stuff['ldap']['markup'])) {
         print($stuff['ldap']['markup']);
       }
     }
     else {
-      print("5) Disabled<br>");
+      print("6) Disabled<br>");
     }
 
 
@@ -110,12 +214,15 @@
       $mp_2 = memory_get_peak_usage();
 
       print("<h2>Resources</h2>\n");
-      print("6) Time Taken: " . sprintf('%.10g', $difference_milli) . " milliseconds (" . sprintf('%.06g', $difference_seconds)  . " seconds).<br>");
-      print("7) Memory Usage (Real): " . $mu_1 . " bytes (" . sprintf('%.06g', $mu_1 / 1024 / 1024) . " megabytes).<br>");
-      print("8) Memory Usage (emalloc): " . $mu_2 . " bytes (" . sprintf('%.06g', $mu_2 / 1024 / 1024) . " megabytes)<br>");
-      print("9) Peak Memory Usage (Real): " . $mp_1 . " bytes (" . sprintf('%.06g', $mp_1 / 1024 / 1024) . " megabytes).<br>");
-      print("10) Peak Memory Usage (emalloc): " . $mp_2 . " bytes (" . sprintf('%.06g', $mp_2 / 1024 / 1024) . " megabytes).<br>");
+      print("7) Time Taken: " . sprintf('%.10g', $difference_milli) . " milliseconds (" . sprintf('%.06g', $difference_seconds)  . " seconds).<br>");
+      print("8) Memory Usage (Real): " . $mu_1 . " bytes (" . sprintf('%.06g', $mu_1 / 1024 / 1024) . " megabytes).<br>");
+      print("9) Memory Usage (emalloc): " . $mu_2 . " bytes (" . sprintf('%.06g', $mu_2 / 1024 / 1024) . " megabytes)<br>");
+      print("10) Peak Memory Usage (Real): " . $mp_1 . " bytes (" . sprintf('%.06g', $mp_1 / 1024 / 1024) . " megabytes).<br>");
+      print("11) Peak Memory Usage (emalloc): " . $mp_2 . " bytes (" . sprintf('%.06g', $mp_2 / 1024 / 1024) . " megabytes).<br>");
     }
+
+    print('</body>');
+    print('</html>');
   }
 
   function session(&$stuff) {
@@ -249,8 +356,8 @@
               $logged_in = TRUE;
 
               ldap($stuff, $session->get_name()->get_value_exact());
-              set_log_activity($database, $session->get_id_user()->get_value_exact());
-              get_database_data($database, $stuff, $session->get_id_user()->get_value_exact());
+              set_log_activity($database);
+              get_database_data($database, $stuff);
 
               if ($session->get_id_user()->get_value_exact() > 0) {
                 $log = get_log_activity($database);
@@ -298,7 +405,7 @@
           $session->set_password($_POST['login_password']);
 
           $user_data = array();
-          $account_exists = check_login_access($database, $_POST['login_name'], $_POST['login_password'], $session);
+          $account_exists = check_login_access($stuff, $database, $_POST['login_name'], $_POST['login_password'], $session);
           if (!$account_exists) {
             $user_id = 1;
             $session->set_name('public_user');
@@ -314,14 +421,13 @@
             $connected = connect_database($database);
 
             if ($connected) {
-              set_log_user($database, 'login_failure', $_POST['login_name'], 403);
+              set_log_user($database, 'login_failure', $_POST['login_name'], NULL, 401);
+              set_log_activity($database, 401);
 
               $stuff['login'] .= ' - Accessing database as: public_user' . '<br>' . "\n";
               $stuff['login'] .= ' - Your user id is: 1 ' . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
-
-              set_log_activity($database, $user_id);
             }
           }
           else {
@@ -349,15 +455,16 @@
             $failure = TRUE;
           }
           else {
-            set_log_user($database, 'login');
-
             $result = $session->do_connect();
             $failure = c_base_return::s_has_error($result);
           }
 
-          if (!$failure) {
+          // added '$user_id > 999' to ensure that anonymous and other system users do not generate a session cookie.
+          if (!$failure && $user_id > 999) {
             $result = $session->do_push(600, 1800); // (10 minutes, 30 minutes)
             $session->do_disconnect();
+
+            set_log_user($database, 'login', NULL, $session->get_timeout_expire()->get_value_exact());
 
             $session_expire = $session->get_timeout_expire()->get_value_exact();
             $session_max = $session->get_timeout_max()->get_value_exact();
@@ -368,7 +475,7 @@
             if ($result instanceof c_base_return_true) {
               $data = array(
                 'session_id' => $session->get_session_id()->get_value_exact(),
-                'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unecessary, but provided for debug purposes.
+                'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
               );
               $cookie->set_value($data);
               $stuff['cookie_login']['cookie'] = $cookie;
@@ -391,8 +498,8 @@
                 ldap($stuff, $session->get_name()->get_value_exact());
               }
 
-              set_log_activity($database, $user_id);
-              get_database_data($database, $stuff, $user_id);
+              set_log_activity($database);
+              get_database_data($database, $stuff);
 
               if ($session->get_id_user()->get_value_exact() > 0) {
                 $log = get_log_activity($database);
@@ -412,7 +519,6 @@
                 unset($table);
               }
 
-              unset($user_id);
               unset($user_data);
             }
             else {
@@ -426,6 +532,7 @@
             }
           }
 
+          unset($user_id);
           unset($session);
         }
       }
@@ -464,7 +571,7 @@
     #$stuff['login'] .= '<br>' . "\n";
   }
 
-  function get_database_data(&$database, &$stuff, $user_id) {
+  function get_database_data(&$database, &$stuff) {
     $stuff['login'] .= 'query: "select * from v_users;"<br>' . "\n";
     $query_result = $database->do_query('select * from v_users');
     if ($query_result instanceof c_base_database_result) {
@@ -482,12 +589,20 @@
       unset($row);
       unset($row_number);
     }
-    $stuff['login'] .= '</ol><br>' . "\n";
+    else {
+      if (!isset($stuff['errors'])) {
+        $stuff['errors'] = '';
+      }
 
+      $stuff['errors'] .= '<li>' . $database->get_last_error()->get_value_exact() . '</li>';
+    }
+    unset($query_result);
+
+    $stuff['login'] .= '</ol><br>' . "\n";
     $stuff['login'] .= '<br>' . "\n";
   }
 
-  function check_login_access(&$database, $username, $password, $session) {
+  function check_login_access(&$stuff, &$database, $username, $password, $session) {
     if ($username == 'public_user') return FALSE;
 
     $database->set_session($session);
@@ -500,6 +615,23 @@
 
     // it is possible the user name might not exist, so try to create it.
     $ensure_result = ensure_user_account($_POST['login_name']);
+    if (c_base_return::s_has_error($ensure_result)) {
+      $errors = $ensure_result->get_error();
+      if (is_array($errors)) {
+        if (!isset($stuff['errors'])) {
+          $stuff['errors'] = '';
+        }
+
+        foreach ($errors as $error) {
+          if ($error instanceof c_base_error) {
+            $stuff['errors'] .= '<li>' . $stuff['error_messages']::s_render_error_message($error)->get_value_exact() . '</li>';
+          }
+        }
+        unset($error);
+      }
+      unset($errors);
+    }
+    unset($ensure_result);
 
     // try again now that the system has attempted to ensure the user account exists.
     $connected = connect_database($database);
@@ -538,40 +670,43 @@
     return TRUE;
   }
 
-  function set_log_user(&$database, $type, $user_name = NULL, $response_code = 200) {
+  function set_log_user(&$database, $type, $user_name = NULL, $expires = NULL, $response_code = 200) {
+    $extra_parameters = '';
+    $extra_values = '';
+
     $query_string = '';
-    #$query_string .= 'insert into v_log_users_self_insert (id_user, name_machine_user, log_title, log_type, log_severity, log_details, request_client, response_code)';
-    #$query_string .= ' values (coalesce((select id from v_users_self), 1), coalesce((select name_machine_user from v_users_self), \'unknown\'), $1, $2, $3, $4, ($5, $6, $7), $8); ';
-    $query_string .= 'insert into v_log_users_self_insert (id_user, log_title, log_type, log_severity, log_details, request_client, response_code)';
-    $query_string .= ' values (coalesce((select id from v_users_self), 1), $1, $2, $3, $4, ($5, $6, $7), $8); ';
+    $query_string .= 'insert into v_log_users_self_insert (id_user, name_machine_user, log_title, log_type, log_severity, request_client, response_code, log_details)';
+    $query_string .= ' values (coalesce((select id from v_users_self), 1), coalesce((select name_machine from v_users_self), \'unknown\'), $1, $2, $3, ($4, $5, $6), $7, $8); ';
 
     $query_parameters = array();
-    $query_parameters[4] = json_encode(NULL);
-    $query_parameters[5] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-    $query_parameters[6] = isset($_SERVER['REMOTE_PORT']) ? $_SERVER['REMOTE_PORT'] : 0;
-    $query_parameters[7] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ; // @todo: test providing NULL.
-    $query_parameters[8] = $response_code;
+    $query_parameters[3] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+    $query_parameters[4] = isset($_SERVER['REMOTE_PORT']) ? $_SERVER['REMOTE_PORT'] : 0;
+    $query_parameters[5] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
+    $query_parameters[6] = $response_code;
 
-    if ($type == 'login' ) {
-      $query_parameters[1] = "Logging in to system.";
-      $query_parameters[2] = 17;
-      $query_parameters[3] = 1;
+    if ($type == 'login') {
+      $query_parameters[0] = "Logging in to the system.";
+      $query_parameters[1] = 17;
+      $query_parameters[2] = 1;
+      $query_parameters[7] = json_encode(array('expires' => $expires));
     }
-    elseif ($type == 'logout' ) {
-      $query_parameters[1] = "Logging out of system.";
-      $query_parameters[2] = 18;
-      $query_parameters[3] = 1;
+    elseif ($type == 'logout') {
+      $query_parameters[0] = "Logging out of the system.";
+      $query_parameters[1] = 18;
+      $query_parameters[2] = 1;
+      $query_parameters[7] = NULL;
     }
-    elseif ($type == 'create' ) {
-      $query_parameters[1] = "Created user account.";
-      $query_parameters[2] = 27;
-      $query_parameters[3] = 1;
+    elseif ($type == 'create') {
+      $query_parameters[0] = "Created the user account.";
+      $query_parameters[1] = 27;
+      $query_parameters[2] = 1;
+      $query_parameters[7] = NULL;
     }
-    elseif ($type == 'login_failure' ) {
-      $query_parameters[1] = "Failed to login as the user '" . $user_name . "'.";
-      $query_parameters[2] = 17;
-      $query_parameters[3] = 2;
-      $query_parameters[4] = json_encode(array('user_name' => $user_name));
+    elseif ($type == 'login_failure') {
+      $query_parameters[0] = "Failed to login as the user '" . $user_name . "'.";
+      $query_parameters[1] = 17;
+      $query_parameters[2] = 2;
+      $query_parameters[7] = json_encode(array('user_name' => $user_name));
     }
     else {
       return FALSE;
@@ -583,10 +718,19 @@
     unset($query_string);
     unset($query_parameters);
 
+    if ($query_result instanceof c_base_return_false) {
+      if (!isset($stuff['errors'])) {
+        $stuff['errors'] = '';
+      }
+
+      $stuff['errors'] .= '<li>' . $database->get_last_error()->get_value_exact() . '</li>';
+    }
+    unset($query_result);
+
     return TRUE;
   }
 
-  function set_log_activity(&$database, $user_id, $response_code = 200) {
+  function set_log_activity(&$database, $response_code = 200) {
     $connected = connect_database($database);
 
     if (!isset($stuff['login'])) {
@@ -601,28 +745,15 @@
     }
 
     if ($connected) {
-      $name_machine_user = 'current_user';
-      if (!is_int($user_id) || $user_id == 1) {
-        $user_id = 1;
-        $name_machine_user = '\'unknown\'';
-      }
-
       $query_string = '';
-      $query_string .= 'insert into v_log_activity_self_insert (id_user, name_machine_user, request_path, request_arguments, request_client, request_headers, response_headers, response_code) values ($1, ' . $name_machine_user . ', $2, $3, ($4, $5, $6), $7, $8, $9); ';
-
-      // @todo: populate headers.
-      $request_headers = json_encode(NULL);
-      $response_headers = json_encode(NULL);
+      $query_string .= 'insert into v_log_activity_self_insert (id_user, name_machine_user, request_path, request_arguments, request_client, response_code) values (coalesce((select id from v_users_self), 1), coalesce((select name_machine from v_users_self), \'unknown\'), $1, $2, ($3, $4, $5), $6); ';
 
       $query_parameters = array();
-      $query_parameters[] = $user_id;
       $query_parameters[] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
       $query_parameters[] = is_array($_GET) && !empty($_GET) ? print_r(array_keys($_GET), TRUE) : '';
       $query_parameters[] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
       $query_parameters[] = isset($_SERVER['REMOTE_PORT']) ? $_SERVER['REMOTE_PORT'] : 0;
       $query_parameters[] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
-      $query_parameters[] = $request_headers;
-      $query_parameters[] = $response_headers;
       $query_parameters[] = $response_code;
       unset($response_headers);
       unset($request_headers);
@@ -636,6 +767,15 @@
       $query_result = $database->do_query($query_string, $query_parameters);
       unset($query_string);
       unset($query_parameters);
+
+      if ($query_result instanceof c_base_return_false) {
+        if (!isset($stuff['errors'])) {
+          $stuff['errors'] = '';
+        }
+
+        $stuff['errors'] .= '<li>' . $database->get_last_error()->get_value_exact() . '</li>';
+      }
+      unset($query_result);
     }
     else {
       return FALSE;
@@ -672,10 +812,26 @@
         }
       }
     }
+    else {
+      if (!isset($stuff['errors'])) {
+        $stuff['errors'] = '';
+      }
+
+      $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+    }
+    unset($query_result);
 
     if (is_null($user_data['id_user'])) {
       if (is_null($ldap_data)) {
         $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine) values (' . $id_sort . ', user)');
+        if ($query_result instanceof c_base_return_false) {
+          if (!isset($stuff['errors'])) {
+            $stuff['errors'] = '';
+          }
+
+          $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+        }
+        unset($query_result);
       }
       else {
         $email = explode('@', $ldap_data['mail']);
@@ -687,8 +843,16 @@
           $email[1],
           $ldap_data['employeenumber'],
         );
-        #$query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine, name_human.first, name_human.last, name_human.complete, address_email.name, address_email.domain, address_email.private, id_external) values (' . $id_sort . ', user, $1, $2, $3, $4, $5, t, $6)', $parameters);
+
         $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine, name_human.first, name_human.last, name_human.complete, address_email, id_external) values (' . $id_sort . ', user, $1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
+        if ($query_result instanceof c_base_return_false) {
+          if (!isset($stuff['errors'])) {
+            $stuff['errors'] = '';
+          }
+
+          $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+        }
+        unset($query_result);
       }
 
       $user_data['id_user'] = 1;
@@ -710,6 +874,14 @@
           }
         }
       }
+      else {
+        if (!isset($stuff['errors'])) {
+          $stuff['errors'] = '';
+        }
+
+        $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+      }
+      unset($query_result);
     }
 
     return $user_data;
@@ -732,6 +904,14 @@
         }
       }
     }
+    else {
+      if (!isset($stuff['errors'])) {
+        $stuff['errors'] = '';
+      }
+
+      $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+    }
+    unset($query_result);
 
     return $values;
   }
@@ -753,6 +933,14 @@
         }
       }
     }
+    else {
+      if (!isset($stuff['errors'])) {
+        $stuff['errors'] = '';
+      }
+
+      $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+    }
+    unset($query_result);
 
     return $values;
   }
@@ -846,17 +1034,34 @@
     $packet_size_target = 63;
     $packet_size_client = 1;
 
-    $socket = socket_create($socket_family, $socket_type, $socket_protocol);
-    if ($socket === FALSE) {
-      socket_close($socket);
-      return FALSE;
-    }
-    unset($socket);
+    $socket = @socket_create($socket_family, $socket_type, $socket_protocol);
+    if (!is_resource($socket)) {
+      unset($socket);
 
-    $connected = socket_connect($socket, $socket_path, $socket_port);
+      $socket_error = @socket_last_error();
+
+      @socket_clear_error();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
+      return c_base_return_error::s_false($error);
+    }
+
+    $connected = @socket_connect($socket, $socket_path, $socket_port);
     if ($connected === FALSE) {
-      socket_close($socket);
-      return FALSE;
+      unset($connected);
+
+      $socket_error = @socket_last_error($socket);
+      @socket_clear_error($socket);
+
+      @socket_close($socket);
+      unset($socket);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
+      return c_base_return_error::s_false($error);
     }
     unset($connected);
 
@@ -871,16 +1076,43 @@
       $packet = pack('a' . $name_length, $user_name);
     }
 
-    $written = socket_write($socket, $packet, $packet_size_target);
+    $written = @socket_write($socket, $packet, $packet_size_target);
     if ($written === FALSE) {
-      socket_close($socket);
-      return FALSE;
+      unset($written);
+
+      $socket_error = @socket_last_error($socket);
+      @socket_clear_error($socket);
+
+      @socket_close($socket);
+      unset($socket);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
+      return c_base_return_error::s_false($error);
     }
     unset($written);
 
-    $response = socket_read($socket, $packet_size_client);
-    socket_close($socket);
+    $response = @socket_read($socket, $packet_size_client);
+    if ($response === FALSE) {
+      unset($response);
+
+      $socket_error = @socket_last_error($socket);
+      @socket_clear_error($socket);
+
+      @socket_close($socket);
+      unset($socket);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
+      return c_base_return_error::s_false($error);
+    }
+    @socket_close($socket);
+    unset($socket);
+
     if (!is_string($response) || strlen($response) == 0) {
+      unset($response);
       return FALSE;
     }
     unset($response);
@@ -902,7 +1134,7 @@
     //   10 = connection timed out when reading or writing.
     //   11 = the connection is being forced closed.
     //   12 = the connection is closing because the service is quitting.
-    return $response_value;
+    return c_base_return_int::s_new($response_value);
   }
 
   function ldap(&$stuff, $username) {
@@ -1110,13 +1342,8 @@
     unset($agent_string);
   }
 
-  $stuff = array(
-    'resources' => array(
-      'time' => microtime(TRUE),
-     ),
-  );
-
+  process_received_headers($stuff);
   existence_cookie($stuff);
   session($stuff);
-  headers($stuff);
+  send_prepared_headers($stuff);
   theme($stuff);

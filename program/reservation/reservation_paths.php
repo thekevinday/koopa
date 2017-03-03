@@ -260,7 +260,15 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
     if (c_base_return::s_has_error($result)) {
       // @todo: process each error message.
       $problem = new c_base_form_problem();
-      $problem->set_value('Failed to load session.');
+
+      $socket_error = $session->get_socket_error()->get_value();
+      if ($socket_error instanceof c_base_return_int) {
+        $problem->set_value('Failed to load session, due to socket error (' . $socket_error . '): ' . @socket_strerror($socket_error) . '.');
+      }
+      else {
+        $problem->set_value('Failed to load session.');
+      }
+      unset($socket_error);
 
       $problems[] = $problem;
       unset($problem);
@@ -297,6 +305,22 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
       $session_expire = $session->get_timeout_expire()->get_value_exact();
       $cookie_login = $session->get_cookie();
 
+      if (c_base_return::s_has_error($pushed)) {
+        $problem = new c_base_form_problem();
+
+        $socket_error = $session->get_socket_error()->get_value();
+        if ($socket_error instanceof c_base_return_int) {
+          $problem->set_value('Failed to push session, due to socket error (' . $socket_error . '): ' . @socket_strerror($socket_error) . '.');
+        }
+        else {
+          $problem->set_value('Failed to push session.');
+        }
+        unset($socket_error);
+
+        $problems[] = $problem;
+        unset($problem);
+      }
+
       if ($cookie_login instanceof c_base_cookie) {
         $cookie_login->set_expires($session_expire);
         $cookie_login->set_max_age(NULL);
@@ -304,7 +328,7 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
         if ($pushed instanceof c_base_return_true) {
           $data = array(
             'session_id' => $session->get_session_id()->get_value_exact(),
-            'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unecessary, but provided for debug purposes.
+            'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
           );
 
           $cookie_login->set_value($data);

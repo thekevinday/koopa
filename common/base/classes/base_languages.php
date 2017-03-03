@@ -789,14 +789,17 @@ final class c_base_language_us_only implements i_base_language {
  *
  * @see: http://www.loc.gov/standards/iso639-2/php/code_list.php
  */
-final class c_base_language_us_limited implements i_base_language {
+final class c_base_language_limited implements i_base_language {
 
   private static $s_aliases = array(
     self::ENGLISH_US              => array('en-us'),
     self::ENGLISH                 => array('eng', 'en'),
     self::FRENCH                  => array('fre', 'fra', 'fr'),
+    self::GAELIC                  => array('gla', 'gd'),
+    self::IRISH                   => array('gle', 'ga'),
     self::SPANISH                 => array('spa', 'es'),
     self::INDONESIAN              => array('ind', 'id'),
+    self::JAPANESE                => array('jpn', 'ja'),
     self::RUSSIAN                 => array('rus', 'ru'),
     self::CHINESE                 => array('chi', 'zho', 'zh'),
     self::UNDETERMINED            => array('und'),
@@ -807,8 +810,11 @@ final class c_base_language_us_limited implements i_base_language {
     self::ENGLISH_US              => array('US English'),
     self::ENGLISH                 => array('English'),
     self::FRENCH                  => array('French'),
+    self::GAELIC                  => array('Gaelic', 'Scottish Gaelic'),
+    self::IRISH                   => array('Irish'),
     self::SPANISH                 => array('Spanish', 'Castilian'),
     self::INDONESIAN              => array('Indonesian'),
+    self::JAPANESE                => array('Japanese'),
     self::RUSSIAN                 => array('Russian'),
     self::CHINESE                 => array('Chinese'),
     self::UNDETERMINED            => array('Undetermined'),
@@ -822,10 +828,16 @@ final class c_base_language_us_limited implements i_base_language {
     'fre'   => self::FRENCH,
     'fra'   => self::FRENCH,
     'fr'    => self::FRENCH,
+    'gla'   => self::GAELIC,
+    'ga'    => self::GAELIC,
+    'gle'   => self::IRISH,
+    'ga'    => self::IRISH,
     'spa'   => self::SPANISH,
     'es'    => self::SPANISH,
     'ind'   => self::INDONESIAN,
     'id'    => self::INDONESIAN,
+    'jpn'   => self::JAPANESE,
+    'ja'    => self::JAPANESE,
     'rus'   => self::RUSSIAN,
     'ru'    => self::RUSSIAN,
     'chi'   => self::CHINESE,
@@ -1002,7 +1014,7 @@ final class c_base_language_us_limited implements i_base_language {
  *
  * @see: http://www.loc.gov/standards/iso639-2/php/code_list.php
  */
-final class c_base_language_us_all implements i_base_language {
+final class c_base_language_all implements i_base_language {
 
   private static $s_aliases = array(
     self::ENGLISH_US              => array('en-us'),

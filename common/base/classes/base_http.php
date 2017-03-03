@@ -132,7 +132,7 @@ class c_base_http extends c_base_rfc_string {
   const DELIMITER_ACCEPT_SUB_0 = 'q';
   const DELIMITER_ACCEPT_SUB_1 = '=';
 
-  const ACCEPT_LANGUAGE_CLASS_DEFAULT = 'c_base_language_us_limited';
+  const ACCEPT_LANGUAGE_CLASS_DEFAULT = 'c_base_language_limited';
 
   // cache control options
   const CACHE_CONTROL_NO_CACHE         = 1;
@@ -4269,7 +4269,6 @@ class c_base_http extends c_base_rfc_string {
       foreach ($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
           $id = $languages->s_get_id_by_name($c['choice']);
-
           if ($id instanceof c_base_return_false) {
             $c['language'] = NULL;
           }

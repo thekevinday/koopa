@@ -29,7 +29,7 @@ create table managers.t_log_types (
 
   constraint cu_log_types_user unique (name_machine),
 
-  constraint cc_log_types_id check (id > 0)
+  constraint cc_log_types_id check (id >= 0)
 );
 
 create sequence managers.s_log_types_id owned by managers.t_log_types.id;
@@ -60,6 +60,7 @@ alter sequence managers.s_log_types_id restart;
 
 
 /** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
+insert into managers.t_log_types (id, name_machine, name_human) values (0, 'none', 'None');
 insert into managers.t_log_types (id, name_machine, name_human) values (1, 'php', 'PHP');
 insert into managers.t_log_types (id, name_machine, name_human) values (2, 'theme', 'Theme');
 insert into managers.t_log_types (id, name_machine, name_human) values (3, 'cache', 'Cache');
@@ -228,7 +229,7 @@ create table managers.t_log_severity_levels (
 
   constraint cu_log_severity_levels_user unique (name_machine),
 
-  constraint cc_log_severity_levels_id check (id > 0)
+  constraint cc_log_severity_levels_id check (id >= 0)
 );
 
 create sequence managers.s_log_severity_levels_id owned by managers.t_log_severity_levels.id;
@@ -253,6 +254,7 @@ alter sequence managers.s_log_severity_levels_id restart;
 
 
 /** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
+insert into managers.t_log_severity_levels (id, name_machine, name_human) values (0, 'none', 'None');
 insert into managers.t_log_severity_levels (id, name_machine, name_human) values (1, 'information', 'Information');
 insert into managers.t_log_severity_levels (id, name_machine, name_human) values (2, 'notice', 'Notice');
 insert into managers.t_log_severity_levels (id, name_machine, name_human) values (3, 'debug', 'Debug');

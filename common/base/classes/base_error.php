@@ -138,7 +138,7 @@ class c_base_error {
     if (is_int($code)) {
       $entry->set_code($code);
     }
-    elseif (is_null($message)) {
+    elseif (is_null($code)) {
       $entry->set_code(0);
     }
 
@@ -344,7 +344,7 @@ class c_base_error {
    *   TRUE on success, FALSE otherwise.
    */
   public function set_code($code) {
-    if (!is_string($code)) {
+    if (!is_int($code)) {
       return FALSE;
     }
 
@@ -432,7 +432,7 @@ class c_base_error {
    * The backtrace will be stored as an object.
    *
    * @param int $count
-   *   (optional) Assign a custom count that is used to prevent unecessary function calls from being included in the backtrace.
+   *   (optional) Assign a custom count that is used to prevent unnecessary function calls from being included in the backtrace.
    *   This is essentially to remove the functions called to generate this backtrace, which do not matter.
    *   Instead, only the function where the error happens should the backtrace limit count apply.
    *   This does nothing when the limit is set to 0 (which means unlimited).
@@ -512,6 +512,7 @@ interface i_base_error_messages {
   const POSTGRESQL_CONNECTION_FAILURE = 14;
   const POSTGRESQL_NO_CONNECTION      = 15;
   const POSTGRESQL_NO_RESOURCE        = 16;
+  const SOCKET_FAILURE                = 17;
 
 
   /**

@@ -105,7 +105,7 @@ insert into administers.t_users (id, name_machine, name_human, is_private) value
 /*** provide current user access to their own information ***/
 create view users.v_users_self with (security_barrier=true) as
   select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_created, date_changed, date_synced, settings from administers.t_users
-    where is_deleted is not true and (name_machine)::text = (current_user)::text;
+    where (name_machine)::text = (current_user)::text;
 
 grant select on users.v_users_self to reservation_users;
 
@@ -118,7 +118,7 @@ grant insert on users.v_users_self_insert to reservation_users;
 
 create view users.v_users_self_update with (security_barrier=true) as
   select address_email, is_private, date_changed, date_synced, settings from administers.t_users
-    where is_deleted is not true and date_changed = localtimestamp and (date_synced is null or date_synced = localtimestamp) and (name_machine)::text = (current_user)::text
+    where date_changed = localtimestamp and (date_synced is null or date_synced = localtimestamp) and (name_machine)::text = (current_user)::text
     with check option;
 
 grant update on users.v_users_self_update to reservation_users;
@@ -127,7 +127,7 @@ grant update on users.v_users_self_update to reservation_users;
 /**** anonymous user has uid = 1 ****/
 create view public.v_users_self with (security_barrier=true) as
   select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_created, date_changed, date_synced, settings from administers.t_users
-    where id = 1 and is_deleted is not true and id_sort = 0;
+    where id = 1 and id_sort = 0;
 
 grant select on public.v_users_self to public_users;
 
@@ -135,7 +135,7 @@ grant select on public.v_users_self to public_users;
 /**** system user has uid = 2 ****/
 create view system.v_users_self with (security_barrier=true) as
   select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_created, date_changed, date_synced, settings from administers.t_users
-    where id = 2 and is_deleted is not true and id_sort = 0;
+    where id = 2 and id_sort = 0;
 
 grant select on system.v_users_self to reservation_user;
 
@@ -160,20 +160,19 @@ grant select on public.v_users_email to public_users;
 
 /*** provide managers with the ability to modify accounts ***/
 create view managers.v_users with (security_barrier=true) as
-  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_created, date_changed, date_synced from administers.t_users
+  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_created, date_changed, date_synced, settings from administers.t_users
     where is_deleted is not true;
 
 grant select on managers.v_users to reservation_users_manager;
 
 create view managers.v_users_insert with (security_barrier=true) as
-  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator from administers.t_users
-    where is_deleted is not true
+  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, settings from administers.t_users
     with check option;
 
 grant insert on managers.v_users_insert to reservation_users_manager;
 
 create view managers.v_users_update with (security_barrier=true) as
-  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_changed, date_synced from administers.t_users
+  select id, id_sort, id_external, name_machine, name_human, address_email, is_private, is_locked, is_coordinator, date_changed, date_synced, settings from administers.t_users
     where is_deleted is not true and date_changed = localtimestamp and (date_synced is null or date_synced = localtimestamp)
     with check option;
 
@@ -222,42 +221,6 @@ grant select on administers.vm_users_date_synced_previous_month to reservation_u
 grant select on administers.vm_users_date_synced_previous_month to reservation_users_manager;
 grant select on administers.vm_users_date_synced_previous_year to reservation_users_administer;
 grant select on administers.vm_users_date_synced_previous_year to reservation_users_manager;
-
-
-
-/*** provide sequence id preservation table ***/
-create table administers.t_users_sequences (
-  id bigint not null,
-  id_user bigint not null,
-  name_machine varchar(128) not null,
-  is_locked boolean default true not null,
-  date_expire timestamp not null,
-
-  constraint cu_users_sequences_id unique (id),
-  constraint cu_users_sequences_name_machine unique (name_machine),
-
-  constraint cc_users_sequences_id check (id > 0),
-
-  constraint cf_users_sequences_user foreign key (id_user, name_machine) references administers.t_users (id, name_machine) on delete cascade on update cascade
-);
-
-grant select,insert,update,delete on administers.t_users_sequences to reservation_users_administer;
-grant select on administers.t_users_sequences to reservation_users_auditor;
-
-create view public.v_users_sequences_locked with (security_barrier=true) as
-  select id, id_user, name_machine, is_locked, date_expire from administers.t_users_sequences
-    where is_locked is true and date_expire >= current_timestamp and (name_machine)::text = (current_user)::text
-    with check option;
-
-grant select,insert,update,delete on v_users_sequences_locked to reservation_users;
-
-create view public.v_users_sequences_unlocked with (security_barrier=true) as
-  select id, id_user, name_machine, is_locked, date_expire from administers.t_users_sequences
-    where (is_locked is not true or date_expire < current_timestamp) and (name_machine)::text = (current_user)::text
-    with check option;
-
-grant select,update,delete on v_users_sequences_unlocked to reservation_users;
-
 
 
 commit transaction;

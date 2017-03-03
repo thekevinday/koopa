@@ -109,7 +109,7 @@ create index ci_paths_public on managers.t_paths (id)
 
 create view users.v_paths with (security_barrier=true) as
   with allowed_groups as (select id from users.v_groups_self)
-  select id, id_type, id_group, name_machine, name_human, is_private from managers.t_paths
+  select id, id_type, id_group, name_machine, name_human, is_private, date_created, date_changed from managers.t_paths
   where is_deleted is not true and (is_locked is not true or id_group in (select * from allowed_groups)) and (is_private is not true or (is_private is true and id_group in (select * from allowed_groups)));
 
 grant select on users.v_paths to reservation_users;

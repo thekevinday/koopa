@@ -153,22 +153,30 @@
       return c_base_return_error::s_false($error);
     }
 
-    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-    if ($socket === FALSE) {
-      socket_close($socket);
+    $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    if (!is_resource($socket)) {
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $this->socket_error = @socket_last_error();
+      @socket_clear_error();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
     $connected = @socket_connect($socket, $settings['database_create_account_host'], $settings['database_create_account_port']);
     if ($connected === FALSE) {
-      socket_close($socket);
+      $socket_error = @socket_last_error($socket);
+
+      @socket_close($socket);
+      @socket_clear_error();
+
       unset($socket);
       unset($connected);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
       return c_base_return_error::s_false($error);
     }
 
@@ -186,7 +194,7 @@
       $packet = pack('a' . $name_length, $user_name);
     }
 
-    $written = socket_write($socket, $packet, $packet_size_target);
+    $written = @socket_write($socket, $packet, $packet_size_target);
 
     unset($packet);
     unset($packet_size_target);
@@ -194,18 +202,44 @@
     unset($difference);
 
     if ($written === FALSE) {
-      socket_close($socket);
       unset($written);
-      unset($socket);
       unset($packet_size_client);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $socket_error = @socket_last_error($socket);
+
+      @socket_close($socket);
+      @socket_clear_error();
+
+      unset($socket);
+      unset($connected);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
       return c_base_return_error::s_false($error);
     }
     unset($written);
 
     $response = @socket_read($socket, $packet_size_client);
-    socket_close($socket);
+    if ($response === FALSE) {
+      unset($response);
+      unset($packet_size_client);
+
+      $socket_error = @socket_last_error($socket);
+
+      @socket_close($socket);
+      @socket_clear_error();
+
+      unset($socket);
+      unset($connected);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
+      return c_base_return_error::s_false($error);
+    }
+
+    @socket_close($socket);
     unset($socket);
     unset($packet_size_client);
 

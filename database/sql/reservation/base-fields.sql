@@ -41,7 +41,7 @@ grant select,usage on managers.s_field_affiliations_id to reservation_users_admi
 grant select,usage on managers.s_field_affiliations_id to reservation_users_manager;
 
 create view users.v_field_affiliations with (security_barrier=true) as
-  select id, id_external, name_machine, name_human from managers.t_field_affiliations
+  select id, id_external, name_machine, name_human, date_created, date_changed from managers.t_field_affiliations
   where is_deleted is false;
 
 grant select on users.v_field_affiliations to reservation_users;
@@ -78,7 +78,7 @@ grant select,usage on managers.s_field_classifications_id to reservation_users_a
 grant select,usage on managers.s_field_classifications_id to reservation_users_manager;
 
 create view users.v_field_classifications with (security_barrier=true) as
-  select id, id_external, name_machine, name_human from managers.t_field_classifications
+  select id, id_external, name_machine, name_human, date_created, date_changed from managers.t_field_classifications
   where is_deleted is false;
 
 grant select on users.v_field_classifications to reservation_users;

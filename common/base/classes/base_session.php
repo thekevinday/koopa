@@ -27,6 +27,7 @@ class c_base_session extends c_base_return {
   private $socket_directory;
   private $socket_path;
   private $socket_timeout;
+  private $socket_error;
 
   private $system_name;
 
@@ -55,6 +56,7 @@ class c_base_session extends c_base_return {
     $this->socket_directory = NULL;
     $this->socket_path = NULL;
     $this->socket_timeout = NULL;
+    $this->socket_error = NULL;
 
     $this->cookie = NULL;
 
@@ -87,6 +89,7 @@ class c_base_session extends c_base_return {
     unset($this->socket_directory);
     unset($this->socket_path);
     unset($this->socket_timeout);
+    unset($this->socket_error);
 
     unset($this->cookie);
 
@@ -154,7 +157,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!is_dir($socket_directory)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':direction_name' => $socket_directory, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_DIRECTORY);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':directory_name' => $socket_directory, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_DIRECTORY);
       return c_base_return_error::s_false($error);
     }
 
@@ -779,13 +782,29 @@ class c_base_session extends c_base_return {
     if ($receive) {
       $this->socket_timeout['receive'] = array('seconds' => $seconds, 'microseconds' => $microseconds);
       if (is_resource($this->socket)) {
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, $seconds, $microseconds);
+        $result = @socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, $seconds, $microseconds);
+        if ($result === FALSE) {
+          unset($result);
+
+          $this->socket_error = @socket_last_error($this->socket);
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_set_option', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+          return c_base_return_error::s_false($error);
+        }
+        unset($result);
       }
     }
     else {
       $this->socket_timeout['send'] = array('seconds' => $seconds, 'microseconds' => $microseconds);
       if (is_resource($this->socket)) {
-        socket_set_option($this->socket, SOL_SOCKET, SO_SNDTIMEO, $seconds, $microseconds);
+        $result = @socket_set_option($this->socket, SOL_SOCKET, SO_SNDTIMEO, $seconds, $microseconds);
+        if ($result === FALSE) {
+          unset($result);
+
+          $this->socket_error = @socket_last_error($this->socket);
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_set_option', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+          return c_base_return_error::s_false($error);
+        }
+        unset($result);
       }
     }
 
@@ -814,7 +833,7 @@ class c_base_session extends c_base_return {
    *
    * Use self::get_error() to get the error reported in the packet and not the socket.
    *
-   * @return c_base_return_int
+   * @return c_base_return_int|c_base_return_null
    *   Number representing the socket error or NULL if undefined.
    *   FALSE with the error bit set is returned on error.
    *
@@ -822,33 +841,11 @@ class c_base_session extends c_base_return {
    * @see: socket_last_error()
    */
   public function get_error_socket() {
-    if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_false($error);
+    if (is_null($this->socket_error)) {
+      return new c_base_return_null();
     }
 
-    return c_base_return_int::s_new(@socket_last_error($this->socket));
-  }
-
-  /**
-   * This clears the error on the socket if any exist.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with the error bit set is returned on error.
-   *
-   * @see: self::get_error_socket()
-   * @see: socket_clear_error()
-   */
-  public function clear_error_socket() {
-    if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_false($error);
-    }
-
-    @socket_clear_error($this->socket);
-
-    return new c_base_return_true();
+    return c_base_return_int::s_new($this->socket_error);
   }
 
   /**
@@ -874,20 +871,27 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    $this->socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
-    if ($this->socket === FALSE) {
-      $this->do_disconnect();
+    $this->socket = @socket_create(AF_UNIX, SOCK_STREAM, 0);
+    if (!is_resource($this->socket)) {
+      $this->socket = NULL;
+      $this->socket_error = @socket_last_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      @socket_clear_error();
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
     $connected = @socket_connect($this->socket, $this->socket_path, 0);
     if ($connected === FALSE) {
       unset($connected);
+
+      $this->socket_error = @socket_last_error($this->socket);
+      @socket_clear_error($this->socket);
+
       $this->do_disconnect();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
     unset($connected);
@@ -963,7 +967,7 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_resource($this->socket) || @socket_last_error($this->socket) != 0) {
+    if (!is_resource($this->socket)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
@@ -1061,7 +1065,7 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_resource($this->socket) || @socket_last_error($this->socket) != 0) {
+    if (!is_resource($this->socket)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
@@ -1139,7 +1143,7 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_resource($this->socket) || @socket_last_error($this->socket) != 0) {
+    if (!is_resource($this->socket)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
@@ -1186,7 +1190,7 @@ class c_base_session extends c_base_return {
    * @see: self::p_transfer()
    */
   public function do_flush() {
-    if (!is_resource($this->socket) || @socket_last_error($this->socket) != 0) {
+    if (!is_resource($this->socket)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
@@ -1227,10 +1231,19 @@ class c_base_session extends c_base_return {
     $written = @socket_write($this->socket, $json);
     unset($json);
 
-    if ($written === FALSE || $written == 0) {
+    if ($written === FALSE) {
       unset($written);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $this->socket_error = @socket_last_error($this->socket);
+      @socket_clear_error($this->socket);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+    elseif ($written == 0) {
+      unset($written);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => NULL, ':socket_error_message' => 'No bytes written.', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
     unset($written);
@@ -1239,7 +1252,10 @@ class c_base_session extends c_base_return {
     if (!is_string($json) || mb_strlen($json) == 0) {
       unset($json);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $this->socket_error = @socket_last_error($this->socket);
+      @socket_clear_error($this->socket);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
 

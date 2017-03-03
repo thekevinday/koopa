@@ -29,7 +29,7 @@ create table managers.t_request_types (
   constraint cu_request_types_id unique (id),
   constraint cu_request_types_name_machine unique (name_machine),
 
-  constraint cc_request_types_id check (id > 0)
+  constraint cc_request_types_id check (id >= 0)
 );
 
 create sequence managers.s_request_types_id owned by managers.t_request_types.id;
@@ -47,6 +47,7 @@ create index ci_request_types_deleted_not on managers.t_request_types (id)
 create index ci_request_types_public on managers.t_request_types (id)
   where is_deleted is not true and is_locked is not true;
 
+
 create view requesters.v_request_types with (security_barrier=true) as
   select id, id_external, name_machine, name_human from managers.t_request_types
   where is_deleted is not true and is_locked is not true;
@@ -54,6 +55,7 @@ create view requesters.v_request_types with (security_barrier=true) as
 grant select on requesters.v_request_types to reservation_users_requester;
 
 /** @todo: consider creating default request types **/
+insert into managers.t_request_types (id, name_machine, name_human) values (0, 'none', 'None');
 
 
 

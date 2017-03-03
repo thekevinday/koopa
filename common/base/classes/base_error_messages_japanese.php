@@ -1,7 +1,12 @@
 <?php
 /**
  * @file
- * Implements english language support for common error messages.
+ * Implements japanese language support for common error messages.
+ *
+ * Disclaimer: This has been added as a test case.
+ *             I used translate.google.com to translate this.
+ *             I have also noticed that the presence of a period '.' at the end of the string changes translation.
+ *             This may require a completely different approach to generating than what works with english.
  */
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -10,7 +15,7 @@ require_once('common/base/classes/base_languages.php');
 /**
  * English language version of common error messages.
  */
-final class c_base_error_messages_english implements i_base_error_messages {
+final class c_base_error_messages_japanese implements i_base_error_messages {
 
   /**
    * Converts a given error message into a processed string.
@@ -116,127 +121,127 @@ final class c_base_error_messages_english implements i_base_error_messages {
   static function s_get_message($code, $arguments = TRUE, $function_name = FALSE) {
     $function_name_string = NULL;
     if ($function_name) {
-      $function_name_string = ' while calling :function_name';
+      $function_name_string = ' :function_name を呼び出している間';
     }
 
     if ($code === self::INVALID_ARGUMENT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('An invalid argument, :argument_name, has been specified' . $function_name_string . '.');
+        return c_base_return_string::s_new('無効な引数 :argument_name が指定されています' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('An invalid argument has been specified' . $function_name_string . '.');
+        return c_base_return_string::s_new('無効な引数が指定されています' . $function_name_string . '。');
       }
     }
     elseif ($code === self::INVALID_FORMAT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The argument, :format_name, has an invalid format' . $function_name_string . '.:expected_format');
+        return c_base_return_string::s_new('引数 :format_name の形式が無効です' . $function_name_string . '。:expected_format');
       }
       else {
-        return c_base_return_string::s_new('An invalid format has been specified.');
+        return c_base_return_string::s_new('無効な形式が指定されています。');
       }
     }
     elseif ($code === self::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The variable, :variable_name, is invalid' . $function_name_string . '.');
+        return c_base_return_string::s_new('変数 :variable_name は無効です' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('An invalid variable has been specified.');
+        return c_base_return_string::s_new('無効な変数が指定されています。');
       }
     }
     elseif ($code === self::OPERATION_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('Failed to perform operation, :operation_name' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+        return c_base_return_string::s_new('操作の実行に失敗しました :operation_name' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('Failed to perform operation.');
+        return c_base_return_string::s_new('操作を実行できませんでした。');
       }
     }
     elseif ($code === self::OPERATION_UNECESSARY) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('Did not perform unnecessary operation, :operation_name' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+        return c_base_return_string::s_new('不要な操作を実行しませんでした :operation_name' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('Did not perform unnecessary operation.');
+        return c_base_return_string::s_new('不要な操作を実行しませんでした。');
       }
     }
     elseif ($code === self::FUNCTION_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The function, :function_name, has failed execution.');
+        return c_base_return_string::s_new('関数 :function_name は実行に失敗しました。');
       }
       else {
-        return c_base_return_string::s_new('A function has failed execution.');
+        return c_base_return_string::s_new('関数の実行に失敗しました。');
       }
     }
     elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The index, :index_name, was not found in the array, :array_name' . $function_name_string . '.');
+        return c_base_return_string::s_new('配列 :index_name に索引 :array_name が見つかりませんでした。' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('Failed to find index within specified array.');
+        return c_base_return_string::s_new('指定された配列内のインデックスの検索に失敗しました。');
       }
     }
     elseif ($code === self::NOT_FOUND_FILE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The file, :file_name, was not found or cannot be accessed' . $function_name_string . '.');
+        return c_base_return_string::s_new('ファイル :file_name が見つかりませんでした、またはアクセスできません' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('File not found or cannot be accessed.');
+        return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません。');
       }
     }
     elseif ($code === self::NOT_FOUND_DIRECTORY) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The directory, :directory_name, was not found or cannot be accessed' . $function_name_string . '.');
+        return c_base_return_string::s_new('ディレクトリ :directory_name が見つかりませんでした、またはアクセスできません' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('File not found or cannot be accessed.');
+        return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません。');
       }
     }
     elseif ($code === self::NO_CONNECTION) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The resource, :resource_name, is not connected' . $function_name_string . '.');
+        return c_base_return_string::s_new('リソース :resource_name は接続されていません' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('The resource is not connected.');
+        return c_base_return_string::s_new('リソースが接続されていません。');
       }
     }
     elseif ($code === self::NO_SUPPORT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The functionality, :functionality_name, is currently not supported.' . $function_name_string . '.');
+        return c_base_return_string::s_new('機能 :functionality_name は現在サポートされていません。' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('The requested functionality is not supported.');
+        return c_base_return_string::s_new('要求された機能はサポートされていません。');
       }
     }
     elseif ($code === self::POSTGRESQL_CONNECTION_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('Failed to connect to the database, :database_name' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+        return c_base_return_string::s_new('データベースへの接続に失敗しました。 :database_name' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('Failed to connect to the database.');
+        return c_base_return_string::s_new('データベースに接続できませんでした。');
       }
     }
     elseif ($code === self::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The database, :database_name, is not connected' . $function_name_string . '.');
+        return c_base_return_string::s_new('データベース :database_name は接続されていません' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('The database is not connected.');
+        return c_base_return_string::s_new('データベースが接続されていません。');
       }
     }
     elseif ($code === self::POSTGRESQL_NO_RESOURCE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('No database resource is available' . $function_name_string . '.');
+        return c_base_return_string::s_new('データベースリソースがありません' . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('No database resource is available.');
+        return c_base_return_string::s_new('データベースリソースは使用できません。.');
       }
     }
     elseif ($code === self::SOCKET_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('Failed to perform socket operation, :operation_name, socket error (:socket_error) \':socket_error_message\'' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+        return c_base_return_string::s_new('ソケット操作の実行に失敗しました。 :operation_name 、ソケットエラー（:socket_error） \':socket_error_message\'' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('Failed to perform socket operation.');
+        return c_base_return_string::s_new('ソケット操作を実行できませんでした。');
       }
     }
 

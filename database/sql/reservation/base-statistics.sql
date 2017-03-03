@@ -51,11 +51,13 @@ create function managers.f_statistics_http_status_codes_insert() returns trigger
     return null;
   end;
 $$ language plpgsql;
-reset role;
-revoke create on schema managers from reservation_users_manager;
 
-create trigger tr_statistics_http_status_codes_insert
+create trigger tr_log_activity_insert_statistics_http_status_codes
   after insert on managers.t_log_activity
+    for each row execute procedure managers.f_statistics_http_status_codes_insert();
+
+create trigger tr_log_users_insert_statistics_http_status_codes
+  after insert on managers.t_log_users
     for each row execute procedure managers.f_statistics_http_status_codes_insert();
 
 
@@ -148,6 +150,7 @@ grant select on managers.t_statistics_request_path to reservation_users_administ
 grant select on managers.t_statistics_request_path to reservation_users_manager;
 grant select on managers.t_statistics_request_path to reservation_users_auditor;
 
+
 /** permissions prevent this from working as desired, so for now open up these stats to the following users (via a view) **/
 create view users.v_statistics_request_path with (security_barrier=true) as
   select path, count from managers.t_statistics_request_path
@@ -155,11 +158,13 @@ create view users.v_statistics_request_path with (security_barrier=true) as
 
 grant select,insert,update on users.v_statistics_request_path to reservation_users;
 
+
 create view public.v_statistics_request_path with (security_barrier=true) as
   select path, count from managers.t_statistics_request_path
     with check option;
 
 grant select,insert,update on public.v_statistics_request_path to public_users;
+
 
 /** create an auto-update trigger **/
 create function managers.f_statistics_request_path_insert() returns trigger as $$
