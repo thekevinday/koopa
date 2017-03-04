@@ -29,7 +29,10 @@
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
     if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
       foreach ($languages_accepted['data']['weight'] as $weight => $language) {
-        $language_code = array_pop(array_keys($language));
+        $language_keys = array_keys($language);
+        $language_code = array_pop($language_keys);
+        unset($language_keys);
+
         if (array_key_exists($language_code, $supported_languages)) {
           $language_chosen = $language_code;
           break;
@@ -129,7 +132,10 @@
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
     if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
       foreach ($languages_accepted['data']['weight'] as $weight => $language) {
-        $language_code = array_pop(array_keys($language));
+        $language_keys = array_keys($language);
+        $language_code = array_pop($language_keys);
+        unset($language_keys);
+
         if (array_key_exists($language_code, $test_strings)) {
           $language_chosen = $language_code;
           break;
@@ -1227,7 +1233,7 @@
 
     // create an existence cookie
     $cookie = new c_base_cookie();
-    $cookie->set_name("test-cookie_existence-" . (isset($_SERVER["HTTPS"]) ? '-ssl' : '-no_ssl'));
+    $cookie->set_name("test-cookie_existence-" . (isset($_SERVER["HTTPS"]) ? 'ssl' : 'no_ssl'));
     $cookie->set_path('/');
     $cookie->set_domain('.localhost');
     $cookie->set_secure(isset($_SERVER["HTTPS"]));

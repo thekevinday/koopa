@@ -140,6 +140,14 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('無効な形式が指定されています。');
       }
     }
+    elseif ($code === self::INVALID_SESSION) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('要求されたセッションは無効です' . $function_name_string . '.:');
+      }
+      else {
+        return c_base_return_string::s_new('要求されたセッションは無効です。');
+      }
+    }
     elseif ($code === self::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('変数 :variable_name は無効です' . $function_name_string . '。');

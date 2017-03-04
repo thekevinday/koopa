@@ -135,6 +135,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('An invalid format has been specified.');
       }
     }
+    elseif ($code === self::INVALID_SESSION) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('The requested session is invalid' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('The requested session is invalid.');
+      }
+    }
     elseif ($code === self::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The variable, :variable_name, is invalid' . $function_name_string . '.');

@@ -19,7 +19,8 @@ require_once('common/base/classes/base_mime.php');
 /**
  * A generic class for managing the HTTP protocol.
  *
- * @see: http://www.iana.org/assignments/message-headers/message-headers.xhtml
+ * @see: https://www.iana.org/assignments/message-headers/message-headers.xhtml
+ * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
  *
  * @require class base_email
  * @require class base_rfc_string
@@ -116,15 +117,15 @@ class c_base_http extends c_base_rfc_string {
   const RESPONSE_PROTOCOL                         = 40;
 
   // non-standard, but supported, response headers.
-  const RESPONSE_REFRESH                   = 1001;
-  const RESPONSE_X_CONTENT_SECURITY_POLICY = 1002;
-  const RESPONSE_X_CONTENT_TYPE_OPTIONS    = 1003;
-  const RESPONSE_X_UA_COMPATIBLE           = 1004;
-  const RESPONSE_CHECKSUM_HEADER           = 1005;
-  const RESPONSE_CHECKSUM_HEADERS          = 1006;
-  const RESPONSE_CHECKSUM_CONTENT          = 1007;
-  const RESPONSE_CONTENT_REVISION          = 1008;
-  const RESPONSE_DATE_ACTUAL               = 1009;
+  const RESPONSE_CHECKSUM_HEADER           = 1001;
+  const RESPONSE_CHECKSUM_HEADERS          = 1002;
+  const RESPONSE_CHECKSUM_CONTENT          = 1003;
+  const RESPONSE_CONTENT_REVISION          = 1004;
+  const RESPONSE_CONTENT_SECURITY_POLICY   = 1005;
+  const RESPONSE_DATE_ACTUAL               = 1006;
+  const RESPONSE_REFRESH                   = 1007;
+  const RESPONSE_X_CONTENT_TYPE_OPTIONS    = 1008;
+  const RESPONSE_X_UA_COMPATIBLE           = 1009;
 
   // accept delimiters (the syntax for the separators can be confusing and misleading)
   const DELIMITER_ACCEPT_SUP   = ',';
@@ -778,7 +779,7 @@ class c_base_http extends c_base_rfc_string {
       $parsed = $this->p_parse_uri($uri);
       if ($parsed['invalid']) {
         unset($parsed);
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_parse_uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'uri', ':expected_format' => NULL, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
         return c_base_return_error::s_false($error);
       }
       unset($parsed['invalid']);
@@ -846,9 +847,9 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($header_name);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($header_name);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
@@ -859,12 +860,12 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] = array();
       }
 
-      $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS][$parsed] = $parsed;
+      $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS][$prepared_token] = $prepared_token;
     }
     else {
-      $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] = array($parsed => $parsed);
+      $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] = array($prepared_token => $prepared_token);
     }
-    unset($parsed);
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -962,9 +963,9 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($header_name);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($header_name);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
@@ -975,12 +976,12 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] = array();
       }
 
-      $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS][$parsed] = $parsed;
+      $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS][$prepared_token] = $prepared_token;
     }
     else {
-      $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] = array($parsed => $parsed);
+      $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] = array($prepared_token => $prepared_token);
     }
-    unset($parsed);
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -1001,6 +1002,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: self::pr_rfc_string_is_media_type()
    * @see: https://tools.ietf.org/html/rfc5789#section-3.1
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
+   * @see: https://tools.ietf.org/html/rfc2616#section-3.12
    */
   public function set_response_accept_patch($media_type, $append = TRUE) {
     if (!is_string($media_type)) {
@@ -1027,7 +1029,7 @@ class c_base_http extends c_base_rfc_string {
     if ($parsed['invalid']) {
       unset($parsed);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_is_media_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'media type', ':expected_format' => '1*(tchar) "/" 1*(tchar) *(*(wsp) ";" *(wsp) 1*(1*(tchar) *(wsp) "=" *(wsp) 1*(tchar) / (quoted-string)))', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
     unset($parsed['invalid']);
@@ -1072,16 +1074,16 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($ranges);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($ranges);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
-    $this->response[self::RESPONSE_ACCEPT_RANGES] = $parsed;
-    unset($parsed);
+    $this->response[self::RESPONSE_ACCEPT_RANGES] = $prepared_token;
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -1256,7 +1258,7 @@ class c_base_http extends c_base_rfc_string {
       if ($parsed['invalid']) {
         unset($parsed);
 
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_is_token_quoted', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'directive value', ':expected_format' => '1*(tchar) *("=" 1*(1*(tchar) / quoted-string) *(*(wsp) "," *(wsp) 1*(tchar) *("=" 1*(1*(tchar) / quoted-string))', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
         return c_base_return_error::s_false($error);
       }
       unset($parsed);
@@ -1307,9 +1309,9 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($connection_option);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($connection_option);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
@@ -1320,12 +1322,12 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_CONNECTION] = array();
       }
 
-      $this->response[self::RESPONSE_CONNECTION][$parsed] = $parsed;
+      $this->response[self::RESPONSE_CONNECTION][$prepared_token] = $prepared_token;
     }
     else {
-      $this->response[self::RESPONSE_CONNECTION] = array($parsed => $parsed);
+      $this->response[self::RESPONSE_CONNECTION] = array($prepared_token => $prepared_token);
     }
-    unset($parsed);
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -1411,22 +1413,161 @@ class c_base_http extends c_base_rfc_string {
    * Assign HTTP response header: content-disposition.
    *
    * The standard defines this as:
-   * - 1*(tchar) *(";" 1*(token) "=" 1*(1*(tchar) / 1*(quoted_string)))
+   * - 1*(tchar) *(";" (wsp) 1*(tchar) "=" 1*(tchar) / 1*(quoted-string))
    *
-   * @param ?? $disposition
-   *   The value to assign to the specified header.
+   * The "type" is: 1*(tchar)
+   * The "parameter_name" is: 1*(tchar)
+   * The "parameter_value" is: 1*(tchar) / 1*(quoted-string)
+   *
+   * @param string|null $type
+   *   The disposition type string to assign.
+   *   May be NULL when append is TRUE.
+   *   Both $type and $parameter_name may not be NULL.
+   * @param string|null $parameter_name
+   *   (optional) A single disposition parameter to be added.
+   *   If NULL, then this is ignored.
+   *   Must not be NULL when $parameter_value is not NULL.
+   * @param string|null $parameter_value
+   *   (optional) A single disposition parameter to be added.
+   *   If NULL, then this is ignored.
+   * @param bool $append
+   *   (optional) If TRUE, then append the header name.
+   *   If FALSE, then assign the header name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
+   *   FALSE without error bit is returned when $type is NULL but there is no type assigned or append is FALSE.
    *
    * @see: https://tools.ietf.org/html/rfc6266#section-4
    */
-  public function set_response_content_disposition($disposition) {
-    // @todo
+  public function set_response_content_disposition($type, $parameter_name = NULL, $parameter_value = NULL, $append = TRUE) {
+    if (!is_null($type) && !is_string($type)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content disposition', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_null($parameter_name) && !is_string($parameter_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($parameter_value) && !is_string($parameter_value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
+    // nothing to do!
+    if ((is_null($type) && (is_null($parameter_name) || $append === FALSE)) {
+      return new c_base_return_false();
+    }
+
+    if (is_null($parameter_name) && !is_null($parameter_value)) {
+      return new c_base_return_false();
+    }
+
+
+    $prepared_token = NULL;
+    if (is_string($type)) {
+      $prepared_token = $this->p_prepare_token($type);
+      if ($prepared_token === FALSE) {
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'content disposition type', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (empty($prepared_token)) {
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+    }
+
+    $prepared_parameter_name = NULL;
+    if (is_string($parameter_name)) {
+      $prepared_parameter_name = $this->p_prepare_token($parameter_name);
+      if ($prepared_parameter_name === FALSE) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'content disposition parameter name', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (empty($prepared_parameter_name)) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+    }
+
+    if (is_string($parameter_value)) {
+      $text = $this->pr_rfc_string_prepare($parameter_value);
+      if ($text['invalid']) {
+        unset($text);
+        unset($parsed_type);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
+      }
+
+      $parsed_parameter_value = $this->pr_rfc_string_is_token_quoted($text['ordinals'], $text['characters']);
+      unset($text);
+
+      if ($parsed_parameter_value['invalid']) {
+        unset($parsed_parameter_value);
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'disposition parameter value', ':expected_format' => '1*(tchar) / 1*(quoted-string)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+      unset($parsed_parameter_value['invalid']);
+      unset($parsed_parameter_value['current']);
+    }
+    else {
+      $parsed_parameter_value = NULL;
+    }
+
+    if (!isset($this->response[self::RESPONSE_CONTENT_DISPOSITION])) {
+      // type cannot be NULL if there is no type currently assigned.
+      if (is_null($type)) {
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      $this->response[self::RESPONSE_CONTENT_DISPOSITION] = array(
+        'type' => NULL,
+        'parameters' => array(),
+      );
+    }
+
+    if (is_string($type)) {
+      $this->response[self::RESPONSE_CONTENT_DISPOSITION]['type'] = $prepared_token;
+    }
+    unset($prepared_token);
+
+    if (is_string($parameter_name)) {
+      if ($append) {
+        $this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters'][$prepared_parameter_name] = $parsed_parameter_value['text'];
+      }
+      else {
+        $this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters'] = array($prepared_parameter_name => $parsed_parameter_value['text']);
+      }
+    }
+    unset($prepared_parameter_name);
+    unset($parsed_parameter_value);
+
+    return new c_base_return_true();
   }
 
   /**
@@ -1440,7 +1581,7 @@ class c_base_http extends c_base_rfc_string {
    * - This is directly related to the mime-type, such that if there was a tarball like: example.html.gz, then content-encoding could be set to gzip to represent the mimetype for example.html (which might be: text/html).
    *
    * Transfer Encoding:
-   * - Defines the encoding applied to the content for the purpos of transmitting.
+   * - Defines the encoding applied to the content for the purpose of transmitting.
    * - This is completely unrelated to the mime-type such that the example.html.gz could still be gzipped (such as using a different compression level) but it would represent example.html.gz and not example.html.gz.gz.
    *
    * This becomes more convoluted because the standard for content encoding states that it does not refer to encodings "inherent" to the content type.
@@ -1450,7 +1591,7 @@ class c_base_http extends c_base_rfc_string {
    * - This means that the encoding is not about the content, but instead of how the content is being transferred (which sounds an awful lot like the words "transfer" and "encoding").
    *
    * That said, many sites and services out there appear to use (and document) that content-encoding is used for compressing data on transfer.
-   * - This directly conflicts with the standards requirements as the compression is done for the transfer.
+   * - This directly conflicts with the standards requirements as the compression is done for the transfer (via transfer encoding).
    *
    * Now, with the transfer-encoding header, there is a major issue in which the standard states (under 3.3.2. Content-Length):
    * - "A sender MUST NOT send a Content-Length header field in any message that contains a Transfer-Encoding header field."
@@ -1653,7 +1794,7 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    */
   public function set_response_content_range($value) {
-    // @todo
+    // @todo: self::RESPONSE_CONTENT_RANGE
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content range', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -1939,8 +2080,23 @@ class c_base_http extends c_base_rfc_string {
    *
    * Use self::SCHEME_LOCAL for a local filesystem link.
    *
-   * @param string $uri
+   * The standard defines this as:
+   * - (uri) *(";" 1*(tchar) "=" 1*(1*(tchar) / 1*(quoted-string)))
+   *
+   * @param string|null $uri
    *   The URI to assign to the specified header.
+   *   May be NULL when append is TRUE.
+   *   Both $null and $parameter_name may not be NULL.
+   * @param string|null $parameter_name
+   *   (optional) A single disposition parameter to be added.
+   *   If NULL, then this is ignored.
+   *   Must not be NULL when $parameter_value is not NULL.
+   * @param string|null $parameter_value
+   *   (optional) A single disposition parameter to be added.
+   *   If NULL, then this is ignored.
+   * @param bool $append
+   *   (optional) If TRUE, then append the header name.
+   *   If FALSE, then assign the header name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -1949,18 +2105,127 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc5988#section-5
    * @see: https://tools.ietf.org/html/rfc3986
    */
-  public function set_response_link($uri) {
+  public function set_response_link($uri, $parameter_name = NULL, $parameter_value = NULL, $append = TRUE) {
     if (!is_string($uri)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    #$parsed = $this->p_parse_uri($uri);
+    if (!is_null($parameter_name) && !is_string($parameter_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    // @todo
+    if (!is_null($parameter_value) && !is_string($parameter_value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response link', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
+    // nothing to do!
+    if ((is_null($uri) && (is_null($parameter_name) || $append === FALSE)) {
+      return new c_base_return_false();
+    }
+
+    if (is_null($parameter_name) && !is_null($parameter_value)) {
+      return new c_base_return_false();
+    }
+
+
+    $parsed_uri = $this->p_parse_uri($uri);
+    if ($parsed_uri['invalid']) {
+      unset($parsed_uri);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'link uri', ':expected_format' => '(uri)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+    unset($parsed_uri['invalid']);
+
+
+    $prepared_parameter_name = NULL;
+    if (is_string($parameter_name)) {
+      $prepared_parameter_name = $this->p_prepare_token($parameter_name);
+      if ($prepared_parameter_name === FALSE) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'link parameter name', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (empty($prepared_parameter_name)) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+    }
+
+
+    if (is_string($parameter_value)) {
+      $text = $this->pr_rfc_string_prepare($parameter_value);
+      if ($text['invalid']) {
+        unset($text);
+        unset($parsed_uri);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
+      }
+
+      $parsed_parameter_value = $this->pr_rfc_string_is_token_quoted($text['ordinals'], $text['characters']);
+      unset($text);
+
+      if ($parsed_parameter_value['invalid']) {
+        unset($parsed_parameter_value);
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'content disposition parameter value', ':expected_format' => '1*(tchar) / 1*(quoted-string)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+      unset($parsed_parameter_value['invalid']);
+      unset($parsed_parameter_value['current']);
+    }
+    else {
+      $parsed_parameter_value = NULL;
+    }
+
+
+    if (!isset($this->response[self::RESPONSE_LINK])) {
+      // uri cannot be NULL if there is no uri currently assigned.
+      if (is_null($uri)) {
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      $this->response[self::RESPONSE_LINK] = array(
+        'uri' => NULL,
+        'parameters' => array(),
+      );
+    }
+
+    if (is_string($uri)) {
+      $this->response[self::RESPONSE_LINK]['uri'] = $parsed_uri;
+    }
+    unset($parsed_uri);
+
+    if (is_string($parameter_name)) {
+      if ($append) {
+        $this->response[self::RESPONSE_LINK]['parameters'][$prepared_parameter_name] = $parsed_parameter_value['text'];
+      }
+      else {
+        $this->response[self::RESPONSE_LINK]['parameters'] = array($prepared_parameter_name => $parsed_parameter_value['text']);
+      }
+    }
+    unset($prepared_parameter_name);
+    unset($parsed_parameter_value);
+
+    return new c_base_return_true();
   }
 
   /**
@@ -1986,7 +2251,7 @@ class c_base_http extends c_base_rfc_string {
     $parsed = $this->p_parse_uri($uri);
     if ($parsed['invalid']) {
       unset($parsed);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_parse_uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'uri', ':expected_format' => NULL, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2001,20 +2266,103 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: pragma.
    *
-   * @param ?? $value
-   *   The value to assign to the specified header.
+   * The standard defines this as:
+   * - 1*(tchar) [ "=" ( 1*(tchar) / 1*(quoted-string) ] *("," (wsp) 1*(tchar) [ "=" ( 1*(tchar) / 1*(quoted-string) ])
+   *
+   * The "parameter_name" is: 1*(tchar)
+   * The "parameter_value" is: 1*(tchar) / 1*(quoted-string)
+   *
+   * @param string $parameter_name
+   *   A single disposition parameter to be added.
+   * @param string|null $parameter_value
+   *   (optional) A single disposition parameter to be added.
+   *   If NULL, then this is ignored.
+   * @param bool $append
+   *   (optional) If TRUE, then append the header name.
+   *   If FALSE, then assign the header name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    *
+   * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
-  public function set_response_pragma($value) {
-    // @todo
+  public function set_response_pragma($paramater_name, $parameter_value = NULL, $append = TRUE) {
+    if (!is_string($paramater_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'paramater_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response pragma', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_null($parameter_value) && !is_string($parameter_value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $prepared_parameter_name = NULL;
+    if (is_string($parameter_name)) {
+      $prepared_parameter_name = $this->p_prepare_token($parameter_name);
+      if ($prepared_parameter_name === FALSE) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'pragma parameter name', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+
+      if (empty($prepared_parameter_name)) {
+        unset($prepared_parameter_name);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+    }
+
+    if (is_string($parameter_value)) {
+      $text = $this->pr_rfc_string_prepare($parameter_value);
+      if ($text['invalid']) {
+        unset($text);
+        unset($parsed_type);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
+      }
+
+      $parsed_parameter_value = $this->pr_rfc_string_is_token_quoted($text['ordinals'], $text['characters']);
+      unset($text);
+
+      if ($parsed_parameter_value['invalid']) {
+        unset($parsed_parameter_value);
+        unset($prepared_token);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'pragma parameter value', ':expected_format' => '1*(tchar) / 1*(quoted-string)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+      unset($parsed_parameter_value['invalid']);
+      unset($parsed_parameter_value['current']);
+    }
+    else {
+      $parsed_parameter_value = NULL;
+    }
+
+    if ($append) {
+      if (!isset($this->response[self::RESPONSE_PRAGMA])) {
+        $this->response[self::RESPONSE_PRAGMA] = array();
+      }
+
+      $this->response[self::RESPONSE_PRAGMA][$prepared_parameter_name] = $parsed_parameter_value['text'];
+    }
+    else {
+      $this->response[self::RESPONSE_PRAGMA] = array($prepared_parameter_name => $parsed_parameter_value['text']);
+    }
+    unset($prepared_parameter_name);
+    unset($parsed_parameter_value);
+
+    return new c_base_return_true();
   }
 
   /**
@@ -2030,7 +2378,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7235#section-4.3
    */
   public function set_response_proxy_authenticate($value) {
-    // @todo
+    // @todo: self::RESPONSE_PROXY_AUTHENTICATE
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response proxy authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2049,7 +2397,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7469
    */
   public function set_response_public_key_pins($value) {
-    // @todo
+    // @todo: self::RESPONSE_PUBLIC_KEY_PINS
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response public key pins', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2074,7 +2422,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    */
   public function set_response_refresh($value) {
-    // @todo
+    // @todo: self::RESPONSE_REFRESH
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response refresh', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2128,7 +2476,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-7.4.2
    */
   public function set_response_server($value) {
-    // @todo
+    // @todo: self::RESPONSE_SERVER
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response server', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2212,7 +2560,7 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    */
   public function set_response_strict_transport_security($value) {
-    // @todo
+    // @todo: self::RESPONSE_STRICT_SECURITY_TRANSPORT
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response strict transport security', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2229,7 +2577,7 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    */
   public function set_response_trailer($value) {
-    // @todo
+    // @todo: self::RESPONSE_TRAILER
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response trailer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2279,7 +2627,7 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    */
   public function set_response_upgrade($value) {
-    // @todo
+    // @todo: self::RESPONSE_UPGRADE
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response upgrade', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2311,9 +2659,9 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($header_name);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($header_name);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
@@ -2323,12 +2671,12 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_VARY] = array();
       }
 
-      $this->response[self::RESPONSE_VARY][$parsed] = $parsed;
+      $this->response[self::RESPONSE_VARY][$prepared_token] = $prepared_token;
     }
     else {
-      $this->response[self::RESPONSE_VARY] = array($parsed => $parsed);
+      $this->response[self::RESPONSE_VARY] = array($prepared_token => $prepared_token);
     }
-    unset($parsed);
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -2346,7 +2694,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7234#section-5.5
    */
   public function set_response_warning($value) {
-    // @todo
+    // @todo: self::RESPONSE_WARNING
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response warning', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2365,7 +2713,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7235#section-4.1
    */
   public function set_response_www_authenticate($value) {
-    // @todo
+    // @todo: self::RESPONSE_WWW_AUTHENTICATE
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response www authenticate', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2401,9 +2749,12 @@ class c_base_http extends c_base_rfc_string {
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
+   *
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://en.wikipedia.org/wiki/Content_Security_Policy
    */
   public function set_response_content_security_policy($value) {
-    // @todo
+    // @todo: self::RESPONSE_CONTENT_SECURITY_POLICY
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content security policy', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2412,18 +2763,22 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: x-content-type-options.
    *
-   * @param ?? $value
+   * @param bool $no_sniff
    *   The value to assign to the specified header.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_response_x_content_type_options($value) {
-    // @todo
+  public function set_response_x_content_type_options($no_sniff) {
+    if (!is_bool($no_sniff)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'no_sniff', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content type options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    $this->response[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = $no_sniff;
+
+    return new c_base_return_true();
   }
 
   /**
@@ -2437,7 +2792,7 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    */
   public function set_response_x_ua_compatible($value) {
-    // @todo
+    // @todo: self::RESPONSE_X_UA_COMPATIBLE
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response ua compatible', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2578,9 +2933,9 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_prepare_token($header_name);
-    if ($parsed === FALSE) {
-      unset($parsed);
+    $prepared_token = $this->p_prepare_token($header_name);
+    if ($prepared_token === FALSE) {
+      unset($prepared_token);
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
@@ -2590,12 +2945,12 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_CHECKSUM_HEADERS] = array();
       }
 
-      $this->response[self::RESPONSE_CHECKSUM_HEADERS][$parsed] = $parsed;
+      $this->response[self::RESPONSE_CHECKSUM_HEADERS][$prepared_token] = $prepared_token;
     }
     else {
-      $this->response[self::RESPONSE_CHECKSUM_HEADERS] = array($parsed => $parsed);
+      $this->response[self::RESPONSE_CHECKSUM_HEADERS] = array($prepared_token => $prepared_token);
     }
-    unset($parsed);
+    unset($prepared_token);
 
     return new c_base_return_true();
   }
@@ -2891,6 +3246,7 @@ class c_base_http extends c_base_rfc_string {
    *
    * @see: https://tools.ietf.org/html/rfc5789#section-3.1
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
+   * @see: https://tools.ietf.org/html/rfc2616#section-3.12
    */
   public function get_response_accept_patch() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
@@ -3019,7 +3375,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-disposition.
    *
-   * @return ??|c_base_return_status
+   * @return c_base_return_array|c_base_return_status
+   *   An an containing the decoded content disposition and its parameters.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc6266#section-4
@@ -3030,10 +3387,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content disposition', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_DISPOSITION]);
   }
 
   /**
@@ -3242,7 +3596,8 @@ class c_base_http extends c_base_rfc_string {
    *
    * @todo: break this into an array of the differnt parts.
    *
-   * @return ??|c_base_return_status
+   * @return c_base_return_array|c_base_return_status
+   *   A decoded link and parameters split into an array.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc5988#section-5
@@ -3254,10 +3609,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response link', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_LINK]);
   }
 
   /**
@@ -3283,11 +3635,11 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: pragma.
    *
-   * @todo: the cache specific options, probably an array.
-   *
-   * @return ??|c_base_return_status
+   * @return c_base_return_array|c_base_return_status
+   *   An array containing the processed pragma.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
+   * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
   public function get_response_pragma() {
@@ -3296,10 +3648,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response pragma', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_PRAGMA]);
   }
 
   /**
@@ -3622,8 +3971,8 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_content_security_policy() {
-    if (!array_key_exists(self::RESPONSE_X_CONTENT_SECURITY_POLICY, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_CONTENT_SECURITY_POLICY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+    if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_SECURITY_POLICY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -3636,8 +3985,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: x-content-type-options.
    *
-   * @return ???|c_base_return_status
-   *   A string containing the response header value.
+   * @return c_base_return_bool|c_base_return_status
+   *   A boolean representing the presence of nosniff.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_x_content_type_options() {
@@ -3646,10 +3995,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content type options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_bool::s_new($this->response[self::RESPONSE_X_CONTENT_TYPE_OPTIONS]);
   }
 
   /**
@@ -4706,6 +5052,7 @@ class c_base_http extends c_base_rfc_string {
    *
    * This is an older version of cache_control that supports 'no-cache'.
    *
+   * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
   private function p_load_request_pragma() {
@@ -5723,11 +6070,12 @@ class c_base_http extends c_base_rfc_string {
    */
   private function p_parse_uri($uri) {
     $result = array(
-      'scheme' => array(),
-      'authority' => array(),
-      'path' => array(),
-      'query' => array(),
-      'fragment' => array(),
+      'scheme' => NULL,
+      'authority' => NULL,
+      'path' => NULL,
+      'query' => NULL,
+      'fragment' => NULL,
+      'url' => TRUE, // @todo: set to FALSE when uri is a urn instead of a url.
       'invalid' => FALSE,
     );
 
@@ -7066,6 +7414,9 @@ class c_base_http extends c_base_rfc_string {
         self::RESPONSE_AGE => 'Age',
         self::RESPONSE_ALLOW => 'Allow',
         self::RESPONSE_CACHE_CONTROL => 'Cache-Control',
+        self::RESPONSE_CHECKSUM_CONTENT => 'Checksum_Content',
+        self::RESPONSE_CHECKSUM_HEADER => 'Checksum_Header',
+        self::RESPONSE_CHECKSUM_HEADERS => 'Checksum_Headers',
         self::RESPONSE_CONNECTION => 'Connection',
         self::RESPONSE_CONTENT_DISPOSITION => 'Content-Disposition',
         self::RESPONSE_CONTENT_ENCODING => 'Content-Encoding',
@@ -7073,6 +7424,8 @@ class c_base_http extends c_base_rfc_string {
         self::RESPONSE_CONTENT_LENGTH => 'Content-Length',
         self::RESPONSE_CONTENT_LOCATION => 'Content-Location',
         self::RESPONSE_CONTENT_RANGE => 'Content-Range',
+        self::RESPONSE_CONTENT_REVISION => 'Content_Revision',
+        self::RESPONSE_CONTENT_SECURITY_POLICY => 'Content-Security-Policy',
         self::RESPONSE_CONTENT_TYPE => 'Content-Type',
         self::RESPONSE_DATE => 'Date',
         self::RESPONSE_DATE_ACTUAL => 'Date_Actual',
@@ -7096,13 +7449,8 @@ class c_base_http extends c_base_rfc_string {
         self::RESPONSE_VARY => 'Vary',
         self::RESPONSE_WARNING => 'Warning',
         self::RESPONSE_WWW_AUTHENTICATE => 'Www-Authenticate',
-        self::RESPONSE_X_CONTENT_SECURITY_POLICY => 'X-Content-Security-Policy',
         self::RESPONSE_X_CONTENT_TYPE_OPTIONS => 'X-Content-Type-Options',
         self::RESPONSE_X_UA_COMPATIBLE => 'X-UA-Compatible',
-        self::RESPONSE_CHECKSUM_HEADER => 'Checksum_Header',
-        self::RESPONSE_CHECKSUM_HEADERS => 'Checksum_Headers',
-        self::RESPONSE_CHECKSUM_CONTENT => 'Checksum_Content',
-        self::RESPONSE_CONTENT_REVISION => 'Content_Revision',
       );
     }
 
@@ -7118,6 +7466,9 @@ class c_base_http extends c_base_rfc_string {
       self::RESPONSE_AGE => 'age',
       self::RESPONSE_ALLOW => 'allow',
       self::RESPONSE_CACHE_CONTROL => 'cache-control',
+      self::RESPONSE_CHECKSUM_CONTENT => 'checksum_content',
+      self::RESPONSE_CHECKSUM_HEADER => 'checksum_header',
+      self::RESPONSE_CHECKSUM_HEADERS => 'checksum_headers',
       self::RESPONSE_CONNECTION => 'connection',
       self::RESPONSE_CONTENT_DISPOSITION => 'content-disposition',
       self::RESPONSE_CONTENT_ENCODING => 'content-encoding',
@@ -7125,6 +7476,8 @@ class c_base_http extends c_base_rfc_string {
       self::RESPONSE_CONTENT_LENGTH => 'content-length',
       self::RESPONSE_CONTENT_LOCATION => 'content-location',
       self::RESPONSE_CONTENT_RANGE => 'content-range',
+      self::RESPONSE_CONTENT_REVISION => 'content_revision',
+      self::RESPONSE_CONTENT_SECURITY_POLICY => 'x-content-security-policy',
       self::RESPONSE_CONTENT_TYPE => 'content-type',
       self::RESPONSE_DATE => 'date',
       self::RESPONSE_DATE_ACTUAL => 'date_actual',
@@ -7148,13 +7501,8 @@ class c_base_http extends c_base_rfc_string {
       self::RESPONSE_VARY => 'vary',
       self::RESPONSE_WARNING => 'warning',
       self::RESPONSE_WWW_AUTHENTICATE => 'www-authenticate',
-      self::RESPONSE_X_CONTENT_SECURITY_POLICY => 'x-content-security-policy',
       self::RESPONSE_X_CONTENT_TYPE_OPTIONS => 'x-content-type-options',
       self::RESPONSE_X_UA_COMPATIBLE => 'x-ua-compatible',
-      self::RESPONSE_CHECKSUM_HEADER => 'checksum_header',
-      self::RESPONSE_CHECKSUM_HEADERS => 'checksum_headers',
-      self::RESPONSE_CHECKSUM_CONTENT => 'checksum_content',
-      self::RESPONSE_CONTENT_REVISION => 'content_revision',
     );
   }
 
@@ -7291,17 +7639,33 @@ class c_base_http extends c_base_rfc_string {
    * @see: self::pr_rfc_string_is_media_type()
    * @see: https://tools.ietf.org/html/rfc5789#section-3.1
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
+   * @see: https://tools.ietf.org/html/rfc2616#section-3.12
    */
   private function p_prepare_header_response_accept_patch(&$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_ACCEPT_PATCH] = 'Accept-Patch: ' . array_shift($this->response[self::RESPONSE_ACCEPT_PATCH]);
+    $header_output[self::RESPONSE_ACCEPT_PATCH] = 'Accept-Patch: ';
 
     if (!empty($this->response[self::RESPONSE_ACCEPT_PATCH])) {
       foreach ($this->response[self::RESPONSE_ACCEPT_PATCH] as $media_type) {
-        $header_output[self::RESPONSE_ACCEPT_PATCH] .= ', ' . $media_type;
+        $header_output[self::RESPONSE_ACCEPT_PATCH] .= $media_type['media'];
+
+        if (!empty($media_type['parameters'])) {
+          $media_parameters = NULL;
+          foreach ($media_type['parameters'] as $parameter_name => $parameter_value) {
+            if (!is_null($media_parameters)) {
+              $media_parameters .= '; ';
+            }
+            $media_parameters .= $parameter_name . '=' . $parameter_value;
+          }
+          unset($parameter_name);
+          unset($parameter_value);
+
+          $header_output[self::RESPONSE_ACCEPT_PATCH] .= ' ' . $media_parameters;
+          unset($media_parameters);
+        }
       }
       unset($media_type);
     }
@@ -7455,6 +7819,13 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: content-disposition.
    *
+   * The standard defines this as:
+   * - 1*(tchar) *(";" (wsp) 1*(tchar) "=" 1*(tchar) / 1*(quoted-string))
+   *
+   * The "type" is: 1*(tchar)
+   * The "parameter_name" is: 1*(tchar)
+   * The "parameter_value" is: 1*(tchar) / 1*(quoted-string)
+   *
    * @param array $header_output
    *   The header output array to make changes to.
    *
@@ -7465,7 +7836,29 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_CONTENT_DISPOSITION] = 'Content-Disposition: ';
+    $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $this->response[self::RESPONSE_CONTENT_DISPOSITION]['type'];
+
+    if (!empty($header_output[self::RESPONSE_CONTENT_DISPOSITION]['parameters'])) {
+      $parameters_string = NULL;
+      foreach($header_output[self::RESPONSE_CONTENT_DISPOSITION]['parameters'] as $parameter_name => $parameter_value) {
+        if (!is_null($parameters_string)) {
+          $parameters_string .= '; ';
+        }
+
+        if (is_null($parameter_value)) {
+          $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name;
+        }
+        else {
+          $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name . '=' . $parameter_value;
+        }
+      }
+      unset($parameter_name);
+      unset($parameter_value);
+
+      $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameters_string;
+      unset($parameters_string);
+    }
   }
 
   /**
@@ -7603,7 +7996,63 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_LINK] = 'Link: ';
+
+    $uri = NULL;
+    if ($this->response[self::RESPONSE_LINK]['uri']['url']) {
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['scheme'])) {
+        $uri .= $this->response[self::RESPONSE_LINK]['uri']['scheme'] . '://';
+      }
+
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['authority'])) {
+        $uri .= $this->response[self::RESPONSE_LINK]['uri']['authority'] . '/';
+      }
+
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['path'])) {
+        $uri .= $this->response[self::RESPONSE_LINK]['uri']['path'];
+      }
+
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['query'])) {
+        $uri .= '?' . $this->response[self::RESPONSE_LINK]['uri']['query'];
+      }
+
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['fragment'])) {
+        $uri .= '#' . $this->response[self::RESPONSE_LINK]['uri']['fragment'];
+      }
+    }
+    else {
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['scheme'])) {
+        $uri .= $this->response[self::RESPONSE_LINK]['uri']['scheme'] . ':';
+      }
+
+      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['path'])) {
+        $uri .= $this->response[self::RESPONSE_LINK]['uri']['path'];
+      }
+    }
+
+    $header_output[self::RESPONSE_LINK] .= '<' . $uri . '>';
+    unset($uri);
+
+    if (!empty($header_output[self::RESPONSE_LINK]['parameters'])) {
+      $parameters_string = NULL;
+      foreach($header_output[self::RESPONSE_LINK]['parameters'] as $parameter_name => $parameter_value) {
+        if (!is_null($parameters_string)) {
+          $parameters_string .= '; ';
+        }
+
+        if (is_null($parameter_value)) {
+          $header_output[self::RESPONSE_LINK] .= $parameter_name;
+        }
+        else {
+          $header_output[self::RESPONSE_LINK] .= $parameter_name . '=' . $parameter_value;
+        }
+      }
+      unset($parameter_name);
+      unset($parameter_value);
+
+      $header_output[self::RESPONSE_LINK] .= $parameters_string;
+      unset($parameters_string);
+    }
   }
 
   /**
@@ -7628,6 +8077,7 @@ class c_base_http extends c_base_rfc_string {
    * @param array $header_output
    *   The header output array to make changes to.
    *
+   * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
   private function p_prepare_header_response_pragma(&$header_output) {
@@ -7635,7 +8085,26 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_PRAGMA] = 'Pragma: ';
+
+    $parameters_string = NULL;
+    foreach($header_output[self::RESPONSE_PRAGMA] as $parameter_name => $parameter_value) {
+      if (!is_null($parameters_string)) {
+        $parameters_string .= ', ';
+      }
+
+      if (is_null($parameter_value)) {
+        $header_output[self::RESPONSE_PRAGMA] .= $parameter_name;
+      }
+      else {
+        $header_output[self::RESPONSE_PRAGMA] .= $parameter_name . '=' . $parameter_value;
+      }
+    }
+    unset($parameter_name);
+    unset($parameter_value);
+
+    $header_output[self::RESPONSE_PRAGMA] .= $parameters_string;
+    unset($parameters_string);
   }
 
   /**
@@ -7902,7 +8371,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    */
   private function p_prepare_header_response_x_content_security_policy(&$header_output) {
-    if (!array_key_exists(self::RESPONSE_X_CONTENT_SECURITY_POLICY, $this->response)) {
+    if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
       return;
     }
 
@@ -7922,7 +8391,14 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = 'X-Content-Type-Options: ';
+
+    if ($this->response[self::RESPONSE_X_CONTENT_TYPE_OPTIONS]) {
+      $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = 'nosniff';
+    }
+    else {
+      $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = 'sniff';
+    }
   }
 
   /**
