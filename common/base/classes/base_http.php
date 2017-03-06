@@ -19,6 +19,11 @@ require_once('common/base/classes/base_mime.php');
 /**
  * A generic class for managing the HTTP protocol.
  *
+ * @todo: many of the HTTP response fields can become HTML meta header fields.
+ *        add a function to return an array of HTTP attributes that can be translated into HTTP tags.
+ *        no processing is to be done here, let a class that is explicitly designed for HTML process it.
+ *        example, content-security-policy (https://en.wikipedia.org/wiki/Content_Security_Policy).
+ *
  * @see: https://www.iana.org/assignments/message-headers/message-headers.xhtml
  * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
  *
@@ -28,6 +33,7 @@ require_once('common/base/classes/base_mime.php');
  */
 class c_base_http extends c_base_rfc_string {
   // standard request headers
+  const REQUEST_NONE                           = 0;
   const REQUEST_ACCEPT                         = 1;
   const REQUEST_ACCEPT_CHARSET                 = 2;
   const REQUEST_ACCEPT_ENCODING                = 3;
@@ -75,6 +81,7 @@ class c_base_http extends c_base_rfc_string {
   const REQUEST_SIGNATURE_PG            = 1009;
 
   // standard response headers
+  const RESPONSE_NONE                             = 0;
   const RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN      = 1;
   const RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS = 2;
   const RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS    = 3;
@@ -127,7 +134,7 @@ class c_base_http extends c_base_rfc_string {
   const RESPONSE_X_CONTENT_TYPE_OPTIONS    = 1008;
   const RESPONSE_X_UA_COMPATIBLE           = 1009;
 
-  // accept delimiters (the syntax for the separators can be confusing and misleading)
+  // delimiters (the syntax for the accept delimiters can be confusing and misleading)
   const DELIMITER_ACCEPT_SUP   = ',';
   const DELIMITER_ACCEPT_SUB   = ';';
   const DELIMITER_ACCEPT_SUB_0 = 'q';
@@ -136,6 +143,7 @@ class c_base_http extends c_base_rfc_string {
   const ACCEPT_LANGUAGE_CLASS_DEFAULT = 'c_base_language_limited';
 
   // cache control options
+  const CACHE_CONTROL_NONE             = 0;
   const CACHE_CONTROL_NO_CACHE         = 1;
   const CACHE_CONTROL_NO_STORE         = 2;
   const CACHE_CONTROL_NO_TRANSFORM     = 3;
@@ -150,6 +158,7 @@ class c_base_http extends c_base_rfc_string {
   const CACHE_CONTROL_PROXY_REVALIDATE = 12;
 
   // supported checksums
+  const CHECKSUM_NONE     = 0;
   const CHECKSUM_MD2      = 1;
   const CHECKSUM_MD4      = 2;
   const CHECKSUM_MD5      = 3;
@@ -159,7 +168,8 @@ class c_base_http extends c_base_rfc_string {
   const CHECKSUM_SHA384   = 7;
   const CHECKSUM_SHA512   = 8;
   const CHECKSUM_CRC32    = 9;
-  const CHECKSUM_PG       = 10; // such as: GPG or PGP.
+  const CHECKSUM_CRC32B   = 10;
+  const CHECKSUM_PG       = 11; // such as: GPG or PGP.
 
   // checksum actions
   const CHECKSUM_ACTION_NONE = 0;
@@ -167,23 +177,30 @@ class c_base_http extends c_base_rfc_string {
   const CHECKSUM_ACTION_MANUAL = 2;
 
   // checksum whats
+  const CHECKSUM_WHAT_NONE     = 0;
   const CHECKSUM_WHAT_FULL     = 1;
   const CHECKSUM_WHAT_PARTIAL  = 2;
   const CHECKSUM_WHAT_SIGNED   = 3;
   const CHECKSUM_WHAT_UNSIGNED = 4;
 
+  // checksum lengths
+  const CHECKSUM_LENGTH_SHORTSUM = 9;
+
   // uri path types
+  const URI_PATH_NONE = 0;
   const URI_PATH_SITE = 1; // such as: '//example.com/main/index.html'
   const URI_PATH_BASE = 2; // such as: '/main/index.html'
   const URI_PATH_THIS = 3; // such as: 'index.html'
 
   // uri host ip addresses
+  const URI_HOST_NONE = 0;
   const URI_HOST_IPV4 = 1;
   const URI_HOST_IPV6 = 2;
   const URI_HOST_IPVX = 3;
   const URI_HOST_NAME = 4;
 
   // transfer encoding choices
+  const ENCODING_NONE     = 0;
   const ENCODING_CHUNKED  = 1;
   const ENCODING_COMPRESS = 2;
   const ENCODING_DEFLATE  = 3;
@@ -214,6 +231,10 @@ class c_base_http extends c_base_rfc_string {
   const HTTP_METHOD_PATCH   = 9; // https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods
   const HTTP_METHOD_TRACK   = 10; // https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Security
   const HTTP_METHOD_DEBUG   = 11; // https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Security
+
+  // http separators
+  const SEPARATOR_HEADER_NAME = ': ';
+  const SEPARATOR_HEADER_LINE = "\n";
 
   private $headers;
   private $headers_sent;
@@ -313,6 +334,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     if (is_null($header_name)) {
       return c_base_return_array::s_new($this->request);
     }
@@ -364,6 +386,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     if (is_null($header_name)) {
       return c_base_return_array::s_new($this->response);
@@ -772,6 +795,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     if ($uri == c_base_ascii::ASTERISK) {
       $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN] = array('wildcard' => TRUE);
     }
@@ -846,6 +870,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $prepared_token = $this->p_prepare_token($header_name);
     if ($prepared_token === FALSE) {
@@ -924,6 +949,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     if ($append) {
       if (!isset($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS]) || !is_array($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS])) {
         $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] = array();
@@ -962,6 +988,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $prepared_token = $this->p_prepare_token($header_name);
     if ($prepared_token === FALSE) {
@@ -1014,6 +1041,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $text = $this->pr_rfc_string_prepare($media_type);
     if ($text['invalid']) {
@@ -1074,6 +1102,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     $prepared_token = $this->p_prepare_token($ranges);
     if ($prepared_token === FALSE) {
       unset($prepared_token);
@@ -1105,6 +1134,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'seconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $this->response[self::RESPONSE_AGE] = $seconds;
     unset($parsed);
@@ -1139,6 +1169,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     switch ($allow) {
       case self::HTTP_METHOD_NONE:
@@ -1221,6 +1252,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     switch($directive_name) {
       case self::CACHE_CONTROL_NO_CACHE:
@@ -1309,6 +1341,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     $prepared_token = $this->p_prepare_token($connection_option);
     if ($prepared_token === FALSE) {
       unset($prepared_token);
@@ -1373,6 +1406,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     if ($append) {
       if ($this->content_is_file) {
         if (is_array($this->content)) {
@@ -1428,7 +1462,7 @@ class c_base_http extends c_base_rfc_string {
    *   If NULL, then this is ignored.
    *   Must not be NULL when $parameter_value is not NULL.
    * @param string|null $parameter_value
-   *   (optional) A single disposition parameter to be added.
+   *   (optional) A single disposition value to be added.
    *   If NULL, then this is ignored.
    * @param bool $append
    *   (optional) If TRUE, then append the header name.
@@ -1464,7 +1498,7 @@ class c_base_http extends c_base_rfc_string {
 
 
     // nothing to do!
-    if ((is_null($type) && (is_null($parameter_name) || $append === FALSE)) {
+    if (is_null($type) && (is_null($parameter_name) || $append === FALSE)) {
       return new c_base_return_false();
     }
 
@@ -1513,7 +1547,6 @@ class c_base_http extends c_base_rfc_string {
       $text = $this->pr_rfc_string_prepare($parameter_value);
       if ($text['invalid']) {
         unset($text);
-        unset($parsed_type);
 
         $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         return c_base_return_error::s_false($error);
@@ -1650,6 +1683,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     switch ($encoding) {
       case self::ENCODING_CHUNKED:
       case self::ENCODING_COMPRESS:
@@ -1692,6 +1726,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     if (is_null($language)) {
       if (!is_object($this->language_class) || !($this->language_class instanceof i_base_language)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->language_class', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
@@ -1729,6 +1764,9 @@ class c_base_http extends c_base_rfc_string {
    * @param int|null $length
    *   (optional) The content-length, representing the total number of octals (8-bits).
    *   Set to NULL for auto-calculation from already assigned data.
+   * @param bool $force
+   *   (optional) Set to TRUE, override the standard and enforce a content-length regardless of transfer-encoding.
+   *   When FALSE adhere to the RFC in regards to transfer-encoding.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -1741,14 +1779,20 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.2
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.3
    */
-  public function set_response_content_length($length = NULL) {
+  public function set_response_content_length($length = NULL, $force = FALSE) {
     if (!is_null($length) && !is_int($length) || $length < 0) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
+    if (!is_bool($force)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'force', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
     // From the RFC: "A sender MUST NOT send a Content-Length header field in any message that contains a Transfer-Encoding header field."
-    if (array_key_exists(self::RESPONSE_TRANSFER_ENCODING, $this->response)) {
+    if ($force === FALSE && array_key_exists(self::RESPONSE_TRANSFER_ENCODING, $this->response)) {
       return new c_base_return_false();
     }
 
@@ -1805,8 +1849,9 @@ class c_base_http extends c_base_rfc_string {
    *
    * @todo: implement a thorough sanity check, this currently uses a simple check.
    *
-   * @param string $content_type
+   * @param string|int $content_type
    *   The content type to assign to the specified header.
+   *   May be an integer representing a mime type as defined in c_base_mime.
    * @param int $charset
    *   (optional) The character set to assign to the specified header.
    *
@@ -1818,36 +1863,46 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.1.5
    */
   public function set_response_content_type($content_type, $charset = c_base_charset::UTF_8) {
-    if (!is_string($content_type)) {
+    if (is_int($content_type)) {
+      $result = c_base_mime::s_get_names_by_id($content_type);
+      if ($result instanceof c_base_return_false) {
+        unset($result);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'content_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      $content_type_string = array_shift($result);
+      unset($result);
+    }
+    elseif (!is_string($content_type)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'content_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+    else {
+      $result = c_base_mime::s_identify($content_type, TRUE);
+      if ($result instanceof c_base_return_false) {
+        unset($result);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'content_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+
+      $content_type_string = $result->get_value_exact()['name_category'] . '/' . $result->get_value_exact()['name_type'];
+      unset($result);
+    }
 
     if (!c_base_charset::s_is_valid($charset)) {
+      unset($content_type_string);
+
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    // perform a very basic syntax check.
-    if (strpos($content_type, ';')) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'content_type', ':expected_format' => '. Semi-colons are not allowed.', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $content_type_part = mb_split('/', $content_type);
-
-    if (count($content_type_part) != 2) {
-      unset($content_type_part);
-
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'mb_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
-    }
-    unset($content_type_part);
 
     $this->response[self::RESPONSE_CONTENT_TYPE] = array(
-      'type' => mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $content_type)),
+      'type' => $content_type_string,
       'charset' => $charset,
     );
+    unset($content_type_string);
 
     return new c_base_return_true();
   }
@@ -1868,10 +1923,17 @@ class c_base_http extends c_base_rfc_string {
   public function set_response_date($timestamp = NULL) {
     if (is_null($timestamp)) {
       if (is_null($this->request_time)) {
+        // @todo: create a date managing class that auto-generates a date value for global use one time per php execution to avoid multiple calls.
+        $timezone_old = date_default_timezone_get();
+        date_default_timezone_set('UTC');
+
         $this->request_time = microtime(TRUE);
+
+        date_default_timezone_set($timezone_old);
+        unset($timezone_old);
       }
 
-      $this->response[self::RESPONSE_DATE_ACTUAL] = $this->request_time;
+      $this->response[self::RESPONSE_DATE] = $this->request_time;
       return new c_base_return_true();
     }
 
@@ -1879,6 +1941,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $this->response[self::RESPONSE_DATE] = $timestamp;
     return new c_base_return_true();
@@ -1916,6 +1979,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     $this->response[self::RESPONSE_DATE_ACTUAL] = $timestamp;
     return new c_base_return_true();
   }
@@ -1947,6 +2011,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'entity_tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $response = array(
       'tag' => '',
@@ -2088,11 +2153,11 @@ class c_base_http extends c_base_rfc_string {
    *   May be NULL when append is TRUE.
    *   Both $null and $parameter_name may not be NULL.
    * @param string|null $parameter_name
-   *   (optional) A single disposition parameter to be added.
+   *   (optional) A single link parameter to be added.
    *   If NULL, then this is ignored.
    *   Must not be NULL when $parameter_value is not NULL.
    * @param string|null $parameter_value
-   *   (optional) A single disposition parameter to be added.
+   *   (optional) A single link value to be added.
    *   If NULL, then this is ignored.
    * @param bool $append
    *   (optional) If TRUE, then append the header name.
@@ -2128,7 +2193,7 @@ class c_base_http extends c_base_rfc_string {
 
 
     // nothing to do!
-    if ((is_null($uri) && (is_null($parameter_name) || $append === FALSE)) {
+    if (is_null($uri) && (is_null($parameter_name) || $append === FALSE)) {
       return new c_base_return_false();
     }
 
@@ -2254,8 +2319,8 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'uri', ':expected_format' => NULL, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
-
     unset($parsed['invalid']);
+
 
     $this->response[self::RESPONSE_LOCATION] = $parsed;
     unset($parsed);
@@ -2273,9 +2338,9 @@ class c_base_http extends c_base_rfc_string {
    * The "parameter_value" is: 1*(tchar) / 1*(quoted-string)
    *
    * @param string $parameter_name
-   *   A single disposition parameter to be added.
+   *   A single pragma parameter to be added.
    * @param string|null $parameter_value
-   *   (optional) A single disposition parameter to be added.
+   *   (optional) A single pragma value to be added.
    *   If NULL, then this is ignored.
    * @param bool $append
    *   (optional) If TRUE, then append the header name.
@@ -2288,9 +2353,9 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
-  public function set_response_pragma($paramater_name, $parameter_value = NULL, $append = TRUE) {
-    if (!is_string($paramater_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'paramater_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_response_pragma($parameter_name, $parameter_value = NULL, $append = TRUE) {
+    if (!is_string($parameter_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2303,6 +2368,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $prepared_parameter_name = NULL;
     if (is_string($parameter_name)) {
@@ -2326,7 +2392,6 @@ class c_base_http extends c_base_rfc_string {
       $text = $this->pr_rfc_string_prepare($parameter_value);
       if ($text['invalid']) {
         unset($text);
-        unset($parsed_type);
 
         $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         return c_base_return_error::s_false($error);
@@ -2455,6 +2520,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     $this->response[self::RESPONSE_RETRY_AFTER] = array(
       'value' => $date,
       'is_seconds' => $seconds,
@@ -2510,6 +2576,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $cookie_name = $cookie->get_name()->get_value_exact();
     if ($append) {
@@ -2659,6 +2726,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
+
     $prepared_token = $this->p_prepare_token($header_name);
     if ($prepared_token === FALSE) {
       unset($prepared_token);
@@ -2743,8 +2811,21 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: content-security-policy.
    *
-   * @param ?? $value
-   *   The value to assign to the specified header.
+   * 1*((alpha) | (digit) | '-')  1*((wsp) 1*(vchar, except ';' and ',')).
+   *
+   * Policy Name: 1*((alpha) | (digit) | '-').
+   * Policy Value: 1*(vchar, except ';' and ',').
+   *
+   * There may be multiple policy names.
+   * Policy names may have multiple policy values.
+   *
+   * @param string $policy_name
+   *   The name of the policy.
+   * @param string $policy_value
+   *   A value assigned to the policy.
+   * @param bool $append
+   *   (optional) Set to TRUE to append values instead of assigning.
+   *   Set to FALSE to assign a new value.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -2752,12 +2833,83 @@ class c_base_http extends c_base_rfc_string {
    *
    * @see: https://www.w3.org/TR/CSP2/
    * @see: https://en.wikipedia.org/wiki/Content_Security_Policy
+   * @see: https://www.html5rocks.com/en/tutorials/security/content-security-policy/
    */
-  public function set_response_content_security_policy($value) {
-    // @todo: self::RESPONSE_CONTENT_SECURITY_POLICY
+  public function set_response_content_security_policy($policy_name, $policy_value, $append = TRUE) {
+    if (!is_string($policy_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'policy_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content security policy', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_string($policy_value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'policy_value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
+    $text = $this->pr_rfc_string_prepare($policy_name);
+    if ($text['invalid']) {
+      unset($text);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+
+    $parsed_policy_name = $this->pr_rfc_string_is_alpha_numeric_dash($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($parsed_policy_name['invalid']) {
+      unset($parsed_policy_name);
+      unset($prepared_token);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'policy name', ':expected_format' => '1*((alpha) | (digit) | '-')', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+    unset($parsed_policy_name['invalid']);
+    unset($parsed_policy_name['current']);
+
+
+    $text = $this->pr_rfc_string_prepare($policy_name);
+    if ($text['invalid']) {
+      unset($text);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+
+    $parsed_policy_value = $this->pr_rfc_string_is_directive_value($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($parsed_policy_value['invalid']) {
+      unset($parsed_policy_value);
+      unset($prepared_token);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'policy value', ':expected_format' => '1*(vchar, except \';\' and \',\')', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+    unset($parsed_policy_value['invalid']);
+    unset($parsed_policy_value['current']);
+
+
+    if ($append) {
+      if (!isset($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY]) || !is_array($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY])) {
+        $this->response[self::RESPONSE_CONTENT_SECURITY_POLICY] = array(
+          $parsed_policy_name['text'] => array(),
+        );
+      }
+
+      $this->response[self::RESPONSE_CONTENT_SECURITY_POLICY][$parsed_policy_name['text']][] = $parsed_policy_value['text'];
+    }
+    else {
+      $this->response[self::RESPONSE_CONTENT_SECURITY_POLICY] = array($parsed_policy_name['text'] => array($parsed_policy_value['text']));
+    }
+    unset($parsed_policy_name);
+    unset($parsed_policy_value);
   }
 
   /**
@@ -2784,22 +2936,92 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: x-ua-compatible.
    *
-   * @param ?? $value
-   *   The value to assign to the specified header.
+   * Treating both parameter name and parameter value as 1*(tchar).
+   *
+   * @param string $browser_name
+   *   The (short) name of the browser.
+   * @param string|null $compatible_version
+   *   The version of the browser that will be the most compatible.
+   *   Set to NULL to remove the $browser_name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_response_x_ua_compatible($value) {
-    // @todo: self::RESPONSE_X_UA_COMPATIBLE
+  public function set_response_x_ua_compatible($browser_name, $compatible_version) {
+    if (!is_string($parameter_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'parameter_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response ua compatible', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_null($compatible_version) && !is_string($compatible_version)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'compatible_version', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
+    $prepared_browser_name = $this->p_prepare_token($browser_name);
+    if ($prepared_browser_name === FALSE) {
+      unset($prepared_browser_name);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'browser name', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (empty($prepared_browser_name)) {
+      unset($prepared_browser_name);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'browser_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+
+    // remove the browser name when compatible version is null.
+    if (is_null($compatible_version)) {
+      if (isset($this->response[self::RESPONSE_X_UA_COMPATIBLE][$prepared_browser_name])) {
+        unset($this->response[self::RESPONSE_X_UA_COMPATIBLE][$prepared_browser_name]);
+      }
+      unset($prepared_browser_name);
+
+      return new c_base_return_true();
+    }
+
+
+    $prepared_compatible_version = $this->p_prepare_token($compatible_version);
+    if ($prepared_compatible_version === FALSE) {
+      unset($prepared_compatible_version);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'browser name', ':expected_format' => '1*(tchar)', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (empty($prepared_compatible_version)) {
+      unset($prepared_compatible_version);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'compatible_version', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if ($append) {
+      if (!isset($this->response[self::RESPONSE_X_UA_COMPATIBLE])) {
+        $this->response[self::RESPONSE_X_UA_COMPATIBLE] = array();
+      }
+
+      $this->response[self::RESPONSE_X_UA_COMPATIBLE][$prepared_browser_name] = $parsed_compatible_version['text'];
+    }
+    else {
+      $this->response[self::RESPONSE_X_UA_COMPATIBLE] = array($prepared_browser_name => $parsed_compatible_version['text']);
+    }
+    unset($prepared_browser_name);
+    unset($parsed_compatible_version);
+
+    return new c_base_return_true();
   }
 
   /**
    * Assign HTTP response header: checksum_header.
+   *
+   * This is a field for applying a checksum to the headers.
    *
    * @param int $action
    *   (optional) Define how the checksum is to be processed.
@@ -2811,12 +3033,10 @@ class c_base_http extends c_base_rfc_string {
    *   (optional) An integer representing the checksum what, can be one of:
    *   - self::CHECKSUM_WHAT_FULL
    *   - self::CHECKSUM_WHAT_PARTIAL
-   *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
-   *   Otherwise, this must be NULL.
+   *   This may be set to NULL.when $action is self::CHECKSUM_ACTION_AUTO.
    * @param int|null $type
    *   (optional) An integer representing the checksum algorithm type.
-   *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
-   *   Otherwise, this must be NULL.
+   *   This may be set to NULL.when $action is self::CHECKSUM_ACTION_AUTO.
    * @param string|null $checksum
    *   (optional) A checksum that represents the content.
    *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
@@ -2868,6 +3088,7 @@ class c_base_http extends c_base_rfc_string {
         case CHECKSUM_SHA384:
         case CHECKSUM_SHA512:
         case CHECKSUM_CRC32:
+        case CHECKSUM_CRC32B:
         case CHECKSUM_PG:
           break;
         default:
@@ -2883,18 +3104,19 @@ class c_base_http extends c_base_rfc_string {
       );
     }
     else {
-      if (!is_int($what)) {
+
+      if (!is_null($what) && !is_int($what)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
-      if (!is_int($type)) {
+      if (!is_null($type) && !is_int($type)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
-      if (!is_string($checksum)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      if (!is_null($action) && !is_int($action)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
@@ -2904,6 +3126,14 @@ class c_base_http extends c_base_rfc_string {
         'what' => self::CHECKSUM_WHAT_FULL,
         'type' => self::CHECKSUM_SHA256,
       );
+
+      if (!is_null($what)) {
+        $this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] = $what;
+      }
+
+      if (!is_null($type)) {
+        $this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] = $type;
+      }
     }
 
     return new c_base_return_true();
@@ -2911,6 +3141,9 @@ class c_base_http extends c_base_rfc_string {
 
   /**
    * Assign HTTP response header: checksum_headers.
+   *
+   * This is an array of header names in which the checksum is processed against.
+   * This field is always included in the checksum_header field.
    *
    * @param string $header_name
    *   The header name to assign to the specified header.
@@ -2932,6 +3165,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $prepared_token = $this->p_prepare_token($header_name);
     if ($prepared_token === FALSE) {
@@ -2969,12 +3203,10 @@ class c_base_http extends c_base_rfc_string {
    *   (optional) An integer representing the checksum what, can be one of:
    *   - self::CHECKSUM_WHAT_FULL
    *   - self::CHECKSUM_WHAT_PARTIAL
-   *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
-   *   Otherwise, this must be NULL.
+   *   This may be set to NULL.when $action is self::CHECKSUM_ACTION_AUTO.
    * @param int|null $type
    *   (optional) An integer representing the checksum algorithm type.
-   *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
-   *   Otherwise, this must be NULL.
+   *   This may be set to NULL.when $action is self::CHECKSUM_ACTION_AUTO.
    * @param string|null $checksum
    *   (optional) A checksum that represents the content.
    *   This is only processed when $action is set to CHECKSUM_ACTION_MANUAL.
@@ -3026,6 +3258,7 @@ class c_base_http extends c_base_rfc_string {
         case CHECKSUM_SHA384:
         case CHECKSUM_SHA512:
         case CHECKSUM_CRC32:
+        case CHECKSUM_CRC32B:
         case CHECKSUM_PG:
           break;
         default:
@@ -3041,18 +3274,18 @@ class c_base_http extends c_base_rfc_string {
       );
     }
     else {
-      if (!is_int($what)) {
+      if (!is_null($what) && !is_int($what)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'what', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
-      if (!is_int($type)) {
+      if (!is_null($type) && !is_int($type)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
-      if (!is_string($checksum)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'checksum', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      if (!is_int($action)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'action', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
@@ -3062,6 +3295,14 @@ class c_base_http extends c_base_rfc_string {
         'what' => self::CHECKSUM_WHAT_FULL,
         'type' => self::CHECKSUM_SHA256,
       );
+
+      if (!is_null($what)) {
+        $this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] = $what;
+      }
+
+      if (!is_null($type)) {
+        $this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] = $type;
+      }
     }
 
     return new c_base_return_true();
@@ -3966,9 +4207,13 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-security-policy.
    *
-   * @return ???|c_base_return_status
+   * @return c_base_return_array|c_base_return_status
    *   A string containing the response header value.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://en.wikipedia.org/wiki/Content_Security_Policy
+   * @see: https://www.html5rocks.com/en/tutorials/security/content-security-policy/
    */
   public function get_response_content_security_policy() {
     if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
@@ -3976,10 +4221,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content security policy', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY]);
   }
 
   /**
@@ -4001,8 +4243,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: x-ua-compatible.
    *
-   * @return c_base_return_string|c_base_return_status
-   *   A string containing the response header value.
+   * @return c_base_return_array|c_base_return_status
+   *   An array containing the response header values.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_x_ua_compatible() {
@@ -4011,14 +4253,13 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    // @todo
-
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response ua compatible', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_X_UA_COMPATIBLE]);
   }
 
   /**
    * Obtain HTTP response header: checksum_header.
+   *
+   * @fixme: this should be auto-populated, so don
    *
    * @return c_base_return_array|c_base_return_status
    *   An array containing:
@@ -4034,7 +4275,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADERS]);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADER]);
   }
 
   /**
@@ -4161,7 +4402,6 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $header_id_to_names = $this->p_get_header_response_mapping(TRUE);
 
     if ($shuffle) {
       $headers = array();
@@ -4182,8 +4422,10 @@ class c_base_http extends c_base_rfc_string {
       $headers = $this->p_get_header_response_mapping();
     }
 
-    // this is used to perform checksums.
+    // this is used to create header and still perform checksums against.
     $header_output = array();
+
+    $header_id_to_names = $this->p_get_header_response_mapping(TRUE);
 
 
     // response status, this must always be first.
@@ -4204,53 +4446,52 @@ class c_base_http extends c_base_rfc_string {
       header($status_string, TRUE, $this->response[self::RESPONSE_STATUS]);
     }
 
-    $this->p_prepare_header_response_access_control_allow_origin($header_output);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS], $header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS], self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS);
-    $this->p_prepare_header_response_access_control_expose_headers($header_output);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_ACCESS_CONTROL_MAX_AGE], $header_id_to_names[self::RESPONSE_ACCESS_CONTROL_MAX_AGE], self::RESPONSE_ACCESS_CONTROL_MAX_AGE);
-    $this->p_prepare_header_response_access_control_allow_methods($header_output);
-    $this->p_prepare_header_response_access_control_allow_headers($header_output);
-    $this->p_prepare_header_response_accept_patch($header_output);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_ACCEPT_RANGES], $header_id_to_names[self::RESPONSE_ACCEPT_RANGES], self::RESPONSE_ACCEPT_RANGES);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_AGE], $header_id_to_names[self::RESPONSE_AGE], self::RESPONSE_AGE);
-    $this->p_prepare_header_response_allow($header_output);
-    $this->p_prepare_header_response_cache_control($header_output);
-    $this->p_prepare_header_response_connection($header_output);
-    $this->p_prepare_header_response_content_disposition($header_output);
-    $this->p_prepare_header_response_content_encoding($header_output);
-    $this->p_prepare_header_response_content_language($header_output);
-    // @todo: this is now an array of values.
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_CONTENT_LENGTH], $header_id_to_names[self::RESPONSE_CONTENT_LENGTH], self::RESPONSE_CONTENT_LENGTH);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_CONTENT_RANGE], $header_id_to_names[self::RESPONSE_CONTENT_RANGE], self::RESPONSE_CONTENT_RANGE);
-    $this->p_prepare_header_response_content_type($header_output);
-    $this->p_prepare_header_response_timestamp_value($header_output, $headers[self::RESPONSE_DATE], $header_id_to_names[self::RESPONSE_DATE], self::RESPONSE_DATE);
-    $this->p_prepare_header_response_timestamp_value($header_output, $headers[self::RESPONSE_DATE_ACTUAL], $header_id_to_names[self::RESPONSE_DATE_ACTUAL], self::RESPONSE_DATE_ACTUAL);
-    $this->p_prepare_header_response_etag($header_output);
-    $this->p_prepare_header_response_timestamp_value($header_output, $header_id_to_names[self::RESPONSE_EXPIRES], $header_id_to_names[self::RESPONSE_EXPIRES], self::RESPONSE_EXPIRES);
-    $this->p_prepare_header_response_timestamp_value($header_output, $header_id_to_names[self::RESPONSE_LAST_MODIFIED], $header_id_to_names[self::RESPONSE_LAST_MODIFIED], self::RESPONSE_LAST_MODIFIED);
-    $this->p_prepare_header_response_link($header_output);
-    $this->p_prepare_header_response_location($header_output);
-    $this->p_prepare_header_response_pragma($header_output);
-    $this->p_prepare_header_response_proxy_authenticate($header_output);
-    $this->p_prepare_header_response_public_key_pins($header_output);
-    $this->p_prepare_header_response_refresh($header_output);
-    $this->p_prepare_header_response_retry_after($header_output);
-    $this->p_prepare_header_response_server($header_output);
-    $this->p_prepare_header_response_set_cookie($header_output);
-    $this->p_prepare_header_response_strict_transport_security($header_output);
-    $this->p_prepare_header_response_trailer($header_output);
-    $this->p_prepare_header_response_transfer_encoding($header_output);
-    $this->p_prepare_header_response_upgrade($header_output);
-    $this->p_prepare_header_response_vary($header_output);
-    $this->p_prepare_header_response_warning($header_output);
-    $this->p_prepare_header_response_www_authenticate($header_output);
-    $this->p_prepare_header_response_x_content_security_policy($header_output);
-    $this->p_prepare_header_response_x_content_type_options($header_output);
-    $this->p_prepare_header_response_x_ua_compatible($header_output);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_CONTENT_LENGTH], $header_id_to_names[self::RESPONSE_CONTENT_LENGTH], self::RESPONSE_CONTENT_LENGTH);
-    $this->p_prepare_header_response_simple_value($header_output, $headers[self::RESPONSE_CONTENT_REVISION], $header_id_to_names[self::RESPONSE_CONTENT_REVISION], self::RESPONSE_CONTENT_REVISION);
-    $this->p_prepare_header_response_checksum_content($header_output);
-    $this->p_prepare_header_response_checksum_headers($header_output, $status_string);
+    $this->p_prepare_header_response_access_control_allow_origin($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN], $header_output);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS], $header_output, self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS);
+    $this->p_prepare_header_response_access_control_expose_headers($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS], $header_output);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_MAX_AGE], $header_output, self::RESPONSE_ACCESS_CONTROL_MAX_AGE);
+    $this->p_prepare_header_response_access_control_allow_methods($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS], $header_output);
+    $this->p_prepare_header_response_access_control_allow_headers($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS], $header_output);
+    $this->p_prepare_header_response_accept_patch($header_id_to_names[self::RESPONSE_ACCEPT_PATCH], $header_output);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_ACCEPT_RANGES], $header_output, self::RESPONSE_ACCEPT_RANGES);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_AGE], $header_output, self::RESPONSE_AGE);
+    $this->p_prepare_header_response_allow($header_id_to_names[self::RESPONSE_ALLOW], $header_output);
+    $this->p_prepare_header_response_cache_control($header_id_to_names[self::RESPONSE_CACHE_CONTROL], $header_output);
+    $this->p_prepare_header_response_connection($header_id_to_names[self::RESPONSE_CONNECTION], $header_output);
+    $this->p_prepare_header_response_content_disposition($header_id_to_names[self::RESPONSE_CONTENT_DISPOSITION], $header_output);
+    $this->p_prepare_header_response_content_encoding($header_id_to_names[self::RESPONSE_CONTENT_ENCODING], $header_output);
+    $this->p_prepare_header_response_content_language($header_id_to_names[self::RESPONSE_CONTENT_LANGUAGE], $header_output);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_LENGTH], $header_output, self::RESPONSE_CONTENT_LENGTH);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_RANGE], $header_output, self::RESPONSE_CONTENT_RANGE);
+    $this->p_prepare_header_response_content_type($header_id_to_names[self::RESPONSE_CONTENT_TYPE], $header_output);
+    $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_DATE], $header_output, $headers[self::RESPONSE_DATE], self::RESPONSE_DATE);
+    $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_DATE_ACTUAL], $header_output, $headers[self::RESPONSE_DATE_ACTUAL], self::RESPONSE_DATE_ACTUAL);
+    $this->p_prepare_header_response_etag($header_id_to_names[self::RESPONSE_ETAG], $header_output);
+    $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_EXPIRES], $header_output, $headers[self::RESPONSE_EXPIRES], self::RESPONSE_EXPIRES);
+    $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_LAST_MODIFIED], $header_output, $headers[self::RESPONSE_LAST_MODIFIED], self::RESPONSE_LAST_MODIFIED);
+    $this->p_prepare_header_response_link($header_id_to_names[self::RESPONSE_LINK], $header_output);
+    $this->p_prepare_header_response_location($header_id_to_names[self::RESPONSE_LOCATION], $header_output);
+    $this->p_prepare_header_response_pragma($header_id_to_names[self::RESPONSE_PRAGMA], $header_output);
+    $this->p_prepare_header_response_proxy_authenticate($header_id_to_names[self::RESPONSE_PROXY_AUTHENTICATE], $header_output);
+    $this->p_prepare_header_response_public_key_pins($header_id_to_names[self::RESPONSE_PUBLIC_KEY_PINS], $header_output);
+    $this->p_prepare_header_response_refresh($header_id_to_names[self::RESPONSE_REFRESH], $header_output);
+    $this->p_prepare_header_response_retry_after($header_id_to_names[self::RESPONSE_RETRY_AFTER], $header_output);
+    $this->p_prepare_header_response_server($header_id_to_names[self::RESPONSE_SERVER], $header_output);
+    $this->p_prepare_header_response_set_cookie($header_id_to_names[self::RESPONSE_SET_COOKIE], $header_output);
+    $this->p_prepare_header_response_strict_transport_security($header_id_to_names[self::RESPONSE_STRICT_TRANSPORT_SECURITY], $header_output);
+    $this->p_prepare_header_response_trailer($header_id_to_names[self::RESPONSE_TRAILER], $header_output);
+    $this->p_prepare_header_response_transfer_encoding($header_id_to_names[self::RESPONSE_TRANSFER_ENCODING], $header_output);
+    $this->p_prepare_header_response_upgrade($header_id_to_names[self::RESPONSE_UPGRADE], $header_output);
+    $this->p_prepare_header_response_vary($header_id_to_names[self::RESPONSE_VARY], $header_output);
+    $this->p_prepare_header_response_warning($header_id_to_names[self::RESPONSE_WARNING], $header_output);
+    $this->p_prepare_header_response_www_authenticate($header_id_to_names[self::RESPONSE_WWW_AUTHENTICATE], $header_output);
+    $this->p_prepare_header_response_content_security_policy($header_id_to_names[self::RESPONSE_CONTENT_SECURITY_POLICY], $header_output);
+    $this->p_prepare_header_response_x_content_type_options($header_id_to_names[self::RESPONSE_X_CONTENT_TYPE_OPTIONS], $header_output);
+    $this->p_prepare_header_response_x_ua_compatible($header_id_to_names[self::RESPONSE_X_UA_COMPATIBLE], $header_output);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_LENGTH], $header_output, self::RESPONSE_CONTENT_LENGTH);
+    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_REVISION], $header_output, self::RESPONSE_CONTENT_REVISION);
+    $this->p_prepare_header_response_checksum_content($header_id_to_names[self::RESPONSE_CHECKSUM_CONTENT], $header_output);
+    $this->p_prepare_header_response_checksum_header($header_id_to_names[self::RESPONSE_CHECKSUM_HEADERS], $header_id_to_names[self::RESPONSE_CHECKSUM_HEADER], $header_output, $status_string);
     unset($status_string);
     unset($header_id_to_names);
 
@@ -4344,6 +4585,7 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'max_filesize', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
 
     $encoding = $this->p_determine_response_encoding();
 
@@ -4530,6 +4772,8 @@ class c_base_http extends c_base_rfc_string {
         foreach ($choice as $key => &$c) {
           $result = c_base_mime::s_identify($c['choice'], TRUE);
           if ($result instanceof c_base_return_false) {
+            unset($result);
+
             // there is no valid value to process.
             continue;
           }
@@ -5786,7 +6030,8 @@ class c_base_http extends c_base_rfc_string {
    * @see: self::p_parse_checksum()
    */
   private function p_load_request_checksum_header() {
-    if (empty($this->headers['checksum_header'])) {
+    // this requires checksum_headers to be defined.
+    if (empty($this->headers['checksum_headers'])) {
       $this->request[self::REQUEST_CHECKSUM_HEADER]['invalid'] = TRUE;
       return;
     }
@@ -5817,6 +6062,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: self::p_parse_checksum_headers()
    */
   private function p_load_request_checksum_headers() {
+    // this requires checksum_header to be defined.
     if (empty($this->headers['checksum_header'])) {
       $this->request[self::REQUEST_CHECKSUM_HEADERS]['invalid'] = TRUE;
       return;
@@ -7132,6 +7378,9 @@ class c_base_http extends c_base_rfc_string {
     elseif ($parsed['text'] == 'crc32') {
       $result['type'] = self::CHECKSUM_CRC32;
     }
+    elseif ($parsed['text'] == 'crc32b') {
+      $result['type'] = self::CHECKSUM_CRC32B;
+    }
     else {
       $result['invalid'] = TRUE;
       unset($parsed);
@@ -7569,12 +7818,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: access-control-allow-origin.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
-  private function p_prepare_header_response_access_control_allow_origin(&$header_output) {
+  private function p_prepare_header_response_access_control_allow_origin($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
       return;
     }
@@ -7585,12 +7836,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: access-control-expose-headers.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
-  private function p_prepare_header_response_access_control_expose_headers(&$header_output) {
+  private function p_prepare_header_response_access_control_expose_headers($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
       return;
     }
@@ -7601,12 +7854,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: access-control-allow-methods.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
-  private function p_prepare_header_response_access_control_allow_methods(&$header_output) {
+  private function p_prepare_header_response_access_control_allow_methods($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
       return;
     }
@@ -7617,12 +7872,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: access-control-allow-headers.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    */
-  private function p_prepare_header_response_access_control_allow_headers(&$header_output) {
+  private function p_prepare_header_response_access_control_allow_headers($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
       return;
     }
@@ -7633,6 +7890,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: accept-patch.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
@@ -7641,24 +7900,25 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    * @see: https://tools.ietf.org/html/rfc2616#section-3.12
    */
-  private function p_prepare_header_response_accept_patch(&$header_output) {
+  private function p_prepare_header_response_accept_patch($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_ACCEPT_PATCH] = 'Accept-Patch: ';
+    $header_output[self::RESPONSE_ACCEPT_PATCH] = $header_name . self::SEPARATOR_HEADER_NAME;
 
     if (!empty($this->response[self::RESPONSE_ACCEPT_PATCH])) {
       foreach ($this->response[self::RESPONSE_ACCEPT_PATCH] as $media_type) {
         $header_output[self::RESPONSE_ACCEPT_PATCH] .= $media_type['media'];
 
         if (!empty($media_type['parameters'])) {
-          $media_parameters = NULL;
+          $parameter_value = reset($media_type['parameters']);
+          $parameter_name = key($media_type['parameters']);
+          unset($media_type['parameters'][$parameter_name]);
+
+          $media_parameters = $parameter_name . '=' . $parameter_value;
           foreach ($media_type['parameters'] as $parameter_name => $parameter_value) {
-            if (!is_null($media_parameters)) {
-              $media_parameters .= '; ';
-            }
-            $media_parameters .= $parameter_name . '=' . $parameter_value;
+            $media_parameters .= '; ' . $parameter_name . '=' . $parameter_value;
           }
           unset($parameter_name);
           unset($parameter_value);
@@ -7674,33 +7934,35 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: allow.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.4.1
    */
-  private function p_prepare_header_response_allow(&$header_output) {
+  private function p_prepare_header_response_allow($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ALLOW, $this->response)) {
       return;
     }
 
+    $header_output[self::RESPONSE_ALLOW] = $header_name . self::SEPARATOR_HEADER_NAME;
+
     if (array_key_exists(self::HTTP_METHOD_NONE, $this->response[self::RESPONSE_ALLOW])) {
       // An empty Allow field value indicates that the resource allows no methods, which might occur in a 405 response if the resource has been temporarily disabled by configuration.
-      $header_output[self::RESPONSE_ALLOW] = 'Allow: ';
       return;
     }
 
     $mapping = array_flip($this->p_get_http_method_mapping());
 
-    $header_output[self::RESPONSE_ALLOW] = 'Allow: ';
+    $allow = reset($this->response[self::RESPONSE_ALLOW]);
+    $allow_key = key($this->response[self::RESPONSE_ALLOW]);
+    unset($this->response[self::RESPONSE_ALLOW][$allow_key]);
+    unset($allow_key);
 
-    $allow = array_shift($this->response[self::RESPONSE_ALLOW]);
     $header_output[self::RESPONSE_ALLOW] .= $mapping[$allow];
-
-    if (!empty($this->response[self::RESPONSE_ALLOW])) {
-      foreach ($this->response[self::RESPONSE_ALLOW] as $allow) {
-        $header_output[self::RESPONSE_ALLOW] .= ', ' . $mapping[$allow];
-      }
+    foreach ($this->response[self::RESPONSE_ALLOW] as $allow) {
+      $header_output[self::RESPONSE_ALLOW] .= ', ' . $mapping[$allow];
     }
     unset($allow);
     unset($mapping);
@@ -7709,13 +7971,15 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: cache-control.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2.3
    */
-  private function p_prepare_header_response_cache_control(&$header_output) {
+  private function p_prepare_header_response_cache_control($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CACHE_CONTROL, $this->response) || empty($this->response[self::RESPONSE_CACHE_CONTROL])) {
       return;
     }
@@ -7723,7 +7987,7 @@ class c_base_http extends c_base_rfc_string {
     $header_output[self::RESPONSE_CACHE_CONTROL] = NULL;
     foreach ($this->response[self::RESPONSE_CACHE_CONTROL] as $cache_control_directive => $cache_control_value) {
       if (is_null($header_output[self::RESPONSE_CACHE_CONTROL])) {
-        $header_output[self::RESPONSE_CACHE_CONTROL] = 'Cache-Control: ';
+        $header_output[self::RESPONSE_CACHE_CONTROL] = $header_name . self::SEPARATOR_HEADER_NAME;
       }
       else {
         $header_output[self::RESPONSE_CACHE_CONTROL] .= ', ';
@@ -7793,25 +8057,28 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: connection.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7230#section-6.1
    */
-  private function p_prepare_header_response_connection(&$header_output) {
+  private function p_prepare_header_response_connection($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONNECTION, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_CONNECTION] = 'Connection: ';
+    $header_output[self::RESPONSE_CONNECTION] = $header_name . self::SEPARATOR_HEADER_NAME;
 
-    $connection = array_shift($this->response[self::RESPONSE_CONNECTION]);
+    $connection = reset($this->response[self::RESPONSE_CONNECTION]);
+    $connection_key = key($this->response[self::RESPONSE_CONNECTION]);
+    unset($this->response[self::RESPONSE_CONNECTION][$connection_key]);
+    unset($connection_key);
+
     $header_output[self::RESPONSE_CONNECTION] .= $connection;
-
-    if (!empty($this->response[self::RESPONSE_CONNECTION])) {
-      foreach ($this->response[self::RESPONSE_CONNECTION] as $connection) {
-        $header_output[self::RESPONSE_CONNECTION] .= ', ' . $connection;
-      }
+    foreach ($this->response[self::RESPONSE_CONNECTION] as $connection) {
+      $header_output[self::RESPONSE_CONNECTION] .= ', ' . $connection;
     }
     unset($connection);
   }
@@ -7826,55 +8093,68 @@ class c_base_http extends c_base_rfc_string {
    * The "parameter_name" is: 1*(tchar)
    * The "parameter_value" is: 1*(tchar) / 1*(quoted-string)
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc6266#section-4
    */
-  private function p_prepare_header_response_content_disposition(&$header_output) {
+  private function p_prepare_header_response_content_disposition($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONTENT_DISPOSITION, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_CONTENT_DISPOSITION] = 'Content-Disposition: ';
+    $header_output[self::RESPONSE_CONTENT_DISPOSITION] = $header_name . self::SEPARATOR_HEADER_NAME;
     $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $this->response[self::RESPONSE_CONTENT_DISPOSITION]['type'];
 
-    if (!empty($header_output[self::RESPONSE_CONTENT_DISPOSITION]['parameters'])) {
-      $parameters_string = NULL;
-      foreach($header_output[self::RESPONSE_CONTENT_DISPOSITION]['parameters'] as $parameter_name => $parameter_value) {
-        if (!is_null($parameters_string)) {
-          $parameters_string .= '; ';
-        }
-
-        if (is_null($parameter_value)) {
-          $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name;
-        }
-        else {
-          $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name . '=' . $parameter_value;
-        }
-      }
-      unset($parameter_name);
-      unset($parameter_value);
-
-      $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameters_string;
-      unset($parameters_string);
+    if (empty($this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters'])) {
+      return;
     }
+
+    $parameter_value = reset($this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters']);
+    $parameter_name = key($this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters']);
+    unset($this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters'][$parameter_name]);
+    if (is_null($parameter_value)) {
+      $parameters_string = $parameter_name;
+    }
+    else {
+      $parameters_string = $parameter_name . '=' . $parameter_value;
+    }
+
+    foreach($this->response[self::RESPONSE_CONTENT_DISPOSITION]['parameters'] as $parameter_name => $parameter_value) {
+      $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= '; ';
+
+      if (is_null($parameter_value)) {
+        $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name;
+      }
+      else {
+        $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameter_name . '=' . $parameter_value;
+      }
+    }
+    unset($parameter_name);
+    unset($parameter_value);
+
+    $header_output[self::RESPONSE_CONTENT_DISPOSITION] .= $parameters_string;
+    unset($parameters_string);
   }
 
   /**
    * Prepare HTTP response header: content-encoding.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.2.2
    */
-  private function p_prepare_header_response_content_encoding(&$header_output) {
+  private function p_prepare_header_response_content_encoding($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONTENT_ENCODING, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_CONTENT_ENCODING] = 'Content-Encoding: ';
+    $header_output[self::RESPONSE_CONTENT_ENCODING] = $header_name . self::SEPARATOR_HEADER_NAME;
 
     switch ($this->response[self::RESPONSE_CONTENT_ENCODING]) {
       case self::ENCODING_CHUNKED:
@@ -7918,12 +8198,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: content-language.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.3.2
    */
-  private function p_prepare_header_response_content_language(&$header_output) {
+  private function p_prepare_header_response_content_language($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONTENT_LANGUAGE, $this->response)) {
       return;
     }
@@ -7933,7 +8215,7 @@ class c_base_http extends c_base_rfc_string {
       $language_array = $language_array->get_value_exact();
 
       if (!empty($language_array[0])) {
-        $header_output[self::RESPONSE_CONTENT_LANGUAGE] = 'Content-Language: ' . $language_array[0];
+        $header_output[self::RESPONSE_CONTENT_LANGUAGE] = $header_name . ': ' . $language_array[0];
       }
     }
     unset($language_array);
@@ -7942,61 +8224,68 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: content-type.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.1.5
    */
-  private function p_prepare_header_response_content_type(&$header_output) {
+  private function p_prepare_header_response_content_type($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONTENT_TYPE, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_CONTENT_TYPE] = 'Content-Type: ' . $this->response[self::RESPONSE_CONTENT_TYPE]['type'] . '; ';
+    $header_output[self::RESPONSE_CONTENT_TYPE] = $header_name . ': ' . $this->response[self::RESPONSE_CONTENT_TYPE]['type'];
 
     $encoding_string = c_base_charset::s_to_string($this->response[self::RESPONSE_CONTENT_TYPE]['charset']);
     if ($encoding_string instanceof c_base_return_string) {
-      $header_output[self::RESPONSE_CONTENT_TYPE] .= $encoding_string->get_value_exact();
+      $header_output[self::RESPONSE_CONTENT_TYPE] .=  '; charset=' . $encoding_string->get_value_exact();
     }
+
     unset($encoding_string);
   }
 
   /**
    * Prepare HTTP response header: etag.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc6266#section-4
    */
-  private function p_prepare_header_response_etag(&$header_output) {
+  private function p_prepare_header_response_etag($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ETAG, $this->response)) {
       return;
     }
 
     if ($this->response[self::RESPONSE_ETAG]['weak']) {
-      $header_output[self::RESPONSE_ETAG] = 'Etag: W/"' . $this->response[self::RESPONSE_ETAG]['tag'] . '"';
+      $header_output[self::RESPONSE_ETAG] = $header_name . ': W/"' . $this->response[self::RESPONSE_ETAG]['tag'] . '"';
     }
     else {
-      $header_output[self::RESPONSE_ETAG] = 'Etag: "' . $this->response[self::RESPONSE_ETAG]['tag'] . '"';
+      $header_output[self::RESPONSE_ETAG] = $header_name . ': "' . $this->response[self::RESPONSE_ETAG]['tag'] . '"';
     }
   }
 
   /**
    * Prepare HTTP response header: link.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc5988#section-5
    * @see: https://tools.ietf.org/html/rfc3986
    */
-  private function p_prepare_header_response_link(&$header_output) {
+  private function p_prepare_header_response_link($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_LINK, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_LINK] = 'Link: ';
+    $header_output[self::RESPONSE_LINK] = $header_name . self::SEPARATOR_HEADER_NAME;
 
     $uri = NULL;
     if ($this->response[self::RESPONSE_LINK]['uri']['url']) {
@@ -8033,18 +8322,26 @@ class c_base_http extends c_base_rfc_string {
     $header_output[self::RESPONSE_LINK] .= '<' . $uri . '>';
     unset($uri);
 
-    if (!empty($header_output[self::RESPONSE_LINK]['parameters'])) {
-      $parameters_string = NULL;
-      foreach($header_output[self::RESPONSE_LINK]['parameters'] as $parameter_name => $parameter_value) {
-        if (!is_null($parameters_string)) {
-          $parameters_string .= '; ';
-        }
+    if (!empty($this->response[self::RESPONSE_LINK]['parameters'])) {
+      $parameter_value = reset($this->response[self::RESPONSE_LINK]['parameters']);
+      $parameter_name = key($this->response[self::RESPONSE_LINK]['parameters']);
+      unset($this->response[self::RESPONSE_LINK]['parameters'][$parameter_name]);
+
+      if (is_null($parameter_value)) {
+        $parameters_string = $parameter_name;
+      }
+      else {
+        $parameters_string = $parameter_name . '=' . $parameter_value;
+      }
+
+      foreach($this->response[self::RESPONSE_LINK]['parameters'] as $parameter_name => $parameter_value) {
+        $parameters_string .= '; ';
 
         if (is_null($parameter_value)) {
-          $header_output[self::RESPONSE_LINK] .= $parameter_name;
+          $parameters_string .= $parameter_name;
         }
         else {
-          $header_output[self::RESPONSE_LINK] .= $parameter_name . '=' . $parameter_value;
+          $parameters_string .= $parameter_name . '=' . $parameter_value;
         }
       }
       unset($parameter_name);
@@ -8058,12 +8355,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: location.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc3986
    */
-  private function p_prepare_header_response_location(&$header_output) {
+  private function p_prepare_header_response_location($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_LOCATION, $this->response)) {
       return;
     }
@@ -8074,30 +8373,40 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: pragma.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
    */
-  private function p_prepare_header_response_pragma(&$header_output) {
+  private function p_prepare_header_response_pragma($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_PRAGMA, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_PRAGMA] = 'Pragma: ';
+    $header_output[self::RESPONSE_PRAGMA] = $header_name . self::SEPARATOR_HEADER_NAME;
 
-    $parameters_string = NULL;
-    foreach($header_output[self::RESPONSE_PRAGMA] as $parameter_name => $parameter_value) {
-      if (!is_null($parameters_string)) {
-        $parameters_string .= ', ';
-      }
+    $parameter_value = reset($this->response[self::RESPONSE_PRAGMA]);
+    $parameter_name = key($this->response[self::RESPONSE_PRAGMA]);
+    unset($this->response[self::RESPONSE_PRAGMA][$parameter_name]);
+
+    if (is_null($parameter_value)) {
+      $parameters_string = $parameter_name;
+    }
+    else {
+      $parameters_string = $parameter_name . '=' . $parameter_value;
+    }
+
+    foreach($this->response[self::RESPONSE_PRAGMA] as $parameter_name => $parameter_value) {
+      $parameters_string .= ', ';
 
       if (is_null($parameter_value)) {
-        $header_output[self::RESPONSE_PRAGMA] .= $parameter_name;
+        $parameters_string .= $parameter_name;
       }
       else {
-        $header_output[self::RESPONSE_PRAGMA] .= $parameter_name . '=' . $parameter_value;
+        $parameters_string .= $parameter_name . '=' . $parameter_value;
       }
     }
     unset($parameter_name);
@@ -8110,12 +8419,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: proxy-authenticate.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7235#section-4.3
    */
-  private function p_prepare_header_response_proxy_authenticate(&$header_output) {
+  private function p_prepare_header_response_proxy_authenticate($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_PROXY_AUTHENTICATE, $this->response)) {
       return;
     }
@@ -8126,12 +8437,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: public-key-pins.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7469
    */
-  private function p_prepare_header_response_public_key_pins(&$header_output) {
+  private function p_prepare_header_response_public_key_pins($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_PUBLIC_KEY_PINS, $this->response)) {
       return;
     }
@@ -8142,13 +8455,15 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: refresh.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Meta_refresh
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    */
-  private function p_prepare_header_response_refresh(&$header_output) {
+  private function p_prepare_header_response_refresh($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_REFRESH, $this->response)) {
       return;
     }
@@ -8159,17 +8474,19 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: retry-after.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.3
    */
-  private function p_prepare_header_response_retry_after(&$header_output) {
+  private function p_prepare_header_response_retry_after($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_RETRY_AFTER, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_RETRY_AFTER] = 'Retry-After: ';
+    $header_output[self::RESPONSE_RETRY_AFTER] = $header_name . self::SEPARATOR_HEADER_NAME;
 
     if ($this->response[self::RESPONSE_RETRY_AFTER]['is_seconds']) {
       $header_output[self::RESPONSE_RETRY_AFTER] .= $this->response[self::RESPONSE_RETRY_AFTER]['is_seconds'];
@@ -8188,12 +8505,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: set-cookie.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc6265
    */
-  private function p_prepare_header_response_set_cookie(&$header_output) {
+  private function p_prepare_header_response_set_cookie($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_SET_COOKIE, $this->response) || !is_array($this->response[self::RESPONSE_SET_COOKIE])) {
       return;
     }
@@ -8216,12 +8535,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: server.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.4.2
    */
-  private function p_prepare_header_response_server(&$header_output) {
+  private function p_prepare_header_response_server($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_SERVER, $this->response)) {
       return;
     }
@@ -8232,12 +8553,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: strict-transport-security.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc6797#section-6.1
    */
-  private function p_prepare_header_response_strict_transport_security(&$header_output) {
+  private function p_prepare_header_response_strict_transport_security($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_STRICT_TRANSPORT_SECURITY, $this->response)) {
       return;
     }
@@ -8251,6 +8574,8 @@ class c_base_http extends c_base_rfc_string {
    * @todo: this appears to no longer be directly specified in the headers.
    *        There is a 'trailer-part' mentioned along with the transfer encoding information.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
@@ -8258,7 +8583,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7230#section-4.1.2
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.1
    */
-  private function p_prepare_header_response_trailer(&$header_output) {
+  private function p_prepare_header_response_trailer($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_TRAILER, $this->response)) {
       return;
     }
@@ -8269,12 +8594,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: transfer-encoding.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.1
    */
-  private function p_prepare_header_response_transfer_encoding(&$header_output) {
+  private function p_prepare_header_response_transfer_encoding($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_TRANSFER_ENCODING, $this->response)) {
       return;
     }
@@ -8291,12 +8618,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: upgrade.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-5.5.3
    */
-  private function p_prepare_header_response_upgrade(&$header_output) {
+  private function p_prepare_header_response_upgrade($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_UPGRADE, $this->response)) {
       return;
     }
@@ -8307,25 +8636,29 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: vary.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.4
    */
-  private function p_prepare_header_response_vary(&$header_output) {
+  private function p_prepare_header_response_vary($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_VARY, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_VARY] = 'Vary: ';
+    $header_output[self::RESPONSE_VARY] = $header_name . self::SEPARATOR_HEADER_NAME;
 
-    $vary = array_shift($this->response[self::RESPONSE_VARY]);
+    $vary = reset($this->response[self::RESPONSE_VARY]);
+    $vary_key = key($this->response[self::RESPONSE_VARY]);
+    unset($this->response[self::RESPONSE_VARY][$vary_key]);
+    unset($vary_key);
+
     $header_output[self::RESPONSE_VARY] .= $vary;
 
-    if (!empty($this->response[self::RESPONSE_VARY])) {
-      foreach ($this->response[self::RESPONSE_VARY] as $vary) {
-        $header_output[self::RESPONSE_VARY] .= ', ' . $vary;
-      }
+    foreach ($this->response[self::RESPONSE_VARY] as $vary) {
+      $header_output[self::RESPONSE_VARY] .= ', ' . $vary;
     }
     unset($vary);
   }
@@ -8333,12 +8666,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: warning.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7234#section-5.5
    */
-  private function p_prepare_header_response_warning(&$header_output) {
+  private function p_prepare_header_response_warning($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_WARNING, $this->response)) {
       return;
     }
@@ -8349,12 +8684,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: www-authenticate.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://tools.ietf.org/html/rfc7235#section-4.1
    */
-  private function p_prepare_header_response_www_authenticate(&$header_output) {
+  private function p_prepare_header_response_www_authenticate($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_WWW_AUTHENTICATE, $this->response)) {
       return;
     }
@@ -8365,33 +8702,67 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: x-content-security-policy
    *
+   * 1*((alpha) | (digit) | '-')  1*((wsp) 1*(vchar, except ';' and ',')).
+   *
+   * Policy Name: 1*((alpha) | (digit) | '-').
+   * Policy Value: 1*(vchar, except ';' and ',').
+   *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
-   * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://en.wikipedia.org/wiki/Content_Security_Policy
+   * @see: https://www.html5rocks.com/en/tutorials/security/content-security-policy/
    */
-  private function p_prepare_header_response_x_content_security_policy(&$header_output) {
+  private function p_prepare_header_response_content_security_policy($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_CONTENT_SECURITY_POLICY] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    $policy_value = reset($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY]);
+    $policy_name = key($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY]);
+    unset($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY][$policy_name]);
+
+    $policy_string = $policy_name;
+    foreach ($policy_values as $policy_value) {
+      $policy_string .= ' ' . $policy_value;
+    }
+    unset($policy_value);
+
+    foreach ($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY] as $policy_name => $policy_values) {
+      $policy_string .= '; ' . $policy_name;
+      foreach ($policy_values as $policy_value) {
+        $policy_string .= ' ' . $policy_value;
+      }
+      unset($policy_value);
+    }
+    unset($policy_name);
+    unset($policy_values);
+
+    $header_output[self::RESPONSE_CONTENT_SECURITY_POLICY] .= $policy_string;
+    unset($policy_string);
   }
 
   /**
    * Prepare HTTP response header: x-content-type-options
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    */
-  private function p_prepare_header_response_x_content_type_options(&$header_output) {
+  private function p_prepare_header_response_x_content_type_options($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_X_CONTENT_TYPE_OPTIONS, $this->response)) {
       return;
     }
 
-    $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = 'X-Content-Type-Options: ';
+    $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = $header_name . self::SEPARATOR_HEADER_NAME;
 
     if ($this->response[self::RESPONSE_X_CONTENT_TYPE_OPTIONS]) {
       $header_output[self::RESPONSE_X_CONTENT_TYPE_OPTIONS] = 'nosniff';
@@ -8404,17 +8775,25 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Prepare HTTP response header: x-ua-compatible
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    */
-  private function p_prepare_header_response_x_ua_compatible(&$header_output) {
+  private function p_prepare_header_response_x_ua_compatible($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_X_UA_COMPATIBLE, $this->response)) {
       return;
     }
 
-    // @todo
+    // in this case, a new header is created for every single entry..
+    $header_output[self::RESPONSE_X_UA_COMPATIBLE] = array();
+    foreach($header_output[self::RESPONSE_X_UA_COMPATIBLE] as $browser_name => $compatible_version) {
+        $header_output[self::RESPONSE_X_UA_COMPATIBLE][] = $browser_name . '=' . $compatible_version;
+    }
+    unset($browser_name);
+    unset($compatible_version);
   }
 
   /**
@@ -8423,14 +8802,31 @@ class c_base_http extends c_base_rfc_string {
    * This will perform a checksum against the content.
    * Be sure to perform this check before changing the content-encoding.
    *
+   * @fixme: both this function and the one for checksum_header do the same thing but for different parts of the HTTP packet.
+   *         the problem is they use two completely different approaches for generating the hash.
+   *         these need to be reviewed and made consistent where possible.
+   *
    * This handles the following header fields:
    * - checksum_content
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    */
-  private function p_prepare_header_response_checksum_content(&$header_output) {
-    if (!array_key_exists(self::RESPONSE_CHECKSUM_CONTENT, $this->response)) {
+  private function p_prepare_header_response_checksum_content($header_name, &$header_output) {
+    // this field is generally auto-populated, so enforce a default.
+    if (!isset($this->response[self::RESPONSE_CHECKSUM_CONTENT])) {
+      $this->response[self::RESPONSE_CHECKSUM_CONTENT] = array(
+        'checksum' => NULL,
+        'action' => self::CHECKSUM_ACTION_AUTO,
+        'what' => self::CHECKSUM_WHAT_FULL,
+        'type' => self::CHECKSUM_SHA256,
+      );
+    }
+
+    // setting this to none manually disables checksum generation.
+    if ($this->response[self::RESPONSE_CHECKSUM_CONTENT]['action'] == self::CHECKSUM_ACTION_NONE) {
       return;
     }
 
@@ -8492,6 +8888,10 @@ class c_base_http extends c_base_rfc_string {
         $algorithm = 'crc32';
         $use_hash = TRUE;
         break;
+      case self::CHECKSUM_CRC32B:
+        $algorithm = 'crc32b';
+        $use_hash = TRUE;
+        break;
       case self::CHECKSUM_PG:
         $algorithm = 'pg';
         break;
@@ -8551,7 +8951,9 @@ class c_base_http extends c_base_rfc_string {
       }
     }
     elseif ($this->response[self::RESPONSE_CHECKSUM_CONTENT]['action'] == self::CHECKSUM_ACTION_MANUAL) {
-      $header_output[self::RESPONSE_CHECKSUM_CONTENT] = 'Checksum_Content: ' . $what . ':' . $algorithm . ':' . $this->response[self::RESPONSE_CHECKSUM_CONTENT]['checksum'];
+      if (!is_null($this->response[self::RESPONSE_CHECKSUM_CONTENT]['checksum'])) {
+        $header_output[self::RESPONSE_CHECKSUM_CONTENT] = 'Checksum_Content: ' . $what . ':' . $algorithm . ':' . $this->response[self::RESPONSE_CHECKSUM_CONTENT]['checksum'];
+      }
     }
     unset($use_hash);
     unset($what);
@@ -8564,98 +8966,255 @@ class c_base_http extends c_base_rfc_string {
    * @todo: implement custom functions for setting algorithms, checksum, and even enabled/disabling auto-checksuming for all checksum header fields.
    *
    * This handles the following header fields:
-   * - checksum_header
-   * - checksum_headers
+   * - checksum_header: used to store the checksum.
+   * - checksum_headers: used to store a list of all header fields the checksum is processed against.
    *
-   * This must be performed after all other header fields have been prepared.
+   * This must be performed after all other header fields have been prepared to be accurate.
    *
+   * @param string $headers_name
+   *   The HTTP checksum headers name, such as: 'Checksum_Headers'.
+   * @param string $header_name
+   *   The HTTP checksum header name, such as: 'Checksum_Header'.
    * @param array $header_output
    *   The header output array to make changes to.
    * @param string|null $status_string
    *   When not NULL, this is prepended to the start of the header checksum string before the checksum is calculated.
    *   When NULL, this value is ignored.
    */
-  private function p_prepare_header_response_checksum_headers(&$header_output, $status_string) {
-    if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADER, $this->response) || !array_key_exists(self::RESPONSE_CHECKSUM_HEADERS, $this->response)) {
+  private function p_prepare_header_response_checksum_header($headers_name, $header_name, &$header_output, $status_string) {
+    // this field is generally auto-populated, so enforce a default.
+    if (!isset($this->response[self::RESPONSE_CHECKSUM_HEADER])) {
+      $this->response[self::RESPONSE_CHECKSUM_HEADER] = array(
+        'checksum' => NULL,
+        'action' => self::CHECKSUM_ACTION_AUTO,
+        'what' => self::CHECKSUM_WHAT_FULL,
+        'type' => self::CHECKSUM_SHA256,
+      );
+    }
+
+    // setting this to none manually disables checksum generation.
+    if ($this->response[self::RESPONSE_CHECKSUM_HEADER]['action'] == self::CHECKSUM_ACTION_NONE) {
       return;
     }
 
-    $header_output_copy = $header_output;
+    // allow for the list of headers to be customized, but if it is not defined, use all available (allowed) headers.
+    if (array_key_exists(self::RESPONSE_CHECKSUM_HEADERS, $this->response)) {
+      $header_output_copy = array();
+      $header_output[self::RESPONSE_CHECKSUM_HEADERS] = array();
+      foreach ($this->response[self::RESPONSE_CHECKSUM_HEADERS] as $header_response_id => $header_response_value) {
+        $header_output_copy[$header_response_id] = $header_response_id;
+        $header_output[self::RESPONSE_CHECKSUM_HEADERS][$header_response_id] = $header_response_id;
+      }
+      unset($header_response_id);
+      unset($header_response_value);
+    }
+    else {
+      $header_output_copy = $header_output;
+    }
 
     if (array_key_exists('date_actual', $header_output_copy)) {
       // When date_actual is specified, the date parameter will not be processed, prevent the 'date' parameter from being used to calculate the header checksum.
       unset($header_output_copy['date']);
     }
 
-    $header_output_keys = array_keys($header_output_copy);
-    unset($header_output_copy);
 
-    if (!empty($header_output_keys)) {
-      $header_value = array_shift($header_output_keys);
-      if (!empty($header_output_keys)) {
-        foreach ($header_output_keys as $header_name) {
-          $header_value .= ', ' . $header_name;
-        }
+    if (empty($header_output_copy)) {
+      // if there are no headers to perform a checksum against, then provide no checksum.
+      unset($header_output_copy);
+      unset($header_output[self::RESPONSE_CHECKSUM_HEADER]);
+      unset($header_output[self::RESPONSE_CHECKSUM_HEADERS]);
+
+      return;
+    }
+
+    reset($header_output_copy);
+    $header_output_id = key($header_output_copy);
+    unset($header_output_copy[$header_output_id]);
+
+    $header_string = '';
+    $header_mappings = $this->p_get_header_response_mapping();
+    if (array_key_exists($header_output_id, $header_mappings)) {
+      $header_string .= $header_mappings[$header_output_id];
+    }
+
+    foreach ($header_output_copy as $header_output_id => $header_output_value) {
+      if (array_key_exists($header_output_id, $header_mappings)) {
+        $header_string .= ', ' . $header_mappings[$header_output_id];
       }
     }
-    unset($header_output_keys);
+    unset($header_output_id);
+    unset($header_output_value);
+    unset($header_mappings);
 
-    $header_output[self::RESPONSE_CHECKSUM_HEADER] = $header_value;
-    unset($header_value);
+    $header_output[self::RESPONSE_CHECKSUM_HEADERS] = $headers_name . self::SEPARATOR_HEADER_NAME . $header_string;
+    unset($header_string);
+    unset($header_output_copy);
 
+
+    // checksum cannot include its own field.
     $header_output_copy = $header_output;
     unset($header_output_copy['checkum_header']);
 
+    // the header keys must be in alphabetic order to ensure a consistent order for the checksum generation and validation.
+    ksort($header_output_copy);
+
     $header_string = '';
     if (!is_null($status_string)) {
-      $header_string .= $status_string . "\n";
+      $header_string .= $status_string . self::SEPARATOR_HEADER_LINE;
     }
 
-    $header_string .= implode("\n", $header_output_copy);
+    foreach ($header_output_copy as $header_output_id => $header_output_value) {
+      if (array_key_exists($header_output_id, $header_output_copy)) {
+        if (is_array($header_output_value)) {
+          foreach ($header_output_value as $sub_header) {
+            $header_string .= $sub_header . self::SEPARATOR_HEADER_LINE;
+          }
+          unset($sub_header);
+        }
+        else {
+          $header_string .= $header_output_value . self::SEPARATOR_HEADER_LINE;
+        }
+      }
+    }
     unset($header_output_copy);
+    unset($header_output_id);
+    unset($header_output_value);
 
-    // @todo: allow caller to specifiy which hash code and which settings.
-    $checkum_header = hash('sha256', $header_string);
-    unset($header_string);
 
-    // @todo: handle support for other algorithms.
-    $header_output[self::RESPONSE_CHECKSUM_HEADER] = 'Checksum_Header: full:sha256:' . $checkum_header;
+    // generate the checksum header based on given parameters when no pre-calculated checksum is given.
+    if ($this->response[self::RESPONSE_CHECKSUM_HEADER]['action'] == self::CHECKSUM_ACTION_AUTO) {
+      if ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD2) {
+        $checkum_header = hash('md2', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD4) {
+        $checkum_header = hash('md4', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD5) {
+        $checkum_header = hash('md5', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA1) {
+        $checkum_header = hash('sha1', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA224) {
+        $checkum_header = hash('sha224', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA256) {
+        $checkum_header = hash('sha256', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA384) {
+        $checkum_header = hash('sha384', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA512) {
+        $checkum_header = hash('sha512', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_CRC32) {
+        $checkum_header = hash('crc32', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_CRC32B) {
+        $checkum_header = hash('crc32b', $header_string);
+      }
+      elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_PG) {
+        // @todo:
+        #$checkum_header = ;
+      }
+      unset($header_string);
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['action'] == self::CHECKSUM_ACTION_MANUAL) {
+      $checkum_header = $this->response[self::RESPONSE_CHECKSUM_HEADER]['checksum'];
+    }
+    else {
+      return;
+    }
+
+
+    $header_output[self::RESPONSE_CHECKSUM_HEADER] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    if ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_FULL) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'full:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_PARTIAL) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'partial:';
+      $checkum_header = substr($checkum_header, 0, self::CHECKSUM_LENGTH_SHORTSUM);
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_SIGNED) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'signed:';
+      // @todo
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_UNSIGNED) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'unsigned:';
+      // @todo
+    }
+
+    if ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD2) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'md2:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD4) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'md4:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_MD5) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'md5:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA1) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'sha1:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA224) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'sha224:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA256) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'sha256:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA384) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'sha384:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_SHA512) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'sha512:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_CRC32) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'crc32:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_CRC32B) {
+      $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'crc32b:';
+    }
+    elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['type'] === self::CHECKSUM_PG) {
+      // @todo:
+      #$checkum_header = ;
+    }
+
+    $header_output[self::RESPONSE_CHECKSUM_HEADER] .= $checkum_header;
     unset($checkum_header);
   }
 
   /**
    * Prepare HTTP response headers that are simple values.
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
-   * @param string $name_lower
-   *   The HTTP header name (all lowercase), such as: 'age'.
-   * @param string $name
-   *   The HTTP header name, such as: 'Age'.
    * @param int $code
    *   The HTTP header code, such as:  self::RESPONSE_AGE.
    */
-  private function p_prepare_header_response_simple_value(&$header_output, $name_lower, $name, $code) {
+  private function p_prepare_header_response_simple_value($header_name, &$header_output, $code) {
     if (!array_key_exists($code, $this->response)) {
       return;
     }
 
-    $header_output[$code] = $name . ': ' . $this->response[$code];
+    $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME . $this->response[$code];
   }
 
   /**
    * Prepare HTTP response header: date
    *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
    * @param array $header_output
    *   The header output array to make changes to.
    * @param string $name_lower
    *   The HTTP header name (all lowercase), such as: 'age'.
-   * @param string $name
-   *   The HTTP header name, such as: 'Age'.
    * @param int $code
    *   The HTTP header code, such as:  self::RESPONSE_AGE.
    */
-  private function p_prepare_header_response_timestamp_value(&$header_output, $name_lower, $name, $code) {
+  private function p_prepare_header_response_timestamp_value($header_name, &$header_output, $name_lower, $code) {
     if (!array_key_exists($code, $this->response)) {
       return;
     }
@@ -8663,7 +9222,7 @@ class c_base_http extends c_base_rfc_string {
     $timezone = date_default_timezone_get();
     date_default_timezone_set('GMT');
 
-    $header_output[$code] = $name . ': ' . date(self::TIMESTAMP_RFC_5322, $this->response[$code]);
+    $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME . date(self::TIMESTAMP_RFC_5322, $this->response[$code]);
 
     date_default_timezone_set($timezone);
     unset($timezone);

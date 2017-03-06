@@ -87,20 +87,36 @@
    *   Http object.
    */
   function reservation_send_response($http) {
+    // add headers
+    $http->set_response_date();
+    $http->set_response_content_type('text/html');
+    $http->set_response_content_language();
+    #$http->set_response_etag();
+    #$http->set_response_last_modified(strtotime('now'));
+    #$http->set_response_expires(strtotime('+30 minutes'));
+    $http->set_response_pragma('no-cache');
+    #$http->set_response_vary('Date');
+    #$http->set_response_warning('1234 This site is under active development.');
+
+    // finalize the content prior to sending headers to ensure header accuracy.
+    $http->set_response_content_length(NULL, TRUE);
+    $http->encode_response_content();
+
+
+    // manually disable output buffering (if enabled) when transfer headers and content.
     $old_output_buffering = ini_get('output_buffering');
     ini_set('output_buffering', 'off');
 
-    // finalize the content prior to sending headers to ensure header accuracy.
-    $http->set_response_content_length();
-    $http->encode_response_content();
 
     // when the headers are sent, checksums are created, so at this point all error output should be stored and not sent.
     $http->send_response_headers();
     flush();
 
+
     // once the header are sent, send the content.
     $http->send_response_content();
     flush();
+
 
     ini_set('output_buffering', $old_output_buffering);
     unset($old_output_buffering);
@@ -316,6 +332,7 @@
    *   The HTML markup.
    */
   function reservation_build_response(&$http, &$session, $markup) {
+    $http->set_response_checksum_header(c_base_http::CHECKSUM_ACTION_AUTO);
     $http->set_response_content($markup);
 
 

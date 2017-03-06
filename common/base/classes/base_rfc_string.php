@@ -2352,6 +2352,8 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     if ($start >= $stop) {
       return $result;
     }
+
+    // @todo: finish writing this!
   }
 
   /**
@@ -2506,6 +2508,127 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $result['invalid'] = TRUE;
       }
     }
+
+    return $result;
+  }
+
+  /**
+   * Processes a string based on the rfc syntax: alphanumeric or dash.
+   *
+   * A string that has the following syntax:
+   * - 1*((ALPHA) | (DIGIT) | '-')
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'text': A string containing the processed text.
+   *   - 'current': an integer representing the position the counter stopped at.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: base_rfc_char::pr_rfc_char_is_alpha()
+   * @see: base_rfc_char::pr_rfc_char_is_digit()
+   */
+  protected function pr_rfc_string_is_alpha_numeric_dash($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'text' => NULL,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if (!$this->pr_rfc_char_is_alpha($code) && !$this->pr_rfc_char_is_digit($code) && $code !== c_base_ascii::MINUS) {
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
+
+    return $result;
+  }
+
+  /**
+   * Processes a string based on the rfc syntax: vchar except for semi-colon and comma.
+   *
+   * A string that has the following syntax:
+   * - 1*(vchar, except for ';' and ',')
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'text': A string containing the processed text.
+   *   - 'current': an integer representing the position the counter stopped at.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: base_rfc_char::pr_rfc_char_is_vchar()
+   */
+  protected function pr_rfc_string_is_directive_value($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'text' => NULL,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if (!$this->pr_rfc_char_is_vchar($code) || ($code === c_base_ascii::COLON_SEMI || $code === c_base_ascii::COMMA)) {
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
 
     return $result;
   }

@@ -64,7 +64,11 @@ class c_base_http_status {
   const PRECONDITION_REQUIRED           = 428;
   const TOO_MANY_REQUESTS               = 429;
   const REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
+  const NO_RESPONSE                     = 444; // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#nginx
   const UNAVAILABLE_FOR_LEGAL_REASONS   = 451;
+  const SSL_CERTIFICATE_ERROR           = 495; // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#nginx
+  const HTTP_REQUEST_SENT_TO_HTTPS      = 497; // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#nginx
+  const CLIENT_CLOSED_REQUEST           = 499; // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#nginx
 
   const INTERNAL_SERVER_ERROR           = 500; // https://tools.ietf.org/html/rfc7231#section-6.6.1
   const NOT_IMPLEMENTED                 = 501; // https://tools.ietf.org/html/rfc7231#section-6.6.2
@@ -285,8 +289,24 @@ class c_base_http_status {
         $string = "Request Header Fields Too Large";
         break;
 
+      case self::NO_RESPONSE:
+        $string = "No Response";
+        break;
+
       case self::UNAVAILABLE_FOR_LEGAL_REASONS:
         $string = "Unavailable for Legal Reasons";
+        break;
+
+      case self::SSL_CERTIFICATE_ERROR:
+        $string = "SSL Certificate Error";
+        break;
+
+      case self::HTTP_REQUEST_SENT_TO_HTTPS:
+        $string = "HTTP Request Sent to HTTPS Port";
+        break;
+
+      case self::CLIENT_CLOSED_REQUEST:
+        $string = "Client Closed Request";
         break;
 
       case self::INTERNAL_SERVER_ERROR:

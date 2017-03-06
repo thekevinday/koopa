@@ -1,6 +1,6 @@
 Functions, Classes, Objects, Traits, and numerous other special types of functionality used by PHP and other languages are used in this project in such a way to provide an obvious and simple way to identify them.
 
-The project loosely follows the drupal project coding scheme, but one specific exception is "camel casing", which is exclusively denied by this project.
+The project loosely follows the drupal project coding scheme, but one specific exception is "camel casing", which is explicitly being considered bad practice for this project.
 All names used should be lower cased.
 Local variables do not have name prefixes such as the ones described below.
 

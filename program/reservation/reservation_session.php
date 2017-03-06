@@ -157,10 +157,12 @@
     if (!is_resource($socket)) {
       unset($socket);
 
-      $this->socket_error = @socket_last_error();
+      $socket_error = @socket_last_error();
       @socket_clear_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      unset($socket_error);
+
       return c_base_return_error::s_false($error);
     }
 
@@ -174,7 +176,7 @@
       unset($socket);
       unset($connected);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);

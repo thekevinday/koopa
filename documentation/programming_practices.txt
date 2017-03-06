@@ -1,0 +1,144 @@
+This document contains notes about specific programming styles, strategies, and optimizations for specific cases.
+This is a supplement to naming.txt.
+
+
+============================
+= Variable Memory Strategy =
+============================
+One of the problems I find with PHP is that it loves to allocate memory but not deallocate.
+This is one of PHP's speed optimizations strategies.
+I find this to be troublesome, but there are a number of things that can be done to reduce the memory consumption.
+This is especially useful for threaded applications, parallel applications, or busy sites.
+
+My strategy is to always call unset() in every variable in use (except for function parameters) immediately as soon as they are no longer used.
+This has a downside of added a bunch of extra code, but I believe the cost is worth the gains.
+This strategy has an extra benefit of improving integrity and security by making it less likely that variable names aren't accidentally re-used.
+This re-use issue is most notable when working with referenced variables, especially with foreach() loops.
+
+Foreach loop issue example:
+  <?php
+  foreach ($a => &$b) {
+    print($b);
+  }
+
+  $b = "hello world"; // here, the variable stored in the array $a gets overwritten when $b is modified.
+  ?>
+
+Adding an unset($b); at the end of the loop prevents the above issue.
+This then makes it easier, and safer, to use the same variable names for certain process (such as using $key and $value in a  foreach() loop).
+
+In terms of memory, PHP does not de-allocate the reserved memory, but it does re-use already allocated memory that is not currently in use.
+With this unset() strategy, the likelyhood of allocating more memory becomes decreased.
+
+Memory usage examples:
+  <?php
+  $byte = 1048576;
+  for($i = 0; $i < 100; $i++) {
+    $bytes = $byte * 10;
+    $test = str_repeat("Test", $bytes);
+    unset($test);
+  }
+  unset($i);
+  unset($byte);
+  unset($bytes);
+
+  print("Final Memory Use: " . memory_get_usage(true));
+  print("\n");
+  print("Final Peak Memory: " . memory_get_peak_usage(true));
+  print("\n");
+  print("\n");
+  ?>
+
+  (using PHP 7.1.2 (cli))
+  As-is, this returns:
+    Final Memory Use: 2097152
+    Final Peak Memory: 44044288
+
+  Commenting out every single unset() call, this returns:
+    Final Memory Use: 44044288
+    Final Peak Memory: 85991424
+
+The above examples mean that we can theoretically have twice as many processes calling the same function when using unset() than when not using unset() as described.
+
+The use of gc_collect_cycles() should be used between major points in the code to manually trigger PHP to free up its memory.
+This should be used strategically because calling it may have a noticable performance impact.
+
+
+=====================
+= The Use of Spaces =
+=====================
+Whitespaces (usually a space) help make code more readable, in my opinion.
+
+Tabs are considered outright bad practice, never use tabs (unless forced to by a given language).
+
+Newlines are not used to break up long lines, this practice should be avoided as much as possible.
+Client software can easily word wrap whereas hard newlines prevent clients from choosing their view/presentation/etc...
+
+Newlines are also used to separate blocks of code that may have different logic, context, or breaks in purpose.
+Generally, 2 newlines are used to break up a block of code or change in logic, intent, or context.
+In source code that has very little structural syntax, like CSS and possible SQL, more than 2 newlines are used to break up larger groups.
+In practice, I seem to be using 4 newlines for major blocks, 3 for minor, and 2 for smallest blocks in files like CSS and SQL.
+
+
+====================
+= Naming Verbosity =
+====================
+This is open-source, the code should be readable.
+To that extent, it should be as readable as a story (or as close as possible to such a thing).
+A reader (ideally) should not have to look around to find means of variables, functions, classes, etc...
+
+The name itself should be descriptive and be complete words.
+There is still an objective to keep names are short as possible, but the meaning and intent of the names should remain.
+
+This has a cost of making very long lines, but I consider that to be trivial.
+This also has a cost in number of characters, so the size of the code and amount of information to be processed is larger.
+
+This is not about being strict in what names are being used but is instead about being verbose in how names are defined.
+
+
+============================
+= Process Outside of Loops =
+============================
+Loops can be expensive and it is best to consider each loop to be processing infinitely large data.
+
+For this reason, it is considered good practice to try to get operations that can (reasonably) be placed outside of the loop to do so.
+
+For example, there are many cases where I have loops where I append a comma so semi-colon to a string for all but the first.
+Logically, I have a habit of writing the following:
+  <?php
+  $processed = NULL;
+
+  foreach ($infinite as $sub_key => $sub_value) {
+    // operation block #1.
+    if (!is_null($processed)) {
+      $processed .= '; ';
+    }
+
+    // operation block #2.
+    $processed .= $sub_key . '=' . $sub_value;
+  }
+  ?>
+
+The problem here is that the !is_null() test is performed inside the loop.
+Lets just say that this means we have 2*infinite operations.
+Performance could be improved if we just had 1*infinite (the bare minimum possible if we have to loop against some data).
+
+To do so, the second operation should be moved outside the loop as follows:
+  <?php
+  // operation block #1.
+  $sub_value = reset($infinite);
+  $sub_key = key($infinite);
+  unset($infinite[$sub_key]);
+  $processed = $sub_key . '=' . $sub_value;
+
+  foreach ($infinite as $sub_value) {
+    // operation block #2.
+    $processed .= '; ' . $sub_value;
+  }
+  ?>
+
+Try to avoid loops whenever possible (always assume they are infinite), but if you have to try to use only one loop instead of multiple.
+Object-oriented designed code can be incredibly inefficient when it comes to loops because it may prevent code designs that allow for using only a single loop.
+To this end, I am trying to provide functions that do not operate on loops but instead on individual keys and values.
+Unfortunately, there are a large number of places where this is not possible, in part because I want to keep the context of a given function/class consistent and self-contained.
+Good examples of such troublesome cases can be viewed within the rfc_char and rfc_string classes and functions.
