@@ -1002,7 +1002,7 @@ class c_base_utf8 {
       unset($array);
     }
 
-    if ($split[0] === '') {
+    if (empty($split) || $split[0] === '') {
       return array();
     }
 
