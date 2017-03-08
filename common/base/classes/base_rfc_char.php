@@ -332,10 +332,9 @@ abstract class c_base_rfc_char extends c_base_return {
   /**
    * Check to see if character is: tchar68.
    *
-   * This doesn't directly exist, but is supplied for use with token68 in the same way tchar is used by token.
-   *
-   * tchar = Visible ASCII character codes: 43, 45->57, 65->90, 95, 97->122, 126
+   * tchar = Visible ASCII character codes: 43, 45->57, 65->90, 95, 97->122, 126.
    * tchar = UTF_8-2, UTF_8-3, UTF_8-4.
+   * tchar = ALPHA, DIGIT, '-', '.', '_', '~', '+', '/'.
    *
    * @param int $ordinal
    *   A code representing a single character to test.
@@ -770,7 +769,8 @@ abstract class c_base_rfc_char extends c_base_return {
   /**
    * Check to see if character is: unreserved.
    *
-   * unreserved = ASCII character codes 45, 46, 48->57, 65->90, 95, 97->122, 126
+   * unreserved = ASCII character codes 45, 46, 48->57, 65->90, 95, 97->122, 126.
+   *            = ALPHA, DIGIT, '-', '.', '_', '~'.
    *
    * @param int $ordinal
    *   A code representing a single character to test.
@@ -793,9 +793,10 @@ abstract class c_base_rfc_char extends c_base_return {
   }
 
   /**
-   * Check to see if character is: unreserved.
+   * Check to see if character is: reserved.
    *
-   * reserved = ASCII character codes 33, 35, 36, 38->44, 47, 58, 59, 61, 63, 64, 91, 93
+   * reserved = ASCII character codes 33, 35, 36, 38->44, 47, 58, 59, 61, 63, 64, 91, 93.
+   *          = ':',  '/',  '?',  '#',  '[',  ']',  '@', '!',  '$',  '&',  ''',  '(',  ')',  '*',  '+',  ',',  ';',  '='.
    *
    * @param int $ordinal
    *   A code representing a single character to test.
@@ -828,7 +829,8 @@ abstract class c_base_rfc_char extends c_base_return {
   /**
    * Check to see if character is: gen-delims.
    *
-   * gen-delims = ASCII character codes 35, 47, 58, 63, 64, 91, 93
+   * gen-delims = ASCII character codes 35, 47, 58, 63, 64, 91, 93.
+   *            = ':', '/', '?', '#', '[', ']', '@'.
    *
    * @param int $ordinal
    *   A code representing a single character to test.
@@ -853,7 +855,8 @@ abstract class c_base_rfc_char extends c_base_return {
   /**
    * Check to see if character is: sub-delims.
    *
-   * sub-delims = ASCII character codes 33, 36, 38->44, 59, 61
+   * sub-delims = ASCII character codes 33, 36, 38->44, 59, 61.
+   *            = '!', '$', '&', ''', '(', ')', '*', '+', ',', ';', '='.
    *
    * @param int $ordinal
    *   A code representing a single character to test.
@@ -873,6 +876,102 @@ abstract class c_base_rfc_char extends c_base_return {
     }
 
     if ($ordinal == c_base_ascii::COLON_SEMI || $ordinal == c_base_ascii::EQUAL) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Check to see if character is: pchar.
+   *
+   * sub-delims = ASCII character codes 33, 36->46, 48->59, 61, 64->90, 95, 97->122, 126.
+   *            = ALPHA, DIGIT, '-', '.', '_', '~', '!', '$', '&', ''', '(', ')', '*', '+', ',', ';', '='. ':', '@', '%'.
+   *
+   * @param int $ordinal
+   *   A code representing a single character to test.
+   *
+   * @return bool
+   *   TRUE on match, FALSE otherwise.
+   *
+   * @see: https://tools.ietf.org/html/rfc3986#appendix-A
+   */
+  protected function pr_rfc_char_is_pchar($ordinal) {
+    if ($ordinal == c_base_ascii::EXCLAMATION) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::HASH && $ordinal < c_base_ascii::SLASH_FORWARD) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::SLASH_FORWARD && $ordinal < c_base_ascii::LESS_THAN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::EQUAL) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::QUESTION_MARK && $ordinal < c_base_ascii::BRACKET_OPEN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::UNDERSCORE) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::GRAVE && $ordinal < c_base_ascii::BRACE_OPEN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::TILDE) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Check to see if character is: query (or fragment).
+   *
+   * query = ASCII character codes 33, 36->59, 61, 63->90, 95, 97->122, 126.
+   *       = ALPHA, DIGIT, '-', '.', '_', '~', '!', '$', '&', ''', '(', ')', '*', '+', ',', ';', '='. ':', '@', '%', '?', '/'.
+   *
+   * @param int $ordinal
+   *   A code representing a single character to test.
+   *
+   * @return bool
+   *   TRUE on match, FALSE otherwise.
+   *
+   * @see: https://tools.ietf.org/html/rfc3986#appendix-A
+   */
+  protected function pr_rfc_char_is_query($ordinal) {
+    if ($ordinal == c_base_ascii::EXCLAMATION) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::HASH && $ordinal < c_base_ascii::LESS_THAN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::EQUAL) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::GREATER_THAN && $ordinal < c_base_ascii::BRACKET_OPEN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::UNDERSCORE) {
+      return TRUE;
+    }
+
+    if ($ordinal > c_base_ascii::GRAVE && $ordinal < c_base_ascii::BRACE_OPEN) {
+      return TRUE;
+    }
+
+    if ($ordinal == c_base_ascii::TILDE) {
       return TRUE;
     }
 

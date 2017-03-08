@@ -95,7 +95,8 @@
     #$http->set_response_last_modified(strtotime('now'));
     #$http->set_response_expires(strtotime('+30 minutes'));
     $http->set_response_pragma('no-cache');
-    #$http->set_response_vary('Date');
+    $http->set_response_vary('Host');
+    $http->set_response_vary('User-Agent');
     #$http->set_response_warning('1234 This site is under active development.');
 
     // finalize the content prior to sending headers to ensure header accuracy.

@@ -19,11 +19,6 @@ require_once('common/base/classes/base_mime.php');
 /**
  * A generic class for managing the HTTP protocol.
  *
- * @todo: many of the HTTP response fields can become HTML meta header fields.
- *        add a function to return an array of HTTP attributes that can be translated into HTTP tags.
- *        no processing is to be done here, let a class that is explicitly designed for HTML process it.
- *        example, content-security-policy (https://en.wikipedia.org/wiki/Content_Security_Policy).
- *
  * @see: https://www.iana.org/assignments/message-headers/message-headers.xhtml
  * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
  *
@@ -207,7 +202,7 @@ class c_base_http extends c_base_rfc_string {
   const ENCODING_GZIP     = 4; // Compression Options: -1 -> 9.
   const ENCODING_BZIP     = 5; // Compression Options: 1 -> 9.
   const ENCODING_LZO      = 6; // Compression Options: LZO1_99, LZO1A_99, LZO1B_999, LZO1C_999, LZO1F_999, LZO1X_999, LZO1Y_999, LZO1Z_999, LZO2A_999 (and many more).
-  const ENCODING_XZ       = 7;
+  const ENCODING_XZ       = 7; // currently unsupported due to available libraries being defunct.
   const ENCODING_EXI      = 8;
   const ENCODING_IDENTITY = 9;
   const ENCODING_SDCH     = 10;
@@ -305,6 +300,32 @@ class c_base_http extends c_base_rfc_string {
    */
   public static function s_value_exact($return) {
     return self::p_s_value_exact($return, __CLASS__, '');
+  }
+
+  /**
+   * Returns a list of HTTP headers that can be used as an HTML meta tag.
+   *
+   * The relationship between HTTP headers and HTML headers is not always one to one.
+   * These should be used
+   * @todo: this list will need to be reviewed once I work on the HTML meta handling code.
+   *
+   * The HTML language supports HTTP headers as HTML tags.
+   *
+   * @see: https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names
+   * @see: https://www.w3.org/TR/html5/document-metadata.html#the-meta-element
+   */
+  public function get_response_headers_for_meta() {
+    return array(
+      self::RESPONSE_CACHE_CONTROL => self::RESPONSE_CACHE_CONTROL,
+      self::RESPONSE_CONTENT_ENCODING => self::RESPONSE_CONTENT_ENCODING,
+      self::RESPONSE_CONTENT_LANGUAGE => self::RESPONSE_CONTENT_LANGUAGE,
+      self::RESPONSE_CONTENT_SECURITY_POLICY => self::RESPONSE_CONTENT_SECURITY_POLICY,
+      self::RESPONSE_CONTENT_TYPE => self::RESPONSE_CONTENT_TYPE,
+      self::RESPONSE_EXPIRES => self::RESPONSE_EXPIRES,
+      self::RESPONSE_LINK => self::RESPONSE_LINK,
+      self::RESPONSE_PRAGMA => self::RESPONSE_PRAGMA,
+      self::RESPONSE_REFRESH => self::RESPONSE_REFRESH,
+    );
   }
 
   /**
@@ -570,21 +591,18 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['accept_datetime']);
     }
 
-    // @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
     if (array_key_exists('access_control_request_method', $this->headers)) {
-      $this->p_load_request_rawish('access_control_request_method', $this->REQUEST_ACCESS_CONTROL_REQUEST_METHOD, 256);
+      $this->p_load_request_access_control_request_method();
       unset($headers['access_control_request_method']);
     }
 
-    // @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
     if (array_key_exists('access_control_request_headers', $this->headers)) {
-      $this->p_load_request_rawish('access_request_allow_headers', $this->REQUEST_ACCESS_CONTROL_REQUEST_HEADERS, 256);
+      $this->p_load_request_access_control_request_headers();
       unset($headers['access_control_request_headers']);
     }
 
-    // @see: https://tools.ietf.org/html/rfc7235#section-4.2
     if (array_key_exists('authorization', $this->headers)) {
-      $this->p_load_request_rawish('authorization', $this->REQUEST_AUTHORIZATION, 4096);
+      $this->p_load_request_authorization();
       unset($headers['authorization']);
     }
 
@@ -688,9 +706,8 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['origin']);
     }
 
-    // @see: https://tools.ietf.org/html/rfc7235#section-4.4
     if (array_key_exists('proxy_authorization', $this->headers)) {
-      $this->p_load_request_rawish('proxy_authorization', $this->REQUEST_PROXY_AUTHORIZATION, 4096);
+      $this->p_load_request_proxy_authorization();
       unset($headers['proxy_authorization']);
     }
 
@@ -725,22 +742,22 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (array_key_exists('x_requested_with', $this->headers)) {
-      $this->p_load_request_rawish('x_requested_with', $this->REQUEST_X_REQUESTED_WITH, 64);
+      $this->p_load_request_x_requested_with();
       unset($headers['x_requested_with']);
     }
 
     if (array_key_exists('x_forwarded_for', $this->headers)) {
-      $this->p_load_request_rawish('x_forwarded_for', $this->REQUEST_X_FORWARDED_for, 512);
+      $this->p_load_request_x_requested_for();
       unset($headers['x_forwarded_for']);
     }
 
     if (array_key_exists('x_forwarded_host', $this->headers)) {
-      $this->p_load_request_rawish('x_forwarded_host', $this->REQUEST_X_FORWARDED_HOST, 512);
+      $this->p_load_request_x_requested_host();
       unset($headers['x_forwarded_host']);
     }
 
     if (array_key_exists('x_forwarded_proto', $this->headers)) {
-      $this->p_load_request_rawish('x_forwarded_proto', $this->REQUEST_X_FORWARDED_PROTO, 64);
+      $this->p_load_request_x_requested_proto();
       unset($headers['x_forwarded_proto']);
     }
 
@@ -776,8 +793,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: access-control-allow-origin.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
+   * Note on multiple urls: The standard appears to only support one url.
+   * Therefore, to have multiple urls, the clients ORIGIN should be checked against a known list.
+   * Then, from that list either the default or the clients ORIGIN is sent.
    *
    * @param string $uri
    *   The uri to assign to the specified header.
@@ -788,6 +806,8 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin
    */
   public function set_response_access_control_allow_origin($uri) {
     if (!is_string($uri)) {
@@ -800,13 +820,24 @@ class c_base_http extends c_base_rfc_string {
       $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN] = array('wildcard' => TRUE);
     }
     else {
-      $parsed = $this->p_parse_uri($uri);
+      $text = $this->pr_rfc_string_prepare($uri);
+      if ($text['invalid']) {
+        unset($text);
+
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        return c_base_return_error::s_false($error);
+      }
+
+      $parsed = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+      unset($text);
+
       if ($parsed['invalid']) {
         unset($parsed);
         $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'uri', ':expected_format' => NULL, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
         return c_base_return_error::s_false($error);
       }
       unset($parsed['invalid']);
+      unset($parsed['current']);
 
       $parsed['wildcard'] = FALSE;
       $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN] = $parsed;
@@ -819,9 +850,6 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: access-control-allow-credentials.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @param bool $allow_credentials
    *   The value to assign to the specified header.
    *
@@ -830,6 +858,8 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Credentials
    */
   public function set_response_access_control_allow_credentials($allow_credentials) {
     if (!is_bool($allow_credentials)) {
@@ -844,10 +874,6 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: access-control-expose-headers.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   * @todo: should this be written in the same way as set_response_allow()?
-   *
    * @param string $header_name
    *   The header name to assign to the specified header.
    * @param bool $append
@@ -859,6 +885,8 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Expose-Headers
    */
   public function set_response_access_control_expose_headers($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
@@ -898,33 +926,29 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: access-control-max-age.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
-   * @param int|float $timestamp
-   *   The timestamp to assign to the specified header.
+   * @param int|float $seconds
+   *   The seconds to assign to the specified header.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Max-Age
    */
-  public function set_response_access_control_max_age($timestamp) {
-    if (!is_int($timestamp) && !is_float($timestamp)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timestamp', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_response_access_control_max_age($seconds) {
+    if (!is_int($seconds) && !is_float($seconds)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'seconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->response[self::RESPONSE_ACCESS_CONTROL_MAX_AGE] = $timestamp;
+    $this->response[self::RESPONSE_ACCESS_CONTROL_MAX_AGE] = $seconds;
     return new c_base_return_true();
   }
 
   /**
    * Assign HTTP response header: access-control-allow-methods.
-   *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
    *
    * @param int $method
    *   The code representing the method to assign to the specified header.
@@ -937,6 +961,8 @@ class c_base_http extends c_base_rfc_string {
    *   FALSE with error bit set is returned on error.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Methods
    */
   public function set_response_access_control_allow_methods($method, $append = TRUE) {
     if (!is_int($method)) {
@@ -948,6 +974,34 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
+
+
+    // this method does nothing.
+    if ($method === self::HTTP_METHOD_NONE) {
+      return new c_base_return_true();
+    }
+
+
+    // require only valid/known methods.
+    switch ($method) {
+      case self::HTTP_METHOD_NONE:
+      case self::HTTP_METHOD_GET:
+      case self::HTTP_METHOD_HEAD:
+      case self::HTTP_METHOD_POST:
+      case self::HTTP_METHOD_PUT:
+      case self::HTTP_METHOD_DELETE:
+      case self::HTTP_METHOD_TRACE:
+      case self::HTTP_METHOD_OPTIONS:
+      case self::HTTP_METHOD_CONNECT:
+      case self::HTTP_METHOD_PATCH:
+      case self::HTTP_METHOD_TRACK:
+      case self::HTTP_METHOD_DEBUG:
+        break;
+
+      default:
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'method', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
 
 
     if ($append) {
@@ -967,9 +1021,6 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: access-control-allow-headers.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @param string $header_name
    *   The header name to assign to the specified header.
    * @param bool $append
@@ -977,6 +1028,8 @@ class c_base_http extends c_base_rfc_string {
    *   If FALSE, then assign the header name.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Headers
    */
   public function set_response_access_control_allow_headers($header_name, $append = TRUE) {
     if (!is_string($header_name)) {
@@ -2148,10 +2201,10 @@ class c_base_http extends c_base_rfc_string {
    * The standard defines this as:
    * - (uri) *(";" 1*(tchar) "=" 1*(1*(tchar) / 1*(quoted-string)))
    *
-   * @param string|null $uri
+   * This standard likely supports multiple link headers.
+   *
+   * @param string $uri
    *   The URI to assign to the specified header.
-   *   May be NULL when append is TRUE.
-   *   Both $null and $parameter_name may not be NULL.
    * @param string|null $parameter_name
    *   (optional) A single link parameter to be added.
    *   If NULL, then this is ignored.
@@ -2160,8 +2213,9 @@ class c_base_http extends c_base_rfc_string {
    *   (optional) A single link value to be added.
    *   If NULL, then this is ignored.
    * @param bool $append
-   *   (optional) If TRUE, then append the header name.
-   *   If FALSE, then assign the header name.
+   *   (optional) If TRUE, then append the parameter name.
+   *   If FALSE, then assign the parameter name.
+   *   When $parameter_name is NULL and this is FALSE, then assign an empty array for parameters associated with $uri.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -2202,7 +2256,17 @@ class c_base_http extends c_base_rfc_string {
     }
 
 
-    $parsed_uri = $this->p_parse_uri($uri);
+    $text = $this->pr_rfc_string_prepare($uri);
+    if ($text['invalid']) {
+      unset($text);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+
+    $parsed = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
+
     if ($parsed_uri['invalid']) {
       unset($parsed_uri);
 
@@ -2210,6 +2274,22 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
     unset($parsed_uri['invalid']);
+
+
+    // when append is FALSE and there is no parameter name, then assign url instead of appending url.
+    if (!$append && is_null($parameter_name)) {
+      if (!isset($this->response[self::RESPONSE_LINK])) {
+        $this->response[self::RESPONSE_LINK] = array();
+      }
+
+      $this->response[self::RESPONSE_LINK][$uri] = array(
+        'uri' => $parsed_uri,
+        'parameters' => array(),
+      );
+      unset($parsed_uri);
+
+      return new c_base_return_true();
+    }
 
 
     $prepared_parameter_name = NULL;
@@ -2260,31 +2340,23 @@ class c_base_http extends c_base_rfc_string {
 
 
     if (!isset($this->response[self::RESPONSE_LINK])) {
-      // uri cannot be NULL if there is no uri currently assigned.
-      if (is_null($uri)) {
-        unset($prepared_token);
-
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-        return c_base_return_error::s_false($error);
-      }
-
-      $this->response[self::RESPONSE_LINK] = array(
-        'uri' => NULL,
-        'parameters' => array(),
-      );
+      $this->response[self::RESPONSE_LINK] = array();
     }
 
-    if (is_string($uri)) {
-      $this->response[self::RESPONSE_LINK]['uri'] = $parsed_uri;
+    if (!array_key_exists($uri, $this->response[self::RESPONSE_LINK])) {
+      $this->response[self::RESPONSE_LINK][$uri] = array(
+        'uri' => $parsed_uri,
+        'parameters' => array()
+      );
     }
     unset($parsed_uri);
 
     if (is_string($parameter_name)) {
       if ($append) {
-        $this->response[self::RESPONSE_LINK]['parameters'][$prepared_parameter_name] = $parsed_parameter_value['text'];
+        $this->response[self::RESPONSE_LINK][$uri]['parameters'][$prepared_parameter_name] = $parsed_parameter_value['text'];
       }
       else {
-        $this->response[self::RESPONSE_LINK]['parameters'] = array($prepared_parameter_name => $parsed_parameter_value['text']);
+        $this->response[self::RESPONSE_LINK][$uri]['parameters'] = array($prepared_parameter_name => $parsed_parameter_value['text']);
       }
     }
     unset($prepared_parameter_name);
@@ -2313,7 +2385,18 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    $parsed = $this->p_parse_uri($uri);
+
+    $text = $this->pr_rfc_string_prepare($uri);
+    if ($text['invalid']) {
+      unset($text);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->pr_rfc_string_prepare', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      return c_base_return_error::s_false($error);
+    }
+
+    $parsed = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
+
     if ($parsed['invalid']) {
       unset($parsed);
       $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'uri', ':expected_format' => NULL, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
@@ -2675,9 +2758,7 @@ class c_base_http extends c_base_rfc_string {
       unset($this->response[self::RESPONSE_CONTENT_LENGTH]);
     }
 
-    // RESPONSE_TRANSFER_ENCODING
-
-    // @todo
+    // @todo: self::RESPONSE_TRANSFER_ENCODING
 
     $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response transfer encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
     return c_base_return_error::s_false($error);
@@ -2727,7 +2808,7 @@ class c_base_http extends c_base_rfc_string {
     }
 
 
-    $prepared_token = $this->p_prepare_token($header_name);
+    $prepared_token = $this->p_prepare_token($header_name, FALSE);
     if ($prepared_token === FALSE) {
       unset($prepared_token);
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_prepare_token', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
@@ -3357,15 +3438,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-origin.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_array|c_base_return_status
    *   A decoded uri split into its different parts inside an array.
    *   This array also contains a key called 'wildcard' which may be either TRUE or FALSE.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin
    */
   public function get_response_access_control_allow_origin() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
@@ -3379,14 +3459,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-credentials.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_bool|c_base_return_status
    *   A boolean representing whether or not to allow credentials.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Credentials
+   *
    */
   public function get_response_access_control_allow_credentials() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, $this->response)) {
@@ -3400,14 +3480,13 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-expose-headers.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_array|c_base_return_status
    *   An array of headers to expose.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Expose-Headers
    */
   public function get_response_access_control_expose_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
@@ -3421,14 +3500,13 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-max-age.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_int|c_base_return_status
    *   An Unix timestamp representing the specified header.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Max-Age
    */
   public function get_response_access_control_max_age() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_MAX_AGE, $this->response)) {
@@ -3442,13 +3520,12 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-methods.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_array|c_base_return_status
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Methods
    */
   public function get_response_access_control_allow_methods() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
@@ -3462,12 +3539,13 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-headers.
    *
-   * @todo: I only glanced at the documentation (which was incomplete on wikipedia).
-   *        More work is likely needed to be done with this and its structure is subject to change.
-   *
    * @return c_base_return_arrayl|c_base_return_status
    *   An array of allowed headers is returned.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *
+   * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Headers
    */
   public function get_response_access_control_allow_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
@@ -4447,7 +4525,7 @@ class c_base_http extends c_base_rfc_string {
     }
 
     $this->p_prepare_header_response_access_control_allow_origin($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN], $header_output);
-    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS], $header_output, self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS);
+    $this->p_prepare_header_response_boolean_value($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS], $header_output, self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS);
     $this->p_prepare_header_response_access_control_expose_headers($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS], $header_output);
     $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_MAX_AGE], $header_output, self::RESPONSE_ACCESS_CONTROL_MAX_AGE);
     $this->p_prepare_header_response_access_control_allow_methods($header_id_to_names[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS], $header_output);
@@ -4804,7 +4882,7 @@ class c_base_http extends c_base_rfc_string {
       krsort($this->request[self::REQUEST_ACCEPT]['data']['weight']);
 
       // The NULL key should be the first key in the weight.
-      $this->p_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT]['data']['weight']);
+      $this->pr_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT]['data']['weight']);
 
       // rename 'choices' array key to 'accept'.
       $this->request[self::REQUEST_ACCEPT]['data']['accept'] = $this->request[self::REQUEST_ACCEPT]['data']['choices'];
@@ -4875,7 +4953,7 @@ class c_base_http extends c_base_rfc_string {
       krsort($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight']);
 
       // The NULL key should be the first key in the weight.
-      $this->p_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight']);
+      $this->pr_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight']);
 
       // rename 'choices' array key to 'language'.
       $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['language'] = $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['choices'];
@@ -4986,7 +5064,7 @@ class c_base_http extends c_base_rfc_string {
       krsort($this->request[self::REQUEST_ACCEPT_ENCODING]['data']['weight']);
 
       // The NULL key should be the first key in the weight.
-      $this->p_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_ENCODING]['data']['weight']);
+      $this->pr_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_ENCODING]['data']['weight']);
 
       // rename 'choices' array key to 'encoding'.
       $this->request[self::REQUEST_ACCEPT_ENCODING]['data']['encoding'] = $this->request[self::REQUEST_ACCEPT_ENCODING]['data']['choices'];
@@ -5142,7 +5220,7 @@ class c_base_http extends c_base_rfc_string {
       krsort($this->request[self::REQUEST_ACCEPT_CHARSET]['data']['weight']);
 
       // The NULL key should be the first key in the weight.
-      $this->p_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_CHARSET]['data']['weight']);
+      $this->pr_prepend_array_value(NULL, $this->request[self::REQUEST_ACCEPT_CHARSET]['data']['weight']);
     }
     unset($this->request[self::REQUEST_ACCEPT_CHARSET]['data']['invalid']);
 
@@ -5174,6 +5252,167 @@ class c_base_http extends c_base_rfc_string {
     $this->request[self::REQUEST_ACCEPT_DATETIME]['invalid'] = FALSE;
 
     unset($timestamp);
+  }
+
+  /**
+   * Load and process the HTTP request parameter: accept-datetime.
+   *
+   * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Request-Method
+   */
+  private function p_load_request_access_control_request_method() {
+    $method_string = mb_strtolower($this->headers['access_control_request_method']);
+    $method_string = str_replace(' ', '', $method_string);
+
+    $methods = explode(',', $method_string);
+    unset($method_string);
+
+    if (empty($methods)) {
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['invalid'] = TRUE;
+      return;
+    }
+
+    $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'] = array();
+
+    foreach ($methods as $method) {
+      switch ($method) {
+        case 'get':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_GET] = self::HTTP_METHOD_GET;
+          break;
+
+        case 'head':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_HEAD] = self::HTTP_METHOD_HEAD;
+          break;
+
+        case 'post':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_POST] = self::HTTP_METHOD_POST;
+          break;
+
+        case 'put':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_PUT] = self::HTTP_METHOD_PUT;
+          break;
+
+        case 'delete':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_DELETE] = self::HTTP_METHOD_DELETE;
+          break;
+
+        case 'trace':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_TRACE] = self::HTTP_METHOD_TRACE;
+          break;
+
+        case 'options':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_OPTIONS] = self::HTTP_METHOD_OPTIONS;
+          break;
+
+        case 'connect':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_CONNECT] = self::HTTP_METHOD_CONNECT;
+          break;
+
+        case 'patch':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_PATCH] = self::HTTP_METHOD_PATCH;
+          break;
+
+        case 'track':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_TRACK] = self::HTTP_METHOD_TRACK;
+          break;
+
+        case 'debug':
+          $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'][self::HTTP_METHOD_DEBUG] = self::HTTP_METHOD_DEBUG;
+          break;
+
+        default:
+          // skip unknown methods instead of failing so that any discovered known methods are still loaded.
+          break;
+      }
+    }
+    unset($method);
+
+    if (!empty($methods) && empty($this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['data'])) {
+      unset($methods);
+
+      // no valid methods were found, now the error can be reported.
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['invalid'] = TRUE;
+      return;
+    }
+    unset($methods);
+
+    $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['defined'] = TRUE;
+    $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_METHOD]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: accept-datetime.
+   *
+   * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Request-Headers
+   */
+  private function p_load_request_access_control_request_headers() {
+    if (empty($this->headers['access_control_request_headers'])) {
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['access_control_request_headers']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data'] = $this->pr_rfc_string_is_token($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['invalid']) {
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['defined'] = TRUE;
+
+      // rename 'tokens' array key to 'headers'.
+      $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['headers'] = $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['tokens'];
+      unset($this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['tokens']);
+    }
+    unset($this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['invalid']);
+    unset($this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['data']['current']);
+
+    $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: authorization.
+   *
+   * 1*(tchar) 1*(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) *( *(wsp) "," *(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) ).
+   *
+   * @see: https://tools.ietf.org/html/rfc7235#section-4.2
+   */
+  private function p_load_request_authorization() {
+    if (empty($this->headers['authorization'])) {
+      $this->request[self::REQUEST_AUTHORIZATION]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['authorization']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_AUTHORIZATION]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_AUTHORIZATION]['data'] = $this->pr_rfc_string_is_credentials($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_AUTHORIZATION]['data']['invalid']) {
+      $this->request[self::REQUEST_AUTHORIZATION]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_AUTHORIZATION]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_AUTHORIZATION]['data']['invalid']);
+    unset($this->request[self::REQUEST_AUTHORIZATION]['data']['current']);
+
+    $this->request[self::REQUEST_AUTHORIZATION]['invalid'] = FALSE;
   }
 
   /**
@@ -5283,7 +5522,7 @@ class c_base_http extends c_base_rfc_string {
 
       // rename 'tokens' array key to 'connection'.
       $this->request[self::REQUEST_CONNECTION]['data']['connection'] = $this->request[self::REQUEST_CONNECTION]['data']['tokens'];
-      unset($this->request[self::REQUEST_CONNECTION]['data']['tokens']);
+      unset($this->request[self::REQUEST_CONNECTION]['data']['text']);
     }
     unset($this->request[self::REQUEST_CONNECTION]['data']['invalid']);
     unset($this->request[self::REQUEST_CONNECTION]['data']['current']);
@@ -5505,7 +5744,16 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $this->request[self::REQUEST_HOST]['data'] = $this->p_parse_uri($this->headers['host']);
+    $text = $this->pr_rfc_string_prepare($this->headers['host']);
+    if ($text['invalid']) {
+      unset($text);
+
+      $this->request[self::REQUEST_HOST]['invalid'] = TRUE;
+      return;
+    }
+
+    $this->request[self::REQUEST_HOST]['data'] = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
 
     if ($this->request[self::REQUEST_HOST]['data']['invalid']) {
       $this->request[self::REQUEST_HOST]['invalid'] = TRUE;
@@ -5754,6 +6002,7 @@ class c_base_http extends c_base_rfc_string {
    *
    * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
    */
   private function p_load_request_origin() {
     if (empty($this->headers['origin'])) {
@@ -5761,7 +6010,16 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $this->request[self::REQUEST_ORIGIN]['data'] = $this->p_parse_uri($this->headers['origin']);
+    $text = $this->pr_rfc_string_prepare($this->headers['origin']);
+    if ($text['invalid']) {
+      unset($text);
+
+      $this->request[self::REQUEST_ORIGIN]['invalid'] = TRUE;
+      return;
+    }
+
+    $this->request[self::REQUEST_ORIGIN]['data'] = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
 
     if ($this->request[self::REQUEST_ORIGIN]['data']['invalid']) {
       $this->request[self::REQUEST_ORIGIN]['invalid'] = TRUE;
@@ -5775,6 +6033,41 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
+   * Load and process the HTTP request parameter: proxy-authorization.
+   *
+   * 1*(tchar) 1*(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) *( *(wsp) "," *(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) ).
+   *
+   * @see: https://tools.ietf.org/html/rfc7235#section-4.4
+   */
+  private function p_load_request_proxy_authorization() {
+    if (empty($this->headers['proxy_authorization'])) {
+      $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['proxy_authorization']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_PROXY_AUTHORIZATION]['data'] = $this->pr_rfc_string_is_credentials($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_PROXY_AUTHORIZATION]['data']['invalid']) {
+      $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_PROXY_AUTHORIZATION]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_PROXY_AUTHORIZATION]['data']['invalid']);
+    unset($this->request[self::REQUEST_PROXY_AUTHORIZATION]['data']['current']);
+
+    $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = FALSE;
+  }
+
+  /**
    * Load and process the HTTP request parameter: referer.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-5.5.2
@@ -5785,7 +6078,16 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $this->request[self::REQUEST_REFERER]['data'] = $this->p_parse_uri($this->headers['referer']);
+    $text = $this->pr_rfc_string_prepare($this->headers['referer']);
+    if ($text['invalid']) {
+      unset($text);
+
+      $this->request[self::REQUEST_REFERER]['invalid'] = TRUE;
+      return;
+    }
+
+    $this->request[self::REQUEST_REFERER]['data'] = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
 
     if ($this->request[self::REQUEST_REFERER]['data']['invalid']) {
       $this->request[self::REQUEST_REFERER]['invalid'] = TRUE;
@@ -6010,6 +6312,145 @@ class c_base_http extends c_base_rfc_string {
     unset($this->request[self::REQUEST_WARNING]['data']['invalid']);
 
     $this->request[self::REQUEST_WARNING]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: x-requested-with.
+   *
+   * I am just assuming the syntax to be 1*(tchar).
+   *
+   * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+   */
+  private function p_load_request_x_requested_with() {
+    if (empty($this->headers['x-requested-with'])) {
+      $this->request[self::REQUEST_X_REQUESTED_WITH]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['x-requested-with']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_WITH]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_X_REQUESTED_WITH]['data'] = $this->pr_rfc_string_is_token($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_X_REQUESTED_WITH]['data']['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_WITH]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_X_REQUESTED_WITH]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_X_REQUESTED_WITH]['data']['invalid']);
+
+    $this->request[self::REQUEST_X_REQUESTED_WITH]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: x-requested-for.
+   *
+   * This could be a name or an ip address.
+   * I am just using 1*(tchar) because that also allows ip addresses.
+   *
+   * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+   */
+  private function p_load_request_x_requested_for() {
+    if (empty($this->headers['x-requested-for'])) {
+      $this->request[self::REQUEST_X_REQUESTED_FOR]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['x-requested-for']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_FOR]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_X_REQUESTED_HOST]['data'] = $this->pr_rfc_string_is_token($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['invalid']);
+    unset($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['uri']);
+
+    $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: x-requested-host.
+   *
+   * I am just assuming the syntax to be (url).
+   *
+   * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+   */
+  private function p_load_request_x_requested_host() {
+    if (empty($this->headers['x-requested-host'])) {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['x-requested-host']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_X_REQUESTED_HOST]['data'] = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['invalid'] || $this->request[self::REQUEST_X_REQUESTED_HOST]['data']['uri'] === FALSE) {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_X_REQUESTED_HOST]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['invalid']);
+    unset($this->request[self::REQUEST_X_REQUESTED_HOST]['data']['uri']);
+
+    $this->request[self::REQUEST_X_REQUESTED_HOST]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: x-requested-proto.
+   *
+   * I am just assuming the syntax to be 1*(tchar).
+   *
+   * @see: https://en.wikipedia.org/wiki/List_of_HTTP_header_fields
+   */
+  private function p_load_request_x_requested_proto() {
+    if (empty($this->headers['x-requested-proto'])) {
+      $this->request[self::REQUEST_X_REQUESTED_PROTO]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['x-requested-proto']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_PROTO]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_X_REQUESTED_PROTO]['data'] = $this->pr_rfc_string_is_token($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_X_REQUESTED_PROTO]['data']['invalid']) {
+      $this->request[self::REQUEST_X_REQUESTED_PROTO]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_X_REQUESTED_PROTO]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_X_REQUESTED_PROTO]['data']['invalid']);
+
+    $this->request[self::REQUEST_X_REQUESTED_PROTO]['invalid'] = FALSE;
   }
 
   /**
@@ -6287,253 +6728,6 @@ class c_base_http extends c_base_rfc_string {
 
     unset($part_sub_priority);
     unset($parts_sub);
-  }
-
-  /**
-   * Decode and check that the given uri is valid.
-   *
-   * This does not decode the uri, it separates it into its individual parts.
-   *
-   * Validation is done according to rfc3986.
-   *
-   *   foo://example.com:8042/over/there?name=ferret#nose
-   *   \_/   \______________/\_________/ \_________/ \__/
-   *    |           |            |            |        |
-   *  scheme    authority       path        query   fragment
-   *    |   _____________________|__
-   *   / \ /                        \
-   *   urn:example:animal:ferret:nose
-   *
-   *
-   * @param string $uri
-   *   The url to validate and decode.
-   *
-   * @return array
-   *   A decoded uri split into its different parts inside an array.
-   *   An array key called 'invalid' exists to designate that the uri is invalid.
-   *
-   * @see: https://tools.ietf.org/html/rfc3986
-   */
-  private function p_parse_uri($uri) {
-    $result = array(
-      'scheme' => NULL,
-      'authority' => NULL,
-      'path' => NULL,
-      'query' => NULL,
-      'fragment' => NULL,
-      'url' => TRUE, // @todo: set to FALSE when uri is a urn instead of a url.
-      'invalid' => FALSE,
-    );
-
-    // @todo: completely rewrite below.
-    $result['invalid'] = TRUE;
-/*
-    $matches = array();
-    $matched = preg_match('!^((\w[=|\w|\d|\s|\.|-|_|~|%]*)*:)*([^#|?]*)(\?([^#]+))*(#(.+))*$!iu', $uri, $matches);
-
-    if ($matched == FALSE || !array_key_exists(3, $matches)) {
-      unset($address);
-      unset($matches);
-      unset($matched);
-      $result['invalid'] = TRUE;
-      return $result;
-    }
-    unset($matched);
-
-
-    // process scheme.
-    if (array_key_exists(2, $matches) && self::p_length_string($matches[2]) > 0) {
-      $combined = $matches[3];
-      if (array_key_exists(4, $matches)) {
-        $combined .= $matches[4];
-      }
-      if (array_key_exists(6, $matches)) {
-        $combined .= $matches[6];
-      }
-
-      $scheme_string = preg_replace('!:' . $combined . '$!iu', '', $matches[0]);
-      $result['scheme'] = mb_split(':', $scheme_string);
-      unset($scheme_string);
-      unset($combined);
-
-      foreach ($result['scheme'] as &$s) {
-        $s = urldecode($s);
-      }
-      unset($s);
-    }
-
-
-    // process authority.
-    if (self::p_length_string($matches[3]) > 0) {
-      // rfc6854 designates multiple uris, separated by commas.
-      $authority = mb_split(',', $matches[3]);
-      foreach ($authority as $a) {
-        $sub_matches = array();
-        $sub_matched = preg_match('!^(//|/|)(([^@]+)@)*(.*)$!iu', $a, $sub_matches);
-
-        if ($sub_matched === FALSE || !isset($sub_matches[4])) {
-          $result['invalid'] = TRUE;
-
-          unset($sub_matches);
-          unset($sub_matched);
-          continue;
-        }
-
-
-        // process user information.
-        $information_matches = array();
-        if (preg_match('@^([=|!|$|&|\'|(|)|\*|\+|,|;|\w|\d|-|\.|_|~|%|\s]*)(:|)$@iu', $sub_matches[3], $information_matches) === FALSE || !isset($information_matches[1])) {
-          $result['invalid'] = TRUE;
-
-          unset($information_matches);
-          unset($sub_matches);
-          unset($sub_matched);
-          continue;
-        }
-
-        $authority_setting = array(
-          'type_path' => self::URI_PATH_THIS,
-          'type_host' => 0,
-          'user' => urldecode($information_matches[1]),
-          'host' => NULL,
-          'port' => NULL,
-        );
-        unset($information_matches);
-
-
-        // process host information.
-        if ($sub_matches[1] == '//') {
-          $authority_setting['type_path'] = self::URI_PATH_SITE;
-        }
-        elseif ($sub_matches[1] == '/') {
-          $authority_setting['type_path'] = self::URI_PATH_BASE;
-        }
-
-        $ipv6_matches = array();
-        if (preg_match('@^\[([^\]]+)\](:\d+$|$)@iu', $sub_matches[4], $ipv6_matches) !== FALSE && isset($ipv6_matches[1])) {
-          $authority_setting['type_host'] = self::URI_HOST_IPV6;
-
-          $ip = inet_pton($ipv6_matches[1]);
-          if ($ip === FALSE) {
-            $result['invalid'] = TRUE;
-
-            unset($ip);
-            unset($ipv6_matches);
-            continue;
-          }
-
-          $authority_setting['host'] = inet_ntop($ip);
-          unset($ip);
-
-          if (isset($ipv6_matches[2]) && self::p_length_string($ipv6_matches[2]) > 0) {
-            $authority_setting['port'] = (int) $ipv6_matches[2];
-          }
-
-          // @todo: ipvfuture is actually embedded inside of the the double brackets used by ipv6.
-          //        to support this, the ipv6 regex must be modified to check for the ipvfuture parameters.
-          // $authority_setting['type_host'] = self::URI_HOST_IPVX;
-          // '@v[\d|a|b|c|d|e|f]\.([=|!|$|&|\'|(|)|\*|\+|,|;|\w|\d|-|\.|_|~|%|:]*)@i'
-        }
-        unset($ipv6_matches);
-
-        $ipv4_matches = array();
-        if (is_null($authority_setting['host']) && preg_match('@(\d+\.\d+\.d+\.d+)(:(\d+)|)$@iu', $sub_matches[4], $ipv4_matches) !== FALSE && isset($ipv4_matches[1])) {
-          $authority_setting['type_host'] = self::URI_HOST_IPV4;
-
-          $ip = inet_pton($ipv4_matches[1]);
-          if ($ip === FALSE) {
-            $result['invalid'] = TRUE;
-
-            unset($ip);
-            unset($ipv4_matches);
-            continue;
-          }
-
-          $authority_setting['host'] = inet_ntop($ip);
-          unset($ip);
-
-          if (isset($ipv4_matches[3]) && self::p_length_string($ipv4_matches[3]) > 0) {
-            $authority_setting['port'] = (int) $ipv4_matches[3];
-          }
-        }
-        unset($ipv4_matches);
-
-        $ipv4_matches = array();
-        if (is_null($authority_setting['host']) && preg_match('@(\d+\.\d+\.d+\.d+)(:(\d+)|)$@iu', $sub_matches[4], $ipv4_matches) !== FALSE && isset($ipv4_matches[1])) {
-          $authority_setting['type_host'] = self::URI_HOST_IPV4;
-
-          $ip = inet_pton($ipv4_matches[1]);
-          if ($ip === FALSE) {
-            $result['invalid'] = TRUE;
-
-            unset($ip);
-            unset($ipv4_matches);
-            continue;
-          }
-
-          $authority_setting['host'] = inet_ntop($ip);
-          unset($ip);
-
-          if (isset($ipv4_matches[3]) && self::p_length_string($ipv4_matches[3]) > 0) {
-            $authority_setting['port'] = (int) $ipv4_matches[3];
-          }
-        }
-        unset($ipv4_matches);
-
-        $name_matches = array();
-        if (is_null($authority_setting['host']) && preg_match('@((=|\w|\d|-|\.|_|~|\!|$|&|\'|(|)|\*|\+|,|;)+)(:(\d+)|)$@iu', $sub_matches[4], $name_matches) !== FALSE && isset($name_matches[1])) {
-          $authority_setting['type_host'] = self::URI_HOST_NAME;
-          $authority_setting['host'] = $name_matches[2];
-
-          if (isset($name_matches[4]) && self::p_length_string($name_matches[4]) > 0) {
-            $authority_setting['port'] = (int) $name_matches[4];
-          }
-        }
-        unset($name_matches);
-
-        $result['authority'][] = $authority_setting;
-
-        unset($authority_setting);
-        unset($sub_matches);
-        unset($sub_matched);
-      }
-
-      unset($a);
-      unset($authority);
-    }
-
-
-    // process query.
-    if (array_key_exists(5, $matches) && self::p_length_string($matches[5]) > 0) {
-      $query_parts = mb_split(',', $matches[5]);
-
-      foreach ($query_parts as $qp) {
-        $qp_parts = mb_split('=', $qp, 2);
-
-        if (is_array($qp_parts) && isset($qp_parts[0])) {
-          $decoded = urldecode($qp_parts[0]);
-          if (isset($qp_parts[1])) {
-            $result['query'][$decoded] = urldecode($qp_parts[1]);
-          }
-          else {
-            $result['query'][$decoded] = NULL;
-          }
-          unset($decoded);
-        }
-      }
-      unset($qp);
-      unset($query_parts);
-    }
-
-
-    // process fragment.
-    if (array_key_exists(7, $matches) && self::p_length_string($matches[7]) > 0) {
-      $result['fragment'][] = urldecode($matches[7]);
-    }
-
-    unset($matches);
-*/
-    return $result;
   }
 
   /**
@@ -7784,16 +7978,29 @@ class c_base_http extends c_base_rfc_string {
    *
    * @param string $token_name
    *   The string to sanitize as a token name.
+   * @param bool $lower_case
+   *   (optional) Force token to be lower-case.
+   *   There are some cases where the token case may need to remain untouched.
+   *   In such cases, set this to FALSE.
    *
    * @return string|bool
    *   A sanitized string is return on success.
    *   FALSE is returned on error or if the header name is invalid.
    */
-  private function p_prepare_token($token_name) {
-    $trimmed = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($token_name));
-    if ($trimmed === FALSE) {
-      unset($trimmed);
-      return FALSE;
+  private function p_prepare_token($token_name, $lower_case = TRUE) {
+    if ($lower_case) {
+      $trimmed = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($token_name));
+      if ($trimmed === FALSE) {
+        unset($trimmed);
+        return FALSE;
+      }
+    }
+    else {
+      $trimmed = preg_replace('/(^\s+)|(\s+$)/us', '', $token_name);
+      if ($trimmed === FALSE) {
+        unset($trimmed);
+        return FALSE;
+      }
     }
 
     $text = $this->pr_rfc_string_prepare($trimmed);
@@ -7824,13 +8031,24 @@ class c_base_http extends c_base_rfc_string {
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Origin
    */
   private function p_prepare_header_response_access_control_allow_origin($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
       return;
     }
 
-    // @todo
+    if ($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN]['wildcard']) {
+      $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN] = $header_name . self::SEPARATOR_HEADER_NAME . '*';
+      return;
+    }
+
+    $combined = pr_rfc_string_combine_uri_array($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN]);
+    if (is_string($combined)) {
+      $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN] = $header_name . self::SEPARATOR_HEADER_NAME . $combined;
+    }
+    unset($combined);
   }
 
   /**
@@ -7842,13 +8060,29 @@ class c_base_http extends c_base_rfc_string {
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Expose-Headers
    */
   private function p_prepare_header_response_access_control_expose_headers($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    if (!empty($this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS])) {
+      $exposed_headers_array = $this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS];
+
+      reset($exposed_headers_array);
+      $exposed_header_name = array_shift($exposed_headers_array);
+      $header_output[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] .= $exposed_header_name;
+
+      foreach ($exposed_headers_array as $exposed_header_name) {
+        $header_output[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS] .= ', ' . $exposed_header_name;
+      }
+      unset($exposed_headers_array);
+      unset($exposed_header_name);
+    }
   }
 
   /**
@@ -7860,13 +8094,72 @@ class c_base_http extends c_base_rfc_string {
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Methods
    */
   private function p_prepare_header_response_access_control_allow_methods($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    $allow_methods_array = $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS];
+
+    reset($allow_methods_array);
+    $methods = array_shift($allow_methods_array);
+    $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= $methods;
+
+    foreach ($allow_methods_array as $methods) {
+      $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= ', ' ;
+
+      switch ($methods) {
+        case self::HTTP_METHOD_HEAD:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'HEAD';
+          break;
+
+        case self::HTTP_METHOD_POST:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'POST';
+          break;
+
+        case self::HTTP_METHOD_PUT:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'PUT';
+          break;
+
+        case self::HTTP_METHOD_DELETE:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'DELETE';
+          break;
+
+        case self::HTTP_METHOD_TRACE:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'TRACE';
+          break;
+
+        case self::HTTP_METHOD_OPTIONS:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'OPTIONS';
+          break;
+
+        case self::HTTP_METHOD_CONNECT:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'CONNECT';
+          break;
+
+        case self::HTTP_METHOD_PATCH:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'PATCH';
+          break;
+
+        case self::HTTP_METHOD_TRACK:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'TRACK';
+          break;
+
+        case self::HTTP_METHOD_DEBUG:
+          $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= 'DEBUG';
+          break;
+
+      }
+      $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS] .= ', ' . $methods;
+    }
+    unset($allow_methods_array);
+    unset($methods);
+
   }
 
   /**
@@ -7878,13 +8171,31 @@ class c_base_http extends c_base_rfc_string {
    *   The header output array to make changes to.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+   * @see: https://www.w3.org/TR/CSP2/
+   * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Allow-Headers
    */
   private function p_prepare_header_response_access_control_allow_headers($header_name, &$header_output) {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    if (empty($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS])) {
+      return;
+    }
+
+    $allowed_headers_array = $this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS];
+
+    reset($allowed_headers_array);
+    $allowed_header_name = array_shift($allowed_headers_array);
+    $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] .= $allowed_header_name;
+
+    foreach ($allowed_headers_array as $allowed_header_name) {
+      $header_output[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS] .= ', ' . $allowed_header_name;
+    }
+    unset($allowed_headers_array);
+    unset($allowed_header_name);
   }
 
   /**
@@ -8285,71 +8596,53 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $header_output[self::RESPONSE_LINK] = $header_name . self::SEPARATOR_HEADER_NAME;
-
-    $uri = NULL;
-    if ($this->response[self::RESPONSE_LINK]['uri']['url']) {
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['scheme'])) {
-        $uri .= $this->response[self::RESPONSE_LINK]['uri']['scheme'] . '://';
+    foreach ($this->response[self::RESPONSE_LINK] as $uris) {
+      $uri = $this->pr_rfc_string_combine_uri_array($uris['uri']);
+      if ($uri === FALSE) {
+        unset($uri);
+        unset($uris);
+        return;
       }
 
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['authority'])) {
-        $uri .= $this->response[self::RESPONSE_LINK]['uri']['authority'] . '/';
+      if (!isset($header_output[self::RESPONSE_LINK])) {
+        $header_output[self::RESPONSE_LINK] = '';
       }
 
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['path'])) {
-        $uri .= $this->response[self::RESPONSE_LINK]['uri']['path'];
-      }
+      $header_output[self::RESPONSE_LINK] .= $header_name . self::SEPARATOR_HEADER_NAME;
+      $header_output[self::RESPONSE_LINK] .= '<' . $uri . '>';
+      unset($uri);
 
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['query'])) {
-        $uri .= '?' . $this->response[self::RESPONSE_LINK]['uri']['query'];
-      }
+      if (!empty($uris['parameters'])) {
+        $parameter_value = reset($uris['parameters']);
+        $parameter_name = key($uris['parameters']);
+        unset($uris['parameters'][$parameter_name]);
 
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['fragment'])) {
-        $uri .= '#' . $this->response[self::RESPONSE_LINK]['uri']['fragment'];
-      }
-    }
-    else {
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['scheme'])) {
-        $uri .= $this->response[self::RESPONSE_LINK]['uri']['scheme'] . ':';
-      }
-
-      if (!is_null($this->response[self::RESPONSE_LINK]['uri']['path'])) {
-        $uri .= $this->response[self::RESPONSE_LINK]['uri']['path'];
-      }
-    }
-
-    $header_output[self::RESPONSE_LINK] .= '<' . $uri . '>';
-    unset($uri);
-
-    if (!empty($this->response[self::RESPONSE_LINK]['parameters'])) {
-      $parameter_value = reset($this->response[self::RESPONSE_LINK]['parameters']);
-      $parameter_name = key($this->response[self::RESPONSE_LINK]['parameters']);
-      unset($this->response[self::RESPONSE_LINK]['parameters'][$parameter_name]);
-
-      if (is_null($parameter_value)) {
-        $parameters_string = $parameter_name;
-      }
-      else {
-        $parameters_string = $parameter_name . '=' . $parameter_value;
-      }
-
-      foreach($this->response[self::RESPONSE_LINK]['parameters'] as $parameter_name => $parameter_value) {
-        $parameters_string .= '; ';
-
+        $parameters_string = '; ';
         if (is_null($parameter_value)) {
           $parameters_string .= $parameter_name;
         }
         else {
           $parameters_string .= $parameter_name . '=' . $parameter_value;
         }
-      }
-      unset($parameter_name);
-      unset($parameter_value);
 
-      $header_output[self::RESPONSE_LINK] .= $parameters_string;
-      unset($parameters_string);
+        foreach($uris['parameters'] as $parameter_name => $parameter_value) {
+          $parameters_string .= '; ';
+
+          if (is_null($parameter_value)) {
+            $parameters_string .= $parameter_name;
+          }
+          else {
+            $parameters_string .= $parameter_name . '=' . $parameter_value;
+          }
+        }
+        unset($parameter_name);
+        unset($parameter_value);
+
+        $header_output[self::RESPONSE_LINK] .= $parameters_string;
+        unset($parameters_string);
+      }
     }
+    unset($uris);
   }
 
   /**
@@ -8787,9 +9080,9 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // in this case, a new header is created for every single entry..
+    // in this case, a new header is created for every single entry.
     $header_output[self::RESPONSE_X_UA_COMPATIBLE] = array();
-    foreach($header_output[self::RESPONSE_X_UA_COMPATIBLE] as $browser_name => $compatible_version) {
+    foreach($this->response[self::RESPONSE_X_UA_COMPATIBLE] as $browser_name => $compatible_version) {
         $header_output[self::RESPONSE_X_UA_COMPATIBLE][] = $browser_name . '=' . $compatible_version;
     }
     unset($browser_name);
@@ -9200,6 +9493,31 @@ class c_base_http extends c_base_rfc_string {
     }
 
     $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME . $this->response[$code];
+  }
+
+  /**
+   * Prepare HTTP response headers that are boolean values represented by the words true/false.
+   *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
+   * @param array $header_output
+   *   The header output array to make changes to.
+   * @param int $code
+   *   The HTTP header code, such as:  self::RESPONSE_AGE.
+   */
+  private function p_prepare_header_response_boolean_value($header_name, &$header_output, $code) {
+    if (!array_key_exists($code, $this->response)) {
+      return;
+    }
+
+    $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    if ($this->response[$code]) {
+      $header_output[$code] .= 'true';
+    }
+    else {
+      $header_output[$code] .= 'false';
+    }
   }
 
   /**

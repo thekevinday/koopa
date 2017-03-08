@@ -349,7 +349,7 @@
                 $stuff['login'] = '';
               }
 
-              $user_data = get_user_data($database, $session->get_name()->get_value_exact(), $ldap_data);
+              $user_data = get_user_data($database, $session->get_name()->get_value_exact());
 
               $stuff['login'] .= ' - You are logged in as: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
               $stuff['login'] .= ' - Your user id is: ' . $session->get_id_user()->get_value_exact() . '<br>' . "\n";
@@ -654,7 +654,7 @@
 
     $connection_string = new c_base_connection_string();
     $connection_string->set_host('127.0.0.1');
-    $connection_string->set_port(5095);
+    $connection_string->set_port(5432);
     $connection_string->set_database('reservation');
     $connection_string->set_user($username);
     $connection_string->set_password($password);
@@ -1121,11 +1121,11 @@
       unset($response);
       return FALSE;
     }
-    unset($response);
 
     // an integer is expected to be returned by the socket.
     $response_packet = unpack('C', $response);
     $response_value = (int) $response_packet[1];
+    unset($response);
 
     // response codes as defined in the c source file:
     //    0 = no problems detected.

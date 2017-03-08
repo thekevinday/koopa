@@ -349,8 +349,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'text': A string containing the processed entity tag.
    *   - 'current': an integer representing the position the counter stopped at.
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
-   *
-   * @see: base_rfc_char::pr_rfc_char_qtext()
    */
   protected function pr_rfc_string_is_entity_tag($ordinals, $characters, $start = 0, $stop = NULL) {
     $result = array(
@@ -773,8 +771,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
   /**
    * Processes a string based on the rfc syntax: credentials.
    *
-   * A string that is a digit has the following syntax:
-   * - token [ 1*(ws) ( token68 / [ ( "," / token *(ws) "=" *(ws) ( token / quoted-string ) ) *( *(ws) "," [ *(ws) token *(ws) "=" *(ws) ( token / quoted-string ) ] ) ] ) ]
+   * A string that has the following syntax:
+   * - 1*(tchar) 1*(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) *( *(wsp) "," *(wsp) 1*(tchar) *(wsp) "=" *(wsp) ( 1*(tchar) / quoted-string ) ).
+   *
+   * @todo: this entire function is incomplete, finish writing it.
    *
    * @param array $ordinals
    *   An array of integers representing each character of the string.
@@ -796,14 +796,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    */
   protected function pr_rfc_string_is_credentials($ordinals, $characters, $start = 0, $stop = NULL) {
     $result = array(
-      'text' => NULL,
+      'scheme' => NULL,
+      'parameters' => array(),
       'current' => $start,
       'invalid' => FALSE,
     );
 
-    // @todo: this looks like a lot of work, so deal with this at some point in the future because this is a very low priority function.
-    $result['invalid'] = TRUE;
-/*
     if (is_null($stop)) {
       $stop = count($ordinals);
     }
@@ -812,6 +810,8 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       return $result;
     }
 
+
+    // load the scheme.
     for (; $result['current'] < $stop; $result['current']++) {
       if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
         // @fixme: should error be reported? do some debugging with this.
@@ -819,17 +819,146 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         break;
       }
 
-      $code = $ordinals[$result['current']];
+      if ($this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
+        // reached end of the scheme.
+        $result['current']++;
 
-      if (!$this->pr_rfc_char_is_digit($code)) {
+        $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+        if ($result['invalid']) {
+          return $result;
+        }
+
+        break;
+      }
+      elseif (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
         $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $result['scheme'] .= $characters[$result['current']];
+    }
+
+    if ($result['current'] >= $stop) {
+      $result['invalid'] = TRUE;
+      return $result;
+    }
+
+
+    // load the parameters.
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+      if ($result['invalid']) {
+        return $result;
+      }
+
+      // load the parameter name.
+      $parameter_name = NULL;
+      for (; $result['current'] < $stop; $result['current']++) {
+        if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+          // @fixme: should error be reported? do some debugging with this.
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        elseif (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $parameter_name .= $characters[$result['current']];
+      }
+
+      $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+      if ($result['invalid']) {
+        return $result;
+      }
+
+      if ($result['current'] >= $stop) {
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      // a parameter name must be followed by an equal sign and then the parameter value..
+      if ($ordinals[$result['current']] != c_base_ascii::EQUAL) {
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+      if ($result['invalid']) {
+        return $result;
+      }
+
+      if ($result['current'] >= $stop) {
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      // load the parameter value.
+      if ($ordinals[$result['current']] == c_base_ascii::QUOTE_DOUBLE) {
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+        $result['current'] = $parsed['current'];
+
+        if ($parsed['invalid']) {
+          unset($parsed);
+
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $result['parameters'][$parameter_name] = $parsed['text'];
+        unset($parsed);
+      }
+      else {
+        for (; $result['current'] < $stop; $result['current']++) {
+          if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+            // @fixme: should error be reported? do some debugging with this.
+            $result['invalid'] = TRUE;
+            return $result;
+          }
+
+          if (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
+            break;
+          }
+
+          $result['parameters'][$parameter_name] .= $characters[$result['current']];
+        }
+      }
+
+      $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+      if ($result['invalid']) {
+        return $result;
+      }
+
+      if ($result['current'] >= $stop) {
         break;
       }
 
-      $result['text'] .= $characters[$result['current']];
+
+      // A comma designates a new entry
+      if ($ordinals[$result['current']] == c_base_ascii::COMMA) {
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+      }
+
+      $parameter_name = NULL;
     }
-    unset($code);
-*/
+
     return $result;
   }
 
@@ -1514,7 +1643,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     krsort($result['choices']);
 
     // The NULL key should be the first key in the weight.
-    $this->p_prepend_array_value(NULL, $result['choices']);
+    $this->pr_prepend_array_value(NULL, $result['choices']);
 
     return $result;
   }
@@ -1545,7 +1674,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'current': an integer representing the position the counter stopped at.
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
-   * @see: base_rfc_char::pr_rfc_char_tchar()
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_media_type($ordinals, $characters, $start = 0, $stop = NULL) {
@@ -1824,7 +1952,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
    * @see: self::pr_rfc_string_is_valued_token_comma()
-   * @see: base_rfc_char::pr_rfc_char_tchar()
    * @see: base_rfc_char::pr_rfc_string_is_media_type()
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
@@ -1850,7 +1977,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       $code = $ordinals[$result['current']];
 
       if ($this->pr_rfc_char_is_wsp($code)) {
-        // @todo: handle whitespace between '='.
         if (is_null($token_name)) {
           continue;
         }
@@ -2026,7 +2152,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
    * @see: self::pr_rfc_string_is_valued_token()
-   * @see: base_rfc_char::pr_rfc_char_tchar()
    * @see: base_rfc_char::pr_rfc_string_is_media_type()
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
@@ -2052,7 +2177,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       $code = $ordinals[$result['current']];
 
       if ($this->pr_rfc_char_is_wsp($code)) {
-        // @todo: handle whitespace between '='.
         if (is_null($token_name)) {
           continue;
         }
@@ -2203,10 +2327,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * - A simpler syntax will therefore be used.
    *
    * A valued_token has the following syntax:
-   * - 1*(*(ws) "," *(ws) token)
+   * - 1*(*(wsp) "," *(wsp) token)
    *
    * Original valued_token standard syntax:
-   * - *("," *(ws)) token *(*(ws) "," *(ws) token)
+   * - *("," *(wsp)) token *(*(wsp) "," *(wsp) token)
    *
    * @param array $ordinals
    *   An array of integers representing each character of the string.
@@ -2225,7 +2349,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'current': an integer representing the position the counter stopped at.
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
-   * @see: base_rfc_char::pr_rfc_char_tchar()
    * @see: https://tools.ietf.org/html/rfc7230#appendix-B
    */
   protected function pr_rfc_string_is_commad_token($ordinals, $characters, $start = 0, $stop = NULL) {
@@ -2307,6 +2430,94 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
   }
 
   /**
+   * Processes a string based on the rfc syntax: path.
+   *
+   * A path has the following syntax:
+   * - *(ALPHA / DIGIT / "-" / "." / "_" / "~" / "%" HEXDIG HEXDIG / "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "=" / ":" / "@" / "/" / "?")
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed or the closing character is found.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'text': A string containing the validated path.
+   *   - 'current': an integer representing the position the counter stopped at.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: https://tools.ietf.org/html/rfc3986#section-3.4
+   */
+  protected function pr_rfc_string_is_path($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'text' => NULL,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+    for (; $result['current'] < $stop; $result['current']++) {
+      $code = $ordinals[$result['current']];
+
+      if ($code == c_base_ascii::PERCENT) {
+        // valid only if two hex digits immediately follow.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and none is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and only one is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+      }
+      elseif (self::pr_rfc_char_is_pchar($code)) {
+        // do nothing, valid.
+      }
+      elseif ($code == c_base_asccii::SLASH_FORWARD) {
+        // do nothing, valid.
+      }
+      else {
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
+
+    return $result;
+  }
+
+  /**
    * Processes a string based on the rfc syntax: query.
    *
    * This is also used by the rfc syntax: fragment.
@@ -2326,21 +2537,15 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *
    * @return array
    *   The processed information:
-   *   - 'address': A string containing the processed ip address.
-   *                When is_future is TRUE, this is an array containing:
-   *                - 'version': The ipfuture version.
-   *                - 'ip': The ip address.
-   *   - 'is_future': A boolean that when TRUE represents an ipvfuture address and when FALSE represents an ipv6 address.
+   *   - 'text': A string containing the validated query.
    *   - 'current': an integer representing the position the counter stopped at.
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
-   * @see: base_rfc_char::pr_rfc_char_tchar()
-   * @see: https://tools.ietf.org/html/rfc2616#section-3.7
+   * @see: https://tools.ietf.org/html/rfc3986#section-3.4
    */
   protected function pr_rfc_string_is_query($ordinals, $characters, $start = 0, $stop = NULL) {
     $result = array(
-      'address' => NULL,
-      'is_future' => FALSE,
+      'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
     );
@@ -2353,7 +2558,53 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       return $result;
     }
 
-    // @todo: finish writing this!
+    for (; $result['current'] < $stop; $result['current']++) {
+      $code = $ordinals[$result['current']];
+
+      if ($code == c_base_ascii::PERCENT) {
+        // valid only if two hex digits immediately follow.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and none is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and only one is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+      }
+      elseif (self::pr_rfc_char_is_pchar($code)) {
+        // do nothing, valid.
+      }
+      elseif ($code == c_base_asccii::SLASH_FORWARD || $code == c_base_asccii::QUESTION_MARK) {
+        // do nothing, valid.
+      }
+      else {
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
+
+    return $result;
   }
 
   /**
@@ -2385,7 +2636,6 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'current': an integer representing the position the counter stopped at.
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    *
-   * @see: base_rfc_char::pr_rfc_char_tchar()
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_ip_literal($ordinals, $characters, $start = 0, $stop = NULL) {
@@ -2457,20 +2707,14 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       for (; $result['current'] < $stop; $result['current']++) {
         $code = $ordinals[$result['current']];
 
-        if (self::pr_rfc_char_is_digit($code)) {
-          // do nothing, valid
-        }
-        elseif (self::pr_rfc_char_is_alpha($code)) {
-          // do nothing, valid
-        }
-        elseif (self::pr_rfc_char_is_unreserved($code)) {
-          // do nothing, valid
+        if (self::pr_rfc_char_is_unreserved($code)) {
+          // do nothing, valid.
         }
         elseif (self::pr_rfc_char_is_sub_delims($code)) {
-          // do nothing, valid
+          // do nothing, valid.
         }
         elseif ($code == c_base_ascii::COLON) {
-          // do nothing, valid
+          // do nothing, valid.
         }
         elseif ($code == c_base_ascii::BRACKET_CLOSE) {
           break;
@@ -2634,6 +2878,589 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
   }
 
   /**
+   * Decode and check that the given uri is valid.
+   *
+   * This does not decode the uri, it separates it into its individual parts.
+   *
+   * Validation is done according to rfc3986.
+   *
+   *   foo://example.com:8042/over/there?name=ferret#nose
+   *   \_/   \______________/\_________/ \_________/ \__/
+   *    |           |            |            |        |
+   *  scheme    authority       path        query   fragment
+   *    |   _____________________|__
+   *   / \ /                        \
+   *   foo:example:animal:ferret:nose
+   *
+   * The standard is misleading in its definition of path.
+   * First it says path can be path-abempty, path-absolute, path-noscheme, path-rootless, or path-empty.
+   * it then defines those as follows:
+   *   path-abempty:  begins with "/" or is empty
+   *   path-absolute: begins with "/" but not "//"
+   *   path-noscheme: begins with a non-colon segment
+   *   path-rootless: begins with a segment
+   *   path-empty:    zero characters
+   *
+   * path-abempty's definition includes a  '//', making path-absolute irrelevant/redundant.
+   * path-rootless's definition includes a colon, making path-noscheme irrelevant/redundant.
+   * path-empty's definition is inconsistent, why not say 'is empty' as with path-abempty?
+   *
+   * I am going to assume that path-abempty is meant to be defined as 'begins with "/" but not "//"' or 'is empty'.
+   *
+   * The standard also provides a regex example that violates their own rules:
+   * - Regex: ^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?
+   * - Their URI: http://www.ics.uci.edu/pub/ietf/uri/#Related
+   * - Example URI: example:relative:url/that:is:not/a:urn
+   *
+   * That example is syntatically valid for 'path-absolute', but has part of it turned into a scheme.
+   * While it is currently not popular to use ':' in a url path, it is valid according to the standard.
+   * Therefore, their example regex is non-conforming.
+   *
+   * In fact, as-written, the standard provides no means to distinguish between a scheme and a path.
+   * - Example Scheme: my_scheme:
+   * - Example Path:   my_path:
+   * Both of those are valid for their appropriate syntax.
+   *
+   * I believe that the way they wrote the standard is very mis-leading.
+   * path = path-abempty / path-absolute / path-noscheme / path-rootless / path-empty
+   * means that any one of those could be valid, thats an OR.
+   * but they are likely interpretting the '/' to be a separation betweem if/then conditionals that are not clearly defined.
+   *
+   * I am going to assume that what they mean is ':' is supported only in path IF a scheme is supplied.
+   * In this case the first colon separates the schema from everything else.
+   * Even with this interpretation, there are still problems because the following would still be syntatically valid:
+   * - Example URI: http://www.example.com/a:syntatically:valid:path
+   * If that example is what is necessary, then how does one make a valid relative uri for paths on that site!?
+   * - schemes are not allowed in relative paths, but that path still exists!
+   * - The standard supports these paths as absolute but does not support them as relative.
+   *
+   * For simplicity purposes, this function will violate the literal standard to follow what I am guessing to be the intended standard.
+   * If a colon is to appear in the path, it must be a URN and if so then it must have a scheme.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'scheme': The protocol string.
+   *   - 'authority': The domain string.
+   *   - 'path': The path string.
+   *   - 'query': An array of url arguments.
+   *   - 'fragment': The id string.
+   *   - 'url': A boolean that when TRUE means the string is a url and when FALSE the string is a urn.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: self::p_combine_uri_array()
+   * @see: self::pr_rfc_string_is_scheme()
+   * @see: self::pr_rfc_string_is_authority()
+   * @see: self::pr_rfc_string_is_path()
+   * @see: self::pr_rfc_string_is_query()
+   * @see: https://tools.ietf.org/html/rfc3986
+   */
+  protected function pr_rfc_string_is_uri($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'scheme' => NULL,
+      'authority' => NULL,
+      'path' => NULL,
+      'query' => NULL,
+      'fragment' => NULL,
+      'url' => TRUE,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+
+    // handle path cases that begin with a forward slash because they are easy to identify.
+    if ($ordinals[$result['current']] == c_base_ascii::SLASH_FORWARD) {
+      $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+      if ($result['invalid'] || $result['current'] >= $stop) {
+        return $result;
+      }
+
+
+      // check for query.
+      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+        // the first question mark is not recorded so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_query($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+
+      // check for fragment.
+      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_fragment($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+      return $result;
+    }
+
+
+    // handle fragment cases first because they are easy to identify.
+    if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+      for (; $result['current'] < $stop; $result['current']++) {
+        if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+          // @fixme: should error be reported? do some debugging with this.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+
+        // the syntax for query is identical to fragment.
+        if (!$this->pr_rfc_char_is_query($code)) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $result['fragment'] .= $characters[$result['current']];
+      }
+      unset($code);
+
+      return $result;
+    }
+
+
+    $not_scheme = FALSE;
+    $not_authority = FALSE;
+    $not_path = FALSE;
+    $processed_string = '';
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($this->pr_rfc_char_is_alpha($code)) {
+        // allowed in: scheme, authority, path
+      }
+      elseif ($this->pr_rfc_char_is_digit($code)) {
+        // allowed in: scheme, authority, path
+      }
+      elseif ($code == c_base_ascii::COLON) {
+        $not_path = TRUE;
+
+        if ($not_scheme) {
+          // must be an authority as per notes in the comments section of the function.
+          if ($not_authority) {
+            unset($not_scheme);
+            unset($not_authority);
+            unset($not_path);
+            unset($processed_string);
+
+            $result['invalid'] = TRUE;
+            return $result;
+          }
+        }
+        else {
+          // must be an scheme as per notes in the comments section of the function.
+          $not_authority = TRUE;
+        }
+      }
+      elseif ($code == c_base_ascii::PLUS || $code == c_base_ascii::MINUS || $code == c_base_ascii::PERIOD) {
+        // allowed in: scheme, authority, path
+      }
+      elseif ($code == c_base_ascii::AT || $code == c_base_ascii::SLASH_FORWARD) {
+        // allowed in: authority, path
+
+        $not_scheme = TRUE;
+      }
+      elseif ($this->pr_rfc_char_is_unreserved($code)) {
+        // allowed in: authority, path
+
+        $not_scheme = TRUE;
+      }
+      elseif ($code == c_base_ascii::BRACKET_OPEN) {
+        // allowed in: authority
+
+        $not_scheme = TRUE;
+        $not_path = TRUE;
+      }
+      else {
+        unset($not_scheme);
+        unset($not_authority);
+        unset($not_path);
+        unset($processed_string);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      if (($not_scheme && $not_path) || ($not_scheme && $not_authority) || ($not_authority && $not_path)) {
+        break;
+      }
+
+      $processed_string .= $characters[$result['current']];
+    }
+    unset($code);
+
+    if ($result['current'] >= $stop) {
+      unset($not_scheme);
+      unset($not_authority);
+      unset($not_path);
+      unset($processed_string);
+
+      return $result;
+    }
+
+    if ($not_authority && $not_path) {
+      unset($not_scheme);
+      unset($not_authority);
+      unset($not_path);
+
+      $result['scheme'] = $processed_string;
+      unset($processed_string);
+
+      $result['current']++;
+      if ($result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check to see if '/' immediately follows, if not then this is a urn.
+      $code = $ordinals[$result['current']];
+      if ($code == c_base_ascii::SLASH_FORWARD) {
+        unset($code);
+
+        // at this point it is known that this is a url instead of a urn.
+        $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+
+        // check for query.
+        if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+          // the first question mark is not recorded so skip past it before validating the fragment.
+          $result['current']++;
+          if ($result['current'] >= $stop) {
+            return $result;
+          }
+
+          $this->p_rfc_string_is_uri_query($ordinals, $characters, $stop, $result);
+          if ($result['invalid'] || $result['current'] >= $stop) {
+            return $result;
+          }
+        }
+
+        // check for fragment.
+        if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+          $this->p_rfc_string_is_uri_fragment($ordinals, $characters, $stop, $result);
+          if ($result['invalid'] || $result['current'] >= $stop) {
+            return $result;
+          }
+        }
+
+        return $result;
+      }
+      unset($code);
+
+      // process path argument and if a single ':' is found, then this is a urn.
+      for (; $result['current'] < $stop; $result['current']++) {
+        if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+          unset($code);
+
+          // @fixme: should error be reported? do some debugging with this.
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $code = $ordinals[$result['current']];
+
+        if ($code == c_base_ascii::HASH || $code == c_base_ascii::QUESTION_MARK) {
+          // found possible query or fragment.
+          $result['url'] = TRUE;
+          break;
+        }
+        elseif ($code == c_base_ascii::COLON) {
+          $result['url'] = FALSE;
+        }
+        elseif (!$this->pr_rfc_char_is_pchar($code)) {
+          unset($code);
+
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $result['path'] .= $characters[$result['current']];
+      }
+      unset($code);
+
+      if ($result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for query.
+      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+        // the first question mark is not recorded so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_query($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+      // check for fragment.
+      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_fragment($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+      return $result;
+    }
+    elseif ($not_scheme && $not_path) {
+      unset($not_scheme);
+      unset($not_authority);
+      unset($not_path);
+
+      $result['authority'] = $processed_string;
+      unset($processed_string);
+
+      $result['current']++;
+      if ($result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for authority.
+      $this->p_rfc_string_is_uri_authority($ordinals, $characters, $stop, $result);
+      if ($result['invalid'] || $result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for path.
+      $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+      if ($result['invalid'] || $result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for query.
+      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+        // the first question mark is not recorded so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_query($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+      // check for fragment.
+      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_fragment($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+    }
+    elseif ($not_scheme && $not_authority) {
+      unset($not_scheme);
+      unset($not_authority);
+      unset($not_path);
+
+      $result['path'] = $processed_string;
+      unset($processed_string);
+
+      $result['current']++;
+      if ($result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for path.
+      $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+      if ($result['invalid'] || $result['current'] >= $stop) {
+        return $result;
+      }
+
+      // check for query.
+      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+        // the first question mark is not recorded so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_query($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+
+      // check for fragment.
+      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_fragment($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+      }
+    }
+    unset($not_scheme);
+    unset($not_authority);
+    unset($not_path);
+    unset($processed_string);
+
+    $result['invalid'] = TRUE;
+
+    return $result;
+  }
+
+  /**
+   * Combine a uri array into a single uri.
+   *
+   * This does not validate the uri, it simply merges an array.
+   *
+   *   foo://example.com:8042/over/there?name=ferret#nose
+   *   \_/   \______________/\_________/ \_________/ \__/
+   *    |           |            |            |        |
+   *  scheme    authority       path        query   fragment
+   *    |   _____________________|__
+   *   / \ /                        \
+   *   urn:example:animal:ferret:nose
+   *
+   *
+   * @param array $uri_array
+   *   A url array with the following structure:
+   *   - 'scheme': The protocol string.
+   *   - 'authority': The domain string.
+   *   - 'path': The path string.
+   *   - 'query': An array of url arguments.
+   *   - 'fragment': The id string.
+   *
+   * @return string|bool
+   *   A combined url array on success.
+   *   FALSE is returned on error.
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   * @see: https://tools.ietf.org/html/rfc3986
+   */
+  protected function pr_rfc_string_combine_uri_array($uri_array) {
+    if (!$uri_array['url']) {
+      // both scheme and path are required for urn.
+      if (!isset($uri_array['scheme']) || !isset($uri_array['path'])) {
+        return FALSE;
+      }
+
+      $combined .= $uri_array['scheme'] . ':' . $uri_array['path'];
+
+      return $combined;
+    }
+
+    $combined = NULL;
+    if (isset($uri_array['scheme'])) {
+      $combined .= $uri_array['scheme'] . ':';
+    }
+
+    if (isset($uri_array['authority'])) {
+      $combined .= $uri_array['authority'];
+    }
+
+    if (isset($uri_array['path'])) {
+      $combined .= $uri_array['path'];
+    }
+
+    if (!empty($uri_array['query'])) {
+      if (is_string($uri_array['query'])) {
+        $combined .= '?' . $uri_array['query'];
+      }
+      elseif (is_array($uri_array['query'])) {
+        $combined .= '?';
+
+        reset($uri_array['query']);
+        $query_name = key($uri_array['query']);
+        $query_value = $uri_array['query'][$query_name];
+        unset($uri_array['query'][$query_name]);
+
+        if (is_null($query_value)) {
+          $combined .= $query_name;
+        }
+        else {
+          $combined .= $query_name . '=' . $query_value;
+        }
+
+        foreach ($uri_array['query'] as $query_name => $query_value) {
+          if (is_null($query_value)) {
+            $combined .= $query_name;
+            continue;
+          }
+
+          $combined .= '&' . $query_name . '=' . $query_value;
+        }
+        unset($query_name);
+        unset($query_value);
+      }
+    }
+
+    if (isset($uri_array['fragment'])) {
+      $combined .= '#' . $uri_array['fragment'];
+    }
+
+    return $combined;
+  }
+
+  /**
    * Effectively unshift a value onto a given array with a specified index.
    *
    * The NULL key should be the first key in the weight.
@@ -2644,7 +3471,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @param array $array
    *   The array to unshift onto.
    */
-  protected function p_prepend_array_value($key, &$array) {
+  protected function pr_prepend_array_value($key, &$array) {
     if (!array_key_exists($key, $array)) {
       return;
     }
@@ -2663,5 +3490,280 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
     $array = $new_array;
     unset($new_array);
+  }
+
+  /**
+   * Helper function for pr_rfc_string_is_uri() to process: authority.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $stop
+   *   The position in the arrays to stop checking.
+   * @param array $result
+   *   An array of return results used by the pr_rfc_string_is_uri().
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   */
+  private function p_rfc_string_is_uri_authority(&$ordinals, &$characters, &$stop, &$result) {
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        unset($code);
+
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($code == c_base_ascii::PERCENT) {
+        // valid only if two hex digits immediately follow.
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and none is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $result['current']++;
+        if ($result['current'] >= $stop) {
+          // this is invalid because it is cut off before 2 hex digits are required and only one is found.
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $code = $ordinals[$result['current']];
+        if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+      }
+      elseif ($code == c_base_ascii::AT || $code == c_base_ascii::COLON) {
+        // this is valid.
+      }
+      elseif ($code == c_base_ascii::BRACKET_OPEN || $code == c_base_ascii::BRACKET_CLOSE) {
+        // this is valid.
+      }
+      elseif ($this->pr_rfc_char_is_unreserved($code)) {
+        // this is valid.
+      }
+      elseif ($this->pr_rfc_char_is_sub_delims($code)) {
+        // this is valid.
+      }
+      else {
+        unset($code);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $result['authority'] .= $characters[$result['current']];
+    }
+    unset($code);
+  }
+
+  /**
+   * Helper function for pr_rfc_string_is_uri() to process: path.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $stop
+   *   The position in the arrays to stop checking.
+   * @param array $result
+   *   An array of return results used by the pr_rfc_string_is_uri().
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   */
+  private function p_rfc_string_is_uri_path(&$ordinals, &$characters, &$stop, &$result) {
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        unset($code);
+
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($code == c_base_ascii::HASH || $code == c_base_ascii::QUESTION_MARK) {
+        // found possible query or fragment.
+        break;
+      }
+      elseif ($code == c_base_ascii::SLASH_FORWARD) {
+        // this is valid.
+      }
+      elseif (!$this->pr_rfc_char_is_pchar($code)) {
+        unset($code);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $result['path'] .= $characters[$result['current']];
+    }
+    unset($code);
+  }
+
+  /**
+   * Helper function for pr_rfc_string_is_uri() to process: query.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $stop
+   *   The position in the arrays to stop checking.
+   * @param array $result
+   *   An array of return results used by the pr_rfc_string_is_uri().
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   */
+  private function p_rfc_string_is_uri_query(&$ordinals, &$characters, &$stop, &$result) {
+    $query_name = NULL;
+    $query_value = NULL;
+    $no_value = FALSE;
+
+    $result['query'] = array();
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        unset($code);
+        unset($query_name);
+        unset($query_value);
+        unset($no_value);
+
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($code == c_base_ascii::HASH) {
+        // hash is not part of the query but does mark the end of the query as it is the start of the fragment.
+        break;
+      }
+      elseif ($code == c_base_ascii::AMPERSAND) {
+        // The '&' designates a new name and value, separate each individual value inside the array.
+        $result['query'][$query_name] = $query_value;
+
+        $query_name = NULL;
+        $query_value = NULL;
+        $no_value = FALSE;
+
+        continue;
+      }
+      elseif ($code == c_base_ascii::EQUAL) {
+        // The '=' designates a value for the current name.
+        if ($no_value || is_null($query_name)) {
+          $query_name .= $characters[$result['current']];
+          $no_value = TRUE;
+          continue;
+        }
+
+        $query_value = '';
+        continue;
+      }
+      elseif (!$this->pr_rfc_char_is_query($code)) {
+        unset($code);
+        unset($query_name);
+        unset($query_value);
+        unset($no_value);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      if (is_null($query_value)) {
+        $query_name .= $characters[$result['current']];
+      }
+      else {
+        $query_value .= $characters[$result['current']];
+      }
+    }
+    unset($code);
+    unset($no_value);
+
+    $result['query'][$query_name] = $query_value;
+
+    unset($query_name);
+    unset($query_value);
+  }
+
+  /**
+   * Helper function for pr_rfc_string_is_uri() to process: fragment.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $stop
+   *   The position in the arrays to stop checking.
+   * @param array $result
+   *   An array of return results used by the pr_rfc_string_is_uri().
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   */
+  private function p_rfc_string_is_uri_fragment(&$ordinals, &$characters, &$stop, &$result) {
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        unset($code);
+
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      // the syntax for query is identical to fragment.
+      if (!$this->pr_rfc_char_is_query($code)) {
+        unset($code);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+
+      $result['fragment'] .= $characters[$result['current']];
+    }
+    unset($code);
+  }
+
+  /**
+   * Helper function for bypassing whitespaces.
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $stop
+   *   The position in the arrays to stop checking.
+   * @param array $result
+   *   An array of return results used by the pr_rfc_string_is_uri().
+   *
+   * @see: self::pr_rfc_string_is_uri()
+   */
+  private function p_rfc_string_skip_past_whitespace(&$ordinals, &$characters, &$stop, &$result) {
+    for (; $result['current'] < $stop; $result['current']++) {
+     if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      if (!$this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
+        break;
+      }
+    }
   }
 }
