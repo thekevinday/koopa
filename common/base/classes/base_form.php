@@ -63,6 +63,44 @@ class c_base_form_problem extends c_base_return_string {
   }
 
   /**
+   * Create a new problem using the given field and value.
+   *
+   * @param string|null $field_name
+   *   A field name to assign, may be NULL if error applies globally.
+   * @param string $message
+   *   The error message.
+   *
+   * @return c_base_form_problem
+   *   Always returns c_base_form_problem.
+   *   Error bit is set on error.
+   */
+  public static function s_create_error($field_name, $message) {
+    $class_string = __CLASS__;
+    $problem = new $class_string();
+    unset($class_string);
+
+    $result = $problem->set_field($field_name);
+    if (c_base_return::s_has_error($result)) {
+      $problem->set_error($result->get_error());
+      unset($result);
+
+      return $problem;
+    }
+    unset($result);
+
+    $result = $problem->set_value($message);
+    if (c_base_return::s_has_error($result)) {
+      $problem->set_error($result->get_error());
+      unset($result);
+
+      return $problem;
+    }
+    unset($result);
+
+    return $problem;
+  }
+
+  /**
    * Associations a field via the field name with this problem.
    *
    * @param string $field_name
@@ -75,7 +113,7 @@ class c_base_form_problem extends c_base_return_string {
    * @see: c_base_session::save()
    */
   public function set_field($field_name) {
-    if (!is_string($field_name) && !empty($field_name)) {
+    if (!is_string($field_name) || empty($field_name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'field_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }

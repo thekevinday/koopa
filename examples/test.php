@@ -2,6 +2,10 @@
   // make sure the class files can be loaded (be sure to customize this as necessary).
   set_include_path('/var/www/koopa');
 
+  // load the global defaults file (this file is not included by default but is required by all).
+  // replace this with your own as you see fit.
+  require_once('common/base/classes/base_defaults_global.php');
+
   require_once('common/base/classes/base_error.php');
   require_once('common/base/classes/base_return.php');
   require_once('common/base/classes/base_session.php');
@@ -352,11 +356,10 @@
               $user_data = get_user_data($database, $session->get_name()->get_value_exact());
 
               $stuff['login'] .= ' - You are logged in as: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
-              $stuff['login'] .= ' - Your user id is: ' . $session->get_id_user()->get_value_exact() . '<br>' . "\n";
               #$stuff['login'] .= ' - Your password is: ' . $session->get_password()->get_value_exact() . '<br>' . "\n";
               $stuff['login'] .= ' - You will be auto-logged out at: ' . $data['expire'] . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
-              $stuff['login'] .= 'Your user data is: <br>' . "\n";
+              $stuff['login'] .= 'Your session user data is: <br>' . "\n";
               $stuff['login'] .= print_r($user_data, TRUE) . "<br>";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
@@ -365,7 +368,7 @@
               set_log_activity($database);
               get_database_data($database, $stuff);
 
-              if ($session->get_id_user()->get_value_exact() > 0) {
+              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_activity($database);
                 $table = build_log_activity_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -374,7 +377,7 @@
                 unset($table);
               }
 
-              if ($session->get_id_user()->get_value_exact() > 0) {
+              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_users($database);
                 $table = build_log_users_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -414,7 +417,7 @@
           $account_exists = check_login_access($stuff, $database, $_POST['login_name'], $_POST['login_password'], $session);
           if (!$account_exists) {
             $user_id = 1;
-            $session->set_name('public_user');
+            $session->set_name('u_public');
             $session->set_password(NULL);
             if (!isset($stuff['login'])) {
               $stuff['login'] = '';
@@ -423,14 +426,14 @@
 
             $database->set_session($session);
             #$database->set_persistent(TRUE);
-            assign_database_string($database, 'public_user', NULL, $session);
+            assign_database_string($database, 'u_public', NULL, $session);
             $connected = connect_database($database);
 
             if ($connected) {
               set_log_user($database, 'login_failure', $_POST['login_name'], NULL, 401);
               set_log_activity($database, 401);
 
-              $stuff['login'] .= ' - Accessing database as: public_user' . '<br>' . "\n";
+              $stuff['login'] .= ' - Accessing database as: u_public' . '<br>' . "\n";
               $stuff['login'] .= ' - Your user id is: 1 ' . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
@@ -465,8 +468,7 @@
             $failure = c_base_return::s_has_error($result);
           }
 
-          // added '$user_id > 999' to ensure that anonymous and other system users do not generate a session cookie.
-          if (!$failure && $user_id > 999) {
+          if (!$failure) {
             $result = $session->do_push(600, 1800); // (10 minutes, 30 minutes)
             $session->do_disconnect();
 
@@ -491,11 +493,10 @@
               }
 
               $stuff['login'] .= ' - You are logged in as: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
-              $stuff['login'] .= ' - Your user id is: ' . $session->get_id_user()->get_value_exact() . '<br>' . "\n";
               #$stuff['login'] .= ' - Your password is: ' . $session->get_password()->get_value_exact() . '<br>' . "\n";
               $stuff['login'] .= ' - You will be auto-logged out at: ' . $expire_string . ' (' . $session_expire . ')' . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
-              $stuff['login'] .= 'Your user data is: <br>' . "\n";
+              $stuff['login'] .= 'Your session user data is: <br>' . "\n";
               $stuff['login'] .= print_r($user_data, TRUE) . "<br>";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
@@ -507,7 +508,7 @@
               set_log_activity($database);
               get_database_data($database, $stuff);
 
-              if ($session->get_id_user()->get_value_exact() > 0) {
+              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_activity($database);
                 $table = build_log_activity_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -516,7 +517,7 @@
                 unset($table);
               }
 
-              if ($session->get_id_user()->get_value_exact() > 0) {
+              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_users($database);
                 $table = build_log_users_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -578,8 +579,8 @@
   }
 
   function get_database_data(&$database, &$stuff) {
-    $stuff['login'] .= 'query: "select * from v_users;"<br>' . "\n";
-    $query_result = $database->do_query('select * from v_users');
+    $stuff['login'] .= 'query: "select * from v_users where is_system is not true and is_public is not true limit 20;"<br>' . "\n";
+    $query_result = $database->do_query(' where is_system is not true and is_public is not true limit 20');
     if ($query_result instanceof c_base_database_result) {
       $all = $query_result->fetch_all();
       $stuff['login'] .= "<ol>";
@@ -609,7 +610,7 @@
   }
 
   function check_login_access(&$stuff, &$database, $username, $password, $session) {
-    if ($username == 'public_user') return FALSE;
+    if ($username == 'u_public') return FALSE;
 
     $database->set_session($session);
     assign_database_string($database, $username, $password, $session);
@@ -670,7 +671,7 @@
     }
 
     $database->do_query('set bytea_output to hex;');
-    $database->do_query('set search_path to system,administers,managers,publishers,reviewers,drafters,users,public;');
+    $database->do_query('set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;');
     $database->do_query('set datestyle to us;');
 
     return TRUE;
@@ -681,8 +682,8 @@
     $extra_values = '';
 
     $query_string = '';
-    $query_string .= 'insert into v_log_users_self_insert (id_user, name_machine_user, log_title, log_type, log_severity, request_client, response_code, log_details)';
-    $query_string .= ' values (coalesce((select id from v_users_self), 1), coalesce((select name_machine from v_users_self), \'unknown\'), $1, $2, $3, ($4, $5, $6), $7, $8); ';
+    $query_string .= 'insert into v_log_users_self_insert (log_title, log_type, log_severity, request_client, response_code, log_details)';
+    $query_string .= ' values ($1, $2, $3, ($4, $5, $6), $7, $8); ';
 
     $query_parameters = array();
     $query_parameters[3] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
@@ -752,7 +753,7 @@
 
     if ($connected) {
       $query_string = '';
-      $query_string .= 'insert into v_log_activity_self_insert (id_user, name_machine_user, request_path, request_arguments, request_client, response_code) values (coalesce((select id from v_users_self), 1), coalesce((select name_machine from v_users_self), \'unknown\'), $1, $2, ($3, $4, $5), $6); ';
+      $query_string .= 'insert into v_log_user_activity_self_insert (request_path, request_arguments, request_client, response_code) values ($1, $2, ($3, $4, $5), $6); ';
 
       $query_parameters = array();
       $query_parameters[] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
@@ -791,14 +792,10 @@
   }
 
   function get_user_data(&$database, $user_name, $ldap_data = NULL) {
-    $id_sort = (int) ord($user_name[0]);
-    $sort_string = ' where id_sort = ' . $id_sort;
-
     $user_data = array(
       'id_user' => NULL,
-      'id_sort' => $id_sort,
     );
-    $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, date_created, date_changed, settings from v_users_self' . $sort_string);
+    $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, is_system, is_public, date_created, date_changed, settings from v_users_self');
     if ($query_result instanceof c_base_database_result) {
       if ($query_result->number_of_rows()->get_value_exact() > 0) {
         $result = $query_result->fetch_row();
@@ -811,9 +808,11 @@
             $user_data['address_email'] = $result_array[3];
             $user_data['is_private'] = $result_array[4];
             $user_data['is_locked'] = $result_array[5];
-            $user_data['date_created'] = $result_array[6];
-            $user_data['date_changed'] = $result_array[7];
-            $user_data['settings'] = json_decode($result_array[8], TRUE);
+            $user_data['is_system'] = $result_array[6];
+            $user_data['is_public'] = $result_array[7];
+            $user_data['date_created'] = $result_array[8];
+            $user_data['date_changed'] = $result_array[9];
+            $user_data['settings'] = json_decode($result_array[10], TRUE);
           }
         }
       }
@@ -829,7 +828,7 @@
 
     if (is_null($user_data['id_user'])) {
       if (is_null($ldap_data)) {
-        $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine) values (' . $id_sort . ', user)');
+        $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values (null, null, null, null, null)');
         if ($query_result instanceof c_base_return_false) {
           if (!isset($stuff['errors'])) {
             $stuff['errors'] = '';
@@ -850,7 +849,7 @@
           $ldap_data['employeenumber'],
         );
 
-        $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine, name_human.first, name_human.last, name_human.complete, address_email, id_external) values (' . $id_sort . ', user, $1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
+        $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values ($1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
         if ($query_result instanceof c_base_return_false) {
           if (!isset($stuff['errors'])) {
             $stuff['errors'] = '';
@@ -861,8 +860,8 @@
         unset($query_result);
       }
 
-      $user_data['id_user'] = 1;
-      $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, date_created, date_changed, settings from v_users_self' . $sort_string);
+      $user_data['id_user'] = NULL;
+      $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, is_system, is_public, date_created, date_changed, settings from v_users_self');
       if ($query_result instanceof c_base_database_result) {
         if ($query_result->number_of_rows()->get_value_exact() > 0) {
           $result = $query_result->fetch_row();
@@ -874,9 +873,11 @@
             $user_data['address_email'] = $result_array[3];
             $user_data['is_private'] = $result_array[4];
             $user_data['is_locked'] = $result_array[5];
-            $user_data['date_created'] = $result_array[6];
-            $user_data['date_changed'] = $result_array[7];
-            $user_data['settings'] = json_decode($result_array[8], TRUE);
+            $user_data['is_system'] = $result_array[6];
+            $user_data['is_public'] = $result_array[7];
+            $user_data['date_created'] = $result_array[8];
+            $user_data['date_changed'] = $result_array[9];
+            $user_data['settings'] = json_decode($result_array[10], TRUE);
           }
         }
       }
@@ -897,7 +898,7 @@
     $values = array();
 
     $user_id = NULL;
-    $query_result = $database->do_query('select id, request_path, request_date, request_client, response_code from v_log_activity_self order by request_date desc limit 20;');
+    $query_result = $database->do_query('select id, request_path, request_date, request_client, response_code from v_log_user_activity_self order by request_date desc limit 20;');
     if ($query_result instanceof c_base_database_result) {
      $total_rows = $query_result->number_of_rows()->get_value_exact();
 

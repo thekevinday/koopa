@@ -217,7 +217,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
     }
     elseif ($code === self::POSTGRESQL_CONNECTION_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('Failed to connect to the database, :database_name' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+        return c_base_return_string::s_new('Failed to connect to the database, :database_name, reasons: :failure_reasons' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
       else {
         return c_base_return_string::s_new('Failed to connect to the database.');

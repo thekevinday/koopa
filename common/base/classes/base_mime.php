@@ -8,23 +8,26 @@
  * A generic class for managing mime-type information.
  */
 class c_base_mime {
-  const CATEGORY_UNKNOWN     = 0;
-  const CATEGORY_PROVIDED    = 1;
-  const CATEGORY_STREAM      = 2;
-  const CATEGORY_TEXT        = 1000;
-  const CATEGORY_IMAGE       = 2000;
-  const CATEGORY_AUDIO       = 3000;
-  const CATEGORY_VIDEO       = 4000;
-  const CATEGORY_DOCUMENT    = 5000;
-  const CATEGORY_CONTAINER   = 6000;
-  const CATEGORY_APPLICATION = 7000; // only for application/* that values not covered by any other category.
+  const CATEGORY_NONE        = 0;
+  const CATEGORY_UNKNOWN     = 1;
+  const CATEGORY_PROVIDED    = 2;
+  const CATEGORY_STREAM      = 3;
+  const CATEGORY_MULTIPART   = 4;
+  const CATEGORY_TEXT        = 5;
+  const CATEGORY_IMAGE       = 6;
+  const CATEGORY_AUDIO       = 7;
+  const CATEGORY_VIDEO       = 8;
+  const CATEGORY_DOCUMENT    = 9;
+  const CATEGORY_CONTAINER   = 10;
+  const CATEGORY_APPLICATION = 11; // only for application/* that values not covered by any other category.
 
+  const TYPE_NONE      = 0;
+  const TYPE_UNKNOWN   = 1;
+  const TYPE_PROVIDED  = 2;
+  const TYPE_STREAM    = 3;
+  const TYPE_FORM_DATA = 4;
 
-  const TYPE_UNKNOWN   = 0;
-  const TYPE_PROVIDED  = 1;
-  const TYPE_STREAM    = 2;
-  const TYPE_MULTIPART = 3;
-
+  const TYPE_TEXT       = 1000;
   const TYPE_TEXT_PLAIN = 1001;
   const TYPE_TEXT_HTML  = 1002;
   const TYPE_TEXT_RSS   = 1003;
@@ -37,7 +40,9 @@ class c_base_mime {
   const TYPE_TEXT_RICH  = 1010;
   const TYPE_TEXT_XHTML = 1011;
   const TYPE_TEXT_PS    = 1012;
+  const TYPE_TEXT_FSS   = 1013;
 
+  const TYPE_IMAGE      = 2000;
   const TYPE_IMAGE_PNG  = 2001;
   const TYPE_IMAGE_GIF  = 2002;
   const TYPE_IMAGE_JPEG = 2003;
@@ -45,12 +50,17 @@ class c_base_mime {
   const TYPE_IMAGE_SVG  = 2005;
   const TYPE_IMAGE_TIFF = 2006;
 
-  const TYPE_AUDIO_WAV  = 3001;
-  const TYPE_AUDIO_OGG  = 3002;
-  const TYPE_AUDIO_MP3  = 3003;
-  const TYPE_AUDIO_MP4  = 3004;
-  const TYPE_AUDIO_MIDI = 3005;
+  const TYPE_AUDIO       = 3000;
+  const TYPE_AUDIO_WAV   = 3001;
+  const TYPE_AUDIO_OGG   = 3002;
+  const TYPE_AUDIO_SPEEX = 3003;
+  const TYPE_AUDIO_FLAC  = 3004;
+  const TYPE_AUDIO_MP3   = 3005;
+  const TYPE_AUDIO_MP4   = 3006;
+  const TYPE_AUDIO_MIDI  = 3007;
+  const TYPE_AUDIO_BASIC = 3008;
 
+  const TYPE_VIDEO           = 4000;
   const TYPE_VIDEO_MPEG      = 4001;
   const TYPE_VIDEO_OGG       = 4002;
   const TYPE_VIDEO_H264      = 4003;
@@ -59,34 +69,41 @@ class c_base_mime {
   const TYPE_VIDEO_JPEG      = 4006;
   const TYPE_VIDEO_WEBM      = 4007;
 
-  const TYPE_DOCUMENT_LIBRECHART        = 5001;
-  const TYPE_DOCUMENT_LIBREFORMULA      = 5002;
-  const TYPE_DOCUMENT_LIBREGRAPHIC      = 5003;
-  const TYPE_DOCUMENT_LIBREPRESENTATION = 5004;
-  const TYPE_DOCUMENT_LIBRESPREADSHEET  = 5005;
-  const TYPE_DOCUMENT_LIBRETEXT         = 5006;
-  const TYPE_DOCUMENT_LIBREHTML         = 5007;
-  const TYPE_DOCUMENT_PDF               = 5008;
+  const TYPE_DOCUMENT                   = 5000;
+  const TYPE_DOCUMENT_PDF               = 5001;
+  const TYPE_DOCUMENT_LIBRECHART        = 5002;
+  const TYPE_DOCUMENT_LIBREFORMULA      = 5003;
+  const TYPE_DOCUMENT_LIBREGRAPHIC      = 5004;
+  const TYPE_DOCUMENT_LIBREPRESENTATION = 5005;
+  const TYPE_DOCUMENT_LIBRESPREADSHEET  = 5006;
+  const TYPE_DOCUMENT_LIBRETEXT         = 5007;
+  const TYPE_DOCUMENT_LIBREHTML         = 5008;
   const TYPE_DOCUMENT_ABIWORD           = 5009;
   const TYPE_DOCUMENT_MSWORD            = 5010;
   const TYPE_DOCUMENT_MSEXCEL           = 5011;
   const TYPE_DOCUMENT_MSPOWERPOINT      = 5012;
 
+  const TYPE_CONTAINER      = 6000;
   const TYPE_CONTAINER_TAR  = 6001;
   const TYPE_CONTAINER_CPIO = 6002;
   const TYPE_CONTAINER_JAVA = 6003;
+
+  const TYPE_APPLICATION               = 7000;
+  const TYPE_APPLICATION_OCSP_REQUEST  = 7001;
+  const TYPE_APPLICATION_OCSP_RESPONSE = 7002;
 
 
   private static $s_names_provided = array(
     self::TYPE_PROVIDED  => array('*/*', 'text/*', 'image/*', 'audio/*', 'video/*', 'application/*'),
     self::TYPE_STREAM    => array('application/octet-stream'),
-    self::TYPE_MULTIPART => array('multipart/form-data'),
+    self::TYPE_FORM_DATA => array('multipart/form-data'),
   );
 
   private static $s_names_text = array(
+    self::TYPE_TEXT         => array('text/*'),
     self::TYPE_TEXT_PLAIN   => array('text/plain'),
     self::TYPE_TEXT_HTML    => array('text/html'),
-    self::TYPE_TEXT_RSS     => array('application/rss', 'application/rss+xml', 'application/rss+xml', 'application/rdf+xml', 'application/atom+xml'),
+    self::TYPE_TEXT_RSS     => array('application/rss', 'application/rss+xml', 'application/rdf+xml', 'application/atom+xml'),
     self::TYPE_TEXT_ICAL    => array('text/calendar'),
     self::TYPE_TEXT_CSV     => array('text/csv'),
     self::TYPE_TEXT_XML     => array('application/xml'),
@@ -96,9 +113,11 @@ class c_base_mime {
     self::TYPE_TEXT_RICH    => array('text/rtf'),
     self::TYPE_TEXT_XHTML   => array('application/xhtml', 'application/xhtml+xml'),
     self::TYPE_TEXT_PS      => array('text/ps'),
+    self::TYPE_TEXT_FSS     => array('text/fss'),
   );
 
   private static $s_names_image = array(
+    self::TYPE_IMAGE      => array('image/*'),
     self::TYPE_IMAGE_PNG  => array('image/png'),
     self::TYPE_IMAGE_GIF  => array('image/gif'),
     self::TYPE_IMAGE_JPEG => array('image/jpeg', 'image/jpg', 'image/jpx'),
@@ -108,17 +127,22 @@ class c_base_mime {
   );
 
   private static $s_names_audio = array(
-    self::TYPE_AUDIO_WAV  => array('audio/wav'),
-    self::TYPE_AUDIO_OGG  => array('audio/ogg'),
-    self::TYPE_AUDIO_MP3  => array('audio/mpeg'),
-    self::TYPE_AUDIO_MP4  => array('audio/mp4'),
-    self::TYPE_AUDIO_MIDI => array('audio/midi'),
+    self::TYPE_AUDIO       => array('audio/*'),
+    self::TYPE_AUDIO_WAV   => array('audio/wav'),
+    self::TYPE_AUDIO_OGG   => array('audio/ogg'),
+    self::TYPE_AUDIO_SPEEX => array('audio/speex'),
+    self::TYPE_AUDIO_FLAC  => array('audio/flac'),
+    self::TYPE_AUDIO_MP3   => array('audio/mpeg'),
+    self::TYPE_AUDIO_MP4   => array('audio/mp4'),
+    self::TYPE_AUDIO_MIDI  => array('audio/midi'),
+    self::TYPE_AUDIO_BASIC  => array('audio/au', 'audio/snd'),
   );
 
   private static $s_names_video = array(
+    self::TYPE_VIDEO           => array('video/*'),
     self::TYPE_VIDEO_MPEG      => array('video/mp4', 'video/mpeg'),
-    self::TYPE_VIDEO_OGG       => array('video/ogg'),
-    self::TYPE_VIDEO_H264      => array('video/h264'),
+    self::TYPE_VIDEO_OGG       => array('video/ogv'),
+    self::TYPE_VIDEO_H264      => array('video/h264', 'video/x264'),
     self::TYPE_VIDEO_QUICKTIME => array('video/qt'),
     self::TYPE_VIDEO_DV        => array('video/dv'),
     self::TYPE_VIDEO_JPEG      => array('video/jpeg', 'video/jpeg2000'),
@@ -126,6 +150,7 @@ class c_base_mime {
   );
 
   private static $s_names_document = array(
+    self::TYPE_DOCUMENT                   => array('application/*'),
     self::TYPE_DOCUMENT_PDF               => array('application/pdf'),
     self::TYPE_DOCUMENT_LIBRECHART        => array('application/vnd.oasis.opendocument.chart'),
     self::TYPE_DOCUMENT_LIBREFORMULA      => array('application/vnd.oasis.opendocument.formula'),
@@ -141,12 +166,96 @@ class c_base_mime {
   );
 
   private static $s_names_container = array(
+    self::TYPE_CONTAINER      => array('application/*'),
     self::TYPE_CONTAINER_TAR  => array('application/tar'),
     self::TYPE_CONTAINER_CPIO => array('application/cpio'),
     self::TYPE_CONTAINER_JAVA => array('application/java'),
   );
 
   private static $s_names_application = array(
+    self::TYPE_APPLICATION => array('application/*'),
+    self::TYPE_APPLICATION_OCSP_REQUEST  => array('application/ocsp-request'),
+    self::TYPE_APPLICATION_OCSP_RESPONSE => array('application/ocsp-response'),
+  );
+
+  private static $s_extensions_text = array(
+    self::TYPE_TEXT         => array(),
+    self::TYPE_TEXT_PLAIN   => array('txt'),
+    self::TYPE_TEXT_HTML    => array('html'),
+    self::TYPE_TEXT_RSS     => array('rss', 'rdf'),
+    self::TYPE_TEXT_ICAL    => array('ics'),
+    self::TYPE_TEXT_CSV     => array('csv'),
+    self::TYPE_TEXT_XML     => array('xml'),
+    self::TYPE_TEXT_CSS     => array('css'),
+    self::TYPE_TEXT_JS      => array('js'),
+    self::TYPE_TEXT_JSON    => array('json'),
+    self::TYPE_TEXT_RICH    => array('rtf'),
+    self::TYPE_TEXT_XHTML   => array('xhtml'),
+    self::TYPE_TEXT_PS      => array('ps'),
+    self::TYPE_TEXT_FSS     => array('setting'),
+  );
+
+  private static $s_extensions_image = array(
+    self::TYPE_IMAGE      => array(),
+    self::TYPE_IMAGE_PNG  => array('png'),
+    self::TYPE_IMAGE_GIF  => array('gif'),
+    self::TYPE_IMAGE_JPEG => array('jpg', 'jpeg'),
+    self::TYPE_IMAGE_BMP  => array('bmp'),
+    self::TYPE_IMAGE_SVG  => array('svg'),
+    self::TYPE_IMAGE_TIFF => array('tiff'),
+  );
+
+  private static $s_extensions_audio = array(
+    self::TYPE_AUDIO       => array(),
+    self::TYPE_AUDIO_WAV   => array('wav'),
+    self::TYPE_AUDIO_OGG   => array('ogg'),
+    self::TYPE_AUDIO_OPUS  => array('opus', 'ogg'),
+    self::TYPE_AUDIO_SPEEX => array('spx'),
+    self::TYPE_AUDIO_FLAC  => array('flac'),
+    self::TYPE_AUDIO_MP3   => array('mp3', 'mp2', 'mp1'),
+    self::TYPE_AUDIO_MP4   => array('mp4', 'mpeg'),
+    self::TYPE_AUDIO_MIDI  => array('midi'),
+    self::TYPE_AUDIO_BASIC => array('au', 'snd'),
+  );
+
+  private static $s_extensions_video = array(
+    self::TYPE_VIDEO           => array(),
+    self::TYPE_VIDEO_MPEG      => array('mp4', 'video/mpeg'),
+    self::TYPE_VIDEO_OGG       => array('video/ogv'),
+    self::TYPE_VIDEO_H264      => array('video/h264'),
+    self::TYPE_VIDEO_QUICKTIME => array('video/qt'),
+    self::TYPE_VIDEO_DV        => array('video/dv'),
+    self::TYPE_VIDEO_JPEG      => array('video/jpeg', 'video/jpeg2000'),
+    self::TYPE_VIDEO_WEBM      => array('video/webm'),
+  );
+
+  private static $s_extensions_document = array(
+    self::TYPE_DOCUMENT                   => array('application/*'),
+    self::TYPE_DOCUMENT_PDF               => array('application/pdf'),
+    self::TYPE_DOCUMENT_LIBRECHART        => array('application/vnd.oasis.opendocument.chart'),
+    self::TYPE_DOCUMENT_LIBREFORMULA      => array('application/vnd.oasis.opendocument.formula'),
+    self::TYPE_DOCUMENT_LIBREGRAPHIC      => array('application/vnd.oasis.opendocument.graphics'),
+    self::TYPE_DOCUMENT_LIBREPRESENTATION => array('application/vnd.oasis.opendocument.presentation'),
+    self::TYPE_DOCUMENT_LIBRESPREADSHEET  => array('application/vnd.oasis.opendocument.spreadsheet'),
+    self::TYPE_DOCUMENT_LIBRETEXT         => array('application/vnd.oasis.opendocument.text'),
+    self::TYPE_DOCUMENT_LIBREHTML         => array('application/vnd.oasis.opendocument.text-web'),
+    self::TYPE_DOCUMENT_ABIWORD           => array('application/abiword', 'application/abiword-compressed'),
+    self::TYPE_DOCUMENT_MSWORD            => array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'),
+    self::TYPE_DOCUMENT_MSEXCEL           => array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/ms-excel'),
+    self::TYPE_DOCUMENT_MSPOWERPOINT      => array('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/ms-powerpoint'),
+  );
+
+  private static $s_extensions_container = array(
+    self::TYPE_CONTAINER      => array('application/*'),
+    self::TYPE_CONTAINER_TAR  => array('application/tar'),
+    self::TYPE_CONTAINER_CPIO => array('application/cpio'),
+    self::TYPE_CONTAINER_JAVA => array('application/java'),
+  );
+
+  private static $s_extensions_application = array(
+    self::TYPE_APPLICATION => array('application/*'),
+    self::TYPE_APPLICATION_OCSP_REQUEST  => array('application/ocsp-request'),
+    self::TYPE_APPLICATION_OCSP_RESPONSE => array('application/ocsp-response'),
   );
 
 
@@ -439,6 +548,14 @@ class c_base_mime {
       elseif ($parts[1] == 'java') {
         $information['id_category'] = self::CATEGORY_CONTAINER;
         $information['id_type'] = self::TYPE_CONTAINER_JAVA;
+      }
+      elseif ($parts[1] == 'ocsp-request') {
+        $information['id_category'] = self::CATEGORY_APPLICATION;
+        $information['id_type'] = self::TYPE_PACKET_OCSP_REQUEST;
+      }
+      elseif ($parts[1] == 'ocsp-response') {
+        $information['id_category'] = self::CATEGORY_APPLICATION;
+        $information['id_type'] = self::TYPE_PACKET_OCSP_RESPONSE;
       }
       else {
         $information['id_type'] = self::TYPE_UNKNOWN;

@@ -1152,19 +1152,23 @@ class c_base_return_object extends c_base_return_value {
   /**
    * Assign the value.
    *
+   * This calls PHP's clone() function to prevent potential security/integrirty issues.
+   *
    * @param object $value
    *   Any value so long as it is an object.
    *   NULL is not allowed.
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.
+   *
+   * @see: clone()
    */
   public function set_value($value) {
     if (!is_object($value)) {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 

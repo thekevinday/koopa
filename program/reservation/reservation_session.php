@@ -268,8 +268,8 @@
     //    6 = error occured while reading input from the user (such as via recv()).
     //    7 = error occured while writing input from the user (such as via send()).
     //    8 = the received packet is invalid, such as wrong length.
-    //   10 = connection timed out when reading or writing.
-    //   11 = the connection is being forced closed.
-    //   12 = the connection is closing because the service is quitting.
+    //    9 = connection timed out when reading or writing.
+    //   10 = the connection is being forced closed.
+    //   11 = the connection is closing because the service is quitting.
     return c_base_return_int::s_new($response_value);
   }

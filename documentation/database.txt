@@ -28,10 +28,10 @@ As for order of operations, postgresql provides a database environment variable 
 This search_path provides an order in which schemas may be searched.
 Because of a users access control, some schemas may not be available.
 This has the convenient effect of allowing multiple identically named tables to be used, but provide different content based on access restrictions.
-For example, there are at least two views filtering the user account infomration: managers.v_users and public.v_users.
+For example, there are at least two views filtering the user account infomration: s_managers.v_users and public.v_users.
 Users without access to the managers will at least see the public.v_users view.
 The view public.v_users provides a limited subset of user rows based on criteria such as if the account is not marked private and then only a limited set of columns are made visible.
-The view managers.v_users provides access to far more accounts and many more columns.
+The view s_managers.v_users provides access to far more accounts and many more columns.
 This then allows the client software, such as PHP, to not need to understand the access control situation and to only need to select v_users to access user data.
 
 Postgresql materialized views are experimentally being used to provide a sort of live cache of information.
@@ -46,3 +46,20 @@ This can then slow down site response time, directly affecting the user experien
 This id_sort column is used, in conjunction with custom indexing, to provide a sub-set of the arbitrarily large users table.
 The id_sort is simply an ordinal integer (as returned by PHPs ord() function) for the first (lower-cased) letter of the username.
 This is obviously not an optimal solution, in part because some alphabets will have more names than others, but I believe it is a good enough solution.
+
+For database names, the following naming scheme is used:
+  - t_: This represents a table.
+  - v_: This represents a view.
+  - m_: This represents a materialized view.
+  - cp_: This represents a primary key constraint.
+  - cu_: This represents a unique constraint.
+  - cc_: This represents a check constraint.
+  - cf_: This represents a foreign key constraint.
+  - i_: This represents an index.
+  - f_: This represents a function.
+  - tr_: This represents a trigger.
+  - ct_: This represents a composite type.
+  - s_: This represents a schema.
+  - r_: This represents a role.
+  - u_: This represents a user (except for ldap users, whose names are exactly as defined in ldap, and the root postgresql user, usually postgres).
+  - se_: This represents a sequence.

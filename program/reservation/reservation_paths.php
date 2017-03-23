@@ -29,18 +29,20 @@ function reservation_build_login_page(&$html, $settings, $session) {
 
   // @fixme: create a form problems array in session and use that.
   $problems = $session->get_problems();
-  if (is_array($problems)) {
-    foreach ($problems as $problem) {
-      if (!empty($problem['fields']) && is_array($problem['fields'])) {
-        foreach ($problem['fields'] as $problem_field) {
-          $problem_fields[$problem_field] = $problem_field;
-        }
-        unset($problem_field);
-      }
+  if ($problems instanceof c_base_return_array) {
+    $problems = $problems->get_value_exact();
 
-      if (!empty($problem['messages']) && is_string($problem['messages'])) {
-        $problem_messages[] = $problem['messages'];
+    foreach ($problems as $problem) {
+      $fields = $problem->get_fields();
+      if ($fields instanceof c_base_return_array) {
+        foreach ($fields->get_value_exact() as $field) {
+          $problem_fields[] = $field;
+        }
+        unset($field);
       }
+      unset($fields);
+
+      $problem_messages[] = $problem->get_value_exact();
     }
     unset($problem);
   }
@@ -174,31 +176,16 @@ function reservation_build_login_page(&$html, $settings, $session) {
 function reservation_attempt_login(&$database, &$settings, &$session) {
   $problems = array();
   if (empty($_POST['login_form-username'])) {
-    $problem = new c_base_form_problem();
-    $problem->set_field('login_form-username');
-    $problem->set_value('No valid username has been supplied.');
-
-    $problems[] = $problem;
-    unset($problem);
+    $problems[] = c_base_form_problem::s_create_error('login_form-username', 'No valid username has been supplied.');
   }
 
   if (empty($_POST['login_form-password'])) {
-    $problem = new c_base_form_problem();
-    $problem->set_field('login_form-password');
-    $problem->set_value('No valid password has been supplied.');
-
-    $problems[] = $problem;
-    unset($problem);
+    $problems[] = c_base_form_problem::s_create_error('login_form-password', 'No valid password has been supplied.');
   }
 
   // explicitly deny access to internal user accounts
-  if ($_POST['login_form-username'] == 'public_user') {
-    $problem = new c_base_form_problem();
-    $problem->set_field('login_form-username');
-    $problem->set_value('Unable to login, an incorrect user name or password has been specified.');
-
-    $problems[] = $problem;
-    unset($problem);
+  if ($_POST['login_form-username'] == 'u_public') {
+    $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user name or password has been specified.');
   }
 
   // return current list of problems before continuing to login attempt with credentials.
@@ -214,40 +201,123 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
   // the database string must be rebuilt using the new username and password.
   reservation_database_string($database, $settings);
 
+  $access_denied = FALSE;
+  $error_messages = array();
   $connected = reservation_database_connect($database);
   if (!($connected instanceof c_base_return_true)) {
-    // it is possible the user name might not exist, so try to auto-create the username if the username does not exist.
-    $ensure_result = reservation_ensure_user_account($settings, $_POST['login_form-username']);
-    // @todo: process the $ensure_result return codes.
+    // try to determine what the warning is.
+    // this is not very accurate/efficient, but scanning the string appears to be the only way to identify the error.
+    $errors = $connected->get_error();
 
-    if ($ensure_result instanceof c_base_return_int) {
-      $ensure_result = $ensure_result->get_value_exact();
+    $error = reset($errors);
+    unset($errors);
 
-      $connected = new c_base_return_false();
-      if ($ensure_result === 0) {
-        // try again now that the system has attempted to ensure the user account exists.
-        $connected = reservation_database_connect($database);
-        if ($connected instanceof c_base_return_true) {
-          // @todo: add log entry.
-          #set_log_user($database, 'create_user');
-        }
+    $details = $error->get_details();
+    unset($error);
+
+    if (isset($details['arguments'][':failure_reasons'][0]['message'])) {
+      // in the case where the database cannot be connected to, do not attempt to ensure user account.
+      if (preg_match('/could not connect to server: connection refused/i', $details['arguments'][':failure_reasons'][0]['message']) > 0) {
+        // @todo: separate messages for admin users and public users.
+        #foreach ($details['arguments'][':failure_reasons'] as $error_message) {
+        #  $error_messages[] = $error_message;
+        #}
+        #unset($error_message);
+        unset($details);
+
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, cannot connect to the database.');
+        return c_base_return_array::s_new($problems);
       }
-      else {
-        // @todo: possibly handle errors resulting from not being able to auto-create account.
+      elseif (preg_match('/no pg_hba\.conf entry for host/i', $details['arguments'][':failure_reasons'][0]['message']) > 0) {
+        // the account either does note exist or is not authorized.
+        // it is a pity that postgresql doesn't differentiate the two.
+        $access_denied = TRUE;
       }
     }
-    unset($ensure_result);
+    unset($details);
+
+    if ($access_denied) {
+      // it is possible the user name might not exist, so try to auto-create the username if the username does not exist.
+      $ensure_result = reservation_ensure_user_account($settings, $_POST['login_form-username']);
+      if ($ensure_result instanceof c_base_return_int) {
+        $ensure_result = $ensure_result->get_value_exact();
+
+        $connected = new c_base_return_false();
+        if ($ensure_result === 0) {
+          // try again now that the system has attempted to ensure the user account exists.
+          $connected = reservation_database_connect($database);
+          if ($connected instanceof c_base_return_true) {
+            // @todo: add log entry.
+            #set_log_user($database, 'create_user');
+          }
+        }
+        elseif ($ensure_result === 1) {
+          // invalid user name, bad characters, or name too long.
+        }
+        elseif ($ensure_result === 2) {
+          // failed to connect to the ldap server and could not query the ldap name.
+        }
+        elseif ($ensure_result === 3) {
+          // user name not found in ldap database.
+        }
+        elseif ($ensure_result === 4) {
+          //    4 = failed to connect to the database.
+        }
+        elseif ($ensure_result === 5) {
+          //    5 = error returned while executing the SQL command.
+        }
+        elseif ($ensure_result === 6) {
+          //    6 = error occured while reading input from the user (such as via recv()).
+        }
+        elseif ($ensure_result === 7) {
+          //    7 = error occured while writing input from the user (such as via send()).
+        }
+        elseif ($ensure_result === 8) {
+          //    8 = the received packet is invalid, such as wrong length.
+        }
+        elseif ($ensure_result === 9) {
+          //   10 = connection timed out when reading or writing.
+        }
+        elseif ($ensure_result === 10) {
+          //   10 = the connection is being forced closed.
+        }
+        elseif ($ensure_result === 11) {
+          //   11 = the connection is closing because the service is quitting.
+        }
+      }
+      unset($ensure_result);
+    }
   }
 
   if ($connected instanceof c_base_return_false) {
-    $problem = new c_base_form_problem();
-    $problem->set_field('login_form-username');
-    $problem->set_value('Unable to login, an incorrect user or password has been specified.');
+    if ($access_denied) {
+      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user or password has been specified.');
+    }
+    else {
+      $errors = $connected->get_error();
 
-    $problems[] = $problem;
-    unset($problem);
+      $error = reset($errors);
+      unset($errors);
+
+      $details = $error->get_details();
+      unset($error);
+
+      // @todo: not just database errors, but also session create errors need to be checked.
+      if (isset($details['arguments'][':failure_reasons'][0]['message']) && is_string($details['arguments'][':failure_reasons'][0]['message'])) {
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, ' . $details['arguments'][':failure_reasons'][0]['message']);
+      }
+      else {
+        // here the reason for failure is unknown.
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login,');
+      }
+      unset($details);
+    }
+
+    unset($access_denied);
   }
   else {
+    unset($access_denied);
+
     // @todo: add log entry.
     #set_log_user($database, 'login');
 
@@ -258,20 +328,14 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
     // the session needs to be opened and the data needs to be saved on successful login.
     $result = $session->do_connect();
     if (c_base_return::s_has_error($result)) {
-      // @todo: process each error message.
-      $problem = new c_base_form_problem();
-
-      $socket_error = $session->get_socket_error()->get_value();
+      $socket_error = $session->get_error_socket();
       if ($socket_error instanceof c_base_return_int) {
-        $problem->set_value('Failed to load session, due to socket error (' . $socket_error . '): ' . @socket_strerror($socket_error) . '.');
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
       }
       else {
-        $problem->set_value('Failed to load session.');
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session.');
       }
       unset($socket_error);
-
-      $problems[] = $problem;
-      unset($problem);
     }
     else {
       $ldap = reservation_database_load_ldap_data($settings, $_POST['login_form-username'])->get_value();
@@ -282,13 +346,9 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
       }
 
       if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
-        // @todo: handle error situation.
-        $problem = new c_base_form_problem();
-        $problem->set_field('login_form-username');
-        $problem->set_value('Failed to retrieve ldap information for specified user.');
+        $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
 
-        $problems[] = $problem;
-        unset($problem);
+        // @todo: handle error situation.
       }
 
       $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();
@@ -302,23 +362,20 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
       $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
       $session->do_disconnect();
 
-      $session_expire = $session->get_timeout_expire()->get_value_exact();
-      $cookie_login = $session->get_cookie();
-
+      $cookie_login = NULL;
       if (c_base_return::s_has_error($pushed)) {
-        $problem = new c_base_form_problem();
-
-        $socket_error = $session->get_socket_error()->get_value();
+        $socket_error = $session->get_error_socket();
         if ($socket_error instanceof c_base_return_int) {
-          $problem->set_value('Failed to push session, due to socket error (' . $socket_error . '): ' . @socket_strerror($socket_error) . '.');
+          $problems = c_base_form_problem::s_create_error(NULL, 'Failed to push session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
         }
         else {
-          $problem->set_value('Failed to push session.');
+          $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to push session.');
         }
         unset($socket_error);
-
-        $problems[] = $problem;
-        unset($problem);
+      }
+      else {
+        $session_expire = $session->get_timeout_expire()->get_value_exact();
+        $cookie_login = $session->get_cookie();
       }
 
       if ($cookie_login instanceof c_base_cookie) {
@@ -484,6 +541,17 @@ function reservation_process_forms(&$html, $settings, &$session) {
   $tag->set_text('This function is called to process specific forms.');
   $html->set_tag($tag);
   unset($tag);
+
+  if (!empty($_POST['form_id'])) {
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BREAK);
+    $html->set_tag($tag);
+    unset($tag);
+
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
+    $tag->set_text('The form has the id: ' . $_POST['form_id'] . '.');
+    $html->set_tag($tag);
+    unset($tag);
+  }
 }
 
 /**

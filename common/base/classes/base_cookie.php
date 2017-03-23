@@ -19,7 +19,7 @@ require_once('common/base/classes/base_return.php');
  * @todo: there seems to be a non-standard cookie flag called 'storeid'.
  *        I cannot find any decent documentation, so I will not implement it at this time.
  *
- * @see: http://us.php.net/manual/en/features.cookies.php
+ * @see: http://php.net/manual/en/features.cookies.php
  * @see: https://tools.ietf.org/html/rfc6265
  * @see: https://tools.ietf.org/html/draft-west-first-party-cookies
  * @see: setcookie()

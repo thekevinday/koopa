@@ -5,6 +5,8 @@
 
   $root_path = 'common/base/classes/';
   require_once($root_path . 'base_http.php');
+  require_once($root_path . 'base_database.php');
+  require_once($root_path . 'base_cookie.php');
 
   class_alias('c_base_return', 'c_return');
   class_alias('c_base_return_status', 'c_status');
@@ -72,11 +74,98 @@
     ini_set('output_buffering', FALSE);
   }
 
+  function program_load_session(&$data_program) {
+    $database = new c_base_database();
+
+    $remote_address = '127.0.0.1';
+    if (!empty($_SERVER['REMOTE_ADDR'])) {
+      $remote_address = $_SERVER['REMOTE_ADDR'];
+    }
+
+    // cookie is used to determine whether or not the user is logged in.
+    $cookie = new c_base_cookie();
+    $cookie->set_name("localhost");
+    $cookie->set_path('/');
+    $cookie->set_domain('.localhost');
+    $cookie->set_secure(TRUE);
+
+    $logged_in = FALSE;
+    $failure = FALSE;
+
+    $result = $cookie->do_pull();
+    if ($result instanceof c_base_return_true) {
+      $value = $cookie->get_value_exact();
+
+      if ($cookie->validate() instanceof c_base_return_true && !empty($value['session_id'])) {
+        $session = new c_base_session();
+        $session->set_socket_directory('/programs/sockets/sessionize_accounts/');
+        $session->set_system_name('example');
+        $session->set_host($remote_address);
+        $session->set_session_id($value['session_id']);
+        $result = $session->do_connect();
+        $failure = c_base_return::s_has_error($result);
+        if (!$failure) {
+          $result = $session->do_pull();
+          $session->do_disconnect();
+          $data_program['session'] = $result;
+        }
+        unset($failure);
+
+        $connected = FALSE;
+        if ($result instanceof c_base_return_true) {
+          $name = $session->get_name()->get_value();
+          $password = $session->get_name()->get_value();
+          program_assign_database_string($database, $name, $password, $session);
+          unset($name);
+          unset($password);
+
+          $connected = program_connect_database($database);
+        }
+        unset($result);
+
+        if ($connected) {
+          // check to see if the session timeout has been extended and if so, then update the cookie.
+          $session_expire = cbri::s_value_exact($session->get_timeout_expire());
+          $session_seconds = $session_expire - time();
+          if ($session_seconds == 0) {
+            $session_seconds = -1;
+          }
+          if ($session_expire > $value['expire']) {
+            $value['expire'] = gmdate("D, d-M-Y H:i:s T", $session_expire);
+            $cookie->set_value($value);
+            $cookie->set_expires($session_expire);
+          }
+          unset($session_expire);
+          unset($session_seconds);
+        }
+        unset($connected);
+        unset($session);
+      }
+    }
+    else {
+      program_assign_database_string($database, 'example_user', NULL, NULL);
+      $connected = program_connect_database($database);
+
+      if ($connected) {
+        $data_program['http']->set_response_content('Connected: success<br>.');
+        $database->do_disconnect();
+      }
+      unset($connected);
+    }
+    unset($value);
+    unset($cookie);
+    unset($database);
+    unset($remote_address);
+    unset($logged_in);
+  }
+
   function program_receive_request(&$data_program) {
     $data_program['http'] = new c_base_http();
 
     $data_program['http']->do_load_request();
     $data_program['http']->set_response_content("");
+
+    program_load_session($data_program);
   }
 
   function program_process_request(&$data_program) {
@@ -311,5 +400,36 @@
     unset($time_stop);
     unset($data_program['debug']);
   }
+
+  function program_assign_database_string(&$database, $username, $password, $session) {
+    if (!is_null($session)) {
+      $database->set_session($session);
+    }
+
+    $connection_string = new c_base_connection_string();
+    $connection_string->set_host('127.0.0.1');
+    $connection_string->set_port(5432);
+    $connection_string->set_database('example');
+    $connection_string->set_user($username);
+    if (!is_null($password)) {
+      $connection_string->set_password($password);
+    }
+    $connection_string->set_ssl_mode('require');
+    $connection_string->set_connect_timeout(4);
+    $database->set_connection_string($connection_string);
+    unset($connection_string);
+  }
+
+  function program_connect_database(&$database) {
+    if (!($database->do_connect() instanceof c_base_return_true)) {
+      return FALSE;
+    }
+
+    $database->do_query('set bytea_output to hex;');
+    $database->do_query('set datestyle to us;');
+
+    return TRUE;
+  }
+
 
   program();

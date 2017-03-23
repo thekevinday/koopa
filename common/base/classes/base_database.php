@@ -24,17 +24,18 @@
  * - A reason against persistent connections is the inability to directly close them.
  *   - This is a major weakness and may prevent me from using this persistent connection design (much testing is required).
  *
- * @see: http://us.php.net/manual/en/features.persistent-connections.php
+ * @see: http://php.net/manual/en/features.persistent-connections.php
  */
 
 // include required files.
+require_once('common/base/classes/base_warning.php');
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 /**
  * A generic class for storing and creating a database connection string.
  *
- * @see: http://us.php.net/manual/en/function.pg-pconnect.php
+ * @see: http://php.net/manual/en/function.pg-pconnect.php
  */
 class c_base_connection_string extends c_base_return_string {
   const DATA_CLEAR_TEXT_LENGTH = 4096;
@@ -49,8 +50,6 @@ class c_base_connection_string extends c_base_return_string {
   private $options;
   private $ssl_mode;
   private $service;
-
-  private $error;
 
   /**
    * Class destructor.
@@ -68,8 +67,6 @@ class c_base_connection_string extends c_base_return_string {
     $this->options = NULL;
     $this->ssl_mode = NULL;
     $this->service = NULL;
-
-    $this->error = NULL;
   }
 
   /**
@@ -88,8 +85,6 @@ class c_base_connection_string extends c_base_return_string {
     unset($this->options);
     unset($this->ssl_mode);
     unset($this->service);
-
-    unset($this->error);
 
     parent::__destruct();
   }
@@ -854,6 +849,13 @@ class c_base_database extends c_base_return {
     // make sure the connection string is built before using.
     $this->connection_string->build();
 
+    // PHP's default error handle does not handle warnings.
+    // postgresql does not return the connection failure errors and instead prints a warning.
+    // the warning has to be caught by temporarily implementing a custom error handler that can catch warnings.
+    // the custom error handle then has to be reset back to the original PHP handler.
+    $handle_warnings = new c_base_warning_handler();
+    $handle_warnings->do_handle();
+
     // Both pg_connect() and pg_pconnect() throw errors and the functions do not support try {} .. catch { statements.
     // the only way to prevent unwanted error reporting (allowing the caller to the reporting) is to use @.
     // The @ is considered bad practice, but there is no alternative in this case.
@@ -868,9 +870,23 @@ class c_base_database extends c_base_return {
     if ($database === FALSE) {
       unset($database);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $this->connection_string->get_database()->get_value_exact(), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+      // postgresql returns connection errors as warnings.
+      $warnings = $handle_warnings->get_warnings();
+      unset($handle_warnings);
+
+      $failure_reasons = array();
+      if ($warnings instanceof c_base_return_array) {
+        $failure_reasons = $warnings->get_value_exact();
+      }
+      unset($warnings);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':database_name' => $this->connection_string->get_database()->get_value_exact(), ':failure_reasons' => $failure_reasons, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+      unset($failure_reasons);
+
       return c_base_return_error::s_false($error);
     }
+    unset($handle_warnings);
+    unset($warnings);
 
     $this->database = $database;
     unset($database);
@@ -1865,7 +1881,7 @@ class c_base_database extends c_base_return {
    *   This is confusing and a return value of an array makes the most sense.
    *
    * @see: pg_select()
-   * @see: http://us.php.net/manual/en/function.pg-select.php
+   * @see: http://php.net/manual/en/function.pg-select.php
    */
   function do_select($table, $conditions, $options = NULL) {
     if (!is_string($table) || empty($table)) {

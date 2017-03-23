@@ -2,24 +2,23 @@
   // assign custom include path.
   set_include_path('/var/www/git/koopa');
 
-  $root_path = 'common/base/classes/';
-  require_once($root_path . 'base_http.php');
-  require_once($root_path . 'base_cookie.php');
-  require_once($root_path . 'base_ldap.php');
-  require_once($root_path . 'base_markup.php');
-  require_once($root_path . 'base_html.php');
-  require_once($root_path . 'base_charset.php');
-  require_once($root_path . 'base_database.php');
+  // load the global defaults file (this file is not included by default but is required by all).
+  // replace this with your own as you see fit.
+  require_once('common/base/classes/base_defaults_global.php');
 
-  $root_path = 'common/theme/classes/';
-  require_once($root_path . 'theme_html.php');
+  require_once('common/base/classes/base_http.php');
+  require_once('common/base/classes/base_cookie.php');
+  require_once('common/base/classes/base_ldap.php');
+  require_once('common/base/classes/base_markup.php');
+  require_once('common/base/classes/base_html.php');
+  require_once('common/base/classes/base_charset.php');
+  require_once('common/base/classes/base_database.php');
 
-  $root_path = 'program/reservation/';
-  require_once($root_path . 'reservation_database.php');
-  require_once($root_path . 'reservation_session.php');
-  require_once($root_path . 'reservation_paths.php');
+  require_once('common/theme/classes/theme_html.php');
 
-  unset($root_path);
+  require_once('program/reservation/reservation_database.php');
+  require_once('program/reservation/reservation_session.php');
+  require_once('program/reservation/reservation_paths.php');
 
   /**
    * Load all custom settings.
@@ -40,7 +39,7 @@
     $settings['database_host'] = '127.0.0.1';
     $settings['database_port'] = 5432;
     $settings['database_name'] = 'reservation';
-    $settings['database_user'] = 'public_user';
+    $settings['database_user'] = 'u_public';
     $settings['database_password'] = NULL;
     $settings['database_timeout'] = 4;
     $settings['database_ssl_mode'] = 'require';
@@ -97,10 +96,11 @@
     $http->set_response_pragma('no-cache');
     $http->set_response_vary('Host');
     $http->set_response_vary('User-Agent');
+    $http->set_response_vary('Accept');
+    $http->set_response_vary('Accept-Language');
     #$http->set_response_warning('1234 This site is under active development.');
 
     // finalize the content prior to sending headers to ensure header accuracy.
-    $http->set_response_content_length(NULL, TRUE);
     $http->encode_response_content();
 
 
@@ -110,7 +110,7 @@
 
 
     // when the headers are sent, checksums are created, so at this point all error output should be stored and not sent.
-    $http->send_response_headers();
+    $http->send_response_headers(TRUE);
     flush();
 
 
@@ -251,8 +251,8 @@
     if (!isset($_SERVER["HTTPS"])) {
       reservation_build_page_require_https($html, $settings, $session);
     }
-    elseif ($settings['database_user'] == 'public_user') {
-      // if the session cookie exists, but the user is still public_user, then the cookie is no longer valid.
+    elseif ($settings['database_user'] == 'u_public') {
+      // if the session cookie exists, but the user is still u_public, then the cookie is no longer valid.
       if (empty($session->get_session_id()->get_value_exact())) {
         // check to see if user has filled out the login form.
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
@@ -264,7 +264,7 @@
           }
           else {
             // store the problems in the session object (because session as a subclass of c_base_return).
-            $session->set_problems($problems);
+            $session->set_problems($problems->get_value_exact());
 
             // @todo: render login failure.
             reservation_process_path_public($html, $settings, $session);

@@ -34,7 +34,6 @@ class c_base_session extends c_base_return {
   private $cookie;
 
   private $name;
-  private $id_user;
   private $host;
   private $password;
   private $session_id;
@@ -63,7 +62,6 @@ class c_base_session extends c_base_return {
     $this->system_name = NULL;
 
     $this->name = NULL;
-    $this->id_user = NULL;
     $this->host = NULL;
     $this->password = NULL;
     $this->session_id = NULL;
@@ -96,7 +94,6 @@ class c_base_session extends c_base_return {
     unset($this->system_name);
 
     unset($this->name);
-    unset($this->id_user);
     unset($this->host);
     unset($this->password);
     unset($this->session_id);
@@ -236,11 +233,6 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (is_null($this->socket_directory)) {
-      $this->socket_directory = NULL;
-      return new c_base_return_true();
-    }
-
     $this->system_name = basename($system_name);
     $this->socket_path = $this->socket_directory . $this->system_name . self::SOCKET_PATH_SUFFIX;
 
@@ -306,44 +298,6 @@ class c_base_session extends c_base_return {
     }
 
     return c_base_return_string::s_new($this->name);
-  }
-
-  /**
-   * Assigns the user id associated with the session.
-   *
-   * @param int|null $id_user
-   *   The user id.
-   *   This must be greater than or equal to 0.
-   *   Set to NULL to remove any existing values.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function set_id_user($id_user) {
-    if (!is_null($id_user) && ((is_int($id_user) && $id_user < 0))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id_user', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->id_user = $id_user;
-
-    return new c_base_return_true();
-  }
-
-  /**
-   * Returns the stored user id.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   The user id_user integer or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_id_user() {
-    if (is_null($this->id_user)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_int::s_new($this->id_user);
   }
 
   /**
@@ -871,6 +825,7 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
+
     $this->socket = @socket_create(AF_UNIX, SOCK_STREAM, 0);
     if (!is_resource($this->socket)) {
       $this->socket = NULL;
@@ -990,11 +945,6 @@ class c_base_session extends c_base_return {
       $this->name = $response['result']['name'];
     }
 
-    $this->id_user = NULL;
-    if (isset($response['result']['id_user']) && is_int($response['result']['id_user'])) {
-      $this->id_user = $response['result']['id_user'];
-    }
-
     if (!is_null($this->password)) {
       $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
     }
@@ -1050,11 +1000,6 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (is_null($this->id_user)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->id_user', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_false($error);
-    }
-
     if (is_null($this->host)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
@@ -1085,7 +1030,7 @@ class c_base_session extends c_base_return {
       $this->settings = array();
     }
 
-    $response = $this->p_transfer(array('name' => $this->name, 'id_user' => $this->id_user, 'ip' => $this->host, 'password' => $this->password, 'expire' => $interval_expire, 'max' => $interval_max, 'settings' => $this->settings));
+    $response = $this->p_transfer(array('name' => $this->name, 'ip' => $this->host, 'password' => $this->password, 'expire' => $interval_expire, 'max' => $interval_max, 'settings' => $this->settings));
     if (c_base_return::s_has_error($response)) {
       return c_base_return_error::s_false($response->get_error(0));
     }

@@ -2667,10 +2667,10 @@ class c_base_http extends c_base_rfc_string {
         $this->response[self::RESPONSE_SET_COOKIE] = array();
       }
 
-      $this->response[self::RESPONSE_SET_COOKIE][$cookie_name] = $cookie;
+      $this->response[self::RESPONSE_SET_COOKIE][$cookie_name] = clone($cookie);
     }
     else {
-      $this->response[self::RESPONSE_SET_COOKIE] = array($cookie_name => $cookie);
+      $this->response[self::RESPONSE_SET_COOKIE] = array($cookie_name => clone($cookie));
     }
     unset($cookie_name);
 
@@ -4455,6 +4455,7 @@ class c_base_http extends c_base_rfc_string {
    * @param bool $shuffle
    *   (optional) When TRUE, this will randomize the order in which header fields are defined, except for the status header (which is always first).
    *    This helps resist fingerprinting techniques thereby helping increase security.
+   *    Some web-servers, namely Apache, will alter the headers, causing the order to not be completely shuffled.
    *
    * @return c_base_return_status
    *   TRUE is returned when headers are sent.
@@ -4578,10 +4579,21 @@ class c_base_http extends c_base_rfc_string {
     foreach ($headers as $header_id => $header_name) {
       if (array_key_exists($header_id, $header_output)) {
         if (is_array($header_output[$header_id])) {
-          foreach ($header_output[$header_id] as $sub_header) {
-            header($sub_header);
+          // the very first header should be a replacement, all others should be an appendment.
+          $headers_copy = $header_output[$header_id];
+          reset($headers_copy);
+          $key = key($headers_copy);
+          $sub_header = $headers_copy[$key];
+
+          header($sub_header);
+          unset($headers_copy[$key]);
+          unset($key);
+
+          foreach ($headers_copy as $sub_header) {
+            header($sub_header, FALSE);
           }
           unset($sub_header);
+          unset($headers_copy);
         }
         else {
           header($header_output[$header_id]);
@@ -9569,11 +9581,22 @@ class c_base_http extends c_base_rfc_string {
           $encoding = $key;
           break 2;
         }
+
+        if ($key == self::ENCODING_BZIP) {
+          $encoding = $key;
+          break 2;
+        }
+
+        if ($key == self::ENCODING_LZO) {
+          $encoding = $key;
+          break 2;
+        }
       }
       unset($key);
       unset($choice);
     }
     unset($weight);
+
     unset($choices);
 
     return $encoding;
