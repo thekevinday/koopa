@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Content **/
-/** This depends on: base-groups.sql **/
+/** This depends on: reservation-groups.sql **/
 start transaction;
 
 
@@ -41,22 +41,22 @@ grant select on s_tables.t_path_types to r_reservation_manager, r_reservation_au
 grant select,usage on s_tables.se_path_types_id to r_reservation_administer;
 
 create index i_path_types_deleted_not on s_tables.t_path_types (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_path_types_public on s_tables.t_path_types (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 
 create view s_managers.v_path_types with (security_barrier=true) as
   select id, name_machine, name_human, is_locked, date_created, date_changed from s_tables.t_path_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on s_managers.v_path_types to r_reservation_manager;
 
 
 create view public.v_path_types with (security_barrier=true) as
   select id, name_machine, name_human, FALSE as is_locked, NULL::timestamp as date_created, NULL::timestamp as date_changed from s_tables.t_path_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on public.v_path_types to r_reservation, r_public, r_reservation_system;
 
@@ -113,28 +113,28 @@ grant select,usage on s_tables.se_paths_id to r_reservation_administer;
 grant usage on s_tables.se_paths_id to r_reservation, r_reservation_system;
 
 create index i_paths_deleted_not on s_tables.t_paths (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_paths_private_not on s_tables.t_paths (id)
-  where is_deleted is not true and is_private is not true;
+  where not is_deleted and not is_private;
 
 create index i_paths_locked_not on s_tables.t_paths (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 create index i_paths_public on s_tables.t_paths (id)
-  where is_deleted is not true and is_locked is not true and is_private is not true;
+  where not is_deleted and not is_locked and not is_private;
 
 
 create view s_users.v_paths with (security_barrier=true) as
   with allowed_groups as (select id from s_users.v_groups_self)
   select id, id_type, id_group, name_machine, name_human, is_private, date_created, date_changed from s_tables.t_paths
-  where is_deleted is not true and (is_locked is not true or id_group in (select * from allowed_groups)) and (is_private is not true or (is_private is true and id_group in (select * from allowed_groups)));
+  where not is_deleted and (not is_locked or id_group in (select * from allowed_groups)) and (not is_private or (is_private and id_group in (select * from allowed_groups)));
 
 grant select on s_users.v_paths to r_reservation, r_reservation_system;
 
 create view public.v_paths with (security_barrier=true) as
   select id, id_type, NULL::bigint as id_group, name_machine, name_human, NULL::bool as is_private, NULL::bool as date_created, NULL::bool as date_changed from s_tables.t_paths
-  where is_deleted is not true and is_locked is not true and is_private is not true;
+  where not is_deleted and not is_locked and not is_private;
 
 grant select on public.v_path_types to r_reservation, r_public, r_reservation_system;
 

@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Legal */
-/** This depends on: base-users.sql **/
+/** This depends on: reservation-users.sql **/
 start transaction;
 
 
@@ -41,15 +41,15 @@ grant select on s_tables.t_legal_types to r_reservation_auditor;
 grant select,usage on s_tables.se_legal_types_id to r_reservation_manager;
 
 create index i_legal_types_deleted_not on s_tables.t_legal_types (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_legal_type_locked_not on s_tables.t_legal_types (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 
 create view s_users.v_legal_types with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_legal_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on s_users.v_legal_types to r_reservation_auditor, r_reservation_requester;
 
@@ -96,14 +96,14 @@ grant select,usage on s_tables.se_signatures_id to r_reservation_manager;
 grant usage on s_tables.se_signatures_id to r_reservation, r_reservation_system;
 
 create index i_signatures_deleted_not on s_tables.t_signatures (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 
 /*** provide current user access to their own information ***/
 create view s_users.v_signatures_self with (security_barrier=true) as
   with this_user as (select id from s_users.v_users_locked_not_self)
   select id, id_type, id_request, date_created, field_fingerprint, field_signature from s_tables.t_signatures
-    where is_deleted is not true and id_creator in (select * from this_user);
+    where not is_deleted and id_creator in (select * from this_user);
 
 grant select on s_users.v_signatures_self to r_reservation, r_reservation_system;
 
@@ -111,7 +111,7 @@ grant select on s_users.v_signatures_self to r_reservation, r_reservation_system
 /** provide current user access to insert their own associations **/
 create view s_users.v_signatures_self_insert with (security_barrier=true) as
   select id, id_type, id_creator, id_request, field_fingerprint, field_signature from s_tables.t_signatures
-    where is_deleted is not true and id_creator in (select id from s_users.v_users_locked_not_self)
+    where not is_deleted and id_creator in (select id from s_users.v_users_locked_not_self)
     with check option;
 
 grant insert on s_users.v_signatures_self_insert to r_reservation, r_reservation_system;

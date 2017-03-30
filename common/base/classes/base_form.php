@@ -103,8 +103,9 @@ class c_base_form_problem extends c_base_return_string {
   /**
    * Associations a field via the field name with this problem.
    *
-   * @param string $field_name
+   * @param string|null $field_name
    *   The field name to assign.
+   *   Set to NULL remove all field names (useful for errors that affect the entire form).
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -113,6 +114,11 @@ class c_base_form_problem extends c_base_return_string {
    * @see: c_base_session::save()
    */
   public function set_field($field_name) {
+    if (is_null($field_name)) {
+      $this->fields = array();
+      return new c_base_return_true();
+    }
+
     if (!is_string($field_name) || empty($field_name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'field_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);

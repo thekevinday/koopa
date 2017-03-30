@@ -1036,7 +1036,13 @@ class c_base_session extends c_base_return {
     }
 
     $response = c_base_return_array::s_value_exact($response);
-    if (empty($response['result']) || !is_array($response['result'])) {
+    if (isset($response['error']) && isset($response['error']['message']) && is_string($response['error']['message'])) {
+      $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      unset($response);
+
+      return c_base_return_error::s_false($error);
+    }
+    elseif (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);

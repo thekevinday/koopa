@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Requests **/
-/** This depends on: base-fields.sql, base-workflow.sql **/
+/** This depends on: reservation-fields.sql, base-workflow.sql **/
 start transaction;
 
 
@@ -41,15 +41,15 @@ grant select on s_tables.t_request_types to r_reservation_auditor;
 grant select,usage on s_tables.se_request_types_id to r_reservation_manager;
 
 create index i_request_types_deleted_not on s_tables.t_request_types (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_request_types_public on s_tables.t_request_types (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 
 create view s_requesters.v_request_types with (security_barrier=true) as
   select id, id_external, name_machine, name_human from s_tables.t_request_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on s_requesters.v_request_types to r_reservation_auditor, r_reservation_requester;
 
@@ -147,7 +147,7 @@ create table s_tables.t_requests (
 
   constraint cc_requests_id check (id > 0),
   constraint cc_requests_id_revision check (id_revision > -1),
-  constraint cc_requests_approved check ((is_approved is true and is_denied is not true) or (is_approved is not true and is_denied is true)),
+  constraint cc_requests_approved check ((is_approved and not is_denied) or (not is_approved and is_denied)),
 
   constraint cf_requests_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_requests_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete restrict on update cascade,
@@ -164,28 +164,28 @@ grant select,usage on s_tables.se_requests_id to r_reservation_manager;
 grant usage on s_tables.se_requests_id to r_reservation, r_reservation_system;
 
 create index i_requests_deleted_not on s_tables.t_requests (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_requests_locked_not on s_tables.t_requests (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 create index i_requests_approved on s_tables.t_requests (id)
-  where is_deleted is not true and is_cancelled is not true and is_approved is true;
+  where not is_deleted and not is_cancelled and is_approved;
 
 create index i_requests_approved_cancelled on s_tables.t_requests (id)
-  where is_deleted is not true and is_cancelled is true and is_approved is true;
+  where not is_deleted and is_cancelled and is_approved;
 
 create index i_requests_denied on s_tables.t_requests (id)
-  where is_deleted is not true and is_cancelled is not true and is_denied is true;
+  where not is_deleted and not is_cancelled and is_denied;
 
 create index i_requests_troubled on s_tables.t_requests (id)
-  where is_deleted is not true and is_cancelled is not true and is_troubled is true;
+  where not is_deleted and not is_cancelled and is_troubled;
 
 create index i_requests_cancelled on s_tables.t_requests (id)
-  where is_deleted is not true and is_cancelled is true;
+  where not is_deleted and is_cancelled;
 
 create index i_requests_locked on s_tables.t_requests (id)
-  where is_deleted is not true and is_locked is true;
+  where not is_deleted and is_locked;
 
 
 /*** approved requests (but not cancelled) ***/
@@ -197,7 +197,7 @@ create view s_users.v_requests_approved with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and is_cancelled is not true and is_approved is true;
+    where not is_deleted and not is_cancelled and is_approved;
 
 grant select on s_users.v_requests_approved to r_reservation, r_reservation_system;
 
@@ -211,7 +211,7 @@ create view s_users.v_requests_approved_cancelled with (security_barrier=true) a
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and is_cancelled is true and is_approved is true;
+    where not is_deleted and is_cancelled and is_approved;
 
 grant select on s_users.v_requests_approved_cancelled to r_reservation, r_reservation_system;
 
@@ -225,7 +225,7 @@ create view s_users.v_requests_denied with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and is_cancelled is not true and is_denied is true;
+    where not is_deleted and not is_cancelled and is_denied;
 
 grant select on s_users.v_requests_denied to r_reservation, r_reservation_system;
 
@@ -239,7 +239,7 @@ create view s_users.v_requests_troubled with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and is_cancelled is not true and is_troubled is true;
+    where not is_deleted and not is_cancelled and is_troubled;
 
 grant select on s_users.v_requests_troubled to r_reservation, r_reservation_system;
 
@@ -253,7 +253,7 @@ create view s_users.v_requests_cancelled with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and is_cancelled is true;
+    where not is_deleted and is_cancelled;
 
 grant select on s_users.v_requests_cancelled to r_reservation, r_reservation_system;
 
@@ -268,7 +268,7 @@ create view s_users.v_requests_self with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and id_association in (select id from associations);
+    where not is_deleted and id_association in (select id from associations);
 
 grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
 
@@ -283,7 +283,7 @@ create view s_users.v_requests_manage with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and id_association in (select id from associations);
+    where not is_deleted and id_association in (select id from associations);
 
 grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
 
@@ -298,7 +298,7 @@ create view s_users.v_requests_coordinate with (security_barrier=true) as
   field_additional, field_dates, field_fees_custodial, field_fees_equipment, field_fees_facilities, field_fees_grounds, field_fees_maintenance, field_fees_other, field_fees_security, field_fees_university, field_location, field_information_attendance, field_information_organization, field_information_adviser_approval, field_insurance_affiliated, field_insurance_contractor, field_insurance_unaffiliated, field_plans_activities, field_plans_audience, field_plans_description, field_presentation_designing_material, field_presentation_external_audio_person, field_presentation_production, field_presentation_printed_material, field_presentation_publicity, field_presentation_technical_equipment, field_presentation_university_logo, field_registration_revenue, field_registration_phone, field_registration_required, field_registration_ticket_dates, field_registration_ticket_phone, field_registration_ticket_price, field_registration_ticket_website, field_registration_website, field_setup_other_tables, field_setup_parking_assistance, field_setup_podium, field_setup_portable_stage, field_setup_rectangular_tables_8ft, field_setup_road_closures, field_setup_round_tables_8ft, field_setup_security, field_setup_special_requests, field_setup_standard_blue_chairs, field_services_alcohol_served, field_services_food, field_services_open_flames, field_title,
   in_state, in_step
   from s_tables.t_requests
-    where is_deleted is not true and id_association in (select id from associations);
+    where not is_deleted and id_association in (select id from associations);
 
 grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
 
@@ -384,7 +384,7 @@ create table s_tables.t_request_revisions_original (
 
   constraint cp_request_revisions_original primary key (id_request),
 
-  constraint cc_request_revisions_original_approved check ((is_approved is true and is_denied is not true) or (is_approved is not true and is_denied is true)),
+  constraint cc_request_revisions_original_approved check ((is_approved and not is_denied) or (not is_approved and is_denied)),
 
   constraint cf_request_revisions_original_id_request foreign key (id_request) references s_tables.t_requests (id) on delete restrict on update cascade,
   constraint cf_request_revisions_original_request_type foreign key (id_type) references s_tables.t_request_types (id) on delete restrict on update cascade,
@@ -501,7 +501,7 @@ create table s_tables.t_request_revisions (
   constraint cp_request_revisions primary key (id_request, id_revision),
 
   constraint cc_request_revisions_id_request check (id_request > 0),
-  constraint cc_request_revisions_approved check ((is_approved is true and is_denied is not true) or (is_approved is not true and is_denied is true)),
+  constraint cc_request_revisions_approved check ((is_approved and not is_denied) or (not is_approved and is_denied)),
 
   constraint cf_request_revisions_id_request foreign key (id_request) references s_tables.t_requests (id) on delete restrict on update cascade,
   constraint cf_request_revisions_request_type foreign key (id_type) references s_tables.t_request_types (id) on delete restrict on update cascade,

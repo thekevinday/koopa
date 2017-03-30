@@ -25,7 +25,8 @@ class c_base_mime {
   const TYPE_UNKNOWN   = 1;
   const TYPE_PROVIDED  = 2;
   const TYPE_STREAM    = 3;
-  const TYPE_FORM_DATA = 4;
+  const TYPE_DATA_FORM = 4;
+  const TYPE_DATA_URL  = 5;
 
   const TYPE_TEXT       = 1000;
   const TYPE_TEXT_PLAIN = 1001;
@@ -96,7 +97,8 @@ class c_base_mime {
   private static $s_names_provided = array(
     self::TYPE_PROVIDED  => array('*/*', 'text/*', 'image/*', 'audio/*', 'video/*', 'application/*'),
     self::TYPE_STREAM    => array('application/octet-stream'),
-    self::TYPE_FORM_DATA => array('multipart/form-data'),
+    self::TYPE_DATA_FORM => array('multipart/form-data'),
+    self::TYPE_DATA_URL => array('application/x-www-form-urlencoded'),
   );
 
   private static $s_names_text = array(

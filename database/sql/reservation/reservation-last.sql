@@ -77,90 +77,90 @@ insert into s_tables.t_path_types (id, name_machine, name_human) values (2, 'use
 
 
 /** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (0, '0', 'Undefined');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (1, '1', 'Invalid');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (2, '2', 'Unknown');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (0, '0', 'Undefined');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (1, '1', 'Invalid');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (2, '2', 'Unknown');
 
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (100, '100', 'Continue');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (101, '101', 'Switching Protocols');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (102, '102', 'Processing');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (100, '100', 'Continue');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (101, '101', 'Switching Protocols');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (102, '102', 'Processing');
 
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (200, '200', 'OK');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (201, '201', 'Created');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (202, '202', 'Accepted');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (203, '203', 'Non-Authoritative Information');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (204, '204', 'No Content');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (205, '205', 'Reset Content');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (206, '206', 'Partial Content');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (207, '207', 'Multi-Status');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (208, '208', 'Already Reported');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (226, '226', 'IM used');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (200, '200', 'OK');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (201, '201', 'Created');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (202, '202', 'Accepted');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (203, '203', 'Non-Authoritative Information');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (204, '204', 'No Content');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (205, '205', 'Reset Content');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (206, '206', 'Partial Content');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (207, '207', 'Multi-Status');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (208, '208', 'Already Reported');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (226, '226', 'IM used');
 
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (300, '300', 'Multiple Choices');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (301, '301', 'Moved Permanently');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (302, '302', 'Found');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (303, '303', 'See Other');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (304, '304', 'Not Modified');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (305, '305', 'Use Proxy');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (306, '306', 'Switch Proxy');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (307, '307', 'Temporary Redirect');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (308, '308', 'Permanent Redirect');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (300, '300', 'Multiple Choices');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (301, '301', 'Moved Permanently');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (302, '302', 'Found');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (303, '303', 'See Other');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (304, '304', 'Not Modified');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (305, '305', 'Use Proxy');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (306, '306', 'Switch Proxy');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (307, '307', 'Temporary Redirect');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (308, '308', 'Permanent Redirect');
 
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (400, '400', 'Bad Request');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (401, '401', 'Unauthorized');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (402, '402', 'Payment Required');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (403, '403', 'Forbidden');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (404, '404', 'Not Found');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (405, '405', 'Method Not Allowed');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (406, '406', 'Not Acceptable');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (407, '407', 'Proxy Authentication Required');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (408, '408', 'Request Timeout');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (409, '409', 'Conflict');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (410, '410', 'Gone');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (411, '411', 'Length Required');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (412, '412', 'Precondition Failed');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (413, '413', 'Payload Too Large');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (414, '414', 'Request-URI Too Long');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (415, '415', 'Unsupported Media Type');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (416, '416', 'Requested Range Not Satisfiable');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (417, '417', 'Expectation Failed');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (422, '422', 'Misdirected Request');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (423, '423', 'Locked');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (424, '424', 'Failed Dependency');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (426, '426', 'Upgrade Required');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (428, '428', 'Precondition Required');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (429, '429', 'Too Many Requests');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (431, '431', 'Request Header Fields Too Large');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (451, '451', 'Unavailable For Legal Reasons');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (400, '400', 'Bad Request');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (401, '401', 'Unauthorized');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (402, '402', 'Payment Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (403, '403', 'Forbidden');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (404, '404', 'Not Found');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (405, '405', 'Method Not Allowed');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (406, '406', 'Not Acceptable');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (407, '407', 'Proxy Authentication Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (408, '408', 'Request Timeout');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (409, '409', 'Conflict');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (410, '410', 'Gone');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (411, '411', 'Length Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (412, '412', 'Precondition Failed');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (413, '413', 'Payload Too Large');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (414, '414', 'Request-URI Too Long');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (415, '415', 'Unsupported Media Type');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (416, '416', 'Requested Range Not Satisfiable');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (417, '417', 'Expectation Failed');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (422, '422', 'Misdirected Request');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (423, '423', 'Locked');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (424, '424', 'Failed Dependency');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (426, '426', 'Upgrade Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (428, '428', 'Precondition Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (429, '429', 'Too Many Requests');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (431, '431', 'Request Header Fields Too Large');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (451, '451', 'Unavailable For Legal Reasons');
 
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (500, '500', 'Internal Server Error');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (501, '501', 'Not Implemented');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (502, '502', 'Bad Gateway');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (503, '503', 'Service Unavailable');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (504, '504', 'Gateway Timeout');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (505, '505', 'HTTP Version Not Supported');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (506, '506', 'Variant Also Negotiates');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (507, '507', 'Insufficient Storage');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (508, '508', 'Loop Detected');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (510, '510', 'Not Extended');
-insert into s_tables.t_log_http_status_codes (id, name_machine, name_human) values (511, '511', 'Network Authentication Required');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (500, '500', 'Internal Server Error');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (501, '501', 'Not Implemented');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (502, '502', 'Bad Gateway');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (503, '503', 'Service Unavailable');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (504, '504', 'Gateway Timeout');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (505, '505', 'HTTP Version Not Supported');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (506, '506', 'Variant Also Negotiates');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (507, '507', 'Insufficient Storage');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (508, '508', 'Loop Detected');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (510, '510', 'Not Extended');
+insert into s_tables.t_log_type_http_status_codes (id, name_machine, name_human) values (511, '511', 'Network Authentication Required');
 
 
 /*** start the sequence count at 1000 to allow for < 1000 to be reserved for special uses ***/
-alter sequence s_tables.se_log_severity_levels_id start 1000;
-alter sequence s_tables.se_log_severity_levels_id restart;
+alter sequence s_tables.se_log_type_severity_levels_id start 1000;
+alter sequence s_tables.se_log_type_severity_levels_id restart;
 
 
 /** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (0, 'none', 'None');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (1, 'information', 'Information');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (2, 'notice', 'Notice');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (3, 'debug', 'Debug');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (4, 'warning', 'Warning');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (5, 'error', 'Error');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (6, 'alert', 'Alert');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (7, 'critical', 'Critical');
-insert into s_tables.t_log_severity_levels (id, name_machine, name_human) values (8, 'emergency', 'Emergency');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (0, 'none', 'None');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (1, 'information', 'Information');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (2, 'notice', 'Notice');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (3, 'debug', 'Debug');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (4, 'warning', 'Warning');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (5, 'error', 'Error');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (6, 'alert', 'Alert');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (7, 'critical', 'Critical');
+insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (8, 'emergency', 'Emergency');
 
 
 
@@ -188,6 +188,7 @@ insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_hum
 insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (2, 2, 'provided_application', 'Provided Application', NULL, 'application/*');
 insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (3, 3, 'stream', 'Stream', 'octect-stream', 'application/octect-stream');
 insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (4, 4, 'multipart', 'Form Data', 'form-data', 'multipart/form-data');
+insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (5, 11, 'application', 'URL Data', 'x-www-form-urlencoded', 'application/x-www-form-urlencoded');
 
 insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (1000, 5, 'text', 'Text', NULL, 'text/*');
 insert into s_tables.t_types_mime_types (id, id_category, name_machine, name_human, field_extension, field_mime) values (1001, 5, 'text_plain', 'Plain Text', 'txt', 'text/plain');

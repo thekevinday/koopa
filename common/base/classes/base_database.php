@@ -24,6 +24,9 @@
  * - A reason against persistent connections is the inability to directly close them.
  *   - This is a major weakness and may prevent me from using this persistent connection design (much testing is required).
  *
+ * To get the current roles assigned to the user currently logged into the database is:
+ *   select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = user;
+ *
  * @see: http://php.net/manual/en/features.persistent-connections.php
  */
 
@@ -2467,6 +2470,7 @@ class c_base_database_result extends c_base_return_resource {
    *
    * @return c_base_return_status|c_base_return_value
    *   The value on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_fetch_row()
    */
@@ -2509,7 +2513,8 @@ class c_base_database_result extends c_base_return_resource {
    *   - PGSQL_DIAG_SOURCE_FUNCTION
    *
    * @return c_base_return_status|c_base_return_string
-   *   String is returned if found, a NULL is returned if not found, and FALSE is returned on error (with error flag set).
+   *   String is returned if found and a NULL is returned if not found.
+   *   FALSE with the error bit set is returned on error.
    *
    * @see: pg_result_error()
    * @see: pg_result_error_field()

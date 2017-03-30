@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs - Types */
-/** This depends on: base-main.sql **/
+/** This depends on: reservation-main.sql **/
 start transaction;
 
 
@@ -39,7 +39,7 @@ grant select,insert,update on s_tables.t_types_mime_categorys to r_reservation_a
 
 create view public.v_types_mime_categorys with (security_barrier=true) as
   select id, name_machine, name_human, is_locked from s_tables.t_types_mime_categorys
-  where is_deleted is not true;
+  where not is_deleted;
 
 grant select on public.v_types_mime_categorys to r_reservation, r_public, r_reservation_system;
 
@@ -48,7 +48,7 @@ grant select,insert,update on s_tables.t_types_mime_categorys to r_reservation_a
 
 create view public.v_types_mime_categorys_locked_not with (security_barrier=true) as
   select id, name_machine, name_human, field_category from s_tables.t_types_mime_categorys
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on public.v_types_mime_categorys_locked_not to r_reservation, r_public, r_reservation_system;
 
@@ -89,13 +89,13 @@ grant select,insert,update on s_tables.t_types_mime_types to r_reservation_admin
 
 create view public.v_types_mime_types with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_types_mime_types
-  where is_deleted is not true;
+  where not is_deleted;
 
 grant select on public.v_types_mime_types to r_reservation, r_public, r_reservation_system;
 
 create view public.v_types_mime_types_locked_not with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_types_mime_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on public.v_types_mime_types to r_reservation, r_public, r_reservation_system;
 

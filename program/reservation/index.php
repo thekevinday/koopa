@@ -256,20 +256,20 @@
       if (empty($session->get_session_id()->get_value_exact())) {
         // check to see if user has filled out the login form.
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
-          $problems = reservation_attempt_login($database, $settings, $session);
+          $logged_in = reservation_attempt_login($database, $settings, $session);
 
-          if ($problems instanceof c_base_return_false) {
+          if ($logged_in instanceof c_base_return_true) {
             reservation_build_page_dashboard($html, $settings, $session);
             // @todo: process and handle different paths here and load page as requested.
           }
           else {
             // store the problems in the session object (because session as a subclass of c_base_return).
-            $session->set_problems($problems->get_value_exact());
+            $session->set_problems($logged_in->get_value_exact());
 
             // @todo: render login failure.
             reservation_process_path_public($html, $settings, $session);
           }
-          unset($problems);
+          unset($logged_in);
         }
         else {
           reservation_process_path_public($html, $settings, $session);

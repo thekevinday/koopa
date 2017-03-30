@@ -32,7 +32,6 @@
  *
  *     Valid load response array keys:
  *     - name: The user name associated with the session.
- *     - id_user: The numeric id of the user.
  *     - password: The password associated with the session.
  *     - expire: The session expiration timeout.
  *     - max: The max session expiration timeout.
@@ -41,7 +40,6 @@
  *
  * A save request packet has the following keys:
  *   - name: The username to associate with the session.
- *   - id_user: The numeric id of the user associated with this session.
  *   - ip: The ip address to associate with the session. These sessions are ip-address specific.
  *   - password: The password to associated with the session (must be defined, but may be NULL).
  *   - expire: Request idle timeout interval, in seconds (this is a soft limit and cannot exceed the hard limit defined by this server).
@@ -452,7 +450,6 @@ function main($argc, $argv) {
 
       $response['result'] = array(
         'name' => $db_session['name'],
-        'id_user' => (int) $db_session['id_user'],
         'password' => $db_session['password'],
         'expire' => $db_session['timeouts']['expire'],
         'max' => $db_session['timeouts']['max'],
@@ -487,10 +484,10 @@ function main($argc, $argv) {
         continue;
       }
 
-      if ((is_int($decoded_packet['id_user']) && $decoded_packet['id_user'] < 0) || !is_int($decoded_packet['id_user']) && (!is_string($decoded_packet['id_user']) || !(is_numeric($decoded_packet['id_user']) && (int) $decoded_packet['id_user'] >= 0))) {
+      if (!isset($decoded_packet['name']) || !is_string($decoded_packet['name']) || empty($decoded_packet['name'])) {
         $response['error'] = array(
-          'target' => 'decoded_packet[id_user]',
-          'message' => "No valid id_user was specified. A valid id_user integer, greater than or equal to 0, must be provided.",
+          'target' => 'decoded_packet[name]',
+          'message' => "No valid name was specified. A valid user name string, must be provided.",
         );
 
         socket_write($client_socket, json_encode($response));
@@ -537,7 +534,6 @@ function main($argc, $argv) {
       $unique_id = $decoded_packet['name'] . '-' . uniqid();
       $database['sessions'][$decoded_packet['ip']][$session_id] = array(
         'name' => $decoded_packet['name'],
-        'id_user' => (int) $decoded_packet['id_user'],
         'password' => $decoded_packet['password'],
         'timeouts' => array(
           'id' => $unique_id,

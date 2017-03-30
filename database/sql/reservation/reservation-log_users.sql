@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs */
-/** This depends on: base-users.sql **/
+/** This depends on: reservation-users.sql **/
 start transaction;
 
 
@@ -34,8 +34,8 @@ create table s_tables.t_log_users (
   constraint cf_log_users_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_users_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_users_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade,
-  constraint cf_log_users_log_severity foreign key (log_severity) references s_tables.t_log_severity_levels (id) on delete restrict on update cascade,
-  constraint cf_log_users_response_code foreign key (response_code) references s_tables.t_log_http_status_codes (id) on delete restrict on update cascade
+  constraint cf_log_users_log_severity foreign key (log_severity) references s_tables.t_log_type_severity_levels (id) on delete restrict on update cascade,
+  constraint cf_log_users_response_code foreign key (response_code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_users_id owned by s_tables.t_log_users.id;
@@ -131,10 +131,10 @@ create view s_users.v_log_users_self_insert with (security_barrier=true) as
 grant insert on s_users.v_log_users_self_insert to r_reservation, r_reservation_system;
 
 
-/** only allow insert for the public user **/
+/** public users should be able to insert, but should never be able to view the logs that they insert. **/
 create view public.v_log_users_self_insert with (security_barrier=true) as
   select log_title, log_type, log_severity, log_details, request_client, response_code from s_tables.t_log_users
-    where id_user = 1
+    where 'r_public' in (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
     with check option;
 
 grant insert on public.v_log_users_self_insert to r_public;
@@ -167,7 +167,7 @@ create table s_tables.t_log_user_activity (
 
   constraint cf_log_user_activity_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_user_activity_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
-  constraint cf_log_user_activity_response_code foreign key (response_code) references s_tables.t_log_http_status_codes (id) on delete restrict on update cascade
+  constraint cf_log_user_activity_response_code foreign key (response_code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_user_activity_id owned by s_tables.t_log_user_activity.id;
@@ -219,10 +219,10 @@ create view s_users.v_log_user_activity_self_insert with (security_barrier=true)
 grant insert on s_users.v_log_user_activity_self_insert to r_reservation, r_reservation_system;
 
 
-/** only allow insert for the public user **/
+/** public users should be able to insert, but should never be able to view the logs that they insert. **/
 create view public.v_log_user_activity_self_insert with (security_barrier=true) as
   select request_path, request_arguments, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
-    where id_user = 1
+    where id_user in (select id from public.v_users_locked_not_self)
     with check option;
 
 grant insert on public.v_log_user_activity_self_insert to r_public;

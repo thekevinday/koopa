@@ -1,6 +1,5 @@
 /** Standardized SQL Structure - Logs - Types */
-/** This depends on: base-users.sql **/
-/* @todo: consider prepending t_log_types_ to all tables (except t_log_types itself). */
+/** This depends on: reservation-users.sql **/
 start transaction;
 
 
@@ -41,14 +40,14 @@ grant select on s_tables.t_log_types to r_reservation_manager, r_reservation_aud
 grant select,usage on s_tables.se_log_types_id to r_reservation_administer;
 
 create index i_log_types_deleted_not on s_tables.t_log_types (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_log_types_public on s_tables.t_log_types (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 create view public.v_log_types with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_types
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 grant select on public.v_log_types to r_reservation, r_public, r_reservation_system;
 
@@ -60,7 +59,7 @@ create trigger tr_log_types_date_changed_deleted_or_locked
 
 
 /*** provide HTTP status codes ***/
-create table s_tables.t_log_http_status_codes (
+create table s_tables.t_log_type_http_status_codes (
   id smallint not null,
 
   name_machine varchar(128) not null,
@@ -74,34 +73,34 @@ create table s_tables.t_log_http_status_codes (
   date_locked timestamp,
   date_deleted timestamp,
 
-  constraint cp_log_http_status_codes primary key (id),
+  constraint cp_log_type_http_status_codes primary key (id),
 
-  constraint cu_log_http_status_codes_user unique (name_machine),
+  constraint cu_log_type_http_status_codes_user unique (name_machine),
 
-  constraint cc_log_http_status_codes_id check (id >= 0 and id < 600)
+  constraint cc_log_type_http_status_codes_id check (id >= 0 and id < 600)
 );
 
-create sequence s_tables.se_log_http_status_codes_id owned by s_tables.t_log_http_status_codes.id;
-alter table s_tables.t_log_http_status_codes alter column id set default nextval('s_tables.se_log_http_status_codes_id'::regclass);
+create sequence s_tables.se_log_type_http_status_codes_id owned by s_tables.t_log_type_http_status_codes.id;
+alter table s_tables.t_log_type_http_status_codes alter column id set default nextval('s_tables.se_log_type_http_status_codes_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_http_status_codes to r_reservation_administer;
-grant select on s_tables.t_log_http_status_codes to r_reservation_manager, r_reservation_auditor;
-grant select,usage on s_tables.se_log_http_status_codes_id to r_reservation_administer;
+grant select,insert,update on s_tables.t_log_type_http_status_codes to r_reservation_administer;
+grant select on s_tables.t_log_type_http_status_codes to r_reservation_manager, r_reservation_auditor;
+grant select,usage on s_tables.se_log_type_http_status_codes_id to r_reservation_administer;
 
-create view public.v_log_http_status_codes with (security_barrier=true) as
-  select id, name_machine, name_human from s_tables.t_log_http_status_codes;
+create view public.v_log_type_http_status_codes with (security_barrier=true) as
+  select id, name_machine, name_human from s_tables.t_log_type_http_status_codes;
 
-grant select on public.v_log_http_status_codes to r_reservation, r_public, r_reservation_system;
+grant select on public.v_log_type_http_status_codes to r_reservation, r_public, r_reservation_system;
 
 
-create trigger tr_log_http_status_codes_date_changed_deleted_or_locked
-  before update on s_tables.t_log_http_status_codes
+create trigger tr_log_type_http_status_codes_date_changed_deleted_or_locked
+  before update on s_tables.t_log_type_http_status_codes
     for each row execute procedure s_administers.f_common_update_date_changed_deleted_or_locked();
 
 
 
 /*** provide log severity level id and names ***/
-create table s_tables.t_log_severity_levels (
+create table s_tables.t_log_type_severity_levels (
   id bigint not null,
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
@@ -114,29 +113,29 @@ create table s_tables.t_log_severity_levels (
   date_locked timestamp,
   date_deleted timestamp,
 
-  constraint cp_log_severity_levels primary key (id),
+  constraint cp_log_type_severity_levels primary key (id),
 
-  constraint cu_log_severity_levels_user unique (name_machine),
+  constraint cu_log_type_severity_levels_user unique (name_machine),
 
-  constraint cc_log_severity_levels_id check (id >= 0)
+  constraint cc_log_type_severity_levels_id check (id >= 0)
 );
 
-create sequence s_tables.se_log_severity_levels_id owned by s_tables.t_log_severity_levels.id;
-alter table s_tables.t_log_severity_levels alter column id set default nextval('s_tables.se_log_severity_levels_id'::regclass);
+create sequence s_tables.se_log_type_severity_levels_id owned by s_tables.t_log_type_severity_levels.id;
+alter table s_tables.t_log_type_severity_levels alter column id set default nextval('s_tables.se_log_type_severity_levels_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_severity_levels to r_reservation_administer;
-grant select on s_tables.t_log_severity_levels to r_reservation_manager, r_reservation_auditor;
-grant select,usage on s_tables.se_log_severity_levels_id to r_reservation_administer;
+grant select,insert,update on s_tables.t_log_type_severity_levels to r_reservation_administer;
+grant select on s_tables.t_log_type_severity_levels to r_reservation_manager, r_reservation_auditor;
+grant select,usage on s_tables.se_log_type_severity_levels_id to r_reservation_administer;
 
-create view s_users.v_log_severity_levels with (security_barrier=true) as
-  select id, name_machine, name_human from s_tables.t_log_severity_levels
-  where is_deleted is not true;
+create view s_users.v_log_type_severity_levels with (security_barrier=true) as
+  select id, name_machine, name_human from s_tables.t_log_type_severity_levels
+  where not is_deleted;
 
-grant select on s_users.v_log_severity_levels to r_reservation, r_public, r_reservation_system;
+grant select on s_users.v_log_type_severity_levels to r_reservation, r_public, r_reservation_system;
 
 
-create trigger tr_log_severity_levels_date_changed_deleted_or_locked
-  before update on s_tables.t_log_severity_levels
+create trigger tr_log_type_severity_levels_date_changed_deleted_or_locked
+  before update on s_tables.t_log_type_severity_levels
     for each row execute procedure s_administers.f_common_update_date_changed_deleted_or_locked();
 
 

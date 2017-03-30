@@ -114,100 +114,155 @@
       return c_base_return_error::s_false($error);
     }
 
-    $id_sort = (int) ord($user_name[0]);
-
-    $user_data = array(
-      'id_user' => NULL,
-      'id_sort' => $id_sort,
-    );
-
     $parameters = array(
       $id_sort,
       $user_name,
     );
 
-    $query_result = $database->do_query('select id, id_sort, id_external, name_human, address_email, is_private, is_locked, date_created, date_changed, settings from v_users_self where id_sort = $1 and name_machine like $2', $parameters);
+    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = $1 and name_machine = $2', $parameters);
     unset($parameters);
 
-    if ($query_result instanceof c_base_database_result) {
-      if ($query_result->number_of_rows()->get_value_exact() > 0) {
-        $result = $query_result->fetch_row();
-        if (!($result instanceof c_base_return_false)) {
-          $result_array = $result->get_value();
-          if (is_array($result_array) && !empty($result_array)) {
-            $user_data['id_user'] = $result_array[0];
-            $user_data['id_sort'] = $result_array[1];
-            $user_data['id_external'] = $result_array[2];
-            $user_data['name_human'] = $result_array[3];
-            $user_data['address_email'] = $result_array[4];
-            $user_data['is_private'] = $result_array[5];
-            $user_data['is_locked'] = $result_array[6];
-            $user_data['date_created'] = $result_array[7];
-            $user_data['date_changed'] = $result_array[8];
-            $user_data['settings'] = json_decode($result_array[9], TRUE);
-          }
-        }
+    if (c_base_return::s_has_error($query_result)) {
+      return reservation_error_get_query('database->do_query(select from v_users_self)', __FUNCTION__, $query_result);
+    }
+
+    if ($query_result instanceof c_base_database_result && $query_result->number_of_rows()->get_value_exact() > 0) {
+      $result = $query_result->fetch_row();
+      unset($query_result);
+
+      if (c_base_return::s_has_error($result)) {
+        return reservation_error_get_query('database->do_query(select from v_users_self)', __FUNCTION__, $result);
+      }
+
+      $result_array = $result->get_value();
+      unset($result);
+
+      if (is_array($result_array) && !empty($result_array)) {
+        $result_array = $result->get_value();
+
+        $user_data = array();
+        $user_data['id'] = $result_array[0];
+        $user_data['id_sort'] = $result_array[1];
+        $user_data['id_external'] = $result_array[2];
+        $user_data['name_machine'] = $result_array[3];
+        $user_data['name_human'] = $result_array[4];
+        $user_data['address_email'] = $result_array[5];
+        $user_data['is_administer'] = $result_array[6];
+        $user_data['is_manager'] = $result_array[7];
+        $user_data['is_auditor'] = $result_array[8];
+        $user_data['is_publisher'] = $result_array[9];
+        $user_data['is_financer'] = $result_array[10];
+        $user_data['is_reviewer'] = $result_array[11];
+        $user_data['is_editor'] = $result_array[12];
+        $user_data['is_drafter'] = $result_array[13];
+        $user_data['is_requester'] = $result_array[14];
+        $user_data['is_system'] = $result_array[15];
+        $user_data['is_public'] = $result_array[16];
+        $user_data['is_locked'] = $result_array[17];
+        $user_data['is_private'] = $result_array[18];
+        $user_data['date_created'] = $result_array[19];
+        $user_data['date_changed'] = $result_array[20];
+        $user_data['date_synced'] = $result_array[21];
+        $user_data['date_locked'] = $result_array[22];
+        $user_data['settings'] = json_decode($result_array[23], TRUE);
+
+        unset($result_array);
+        return c_base_return_array::s_new($user_data);
+      }
+      unset($result_array);
+    }
+    unset($query_result);
+
+    // at this ppint the user account likely does not exist in the database, so create it using any ldap information if available.
+    if (is_null($ldap_data)) {
+      $query_result = $database->do_query('insert into v_users_self_insert (name_human.first) values (null)');
+
+      if (c_base_return::s_has_error($query_result)) {
+        return reservation_error_get_query('database->do_query(insert into v_users_self_insert)', __FUNCTION__, $query_result);
+      }
+    }
+    else {
+      $email = explode('@', $ldap_data['mail']);
+      $parameters = array(
+        $ldap_data['givenname'],
+        $ldap_data['sn'],
+        $ldap_data['cn'],
+        $email[0],
+        $email[1],
+        $ldap_data['employeenumber'],
+      );
+
+      $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values ($1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
+
+      if (c_base_return::s_has_error($query_result)) {
+        return reservation_error_get_query('database->do_query(insert into v_users_self_insert)', __FUNCTION__, $query_result);
       }
     }
     unset($query_result);
 
-    if (is_null($user_data['id_user'])) {
-      if (is_null($ldap_data)) {
-        $parameters = array(
-          $id_sort,
-        );
 
-        $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine) values ($1, user)', $parameters);
-        unset($query_result);
-        unset($parameters);
-      }
-      else {
-        $email = explode('@', $ldap_data['mail']);
-        $parameters = array(
-          $ldap_data['givenname'],
-          $ldap_data['sn'],
-          $ldap_data['cn'],
-          $email[0],
-          $email[1],
-          $ldap_data['employeenumber'],
-        );
-        $query_result = $database->do_query('insert into v_users_self_insert (id_sort, name_machine, name_human.first, name_human.last, name_human.complete, address_email, id_external) values (' . $id_sort . ', user, $1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
-        unset($query_result);
-      }
+    // try loading the user information again now that the user information exists in the database.
+    $parameters = array(
+      $id_sort,
+      $user_name,
+    );
 
-      $parameters = array(
-        $id_sort,
-        $user_name,
-      );
+    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = $1 and name_machine = $2', $parameters);
+    unset($parameters);
 
-      $query_result = $database->do_query('select id, id_sort, id_external, name_human, address_email, is_private, is_locked, date_created, date_changed, settings from v_users_self where id_sort = $1 and name_machine = $2');
-      unset($parameters);
-
-      if ($query_result instanceof c_base_database_result) {
-        if ($query_result->number_of_rows()->get_value_exact() > 0) {
-          $result = $query_result->fetch_row();
-          if (!($result instanceof c_base_return_false)) {
-            $result_array = $result->get_value();
-            if (is_array($result_array) && !empty($result_array)) {
-              $result_array = $result->get_value();
-              $user_data['id_user'] = $result_array[0];
-              $user_data['id_sort'] = $result_array[1];
-              $user_data['id_external'] = $result_array[2];
-              $user_data['name_human'] = $result_array[3];
-              $user_data['address_email'] = $result_array[4];
-              $user_data['is_private'] = $result_array[5];
-              $user_data['is_locked'] = $result_array[6];
-              $user_data['date_created'] = $result_array[7];
-              $user_data['date_changed'] = $result_array[8];
-              $user_data['settings'] = json_decode($result_array[9], TRUE);
-            }
-          }
-        }
-      }
-      unset($query_result);
+    if (c_base_return::s_has_error($query_result)) {
+      return reservation_error_get_query('database->do_query(select from v_users_self)', __FUNCTION__, $query_result);
     }
 
-    return c_base_return_array::s_new($user_data);
+    if ($query_result instanceof c_base_database_result && $query_result->number_of_rows()->get_value_exact() > 0) {
+      $result = $query_result->fetch_row();
+      unset($query_result);
+
+      if (c_base_return::s_has_error($result)) {
+        return reservation_error_get_query('database->do_query(select from v_users_self)', __FUNCTION__, $result);
+      }
+
+      $result_array = $result->get_value();
+      unset($result);
+
+      if (is_array($result_array) && !empty($result_array)) {
+        $result_array = $result->get_value();
+
+        $user_data = array();
+        $user_data['id'] = $result_array[0];
+        $user_data['id_sort'] = $result_array[1];
+        $user_data['id_external'] = $result_array[2];
+        $user_data['name_machine'] = $result_array[3];
+        $user_data['name_human'] = $result_array[4];
+        $user_data['address_email'] = $result_array[5];
+        $user_data['is_administer'] = $result_array[6];
+        $user_data['is_manager'] = $result_array[7];
+        $user_data['is_auditor'] = $result_array[8];
+        $user_data['is_publisher'] = $result_array[9];
+        $user_data['is_financer'] = $result_array[10];
+        $user_data['is_reviewer'] = $result_array[11];
+        $user_data['is_editor'] = $result_array[12];
+        $user_data['is_drafter'] = $result_array[13];
+        $user_data['is_requester'] = $result_array[14];
+        $user_data['is_system'] = $result_array[15];
+        $user_data['is_public'] = $result_array[16];
+        $user_data['is_locked'] = $result_array[17];
+        $user_data['is_private'] = $result_array[18];
+        $user_data['date_created'] = $result_array[19];
+        $user_data['date_changed'] = $result_array[20];
+        $user_data['date_synced'] = $result_array[21];
+        $user_data['date_locked'] = $result_array[22];
+        $user_data['settings'] = json_decode($result_array[23], TRUE);
+
+        unset($result_array);
+        return c_base_return_array::s_new($user_data);
+      }
+      unset($result_array);
+    }
+    unset($query_result);
+
+
+    return c_base_return_array::s_new(array());
   }
 
   /**
@@ -306,6 +361,9 @@
 
   /**
    * Get all roles assigned to the current user.
+   *
+   * @todo: this might be unecessary as it may be automated via the user view table and sql triggers.
+   * @todo: review and update or delete this function as necessary.
    *
    * @param c_base_database &$database
    *   The database object.
@@ -412,4 +470,55 @@
     unset($roles);
 
     return new c_base_return_true();
+  }
+
+  /**
+   * Builds a return object for a query.
+   *
+   * This functions is provided to simplify the return of specific code.
+   * Error handling is not performed, instead simple failsafes are used.
+   *
+   * @param string $operation_name
+   *   The name of the operation, which is generally something like: database->do_query.
+   * @param string $function_name
+   *   The name of the function.
+   *   The caller should usually use __FUNCTION__ here.
+   * @param c_base_return $result
+   *   The query return result.
+   *
+   * @return c_base_error
+   *   A generated oepration failure error.
+   */
+  function reservation_error_get_query($operation_name, $function_name, $result) {
+    if (!is_string($operation_name)) {
+      $operation_name = '';
+    }
+
+    if (!is_string($function_name)) {
+      $function_name = '';
+    }
+
+    $failure = new c_base_return_false();
+    $found_errors = FALSE;
+    if ($result instanceof c_base_return) {
+      $errors = $result->get_error();
+      if (is_array($errors)) {
+        $found_errors = TRUE;
+
+        foreach ($errors as $error) {
+          $failure->set_error($error);
+        }
+        unset($error);
+      }
+      unset($errors);
+    }
+
+    if (!$found_errors) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => $operation_name, ':function_name' => $function_name)), i_base_error_messages::OPERATION_FAILURE);
+      $failure->set_error($error);
+      unset($error);
+    }
+    unset($found_errors);
+
+    return $failure;
   }

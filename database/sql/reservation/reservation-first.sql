@@ -22,6 +22,7 @@ create role r_reservation_system inherit nologin;
 create role r_reservation_revision_requests inherit nologin;
 create role r_reservation_statistics_update inherit nologin;
 create role r_reservation_logger inherit nologin;
+create role r_reservation_groups_handler inherit nologin;
 
 
 grant r_reservation to r_reservation_administer with admin option;

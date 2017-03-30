@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs - Problems */
-/** This depends on: base-users.sql **/
+/** This depends on: reservation-users.sql **/
 /* The problem logs are intended for temporary reporting of problems and are meant to allow permanent deletion. */
 start transaction;
 
@@ -13,7 +13,6 @@ set datestyle to us;
 
 
 /** Provide a log of problems, which are defined by the software. **/
-/* @todo: shouldnt there be a problem type code? */
 create table s_tables.t_log_problems (
   id bigint not null,
 
@@ -35,10 +34,8 @@ alter table s_tables.t_log_problems alter column id set default nextval('s_table
 
 grant select,insert,update,delete on s_tables.t_log_problems to r_reservation_manager;
 grant select on s_tables.t_log_problems to r_reservation_auditor;
-grant select,usage on s_tables.se_log_problems_id to r_reservation_manager, r_reservation_auditor;
+grant select,usage on s_tables.se_log_problems_id to r_reservation_manager;
 grant usage on s_tables.se_log_problems_id to r_reservation, r_reservation_system;
-
-/* @todo: it seems the views for allowing users to insert/delete problems needs to be created. */
 
 
 
@@ -101,8 +98,6 @@ create function s_tables.f_log_problems_users_delete() returns trigger security 
   end;
 $$ language plpgsql;
 
-reset role;
-
 alter function s_tables.f_log_problems_users_delete () owner to r_reservation_logger;
 
 create trigger tr_log_problems_users_delete
@@ -112,6 +107,7 @@ create trigger tr_log_problems_users_delete
 create trigger tr_log_problems_enforce_user_and_session_ids
   before insert on s_tables.t_log_problems
     for each row execute procedure s_administers.f_common_enforce_user_and_session_ids();
+
 
 
 commit transaction;

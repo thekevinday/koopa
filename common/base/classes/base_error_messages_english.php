@@ -24,6 +24,8 @@ final class c_base_error_messages_english implements i_base_error_messages {
    * @param bool $function_name
    *   (optional) When TRUE, the function name is included with the message.
    *   When FALSE, no funciton name is provided.
+   * @param null|string $additional_message
+   *   (optional) Any additional messages to display.
    * @param bool $use_html
    *   (optional) When TRUE, the message is escaped and then wrapped in HTML.
    *   When FALSE, no HTML wrapping or escaping is peformed.
@@ -34,7 +36,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
    *
    * @see: s_get_message()
    */
-  static function s_render_error_message($error, $arguments = TRUE, $function_name = FALSE, $html = TRUE) {
+  static function s_render_error_message($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = TRUE) {
     if (!($error instanceof c_base_error)) {
       return c_base_return_string::s_new('');
     }
@@ -46,6 +48,10 @@ final class c_base_error_messages_english implements i_base_error_messages {
     }
 
     $message = self::s_get_message($code, $arguments, $function_name)->get_value_exact();
+    if (is_string($additional_message)) {
+      $message .= $additional_message;
+    }
+
     if (empty($message)) {
       unset($message);
       unset($code);

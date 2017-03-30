@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Main */
-/** This depends on: base-first.sql **/
+/** This depends on: reservation-first.sql **/
 /* @todo: add restrictions to even managers and administers so that ALL users access via views to allow for disabling any account (even an admin).
           only the postgresql/root account may access tables directly.
           This requires changing permissions and adding the appropriate s_administers and s_managers tables.
@@ -41,7 +41,7 @@ grant usage on schema s_drafters to r_reservation_drafter;
 grant usage on schema s_requesters to r_reservation_requester;
 grant usage on schema s_users to r_reservation;
 
-grant usage on schema s_tables to r_reservation_revision_requests, r_reservation_statistics_update, r_reservation_logger;
+grant usage on schema s_tables to r_reservation_revision_requests, r_reservation_statistics_update, r_reservation_logger, r_reservation_groups_handler;
 
 
 /** Composite Types **/
@@ -176,16 +176,16 @@ create type public.ct_field_insurance as (
 /* User ID and Session User ID Functions */
 create function s_administers.f_common_enforce_user_and_session_ids() returns trigger as $$
   begin
-    new.id_user = coalesce((select id from v_users_self), 1);
-    new.id_user_session = coalesce((select id from v_users_self_session), 1);
+    new.id_user = (select id from v_users_self);
+    new.id_user_session = (select id from v_users_self_session);
     return new;
   end;
 $$ language plpgsql;
 
 create function s_administers.f_common_enforce_creator_and_session_ids() returns trigger as $$
   begin
-    new.id_creator = coalesce((select id from v_users_self), 1);
-    new.id_creator_session = coalesce((select id from v_users_self_session), 1);
+    new.id_creator = (select id from v_users_self);
+    new.id_creator_session = (select id from v_users_self_session);
     return new;
   end;
 $$ language plpgsql;

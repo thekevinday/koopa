@@ -169,9 +169,8 @@ function reservation_build_login_page(&$html, $settings, $session) {
  *   The current session.
  *
  * @return c_base_return_array|c_base_return_status
- *   FALSE on success.
+ *   TRUE on success.
  *   An array of problems on failure.
- *   FALSE with error bit set is returned on error.
  */
 function reservation_attempt_login(&$database, &$settings, &$session) {
   $problems = array();
@@ -204,11 +203,12 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
   $access_denied = FALSE;
   $error_messages = array();
   $connected = reservation_database_connect($database);
-  if (!($connected instanceof c_base_return_true)) {
+  if (c_base_return::s_has_error($connected)) {
     // try to determine what the warning is.
     // this is not very accurate/efficient, but scanning the string appears to be the only way to identify the error.
     $errors = $connected->get_error();
 
+    // @todo: walk through all errors instead of just checking the first.
     $error = reset($errors);
     unset($errors);
 
@@ -232,6 +232,12 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
         // the account either does note exist or is not authorized.
         // it is a pity that postgresql doesn't differentiate the two.
         $access_denied = TRUE;
+      }
+      else {
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, reason: ' . $details['arguments'][':failure_reasons'][0]['message'] . '.');
+        unset($details);
+
+        return c_base_return_array::s_new($problems);
       }
     }
     unset($details);
@@ -289,7 +295,8 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
     }
   }
 
-  if ($connected instanceof c_base_return_false) {
+  if (c_base_return::s_has_error($connected) || $connected instanceof c_base_return_false) {
+    // @todo: rewrite this function to handle multiple errors.
     if ($access_denied) {
       $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user or password has been specified.');
     }
@@ -314,96 +321,96 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
     }
 
     unset($access_denied);
+    unset($connected);
+
+    if (empty($problems)) {
+      unset($problems);
+      return new c_base_return_false();
+    }
+
+    return c_base_return_array::s_new($problems);
+  }
+  unset($access_denied);
+
+  // @todo: add log entry.
+  #set_log_user($database, 'login');
+
+  // @todo: load and store custom settings (loaded from the database and/or ldap).
+  #$session->set_settings($user_data);
+
+  // the session needs to be opened and the data needs to be saved on successful login.
+  $result = $session->do_connect();
+  if (c_base_return::s_has_error($result)) {
+    $socket_error = $session->get_error_socket();
+    if ($socket_error instanceof c_base_return_int) {
+      $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
+    }
+    else {
+      $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session.');
+    }
+    unset($socket_error);
   }
   else {
-    unset($access_denied);
+    $ldap = reservation_database_load_ldap_data($settings, $_POST['login_form-username'])->get_value();
+    if ($ldap instanceof c_base_return_false || !is_array($ldap)) {
+      $ldap = array(
+        'data' => NULL,
+      );
+    }
 
-    // @todo: add log entry.
-    #set_log_user($database, 'login');
+    if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
+      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
 
-    // @todo: load and store custom settings (loaded from the database and/or ldap).
-    #$session->set_id_user($user_id);
-    #$session->set_settings($user_data);
+      // @todo: handle error situation.
+    }
 
-    // the session needs to be opened and the data needs to be saved on successful login.
-    $result = $session->do_connect();
-    if (c_base_return::s_has_error($result)) {
+    $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();
+
+    // @todo: get and use user id from $user_data.
+
+    $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
+    $session->do_disconnect();
+
+    $cookie_login = NULL;
+    if (c_base_return::s_has_error($pushed)) {
       $socket_error = $session->get_error_socket();
       if ($socket_error instanceof c_base_return_int) {
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
+        $problems = c_base_form_problem::s_create_error(NULL, 'Failed to push session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
       }
       else {
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session.');
+        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to push session.');
       }
       unset($socket_error);
     }
     else {
-      $ldap = reservation_database_load_ldap_data($settings, $_POST['login_form-username'])->get_value();
-      if ($ldap instanceof c_base_return_false || !is_array($ldap)) {
-        $ldap = array(
-          'data' => NULL,
-        );
-      }
-
-      if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
-        $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
-
-        // @todo: handle error situation.
-      }
-
-      $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();
-
-      if (is_array($user_data) && isset($user_data['id_user'])) {
-        $session->set_id_user($user_data['id_user']);
-      }
-
-      // @todo: get and use user id from $user_data.
-
-      $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
-      $session->do_disconnect();
-
-      $cookie_login = NULL;
-      if (c_base_return::s_has_error($pushed)) {
-        $socket_error = $session->get_error_socket();
-        if ($socket_error instanceof c_base_return_int) {
-          $problems = c_base_form_problem::s_create_error(NULL, 'Failed to push session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
-        }
-        else {
-          $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to push session.');
-        }
-        unset($socket_error);
-      }
-      else {
-        $session_expire = $session->get_timeout_expire()->get_value_exact();
-        $cookie_login = $session->get_cookie();
-      }
-
-      if ($cookie_login instanceof c_base_cookie) {
-        $cookie_login->set_expires($session_expire);
-        $cookie_login->set_max_age(NULL);
-
-        if ($pushed instanceof c_base_return_true) {
-          $data = array(
-            'session_id' => $session->get_session_id()->get_value_exact(),
-            'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
-          );
-
-          $cookie_login->set_value($data);
-          $session->set_cookie($cookie_login);
-        }
-      }
-      unset($cookie_login);
-      unset($session_expire);
-      unset($pushed);
+      $session_expire = $session->get_timeout_expire()->get_value_exact();
+      $cookie_login = $session->get_cookie();
     }
-    unset($result);
 
+    if ($cookie_login instanceof c_base_cookie) {
+      $cookie_login->set_expires($session_expire);
+      $cookie_login->set_max_age(NULL);
+
+      if ($pushed instanceof c_base_return_true) {
+        $data = array(
+          'session_id' => $session->get_session_id()->get_value_exact(),
+          'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
+        );
+
+        $cookie_login->set_value($data);
+        $session->set_cookie($cookie_login);
+      }
+    }
+    unset($cookie_login);
+    unset($session_expire);
+    unset($pushed);
   }
+  unset($result);
   unset($connected);
 
   if (empty($problems)) {
     unset($problems);
-    return new c_base_return_false();
+    return new c_base_return_true();
   }
 
   return c_base_return_array::s_new($problems);

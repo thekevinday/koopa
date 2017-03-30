@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Fields **/
-/** This depends on: base-users.sql **/
+/** This depends on: reservation-users.sql **/
 start transaction;
 
 
@@ -41,14 +41,14 @@ grant select on s_tables.t_field_affiliations to r_reservation_auditor;
 grant select,usage on s_tables.se_field_affiliations_id to r_reservation_manager;
 
 create index i_field_affiliations_deleted_not on s_tables.t_field_affiliations (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_field_affiliations_locked_not on s_tables.t_field_affiliations (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 create view s_users.v_field_affiliations with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_field_affiliations
-  where is_deleted is not true;
+  where not is_deleted;
 
 grant select on s_users.v_field_affiliations to r_reservation, r_reservation_system;
 
@@ -89,15 +89,15 @@ grant select on s_tables.t_field_classifications to r_reservation_auditor;
 grant select,usage on s_tables.se_field_classifications_id to r_reservation_manager;
 
 create index i_field_classifications_deleted_not on s_tables.t_field_classifications (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_field_classifications_locked_not on s_tables.t_field_classifications (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 
 create view s_users.v_field_classifications with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_field_classifications
-  where is_deleted is not true;
+  where not is_deleted;
 
 grant select on s_users.v_field_classifications to r_reservation, r_reservation_system;
 

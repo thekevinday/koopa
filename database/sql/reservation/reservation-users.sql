@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Users */
-/** This depends on: base-main.sql **/
+/** This depends on: reservation-main.sql **/
 start transaction;
 
 
@@ -16,7 +16,7 @@ create table s_tables.t_users (
   id bigint not null,
   id_external bigint,
 
-  id_sort smallint not null default 0,
+  id_sort smallint default 0,
 
   name_machine varchar(128) not null,
   name_human public.ct_name_person default (null, null, null, null, null, null) not null,
@@ -67,16 +67,16 @@ grant select,usage on s_tables.se_users_id to r_reservation_administer;
 grant usage on s_tables.se_users_id to r_reservation, r_reservation_system;
 
 create index i_users_deleted_not on s_tables.t_users (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_users_private_not on s_tables.t_users (id)
-  where is_deleted is not true and is_private is not true;
+  where not is_deleted and not is_private;
 
 create index i_users_locked_not on s_tables.t_users (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 create index i_users_private_email_not on s_tables.t_users (id)
-  where is_deleted is not true and is_private is not true and (address_email).private is not true;
+  where not is_deleted and not is_private and not (address_email).private;
 
 
 /* Note: id_sort is only needed when directly validating against id or name_machine because both of those are already an index. */
@@ -112,39 +112,53 @@ create index i_users_id_sort_z on s_tables.t_users (id_sort) with (fillfactor = 
 /*** provide current user access to their own information (system users are not allowed to update their account) ***/
 create view s_users.v_users_self with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where is_deleted is not true and (name_machine)::text = (current_user)::text;
+    where not is_deleted and (name_machine)::text = (current_user)::text;
 
 grant select on s_users.v_users_self to r_reservation, r_reservation_system;
 
 create view s_users.v_users_self_session with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where is_deleted is not true and (name_machine)::text = (session_user)::text;
+    where not is_deleted and (name_machine)::text = (session_user)::text;
 
 grant select on s_users.v_users_self_session to r_reservation, r_reservation_system;
 
+create view public.v_users_self_session with (security_barrier=true) as
+  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
+    where not is_deleted and (name_machine)::text = (session_user)::text and 'r_public' in (select * from postgres_roles);
+
+grant select on public.v_users_self_session to r_public;
+
 create view s_users.v_users_locked_not_self with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where is_deleted is not true and is_locked is not true and (name_machine)::text = (current_user)::text;
+    where not is_deleted and not is_locked and (name_machine)::text = (current_user)::text;
 
 grant select on s_users.v_users_locked_not_self to r_reservation, r_reservation_system;
 
+create view public.v_users_locked_not_self with (security_barrier=true) as
+  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
+    where not is_deleted and not is_locked and (name_machine)::text = (current_user)::text and 'r_public' in (select * from postgres_roles);
+
+grant select on public.v_users_locked_not_self to r_public;
+
 create view s_users.v_users_can_manage_roles with (security_barrier=true) as
-  with this_user_can_manage_roles as (select id from s_users.v_users_locked_not_self where can_manage_roles is true)
+  with this_user_can_manage_roles as (select id from s_users.v_users_locked_not_self where can_manage_roles)
   select id_sort, name_human, address_email from s_tables.t_users
-    where is_deleted is not true and is_locked is not true and is_system is not true and is_public is not true and (name_machine)::text = (current_user)::text and id in (select * from this_user_can_manage_roles);
+    where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text and id in (select * from this_user_can_manage_roles);
 
 grant select on s_users.v_users_can_manage_roles to r_reservation, r_reservation_system;
 
 create view s_users.v_users_self_insert with (security_barrier=true) as
   select id_external, name_human, address_email, is_private, settings from s_tables.t_users
-    where is_deleted is not true and is_locked is not true and is_system is not true and is_public is not true and (name_machine)::text = (current_user)::text
+    where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
     with check option;
 
 grant insert on s_users.v_users_self_insert to r_reservation, r_reservation_system;
 
 create view s_users.v_users_self_update with (security_barrier=true) as
   select address_email, is_private, settings from s_tables.t_users
-    where is_deleted is not true and is_locked is not true and is_system is not true and is_public is not true and (name_machine)::text = (current_user)::text
+    where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
     with check option;
 
 grant update on s_users.v_users_self_update to r_reservation, r_reservation_system;
@@ -153,7 +167,7 @@ grant update on s_users.v_users_self_update to r_reservation, r_reservation_syst
 /**** anonymous user has uid = 1 ****/
 create view public.v_users_self with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where is_deleted is not true and id = 1;
+    where not is_deleted and id = 1;
 
 grant select on public.v_users_self to r_public, r_reservation, r_reservation_system;
 
@@ -161,7 +175,7 @@ grant select on public.v_users_self to r_public, r_reservation, r_reservation_sy
 /*** provide public user information ***/
 create view public.v_users with (security_barrier=true) as
   select id, null::bigint as id_external, id_sort, name_machine, name_human, null::public.ct_email as address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, null::bool as is_private, null::bool as can_manage_roles, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::json as settings from s_tables.t_users
-    where (is_deleted is not true and is_private is not true) or (is_deleted is not true and (name_machine)::text = (current_user)::text);
+    where (not is_deleted and not is_private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
 grant select on public.v_users to r_reservation, r_public, r_reservation_system;
 
@@ -169,7 +183,7 @@ grant select on public.v_users to r_reservation, r_public, r_reservation_system;
 /*** provide e-mail address as public information only if it is explicitly allowed ***/
 create view public.v_users_email with (security_barrier=true) as
   select id, null::bigint as id_external, id_sort, name_machine, name_human, address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, null::bool as is_private, null::bool as can_manage_roles, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::json as settings from s_tables.t_users
-    where (is_deleted is not true and is_private is not true and (address_email).private is not true) or (is_deleted is not true and (name_machine)::text = (current_user)::text);
+    where (not is_deleted and not is_private and not (address_email).private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
 grant select on public.v_users_email to r_reservation, r_public, r_reservation_system;
 
@@ -177,7 +191,7 @@ grant select on public.v_users_email to r_reservation, r_public, r_reservation_s
 /*** provide managers with the ability to modify accounts ***/
 create view s_managers.v_users with (security_barrier=true) as
   select * from s_tables.t_users
-    where is_deleted is not true;
+    where not is_deleted;
 
 grant select on s_managers.v_users to r_reservation_manager;
 
@@ -189,14 +203,14 @@ grant insert on s_managers.v_users_insert to r_reservation_manager;
 
 create view s_managers.v_users_update with (security_barrier=true) as
   select id, id_external, name_machine, name_human, address_email, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, can_manage_roles, settings from s_tables.t_users
-    where is_deleted is not true
+    where not is_deleted
     with check option;
 
 grant update on s_managers.v_users_update to r_reservation_manager;
 
 create view s_managers.v_users_deleted with (security_barrier=true) as
   select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where is_deleted is true;
+    where is_deleted;
 
 grant select on s_managers.v_users to r_reservation_manager;
 
@@ -255,7 +269,7 @@ grant select on s_administers.m_users_date_created_previous_year to r_reservatio
 
 create function s_administers.f_users_insert_actions() returns trigger as $$
   begin
-    if (new.name_machine = null) then
+    if (new.name_machine is null) then
       new.name_machine = current_user;
     end if;
 

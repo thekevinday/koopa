@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Dates **/
-/** This depends on: base-main.sql **/
+/** This depends on: reservation-main.sql **/
 start transaction;
 
 
@@ -41,15 +41,15 @@ grant select on s_tables.t_date_contexts to r_reservation_auditor;
 grant select,usage on s_tables.se_date_contexts_id to r_reservation_manager;
 
 create index i_date_contexts_deleted_not on s_tables.t_date_contexts (id)
-  where is_deleted is not true;
+  where not is_deleted;
 
 create index i_date_contexts_locked_not on s_tables.t_date_contexts (id)
-  where is_deleted is not true and is_locked is not true;
+  where not is_deleted and not is_locked;
 
 
 create view s_requesters.v_date_contexts with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_date_contexts
-  where is_deleted is not true;
+  where not is_deleted;
 
 grant select on s_requesters.v_date_contexts to r_reservation_requester, r_reservation_reviewer;
 

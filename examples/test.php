@@ -75,6 +75,20 @@
     if (isset($stuff['cookie_login']['cookie'])) {
       $stuff['cookie_login']['cookie']->do_push();
     }
+
+    // additional cookies to expire.
+    if (isset($stuff['cookie_expire']['cookies']) && is_array($stuff['cookie_expire']['cookies'])) {
+      foreach ($stuff['cookie_expire']['cookies'] as $cookie) {
+        if (!($cookie instanceof c_base_cookie)) {
+          continue;
+        }
+
+        $cookie->set_expires(-1);
+        $cookie->set_max_age(-1);
+        $cookie->do_push();
+      }
+      unset($cookie);
+    }
   }
 
   function theme($stuff) {
@@ -276,13 +290,14 @@
 
               $name = $session->get_name()->get_value();
               $password = $session->get_password()->get_value();
-              assign_database_string($database, $name, $password, $session);
+              assign_database_string($database, $name, $password);
               unset($name);
               unset($password);
 
               $connected = connect_database($database);
               if ($connected) {
                 set_log_user($database, 'logout');
+                set_log_activity($database, 200);
                 $database->do_disconnect();
               }
               unset($connected);
@@ -316,7 +331,7 @@
             if ($result instanceof c_base_return_true) {
               $name = $session->get_name()->get_value();
               $password = $session->get_password()->get_value();
-              assign_database_string($database, $name, $password, $session);
+              assign_database_string($database, $name, $password);
               unset($name);
               unset($password);
 
@@ -353,9 +368,10 @@
                 $stuff['login'] = '';
               }
 
-              $user_data = get_user_data($database, $session->get_name()->get_value_exact());
+              $user_data = get_user_data($database, $stuff, $session->get_name()->get_value_exact());
 
-              $stuff['login'] .= ' - You are logged in as: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
+              $stuff['login'] .= ' - You are logged in as: ' . $user_data['name_machine'] . '<br>' . "\n";
+              $stuff['login'] .= ' - Your session user is: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
               #$stuff['login'] .= ' - Your password is: ' . $session->get_password()->get_value_exact() . '<br>' . "\n";
               $stuff['login'] .= ' - You will be auto-logged out at: ' . $data['expire'] . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
@@ -364,20 +380,29 @@
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
 
+              if (!isset($user_data['name_machine']) || $user_data['name_machine'] != $session->get_name()->get_value_exact()) {
+                $stuff['login'] .= 'Your session name does not match the logged in name.' . '<br>' . "\n";
+                $stuff['login'] .= 'This can happen when the user name has been deleted from the database for an existing session.' . '<br>' . "\n";
+                $stuff['login'] .= 'Your session cookie is being deleted.' . '<br>' . "\n";
+                $stuff['login'] .= '<br>' . "\n";
+
+                $cookie->set_expires(-1);
+                $cookie->set_max_age(-1);
+                $stuff['cookie_login']['cookie'] = $cookie;
+              }
+
               ldap($stuff, $session->get_name()->get_value_exact());
               set_log_activity($database);
-              get_database_data($database, $stuff);
+              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_public') {
+                get_database_data($database, $stuff);
 
-              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_activity($database);
                 $table = build_log_activity_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
 
                 unset($log);
                 unset($table);
-              }
 
-              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_users($database);
                 $table = build_log_users_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -413,30 +438,49 @@
           $session->set_host($remote_address);
           $session->set_password($_POST['login_password']);
 
+          $is_public = FALSE;
           $user_data = array();
-          $account_exists = check_login_access($stuff, $database, $_POST['login_name'], $_POST['login_password'], $session);
+
+          // allow direct login as u_public and assume/require that the u_public account already exists.
+          if ($_POST['login_name'] == 'u_public') {
+            $is_public = TRUE;
+            $account_exists = FALSE;
+          }
+          else {
+            $account_exists = check_login_access($stuff, $database, $_POST['login_name'], $_POST['login_password'], $session);
+          }
+
           if (!$account_exists) {
-            $user_id = 1;
             $session->set_name('u_public');
             $session->set_password(NULL);
-            if (!isset($stuff['login'])) {
-              $stuff['login'] = '';
+
+            if ($is_public === FALSE) {
+              if (!isset($stuff['login'])) {
+                $stuff['login'] = '';
+              }
+              $stuff['login'] .= "DEBUG: user " . htmlspecialchars($_POST['login_name'], ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . " does not exist and user does not exist in ldap (falling back to the public account to access the database).<br>";
             }
-            $stuff['login'] .= "DEBUG: does not exist and does not exist in ldap (falling back to the public account to access the database).<br>";
 
-            $database->set_session($session);
             #$database->set_persistent(TRUE);
-            assign_database_string($database, 'u_public', NULL, $session);
+            assign_database_string($database, 'u_public', NULL);
             $connected = connect_database($database);
-
             if ($connected) {
-              set_log_user($database, 'login_failure', $_POST['login_name'], NULL, 401);
-              set_log_activity($database, 401);
+              if ($is_public === FALSE) {
+                set_log_user($database, 'login_failure', $_POST['login_name'], NULL, 401);
+                set_log_activity($database, 401);
+              }
+              else {
+                set_log_user($database, 'login');
+                set_log_activity($database, 200);
+              }
+
+              $user_data = get_user_data($database, $stuff, 'u_public');
 
               $stuff['login'] .= ' - Accessing database as: u_public' . '<br>' . "\n";
-              $stuff['login'] .= ' - Your user id is: 1 ' . '<br>' . "\n";
+              $stuff['login'] .= ' - Your user id is: ' . (isset($user_data['id']) ? $user_data['id'] : 'does not exist') . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
+              $is_public = TRUE;
             }
           }
           else {
@@ -451,13 +495,12 @@
             }
 
             $connected = TRUE;
-            $stuff['login'] .= "DEBUG: account already exists or exists in ldap.<br>";
-            $user_data = get_user_data($database, $_POST['login_name'], $ldap_data);
-            $user_id = $user_data['id_user'];
-            unset($user_data['id_user']);
+            $stuff['login'] .= "DEBUG: account already exists.<br>";
+            $user_data = get_user_data($database, $stuff, $_POST['login_name'], $ldap_data);
             unset($ldap_data);
           }
-          $session->set_id_user($user_id);
+          unset($account_exists);
+
           $session->set_settings($user_data);
 
           if (!$connected) {
@@ -469,30 +512,46 @@
           }
 
           if (!$failure) {
-            $result = $session->do_push(600, 1800); // (10 minutes, 30 minutes)
+            if (!$is_public) {
+              $result = $session->do_push(600, 1800); // (10 minutes, 30 minutes)
+              $session_expire = $session->get_timeout_expire()->get_value_exact();
+              $session_max = $session->get_timeout_max()->get_value_exact();
+              $expire_string = date("D, d M Y H:i:s T", $session_expire);
+
+              $cookie->set_expires($session_expire);
+              $cookie->set_max_age(NULL);
+
+              set_log_user($database, 'login', NULL, $session_expire);
+              set_log_activity($database, 200);
+
+              if ($result instanceof c_base_return_true) {
+                $data = array(
+                  'session_id' => $session->get_session_id()->get_value_exact(),
+                  'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
+                );
+                $cookie->set_value($data);
+                $stuff['cookie_login']['cookie'] = $cookie;
+              }
+            }
+            else {
+              $session_expire = NULL;
+              $session_max = NULL;
+              $expire_string = 'indefinite';
+
+              $cookie->set_expires(-1);
+              $cookie->set_max_age(-1);
+
+              $result = new c_base_return_true();
+            }
             $session->do_disconnect();
 
-            set_log_user($database, 'login', NULL, $session->get_timeout_expire()->get_value_exact());
-
-            $session_expire = $session->get_timeout_expire()->get_value_exact();
-            $session_max = $session->get_timeout_max()->get_value_exact();
-            $expire_string = date("D, d M Y H:i:s T", $session_expire);
-            $cookie->set_expires($session_expire);
-            $cookie->set_max_age(NULL);
-
             if ($result instanceof c_base_return_true) {
-              $data = array(
-                'session_id' => $session->get_session_id()->get_value_exact(),
-                'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
-              );
-              $cookie->set_value($data);
-              $stuff['cookie_login']['cookie'] = $cookie;
-
               if (!isset($stuff['login'])) {
                 $stuff['login'] = '';
               }
 
-              $stuff['login'] .= ' - You are logged in as: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
+              $stuff['login'] .= ' - You are logged in as: ' . $user_data['name_machine'] . '<br>' . "\n";
+              $stuff['login'] .= ' - Your session user is: ' . $session->get_name()->get_value_exact() . '<br>' . "\n";
               #$stuff['login'] .= ' - Your password is: ' . $session->get_password()->get_value_exact() . '<br>' . "\n";
               $stuff['login'] .= ' - You will be auto-logged out at: ' . $expire_string . ' (' . $session_expire . ')' . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
@@ -506,18 +565,16 @@
               }
 
               set_log_activity($database);
-              get_database_data($database, $stuff);
+              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_public') {
+                get_database_data($database, $stuff);
 
-              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_activity($database);
                 $table = build_log_activity_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
 
                 unset($log);
                 unset($table);
-              }
 
-              if (!empty($session->get_name()->get_value_exact())) {
                 $log = get_log_users($database);
                 $table = build_log_users_table($log);
                 $stuff['login'] .= "<br>" . $table . "<br>";
@@ -533,13 +590,31 @@
                 $stuff['login'] = '';
               }
 
-              $error = $session->get_error();
-              $stuff['login'] .= ' - failed to save requested session, error: ' . print_r($error, TRUE) . "<br>";
-              unset($error);
+              $error_messages = '';
+              $errors = $result->get_error();
+              if (is_array($errors)) {
+                foreach ($errors as $error) {
+                  if (!($error instanceof c_base_error)) {
+                    continue;
+                  }
+
+                  $error_message = $error->get_message();
+                  if (!is_string($error_message)) {
+                    $error_message = NULL;
+                  }
+
+                  $error_messages .= $stuff['error_messages']::s_render_error_message($error, TRUE, FALSE, $error_message)->get_value_exact();
+                  unset($error_message);
+                }
+                unset($error);
+              }
+              unset($errors);
+
+              $stuff['login'] .= ' - failed to save requested session, error: ' . $error_messages . "<br>";
+              unset($error_messages);
             }
           }
 
-          unset($user_id);
           unset($session);
         }
       }
@@ -579,8 +654,8 @@
   }
 
   function get_database_data(&$database, &$stuff) {
-    $stuff['login'] .= 'query: "select * from v_users where is_system is not true and is_public is not true limit 20;"<br>' . "\n";
-    $query_result = $database->do_query(' where is_system is not true and is_public is not true limit 20');
+    $stuff['login'] .= 'query: "select * from v_users where not is_system and not is_public limit 20;"<br>' . "\n";
+    $query_result = $database->do_query(' where not is_system and not is_public limit 20');
     if ($query_result instanceof c_base_database_result) {
       $all = $query_result->fetch_all();
       $stuff['login'] .= "<ol>";
@@ -593,8 +668,8 @@
         unset($column);
         unset($value);
       }
+      unset($all);
       unset($row);
-      unset($row_number);
     }
     else {
       if (!isset($stuff['errors'])) {
@@ -612,8 +687,11 @@
   function check_login_access(&$stuff, &$database, $username, $password, $session) {
     if ($username == 'u_public') return FALSE;
 
-    $database->set_session($session);
-    assign_database_string($database, $username, $password, $session);
+    if ($database->is_connected() instanceof c_base_return_true) {
+      return TRUE;
+    }
+
+    assign_database_string($database, $username, $password);
 
     $connected = connect_database($database);
     if ($connected) {
@@ -638,21 +716,20 @@
       }
       unset($errors);
     }
-    unset($ensure_result);
-
-    // try again now that the system has attempted to ensure the user account exists.
-    $connected = connect_database($database);
-    if ($connected) {
-      set_log_user($database, 'create_user');
-      return TRUE;
+    else {
+      // try again now that the system has attempted to ensure the user account exists.
+      $connected = connect_database($database);
+      if ($connected) {
+        set_log_user($database, 'create_user');
+        return TRUE;
+      }
     }
+    unset($ensure_result);
 
     return FALSE;
   }
 
-  function assign_database_string(&$database, $username, $password, $session) {
-    $database->set_session($session);
-
+  function assign_database_string(&$database, $username, $password) {
     $connection_string = new c_base_connection_string();
     $connection_string->set_host('127.0.0.1');
     $connection_string->set_port(5432);
@@ -791,30 +868,86 @@
     return TRUE;
   }
 
-  function get_user_data(&$database, $user_name, $ldap_data = NULL) {
-    $user_data = array(
-      'id_user' => NULL,
-    );
-    $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, is_system, is_public, date_created, date_changed, settings from v_users_self');
+  function get_user_data(&$database, &$stuff, $user_name, $ldap_data = NULL) {
+    $user_data = array();
+    $query_result = $database->do_query('select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self');
+
+
+    if (c_base_return::s_has_error($query_result)) {
+      $errors = $query_result->get_error();
+      if (is_array($errors)) {
+        if (!isset($stuff['errors'])) {
+          $stuff['errors'] = '';
+        }
+
+        foreach ($errors as $error) {
+          if ($error instanceof c_base_error) {
+            $stuff['errors'] .= '<li>' . $stuff['error_messages']::s_render_error_message($error)->get_value_exact() . '</li>';
+          }
+        }
+        unset($error);
+      }
+      unset($errors);
+    }
+
     if ($query_result instanceof c_base_database_result) {
       if ($query_result->number_of_rows()->get_value_exact() > 0) {
         $result = $query_result->fetch_row();
+
+        if (c_base_return::s_has_error($result)) {
+          $errors = $result->get_error();
+          if (is_array($errors)) {
+            if (!isset($stuff['errors'])) {
+              $stuff['errors'] = '';
+            }
+
+            foreach ($errors as $error) {
+              if ($error instanceof c_base_error) {
+                $stuff['errors'] .= '<li>' . $stuff['error_messages']::s_render_error_message($error)->get_value_exact() . '</li>';
+              }
+            }
+            unset($error);
+          }
+          unset($errors);
+        }
+
         if (!($result instanceof c_base_return_false)) {
           $result_array = $result->get_value();
           if (!empty($result_array)) {
-            $user_data['id_user'] = $result_array[0];
+            $user_data['id'] = $result_array[0];
             $user_data['id_external'] = $result_array[1];
-            $user_data['name_human'] = $result_array[2];
-            $user_data['address_email'] = $result_array[3];
-            $user_data['is_private'] = $result_array[4];
-            $user_data['is_locked'] = $result_array[5];
-            $user_data['is_system'] = $result_array[6];
-            $user_data['is_public'] = $result_array[7];
-            $user_data['date_created'] = $result_array[8];
-            $user_data['date_changed'] = $result_array[9];
-            $user_data['settings'] = json_decode($result_array[10], TRUE);
+            $user_data['name_machine'] = $result_array[2];
+            $user_data['name_human'] = $result_array[3];
+            $user_data['address_email'] = $result_array[4];
+            $user_data['is_administer'] = $result_array[5];
+            $user_data['is_manager'] = $result_array[6];
+            $user_data['is_auditor'] = $result_array[7];
+            $user_data['is_publisher'] = $result_array[8];
+            $user_data['is_financer'] = $result_array[9];
+            $user_data['is_reviewer'] = $result_array[10];
+            $user_data['is_editor'] = $result_array[11];
+            $user_data['is_drafter'] = $result_array[12];
+            $user_data['is_requester'] = $result_array[13];
+            $user_data['is_system'] = $result_array[14];
+            $user_data['is_public'] = $result_array[15];
+            $user_data['is_locked'] = $result_array[16];
+            $user_data['is_private'] = $result_array[17];
+            $user_data['date_created'] = $result_array[18];
+            $user_data['date_changed'] = $result_array[19];
+            $user_data['date_synced'] = $result_array[20];
+            $user_data['date_locked'] = $result_array[21];
+            $user_data['settings'] = json_decode($result_array[22], TRUE);
           }
         }
+      }
+
+      if (!isset($user_data['id'])) {
+        // note: the error here is not recored because the user account may not exist yet and needs to be auto-created.
+        #if (!isset($stuff['errors'])) {
+        #  $stuff['errors'] = '';
+        #}
+
+        #$stuff['errors'] .= '<li>No valid data found for the user: ' . $user_name . '</li>';
       }
     }
     else {
@@ -823,10 +956,13 @@
       }
 
       $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+
+      return $user_data;
     }
     unset($query_result);
 
-    if (is_null($user_data['id_user'])) {
+    // if the user does not yet exist in the database (and is not the public user), then create it.
+    if (!isset($user_data['id']) && $user_name != 'u_public') {
       if (is_null($ldap_data)) {
         $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values (null, null, null, null, null)');
         if ($query_result instanceof c_base_return_false) {
@@ -835,6 +971,10 @@
           }
 
           $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+
+          // don't attempt to perform select again because the insert query has failed and so there should be nothing to select.
+          unset($query_result);
+          return $user_data;
         }
         unset($query_result);
       }
@@ -856,29 +996,53 @@
           }
 
           $stuff['errors'] .= '<li>' . htmlspecialchars($database->get_last_error()->get_value_exact(), ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</li>';
+
+          // don't attempt to perform select again because the insert query has failed and so there should be nothing to select.
+          unset($query_result);
+          return $user_data;
         }
         unset($query_result);
       }
 
-      $user_data['id_user'] = NULL;
-      $query_result = $database->do_query('select id, id_external, name_human, address_email, is_private, is_locked, is_system, is_public, date_created, date_changed, settings from v_users_self');
+      $user_data['id'] = NULL;
+      $query_result = $database->do_query('select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self');
       if ($query_result instanceof c_base_database_result) {
         if ($query_result->number_of_rows()->get_value_exact() > 0) {
           $result = $query_result->fetch_row();
           if (!($result instanceof c_base_return_false)) {
             $result_array = $result->get_value();
-            $user_data['id_user'] = $result_array[0];
+            $user_data['id'] = $result_array[0];
             $user_data['id_external'] = $result_array[1];
-            $user_data['name_human'] = $result_array[2];
-            $user_data['address_email'] = $result_array[3];
-            $user_data['is_private'] = $result_array[4];
-            $user_data['is_locked'] = $result_array[5];
-            $user_data['is_system'] = $result_array[6];
-            $user_data['is_public'] = $result_array[7];
-            $user_data['date_created'] = $result_array[8];
-            $user_data['date_changed'] = $result_array[9];
-            $user_data['settings'] = json_decode($result_array[10], TRUE);
+            $user_data['name_machine'] = $result_array[2];
+            $user_data['name_human'] = $result_array[3];
+            $user_data['address_email'] = $result_array[4];
+            $user_data['is_administer'] = $result_array[5];
+            $user_data['is_manager'] = $result_array[6];
+            $user_data['is_auditor'] = $result_array[7];
+            $user_data['is_publisher'] = $result_array[8];
+            $user_data['is_financer'] = $result_array[9];
+            $user_data['is_reviewer'] = $result_array[10];
+            $user_data['is_editor'] = $result_array[11];
+            $user_data['is_drafter'] = $result_array[12];
+            $user_data['is_requester'] = $result_array[13];
+            $user_data['is_system'] = $result_array[14];
+            $user_data['is_public'] = $result_array[15];
+            $user_data['is_locked'] = $result_array[16];
+            $user_data['is_private'] = $result_array[17];
+            $user_data['date_created'] = $result_array[18];
+            $user_data['date_changed'] = $result_array[19];
+            $user_data['date_synced'] = $result_array[20];
+            $user_data['date_locked'] = $result_array[21];
+            $user_data['settings'] = json_decode($result_array[22], TRUE);
           }
+        }
+
+        if (!isset($user_data['id'])) {
+          if (!isset($stuff['errors'])) {
+            $stuff['errors'] = '';
+          }
+
+          $stuff['errors'] .= '<li>No valid data found for the user: ' . $user_name . '</li>';
         }
       }
       else {
@@ -897,7 +1061,6 @@
   function get_log_activity(&$database) {
     $values = array();
 
-    $user_id = NULL;
     $query_result = $database->do_query('select id, request_path, request_date, request_client, response_code from v_log_user_activity_self order by request_date desc limit 20;');
     if ($query_result instanceof c_base_database_result) {
      $total_rows = $query_result->number_of_rows()->get_value_exact();
@@ -926,7 +1089,6 @@
   function get_log_users(&$database) {
     $values = array();
 
-    $user_id = NULL;
     $query_result = $database->do_query('select id, log_title, log_type, log_date, request_client, response_code from v_log_users_self order by log_date desc limit 10;');
     if ($query_result instanceof c_base_database_result) {
      $total_rows = $query_result->number_of_rows()->get_value_exact();
