@@ -40,6 +40,7 @@ create table s_tables.t_files (
   constraint cu_files_field_path unique (field_path),
 
   constraint cc_files_id check (id > 0),
+  constraint cc_files_name_machine check (name_machine ~ '\w+'),
 
   constraint cf_files_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
   constraint cf_files_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete cascade on update cascade,
@@ -79,7 +80,7 @@ create view public.v_files with (security_barrier=true) as
   select id, id_type, NULL::bigint as id_group, name_machine, name_human, NULL::bool as is_private, NULL::bool as date_created, NULL::bool as date_changed from s_tables.t_files
   where not is_deleted and not is_locked and not is_private;
 
-grant select on public.v_path_types to r_reservation, r_public, r_reservation_system;
+grant select on public.v_path_types to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_files_date_changed_deleted_or_locked

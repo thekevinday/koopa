@@ -49,7 +49,7 @@ create view public.v_log_types with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_types
   where not is_deleted and not is_locked;
 
-grant select on public.v_log_types to r_reservation, r_public, r_reservation_system;
+grant select on public.v_log_types to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_log_types_date_changed_deleted_or_locked
@@ -90,7 +90,7 @@ grant select,usage on s_tables.se_log_type_http_status_codes_id to r_reservation
 create view public.v_log_type_http_status_codes with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_type_http_status_codes;
 
-grant select on public.v_log_type_http_status_codes to r_reservation, r_public, r_reservation_system;
+grant select on public.v_log_type_http_status_codes to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_log_type_http_status_codes_date_changed_deleted_or_locked
@@ -131,7 +131,7 @@ create view s_users.v_log_type_severity_levels with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_type_severity_levels
   where not is_deleted;
 
-grant select on s_users.v_log_type_severity_levels to r_reservation, r_public, r_reservation_system;
+grant select on s_users.v_log_type_severity_levels to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_log_type_severity_levels_date_changed_deleted_or_locked

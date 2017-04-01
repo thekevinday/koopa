@@ -98,7 +98,7 @@ create function s_tables.f_log_problems_users_delete() returns trigger security 
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_log_problems_users_delete () owner to r_reservation_logger;
+alter function s_tables.f_log_problems_users_delete () owner to u_reservation_logger;
 
 create trigger tr_log_problems_users_delete
   after delete on s_tables.t_log_problems_users

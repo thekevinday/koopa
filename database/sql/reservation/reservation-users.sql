@@ -12,6 +12,7 @@ set datestyle to us;
 
 
 /** Users **/
+/* Note: is_public and is_private have two different contexts, is_public refers to the r_reservation_public role and is_private refers to making certain user fields public/private within the system to a certain degree. */
 create table s_tables.t_users (
   id bigint not null,
   id_external bigint,
@@ -123,11 +124,11 @@ create view s_users.v_users_self_session with (security_barrier=true) as
 grant select on s_users.v_users_self_session to r_reservation, r_reservation_system;
 
 create view public.v_users_self_session with (security_barrier=true) as
-  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
+  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_reservation_public')
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where not is_deleted and (name_machine)::text = (session_user)::text and 'r_public' in (select * from postgres_roles);
+    where not is_deleted and (name_machine)::text = (session_user)::text and 'r_reservation_public' in (select * from postgres_roles);
 
-grant select on public.v_users_self_session to r_public;
+grant select on public.v_users_self_session to r_reservation_public;
 
 create view s_users.v_users_locked_not_self with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
@@ -136,11 +137,11 @@ create view s_users.v_users_locked_not_self with (security_barrier=true) as
 grant select on s_users.v_users_locked_not_self to r_reservation, r_reservation_system;
 
 create view public.v_users_locked_not_self with (security_barrier=true) as
-  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
+  with postgres_roles as (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_reservation_public')
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, can_manage_roles, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
-    where not is_deleted and not is_locked and (name_machine)::text = (current_user)::text and 'r_public' in (select * from postgres_roles);
+    where not is_deleted and not is_locked and (name_machine)::text = (current_user)::text and 'r_reservation_public' in (select * from postgres_roles);
 
-grant select on public.v_users_locked_not_self to r_public;
+grant select on public.v_users_locked_not_self to r_reservation_public;
 
 create view s_users.v_users_can_manage_roles with (security_barrier=true) as
   with this_user_can_manage_roles as (select id from s_users.v_users_locked_not_self where can_manage_roles)
@@ -169,7 +170,7 @@ create view public.v_users_self with (security_barrier=true) as
   select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
     where not is_deleted and id = 1;
 
-grant select on public.v_users_self to r_public, r_reservation, r_reservation_system;
+grant select on public.v_users_self to r_reservation_public, r_reservation, r_reservation_system;
 
 
 /*** provide public user information ***/
@@ -177,7 +178,7 @@ create view public.v_users with (security_barrier=true) as
   select id, null::bigint as id_external, id_sort, name_machine, name_human, null::public.ct_email as address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, null::bool as is_private, null::bool as can_manage_roles, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::json as settings from s_tables.t_users
     where (not is_deleted and not is_private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
-grant select on public.v_users to r_reservation, r_public, r_reservation_system;
+grant select on public.v_users to r_reservation, r_reservation_public, r_reservation_system;
 
 
 /*** provide e-mail address as public information only if it is explicitly allowed ***/
@@ -185,7 +186,7 @@ create view public.v_users_email with (security_barrier=true) as
   select id, null::bigint as id_external, id_sort, name_machine, name_human, address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, null::bool as is_private, null::bool as can_manage_roles, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::json as settings from s_tables.t_users
     where (not is_deleted and not is_private and not (address_email).private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
-grant select on public.v_users_email to r_reservation, r_public, r_reservation_system;
+grant select on public.v_users_email to r_reservation, r_reservation_public, r_reservation_system;
 
 
 /*** provide managers with the ability to modify accounts ***/
@@ -304,8 +305,347 @@ create function s_administers.f_users_update_actions() returns trigger as $$
 $$ language plpgsql;
 
 
+/* attempt to auto-manage postgresql reservation roles with the reservation database user roles. */
+/* user ids 1 and 2 are explicitly reserved for anonymous/public and the database postgresql accounts. */
+/* postgresql does not seem to support variables for the user with grant and revoke, therefore the execute statement is used to perform the query. */
+/* @fixme: the name_machine must be forcibly sanitized to be alphanumeric, -, or _ in all cases. */
+create function s_administers.f_users_insert_as_administer() returns trigger security definer as $$
+  declare
+    name_machine constant text default quote_ident(new.name_machine);
+  begin
+    if (new.id = 1 or new.id = 2) then
+      return null;
+    end if;
+
+    set client_min_messages to error;
+
+    if (new.is_locked or new.is_deleted) then
+      if (new.is_deleted) then
+        execute 'revoke r_reservation from ' || name_machine;
+        execute 'revoke r_reservation_system from ' || name_machine;
+        execute 'revoke r_reservation_public from ' || name_machine;
+      elseif (new.is_public) then
+        execute 'grant r_reservation_public to ' || name_machine;
+      elseif (new.is_system) then
+        execute 'grant r_reservation_system to ' || name_machine;
+      elseif (new.is_requester or new.is_drafter or new.is_editor or new.is_reviewer or new.is_financer or new.is_insurer or new.is_publisher or new.is_auditor or new.is_manager or new.is_administer) then
+        execute 'grant r_reservation to ' || name_machine;
+      end if;
+
+      execute 'revoke r_reservation_administer from ' || name_machine;
+      execute 'revoke r_reservation_manager from ' || name_machine;
+      execute 'revoke r_reservation_auditor from ' || name_machine;
+      execute 'revoke r_reservation_publisher from ' || name_machine;
+      execute 'revoke r_reservation_financer from ' || name_machine;
+      execute 'revoke r_reservation_insurer from ' || name_machine;
+      execute 'revoke r_reservation_reviewer from ' || name_machine;
+      execute 'revoke r_reservation_editor from ' || name_machine;
+      execute 'revoke r_reservation_drafter from ' || name_machine;
+      execute 'revoke r_reservation_requester from ' || name_machine;
+    elseif (new.is_public) then
+      execute 'grant r_reservation_public to ' || name_machine;
+      execute 'revoke r_reservation from ' || name_machine;
+
+      if (new.is_system) then
+        execute 'grant r_reservation_system to ' || name_machine;
+      else
+        execute 'revoke r_reservation_system from ' || name_machine;
+      end if;
+
+      execute 'revoke r_reservation_administer from ' || name_machine;
+      execute 'revoke r_reservation_manager from ' || name_machine;
+      execute 'revoke r_reservation_auditor from ' || name_machine;
+      execute 'revoke r_reservation_publisher from ' || name_machine;
+      execute 'revoke r_reservation_financer from ' || name_machine;
+      execute 'revoke r_reservation_insurer from ' || name_machine;
+      execute 'revoke r_reservation_reviewer from ' || name_machine;
+      execute 'revoke r_reservation_editor from ' || name_machine;
+      execute 'revoke r_reservation_drafter from ' || name_machine;
+      execute 'revoke r_reservation_requester from ' || name_machine;
+    else
+      if (new.is_system) then
+        execute 'grant r_reservation_system to ' || name_machine;
+
+        execute 'revoke r_reservation from ' || name_machine;
+        execute 'revoke r_reservation_public from ' || name_machine;
+      elseif (new.is_requester or new.is_drafter or new.is_editor or new.is_reviewer or new.is_financer or new.is_insurer or new.is_publisher or new.is_auditor or new.is_manager or new.is_administer) then
+        execute 'grant r_reservation to ' || name_machine;
+
+        execute 'revoke r_reservation_system from ' || name_machine;
+        execute 'revoke r_reservation_public from ' || name_machine;
+      end if;
+
+      if (new.is_administer) then
+        execute 'grant r_reservation_administer to ' || name_machine;
+      end if;
+
+      if (new.is_manager) then
+        execute 'grant r_reservation_manager to ' || name_machine;
+      end if;
+
+      if (new.is_auditor) then
+        execute 'grant r_reservation_auditor to ' || name_machine;
+      end if;
+
+      if (new.is_publisher) then
+        execute 'grant r_reservation_publisher to ' || name_machine;
+      end if;
+
+      if (new.is_insurer) then
+        execute 'grant r_reservation_insurer to ' || name_machine;
+      end if;
+
+      if (new.is_financer) then
+        execute 'grant r_reservation_financer to ' || name_machine;
+      end if;
+
+      if (new.is_reviewer) then
+        execute 'grant r_reservation_reviewer to ' || name_machine;
+      end if;
+
+      if (new.is_editor) then
+        execute 'grant r_reservation_editor to ' || name_machine;
+      end if;
+
+      if (new.is_drafter) then
+        execute 'grant r_reservation_drafter to ' || name_machine;
+      end if;
+
+      if (new.is_requester) then
+        execute 'grant r_reservation_requester to ' || name_machine;
+      end if;
+    end if;
+
+    reset client_min_messages;
+
+    return null;
+  end;
+$$ language plpgsql;
+
+alter function s_administers.f_users_insert_as_administer() owner to u_reservation_grant_roles;
+
+
+create function s_administers.f_users_update_as_administer() returns trigger security definer as $$
+  declare
+    name_machine constant text default quote_ident(new.name_machine);
+  begin
+    if (new.id = 1 or new.id = 2) then
+      return null;
+    end if;
+
+    set client_min_messages to error;
+
+    if (old.is_locked <> new.is_locked or old.is_deleted <> new.is_deleted) then
+      if (old.is_deleted <> new.is_deleted) then
+        if (new.is_deleted) then
+          execute 'revoke r_reservation from ' || name_machine;
+          execute 'revoke r_reservation_system from ' || name_machine;
+          execute 'revoke r_reservation_public from ' || name_machine;
+        else
+          if (new.is_public) then
+            execute 'grant r_reservation_public to ' || name_machine;
+          elseif (new.is_system) then
+            execute 'grant r_reservation_system to ' || name_machine;
+          elseif (new.is_requester or new.is_drafter or new.is_editor or new.is_reviewer or new.is_financer or new.is_insurer or new.is_publisher or new.is_auditor or new.is_manager or new.is_administer) then
+            execute 'grant r_reservation to ' || name_machine;
+          end if;
+        end if;
+      end if;
+
+      if (new.is_locked or new.is_deleted) then
+        execute 'revoke r_reservation_administer from ' || name_machine;
+        execute 'revoke r_reservation_manager from ' || name_machine;
+        execute 'revoke r_reservation_auditor from ' || name_machine;
+        execute 'revoke r_reservation_publisher from ' || name_machine;
+        execute 'revoke r_reservation_financer from ' || name_machine;
+        execute 'revoke r_reservation_insurer from ' || name_machine;
+        execute 'revoke r_reservation_reviewer from ' || name_machine;
+        execute 'revoke r_reservation_editor from ' || name_machine;
+        execute 'revoke r_reservation_drafter from ' || name_machine;
+        execute 'revoke r_reservation_requester from ' || name_machine;
+        execute 'revoke r_reservation_system from ' || name_machine;
+        execute 'revoke r_reservation_public from ' || name_machine;
+      elseif (new.is_public) then
+        execute 'grant r_reservation_public to ' || name_machine;
+
+        if (new.is_system) then
+          execute 'grant r_reservation_system to ' || name_machine;
+        end if;
+      else
+        if (new.is_administer) then
+          execute 'grant r_reservation_administer to ' || name_machine;
+        end if;
+
+        if (new.is_manager) then
+          execute 'grant r_reservation_manager to ' || name_machine;
+        end if;
+
+        if (new.is_auditor) then
+          execute 'grant r_reservation_auditor to ' || name_machine;
+        end if;
+
+        if (new.is_publisher) then
+          execute 'grant r_reservation_publisher to ' || name_machine;
+        end if;
+
+        if (new.is_financer) then
+          execute 'grant r_reservation_financer to ' || name_machine;
+        end if;
+
+        if (new.is_insurer) then
+          execute 'grant r_reservation_insurer to ' || name_machine;
+        end if;
+
+        if (new.is_reviewer) then
+          execute 'grant r_reservation_reviewer to ' || name_machine;
+        end if;
+
+        if (new.is_editor) then
+          execute 'grant r_reservation_editor to ' || name_machine;
+        end if;
+
+        if (new.is_drafter) then
+          execute 'grant r_reservation_drafter to ' || name_machine;
+        end if;
+
+        if (new.is_requester) then
+          execute 'grant r_reservation_requester to ' || name_machine;
+        end if;
+
+        if (new.is_system) then
+          execute 'grant r_reservation_system to ' || name_machine;
+        end if;
+      end if;
+    elseif (old.is_public <> new.is_public and new.is_public) then
+      execute 'grant r_reservation_public to ' || name_machine;
+
+      execute 'revoke r_reservation_administer from ' || name_machine;
+      execute 'revoke r_reservation_manager from ' || name_machine;
+      execute 'revoke r_reservation_auditor from ' || name_machine;
+      execute 'revoke r_reservation_publisher from ' || name_machine;
+      execute 'revoke r_reservation_financer from ' || name_machine;
+      execute 'revoke r_reservation_insurer from ' || name_machine;
+      execute 'revoke r_reservation_reviewer from ' || name_machine;
+      execute 'revoke r_reservation_editor from ' || name_machine;
+      execute 'revoke r_reservation_drafter from ' || name_machine;
+      execute 'revoke r_reservation_requester from ' || name_machine;
+
+      if (old.is_system <> new.is_system) then
+        if (new.is_system) then
+          execute 'grant r_reservation_system to ' || name_machine;
+        else
+          execute 'revoke r_reservation_system from ' || name_machine;
+        end if;
+      end if;
+    else
+      if (old.is_public <> new.is_public) then
+        execute 'revoke r_reservation_public from ' || name_machine;
+      end if;
+
+      if (old.is_system <> new.is_system) then
+        if (new.is_system) then
+          execute 'grant r_reservation_system to ' || name_machine;
+        else
+          execute 'revoke r_reservation_system from ' || name_machine;
+        end if;
+      elseif (not new.is_system) then
+        if (new.is_requester or new.is_drafter or new.is_editor or new.is_reviewer or new.is_financer or new.is_insurer or new.is_publisher or new.is_auditor or new.is_manager or new.is_administer) then
+          execute 'grant r_reservation to ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_administer <> new.is_administer) then
+        if (new.is_administer) then
+          execute 'grant r_reservation_administer to ' || name_machine;
+        else
+          execute 'revoke r_reservation_administer from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_manager <> new.is_manager) then
+        if (new.is_manager) then
+          execute 'grant r_reservation_manager to ' || name_machine;
+        else
+          execute 'revoke r_reservation_manager from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_auditor <> new.is_auditor) then
+        if (new.is_auditor) then
+          execute 'grant r_reservation_auditor to ' || name_machine;
+        else
+          execute 'revoke r_reservation_auditor from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_publisher <> new.is_publisher) then
+        if (new.is_publisher) then
+          execute 'grant r_reservation_publisher to ' || name_machine;
+        else
+          execute 'revoke r_reservation_publisher from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_insurer <> new.is_insurer) then
+        if (new.is_insurer) then
+          execute 'grant r_reservation_insurer to ' || name_machine;
+        else
+          execute 'revoke r_reservation_insurer from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_financer <> new.is_financer) then
+        if (new.is_financer) then
+          execute 'grant r_reservation_financer to ' || name_machine;
+        else
+          execute 'revoke r_reservation_financer from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_reviewer <> new.is_reviewer) then
+        if (new.is_reviewer) then
+          execute 'grant r_reservation_reviewer to ' || name_machine;
+        else
+          execute 'revoke r_reservation_reviewer from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_editor <> new.is_editor) then
+        if (new.is_editor) then
+          execute 'grant r_reservation_editor to ' || name_machine;
+        else
+          execute 'revoke r_reservation_editor from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_drafter <> new.is_drafter) then
+        if (new.is_drafter) then
+          execute 'grant r_reservation_drafter to ' || name_machine;
+        else
+          execute 'revoke r_reservation_drafter from ' || name_machine;
+        end if;
+      end if;
+
+      if (old.is_requester <> new.is_requester) then
+        if (new.is_requester) then
+          execute 'grant r_reservation_requester to ' || name_machine;
+        else
+          execute 'revoke r_reservation_requester from ' || name_machine;
+        end if;
+      end if;
+    end if;
+
+    reset client_min_messages;
+
+    return null;
+  end;
+$$ language plpgsql;
+
+alter function s_administers.f_users_update_as_administer() owner to u_reservation_grant_roles;
+
 create function s_administers.f_users_update_materialized_views() returns trigger security definer as $$
   begin
+
     refresh materialized view s_administers.m_users_date_created_this_day;
     refresh materialized view s_administers.m_users_date_changed_this_day;
     refresh materialized view s_administers.m_users_date_synced_this_day;
@@ -314,7 +654,7 @@ create function s_administers.f_users_update_materialized_views() returns trigge
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_users_update_materialized_views() owner to r_reservation_administer;
+alter function s_administers.f_users_update_as_administer() owner to r_reservation_administer;
 
 create trigger tr_users_insert_actions
   before insert on s_tables.t_users
@@ -324,13 +664,21 @@ create trigger tr_users_update_actions
   before update on s_tables.t_users
     for each row execute procedure s_administers.f_users_update_actions();
 
+create trigger tr_users_insert_as_administer
+  after insert on s_tables.t_users
+    for each row execute procedure s_administers.f_users_insert_as_administer();
+
+create trigger tr_users_update_as_administer
+  after update on s_tables.t_users
+    for each row execute procedure s_administers.f_users_update_as_administer();
+
 create trigger tr_users_update_materialized_views
   after insert or update on s_tables.t_users
     for each statement execute procedure s_administers.f_users_update_materialized_views();
 
 /** Special Cases: manually add the postgresql and public users first before any logging triggers are defined (because some of them depend on this table recursively! **/
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_public) values (1, 'u_public', (null, 'Unknown', null, null, null, 'Unknown'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (2, 'postgres', (null, 'Database', null, 'Administer', null, 'Database (Administer)'), false, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_public) values (1, 'u_reservation_public', (null, 'Unknown', null, null, null, 'Unknown'), false, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (2, 'postgres', (null, 'Database', null, 'Administer', null, 'Database (Administer)'), true, true);
 
 
 

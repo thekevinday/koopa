@@ -49,6 +49,7 @@ create table s_tables.t_groups (
 
   constraint cc_groups_id check (id > 0),
   constraint cc_groups_id_external check (id_external >= -1),
+  constraint cc_groups_name_machine check (name_machine ~ '\w+'),
 
   constraint cu_groups_id_external unique (id_external),
   constraint cu_groups_name_machine unique (name_machine),
@@ -59,10 +60,10 @@ create table s_tables.t_groups (
 create sequence s_tables.se_groups_id owned by s_tables.t_groups.id;
 alter table s_tables.t_groups alter column id set default nextval('s_tables.se_groups_id'::regclass);
 
-grant select,insert,update on s_tables.t_groups to r_reservation_manager, r_reservation_groups_handler;
+grant select,insert,update on s_tables.t_groups to r_reservation_manager, u_reservation_groups_handler;
 grant select on s_tables.t_groups to r_reservation_auditor;
 grant select,usage on s_tables.se_groups_id to r_reservation_manager;
-grant usage on s_tables.se_groups_id to r_reservation, r_reservation_system, r_reservation_groups_handler;
+grant usage on s_tables.se_groups_id to r_reservation, r_reservation_system, u_reservation_groups_handler;
 
 /* Note: id_sort is only needed when directly validating against id or name_machine because both of those are already an index. */
 create index i_groups_id_sort_a on s_tables.t_groups (id_sort) with (fillfactor = 100) where id_sort = 97;
@@ -125,7 +126,7 @@ create function s_administers.f_groups_group_user_insert() returns trigger secur
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_groups_group_user_insert () owner to r_reservation_groups_handler;
+alter function s_administers.f_groups_group_user_insert () owner to u_reservation_groups_handler;
 
 create function s_administers.f_groups_group_user_update() returns trigger security definer as $$
   begin
@@ -141,7 +142,7 @@ create function s_administers.f_groups_group_user_update() returns trigger secur
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_groups_group_user_update () owner to r_reservation_groups_handler;
+alter function s_administers.f_groups_group_user_update () owner to u_reservation_groups_handler;
 
 
 create trigger tr_groups_group_user_insert

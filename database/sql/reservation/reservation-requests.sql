@@ -30,7 +30,8 @@ create table s_tables.t_request_types (
   constraint cu_request_types_id unique (id),
   constraint cu_request_types_name_machine unique (name_machine),
 
-  constraint cc_request_types_id check (id >= 0)
+  constraint cc_request_types_id check (id >= 0),
+  constraint cc_request_types_name_machine check (name_machine ~ '\w+')
 );
 
 create sequence s_tables.se_request_types_id owned by s_tables.t_request_types.id;
@@ -148,6 +149,7 @@ create table s_tables.t_requests (
   constraint cc_requests_id check (id > 0),
   constraint cc_requests_id_revision check (id_revision > -1),
   constraint cc_requests_approved check ((is_approved and not is_denied) or (not is_approved and is_denied)),
+  constraint cc_requests_name_machine check (name_machine ~ '\w+'),
 
   constraint cf_requests_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_requests_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete restrict on update cascade,
@@ -391,7 +393,7 @@ create table s_tables.t_request_revisions_original (
   constraint cf_request_revisions_original_association foreign key (id_association) references s_tables.t_associations (id) on delete restrict on update cascade
 );
 
-grant select,insert on s_tables.t_request_revisions_original to r_reservation_administer, r_reservation_revision_requests;
+grant select,insert on s_tables.t_request_revisions_original to r_reservation_administer, u_reservation_revision_requests;
 grant select on s_tables.t_request_revisions_original to r_reservation_manager, r_reservation_auditor;
 
 
@@ -419,7 +421,7 @@ create function s_tables.f_request_revisions_original_record_revision() returns 
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_request_revisions_original_record_revision () owner to r_reservation_revision_requests;
+alter function s_tables.f_request_revisions_original_record_revision () owner to u_reservation_revision_requests;
 
 create trigger tr_requests_save_original_revision
   after insert on s_tables.t_requests
@@ -508,7 +510,7 @@ create table s_tables.t_request_revisions (
   constraint cf_request_revisions_association foreign key (id_association) references s_tables.t_associations (id) on delete restrict on update cascade
 );
 
-grant select,insert on s_tables.t_request_revisions to r_reservation_administer, r_reservation_revision_requests;
+grant select,insert on s_tables.t_request_revisions to r_reservation_administer, u_reservation_revision_requests;
 grant select on s_tables.t_request_revisions to r_reservation_manager, r_reservation_auditor;
 
 
@@ -851,7 +853,7 @@ create function s_tables.f_request_revisions_record_revision() returns trigger s
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_request_revisions_record_revision () owner to r_reservation_revision_requests;
+alter function s_tables.f_request_revisions_record_revision () owner to u_reservation_revision_requests;
 
 create trigger tr_requests_save_revision
   after insert on s_tables.t_request_revisions

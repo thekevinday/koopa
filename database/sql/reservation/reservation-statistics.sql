@@ -29,7 +29,7 @@ create table s_tables.t_statistics_http_status_codes (
   constraint cf_statistics_http_status_codes_code foreign key (code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
 );
 
-grant select,insert,update on s_tables.t_statistics_http_status_codes to r_reservation_manager, r_reservation_statistics_update;
+grant select,insert,update on s_tables.t_statistics_http_status_codes to r_reservation_manager, u_reservation_statistics_update;
 grant select on s_tables.t_statistics_http_status_codes to r_reservation_auditor;
 
 
@@ -50,7 +50,7 @@ create function s_tables.f_statistics_http_status_codes_insert() returns trigger
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_statistics_http_status_codes_insert () owner to r_reservation_statistics_update;
+alter function s_tables.f_statistics_http_status_codes_insert () owner to u_reservation_statistics_update;
 
 create trigger tr_log_user_activity_insert_statistics_http_status_codes
   after insert on s_tables.t_log_user_activity
@@ -98,7 +98,7 @@ create view public.v_statistics_request_path with (security_barrier=true) as
   select path, count from s_tables.t_statistics_request_path
     with check option;
 
-grant select,insert,update on public.v_statistics_request_path to r_public;
+grant select,insert,update on public.v_statistics_request_path to r_reservation_public;
 
 
 /** create an auto-update trigger **/

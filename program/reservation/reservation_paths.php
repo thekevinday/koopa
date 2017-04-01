@@ -183,7 +183,7 @@ function reservation_attempt_login(&$database, &$settings, &$session) {
   }
 
   // explicitly deny access to internal user accounts
-  if ($_POST['login_form-username'] == 'u_public') {
+  if ($_POST['login_form-username'] == 'u_reservation_public') {
     $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user name or password has been specified.');
   }
 

@@ -39,7 +39,7 @@
     $settings['database_host'] = '127.0.0.1';
     $settings['database_port'] = 5432;
     $settings['database_name'] = 'reservation';
-    $settings['database_user'] = 'u_public';
+    $settings['database_user'] = 'u_reservation_public';
     $settings['database_password'] = NULL;
     $settings['database_timeout'] = 4;
     $settings['database_ssl_mode'] = 'require';
@@ -251,8 +251,8 @@
     if (!isset($_SERVER["HTTPS"])) {
       reservation_build_page_require_https($html, $settings, $session);
     }
-    elseif ($settings['database_user'] == 'u_public') {
-      // if the session cookie exists, but the user is still u_public, then the cookie is no longer valid.
+    elseif ($settings['database_user'] == 'u_reservation_public') {
+      // if the session cookie exists, but the user is still u_reservation_public, then the cookie is no longer valid.
       if (empty($session->get_session_id()->get_value_exact())) {
         // check to see if user has filled out the login form.
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {

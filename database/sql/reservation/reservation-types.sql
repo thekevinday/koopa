@@ -32,7 +32,8 @@ create table s_tables.t_types_mime_categorys (
 
   constraint cu_types_mime_categorys_name_machine unique (name_machine),
 
-  constraint cc_types_mime_categorys_id check (id > -1)
+  constraint cc_types_mime_categorys_id check (id > -1),
+  constraint cc_types_mime_categorys_name_machine check (name_machine ~ '\w+')
 );
 
 grant select,insert,update on s_tables.t_types_mime_categorys to r_reservation_administer;
@@ -41,7 +42,7 @@ create view public.v_types_mime_categorys with (security_barrier=true) as
   select id, name_machine, name_human, is_locked from s_tables.t_types_mime_categorys
   where not is_deleted;
 
-grant select on public.v_types_mime_categorys to r_reservation, r_public, r_reservation_system;
+grant select on public.v_types_mime_categorys to r_reservation, r_reservation_public, r_reservation_system;
 
 grant select,insert,update on s_tables.t_types_mime_categorys to r_reservation_administer;
 
@@ -50,7 +51,7 @@ create view public.v_types_mime_categorys_locked_not with (security_barrier=true
   select id, name_machine, name_human, field_category from s_tables.t_types_mime_categorys
   where not is_deleted and not is_locked;
 
-grant select on public.v_types_mime_categorys_locked_not to r_reservation, r_public, r_reservation_system;
+grant select on public.v_types_mime_categorys_locked_not to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_types_mime_categorys_date_changed_deleted_or_locked
@@ -91,13 +92,13 @@ create view public.v_types_mime_types with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_types_mime_types
   where not is_deleted;
 
-grant select on public.v_types_mime_types to r_reservation, r_public, r_reservation_system;
+grant select on public.v_types_mime_types to r_reservation, r_reservation_public, r_reservation_system;
 
 create view public.v_types_mime_types_locked_not with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_types_mime_types
   where not is_deleted and not is_locked;
 
-grant select on public.v_types_mime_types to r_reservation, r_public, r_reservation_system;
+grant select on public.v_types_mime_types to r_reservation, r_reservation_public, r_reservation_system;
 
 
 create trigger tr_types_mime_types_date_changed_deleted_or_locked

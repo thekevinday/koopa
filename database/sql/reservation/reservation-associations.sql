@@ -48,6 +48,7 @@ create table s_tables.t_associations (
   constraint cu_associations_name_machine unique (name_machine),
 
   constraint cc_associations_id check (id > 0),
+  constraint cc_associations_name_machine check (name_machine ~ '\w+'),
 
   constraint cf_associations_manager foreign key (id_manager) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_associations_creator foreign key (id_creator) references s_tables.t_users (id) on delete restrict on update cascade,

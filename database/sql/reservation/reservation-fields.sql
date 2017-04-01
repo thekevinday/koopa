@@ -30,7 +30,8 @@ create table s_tables.t_field_affiliations (
   constraint cu_field_affiliations_id unique (id),
   constraint cu_field_affiliations_name_machine unique (name_machine),
 
-  constraint cc_field_affiliations_id check (id > 0)
+  constraint cc_field_affiliations_id check (id > 0),
+  constraint cc_field_affiliations_name_machine check (name_machine ~ '\w+')
 );
 
 create sequence s_tables.se_field_affiliations_id owned by s_tables.t_field_affiliations.id;

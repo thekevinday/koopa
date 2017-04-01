@@ -41,7 +41,7 @@ grant usage on schema s_drafters to r_reservation_drafter;
 grant usage on schema s_requesters to r_reservation_requester;
 grant usage on schema s_users to r_reservation;
 
-grant usage on schema s_tables to r_reservation_revision_requests, r_reservation_statistics_update, r_reservation_logger, r_reservation_groups_handler;
+grant usage on schema s_tables to u_reservation_revision_requests, u_reservation_statistics_update, u_reservation_logger, u_reservation_groups_handler;
 
 
 /** Composite Types **/

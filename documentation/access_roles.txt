@@ -54,7 +54,7 @@ The roles:
   - Do not confuse this with "r_(system)_user" (described below), which is considered a special-case user account.
   - All users should be part of this role.
 
-- r_public:
+- r_(system)_public:
   - Provides access to the database but only for information that should be made available to the world.
   - This role has the least amount of access.
   - Should not be assigned to any user with the (system)_users role or any such subset.
@@ -79,27 +79,27 @@ There are five groups:
   - These are for accounts that need login access and are granted access that every user on the system should have access to.
 
 - Public Group:
-  - r_public
+  - r_(system)_public
   - These are for anonymous accounts and other public access entities.
   - Everything this should be able to access is generally considered public information.
 
 
 There are also special user accounts:
-- u_public:
+- u_(system)_public:
   - This account should not require a password to login and essentially represent a public web user.
-  - Some systems are designed to be private and require login, these systems generally provided almost no access for u_public.
+  - Some systems are designed to be private and require login, these systems generally provided almost no access for u_(system)_public.
   - Because there is no password and all data is considered public, ssl is not needed and access to/from the database should have higher performance than other user accounts.
 
-- r_(system):
-  - Replace (system) with the appropriate name for the system, generally the database name (for example, the reservation system, this would be r_reservation).
+- u_(system):
+  - Replace (system) with the appropriate name for the system, generally the database name (for example, the reservation system, this would be u_reservation).
   - This is the account the system uses for general cron jobs and other automated tasks.
   - The access provided here is dependent to the particular system and therefore this may also have or not have a password.
 
-- r_(system)_(????):
-  - Replace (system) with the appropriate name for the system, generally the database name (for example, the reservation system, this would be r_reservation).
+- u_(system)_(????):
+  - Replace (system) with the appropriate name for the system, generally the database name (for example, the reservation system, this would be u_reservation_????).
   - Replace (????) with a custom name specific to the limitation or purpose of the role.
   - Custom database-specific accounts are created to act as a restricted/jailed account to perform certain tasks.
   - These roles are used to prevent users from having direct access to some tables without having to switch to a root user.
   - Postgresql allows views to run as 'security definer', which then grants all such priveleges.
     - By using a restricted/jailed role, any potential damage from accidents or security breaches are reduced.
-  - Example: 'r_reservation_statistics_update' is a role that performs updates on statistics tables in the reservation system database.
+  - Example: 'u_reservation_statistics_update' is a role that performs updates on statistics tables in the reservation system database.

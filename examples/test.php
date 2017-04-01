@@ -297,7 +297,6 @@
               $connected = connect_database($database);
               if ($connected) {
                 set_log_user($database, 'logout');
-                set_log_activity($database, 200);
                 $database->do_disconnect();
               }
               unset($connected);
@@ -393,7 +392,8 @@
 
               ldap($stuff, $session->get_name()->get_value_exact());
               set_log_activity($database);
-              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_public') {
+
+              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_reservation_public') {
                 get_database_data($database, $stuff);
 
                 $log = get_log_activity($database);
@@ -441,8 +441,8 @@
           $is_public = FALSE;
           $user_data = array();
 
-          // allow direct login as u_public and assume/require that the u_public account already exists.
-          if ($_POST['login_name'] == 'u_public') {
+          // allow direct login as u_reservation_public and assume/require that the u_reservation_public account already exists.
+          if ($_POST['login_name'] == 'u_reservation_public') {
             $is_public = TRUE;
             $account_exists = FALSE;
           }
@@ -451,7 +451,7 @@
           }
 
           if (!$account_exists) {
-            $session->set_name('u_public');
+            $session->set_name('u_reservation_public');
             $session->set_password(NULL);
 
             if ($is_public === FALSE) {
@@ -462,21 +462,19 @@
             }
 
             #$database->set_persistent(TRUE);
-            assign_database_string($database, 'u_public', NULL);
+            assign_database_string($database, 'u_reservation_public', NULL);
             $connected = connect_database($database);
             if ($connected) {
               if ($is_public === FALSE) {
                 set_log_user($database, 'login_failure', $_POST['login_name'], NULL, 401);
-                set_log_activity($database, 401);
               }
               else {
                 set_log_user($database, 'login');
-                set_log_activity($database, 200);
               }
 
-              $user_data = get_user_data($database, $stuff, 'u_public');
+              $user_data = get_user_data($database, $stuff, 'u_reservation_public');
 
-              $stuff['login'] .= ' - Accessing database as: u_public' . '<br>' . "\n";
+              $stuff['login'] .= ' - Accessing database as: u_reservation_public' . '<br>' . "\n";
               $stuff['login'] .= ' - Your user id is: ' . (isset($user_data['id']) ? $user_data['id'] : 'does not exist') . '<br>' . "\n";
               $stuff['login'] .= '<br>' . "\n";
               $logged_in = TRUE;
@@ -522,7 +520,6 @@
               $cookie->set_max_age(NULL);
 
               set_log_user($database, 'login', NULL, $session_expire);
-              set_log_activity($database, 200);
 
               if ($result instanceof c_base_return_true) {
                 $data = array(
@@ -565,7 +562,8 @@
               }
 
               set_log_activity($database);
-              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_public') {
+
+              if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_reservation_public') {
                 get_database_data($database, $stuff);
 
                 $log = get_log_activity($database);
@@ -685,7 +683,7 @@
   }
 
   function check_login_access(&$stuff, &$database, $username, $password, $session) {
-    if ($username == 'u_public') return FALSE;
+    if ($username == 'u_reservation_public') return FALSE;
 
     if ($database->is_connected() instanceof c_base_return_true) {
       return TRUE;
@@ -962,7 +960,7 @@
     unset($query_result);
 
     // if the user does not yet exist in the database (and is not the public user), then create it.
-    if (!isset($user_data['id']) && $user_name != 'u_public') {
+    if (!isset($user_data['id']) && $user_name != 'u_reservation_public') {
       if (is_null($ldap_data)) {
         $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values (null, null, null, null, null)');
         if ($query_result instanceof c_base_return_false) {

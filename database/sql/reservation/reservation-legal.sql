@@ -30,7 +30,8 @@ create table s_tables.t_legal_types (
   constraint cu_legal_types_id unique (id),
   constraint cu_legal_types_name_machine unique (name_machine),
 
-  constraint cc_legal_types_id check (id > -1)
+  constraint cc_legal_types_id check (id > -1),
+  constraint cc_legal_name_machine check (name_machine ~ '\w+')
 );
 
 create sequence s_tables.se_legal_types_id owned by s_tables.t_legal_types.id;

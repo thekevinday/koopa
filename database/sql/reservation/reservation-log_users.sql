@@ -43,7 +43,7 @@ alter table s_tables.t_log_users alter column id set default nextval('s_tables.s
 
 grant select on s_tables.t_log_users to r_reservation_manager, r_reservation_auditor;
 grant select,usage on s_tables.se_log_users_id to r_reservation_administer;
-grant usage on s_tables.se_log_users_id to r_reservation, r_public, r_reservation_system;
+grant usage on s_tables.se_log_users_id to r_reservation, r_reservation_public, r_reservation_system;
 
 create index i_log_users_type_php on s_tables.t_log_users (id)
   where log_type = 1;
@@ -134,10 +134,10 @@ grant insert on s_users.v_log_users_self_insert to r_reservation, r_reservation_
 /** public users should be able to insert, but should never be able to view the logs that they insert. **/
 create view public.v_log_users_self_insert with (security_barrier=true) as
   select log_title, log_type, log_severity, log_details, request_client, response_code from s_tables.t_log_users
-    where 'r_public' in (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_public')
+    where 'r_reservation_public' in (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_reservation_public')
     with check option;
 
-grant insert on public.v_log_users_self_insert to r_public;
+grant insert on public.v_log_users_self_insert to r_reservation_public;
 
 
 create trigger tr_log_users_enforce_user_and_session_ids
@@ -175,7 +175,7 @@ alter table s_tables.t_log_user_activity alter column id set default nextval('s_
 
 grant select on s_tables.t_log_user_activity to r_reservation_manager, r_reservation_auditor;
 grant select,usage on s_tables.se_log_user_activity_id to r_reservation_administer;
-grant usage on s_tables.se_log_user_activity_id to r_reservation, r_public, r_reservation_system;
+grant usage on s_tables.se_log_user_activity_id to r_reservation, r_reservation_public, r_reservation_system;
 
 create index i_log_user_activity_response_code_4xx on s_tables.t_log_user_activity (id)
   where response_code >= 400 and response_code < 500;
@@ -225,7 +225,7 @@ create view public.v_log_user_activity_self_insert with (security_barrier=true) 
     where id_user in (select id from public.v_users_locked_not_self)
     with check option;
 
-grant insert on public.v_log_user_activity_self_insert to r_public;
+grant insert on public.v_log_user_activity_self_insert to r_reservation_public;
 
 
 create trigger tr_log_user_activity_enforce_user_and_session_ids

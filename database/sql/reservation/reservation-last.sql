@@ -355,17 +355,18 @@ alter sequence s_tables.se_users_id restart;
 
 
 /*** create hard-coded/internal user ids ***/
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (3, 'u_system_administer', (null, 'System', null, 'Administer', null, 'System (Administer)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (4, 'u_system_manager', (null, 'System', null, 'Manager', null, 'System (Manager)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (5, 'u_system_auditor', (null, 'System', null, 'Auditor', null, 'System (Auditor)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (6, 'u_system_publisher', (null, 'System', null, 'Publisher', null, 'System (Publisher)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (7, 'u_system_insurer', (null, 'System', null, 'Insurer', null, 'System (Insurer)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (8, 'u_system_financer', (null, 'System', null, 'Financer', null, 'System (Financer)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (9, 'u_system_reviewer', (null, 'System', null, 'Reviewer', null, 'System (Reviewer)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (10, 'u_system_editor', (null, 'System', null, 'Editor', null, 'System (Editor)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (11, 'u_system_drafter', (null, 'System', null, 'Drafter', null, 'System (Drafter)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (12, 'u_system_requester', (null, 'System', null, 'Requester', null, 'System (Requester)'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_public) values (13, 'u_system_public', (null, 'System', null, 'Public', null, 'System (Public)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_administer) values (3, 'u_reservation_system_administer', (null, 'System', null, 'Administer', null, 'System (Administer)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_manager) values (4, 'u_reservation_system_manager', (null, 'System', null, 'Manager', null, 'System (Manager)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_auditor) values (5, 'u_reservation_system_auditor', (null, 'System', null, 'Auditor', null, 'System (Auditor)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_publisher) values (6, 'u_reservation_system_publisher', (null, 'System', null, 'Publisher', null, 'System (Publisher)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_insurer) values (7, 'u_reservation_system_insurer', (null, 'System', null, 'Insurer', null, 'System (Insurer)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_financer) values (8, 'u_reservation_system_financer', (null, 'System', null, 'Financer', null, 'System (Financer)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_reviewer) values (9, 'u_reservation_system_reviewer', (null, 'System', null, 'Reviewer', null, 'System (Reviewer)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_editor) values (10, 'u_reservation_system_editor', (null, 'System', null, 'Editor', null, 'System (Editor)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_drafter) values (11, 'u_reservation_system_drafter', (null, 'System', null, 'Drafter', null, 'System (Drafter)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_requester) values (12, 'u_reservation_system_requester', (null, 'System', null, 'Requester', null, 'System (Requester)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_public) values (13, 'u_reservation_system_public', (null, 'System', null, 'Public', null, 'System (Public)'), false, true, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (14, 'u_reservation_system', (null, 'System', null, 'System', null, 'System'), false, true);
 
 
 
