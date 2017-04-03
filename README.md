@@ -1,5 +1,5 @@
 # koopa
-Open-Source (GPL-3) PHP CMS-like project/library focused on database first originally based on drupal.
+Open-Source (GPL-3) PHP CMS-like project/library focused on the database first and is originally based on drupal.
 
 Instead of building a CMS around PHP, this project aims to build a library around database and then extend it into PHP (and possibly more languages).
 
