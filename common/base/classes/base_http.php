@@ -2121,7 +2121,7 @@ class c_base_http extends c_base_rfc_string {
 
         if ($weak) {
           // Keep the first 15 characters for 'partial:sha256:' plus the first 9 characters of the checksum.
-          $response['tag'] = substr($response['tag'], 0, 24);
+          $response['tag'] = mt_substr($response['tag'], 0, 24);
         }
       }
       else {
@@ -4954,7 +4954,7 @@ class c_base_http extends c_base_rfc_string {
           }
           else {
             $c['language'] = $id->get_value_exact();
-            $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight'][$weight][$c['language']] = mb_strtolower($c['choice']);
+            $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight'][$weight][$c['language']] = (string) c_base_utf8::s_lowercase($c['choice'])->get_value();
             unset($c['choice']);
           }
         }
@@ -5009,7 +5009,7 @@ class c_base_http extends c_base_rfc_string {
       // convert the known values into integers for improved processing.
       foreach ($this->request[self::REQUEST_ACCEPT_ENCODING]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
-          $lowercase = mb_strtolower($c['choice']);
+          $lowercase = (string) c_base_utf8::s_lowercase($c['choice'])->get_value();
           if ($lowercase == 'chunked') {
             $c['encoding'] = self::ENCODING_CHUNKED;
             $this->request[self::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][self::ENCODING_CHUNKED] = $lowercase;
@@ -5120,7 +5120,7 @@ class c_base_http extends c_base_rfc_string {
       // convert the known values into integers for improved processing.
       foreach ($this->request[self::REQUEST_ACCEPT_CHARSET]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
-          $lowercase = mb_strtolower($c['choice']);
+          $lowercase = (string) c_base_utf8::s_lowercase($c['choice'])->get_value();
           if ($lowercase == 'ascii') {
             $c['charset'] = c_base_charset::ASCII;
             $this->request[self::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ASCII] = $lowercase;
@@ -5274,7 +5274,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Request-Method
    */
   private function p_load_request_access_control_request_method() {
-    $method_string = mb_strtolower($this->headers['access_control_request_method']);
+    $method_string = (string) c_base_utf8::s_lowercase($this->headers['access_control_request_method'])->get_value();
     $method_string = str_replace(' ', '', $method_string);
 
     $methods = explode(',', $method_string);
@@ -5454,7 +5454,7 @@ class c_base_http extends c_base_rfc_string {
 
     $parts = mb_split(', ', $cache_control);
     foreach ($parts as $part) {
-      $cleaned_up = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $part));
+      $cleaned_up = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $part))->get_value();
       if ($cleaned_up == 'no-cache') {
         $this->request[self::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
         $this->request[self::REQUEST_CACHE_CONTROL]['data']['methods'][SELF::CACHE_CONTROL_NO_CACHE] = SELF::CACHE_CONTROL_NO_CACHE;
@@ -5563,7 +5563,7 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $cleaned_up = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $pragma));
+    $cleaned_up = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $pragma))->get_value();
     if ($cleaned_up == 'no-cache') {
       $this->request[self::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
       $this->request[self::REQUEST_CACHE_CONTROL]['data'][SELF::CACHE_CONTROL_NO_CACHE] = SELF::CACHE_CONTROL_NO_CACHE;
@@ -5655,7 +5655,7 @@ class c_base_http extends c_base_rfc_string {
     }
 
     $content_type_parts = mb_split(';', $content_type);
-    $content_type_part = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $content_type_parts[0]));
+    $content_type_part = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $content_type_parts[0]))->get_value();
 
     $this->request[self::REQUEST_CONTENT_TYPE]['defined'] = TRUE;
     $this->request[self::REQUEST_CONTENT_TYPE]['data'] = $content_type_part;
@@ -6142,7 +6142,7 @@ class c_base_http extends c_base_rfc_string {
       // convert the known values into integers for improved processing.
       foreach ($this->request[self::REQUEST_TE]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
-          $lowercase = mb_strtolower($c['choice']);
+          $lowercase = (string) c_base_utf8::s_lowercase($c['choice'])->get_value();
           if ($c['choice'] == 'compress') {
             $c['encoding'] = self::ENCODING_COMPRESS;
           }
@@ -6592,11 +6592,9 @@ class c_base_http extends c_base_rfc_string {
     $this->request[$key]['defined'] = TRUE;
     $this->request[$key]['invalid'] = FALSE;
 
-    if (is_null($max_length)) {
-      $this->request[$key]['data'] = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $raw));
-    }
-    else {
-      $this->request[$key]['data'] = mb_substr(mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $raw)), 0, $max_length);
+    $this->request[$key]['data'] = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $raw))->get_value();
+    if (!is_null($max_length)) {
+      $this->request[$key]['data'] = c_base_utf8::s_substring($this->request[$key]['data'], 0, $max_length);
     }
     unset($raw);
   }
@@ -6623,11 +6621,10 @@ class c_base_http extends c_base_rfc_string {
     $this->request[$key]['defined'] = TRUE;
     $this->request[$key]['invalid'] = FALSE;
 
-    if (is_null($max_length)) {
-      $this->request[$key]['data'][$field] = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $raw));
-    }
-    else {
-      $this->request[$key]['data'][$field] = mb_substr(mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $raw)), 0, $max_length);
+
+    $this->request[$key]['data'][$field] = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $raw))->get_value();
+    if (!is_null($max_length)) {
+      $this->request[$key]['data'][$field] = c_base_utf8::s_substring($this->request[$key]['data'][$field], 0, $max_length);
     }
     unset($raw);
   }
@@ -6657,10 +6654,10 @@ class c_base_http extends c_base_rfc_string {
       return FALSE;
     }
 
-    $raw = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $original));
+    $raw = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $original))->get_value();
 
     // rfc5322 is the preferred/recommended format.
-    $rfc5322 = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_5322, $timestamp)));
+    $rfc5322 = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_5322, $timestamp)))->get_value();
     if ($raw == $rfc5322) {
       unset($raw);
       unset($timestamp);
@@ -6669,7 +6666,7 @@ class c_base_http extends c_base_rfc_string {
     }
     unset($rfc5322);
 
-    $rfc1123 = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_1123, $timestamp)));
+    $rfc1123 = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_1123, $timestamp)))->get_value();
     if ($raw == $rfc1123) {
       unset($raw);
       unset($timestamp);
@@ -6678,7 +6675,7 @@ class c_base_http extends c_base_rfc_string {
     }
     unset($rfc1123);
 
-    $rfc850 = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_850, $timestamp)));
+    $rfc850 = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_850, $timestamp)))->get_value();
     if ($raw == $rfc850) {
       unset($raw);
       unset($timestamp);
@@ -6705,10 +6702,10 @@ class c_base_http extends c_base_rfc_string {
   private function p_process_accept_parts_sub($super, &$value, &$priority) {
     $parts_sub = mb_split(self::DELIMITER_ACCEPT_SUB, $super);
 
-    $part_sub_value = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $parts_sub[0]));
+    $part_sub_value = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $parts_sub[0]))->get_value();
     $part_sub_priority = NULL;
     if (count($parts_sub) > 1) {
-      $part_sub_priority = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $parts_sub[1]));
+      $part_sub_priority = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $parts_sub[1]))->get_value();
     }
 
     if (self::p_length_string($part_sub_value) > 2) {
@@ -7044,8 +7041,8 @@ class c_base_http extends c_base_rfc_string {
       }
 
       if (isset($pieces[1])) {
-        $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
-        $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[1]));
+        $lower_piece_1 = (string) preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value();
+        $lower_piece_2 = (string) preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1]))->get_value();
 
         if ($lower_piece_1 == 'trident') {
           $result['engine_name_machine'] = 'trident';
@@ -7070,7 +7067,9 @@ class c_base_http extends c_base_rfc_string {
         unset($lower_piece_2);
       }
       elseif (isset($pieces[0])) {
-        $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
+        $lower_cased = (string) c_base_utf8::s_lowercase($pieces[0])->get_value();
+        $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
+        unset($lower_cased);
 
         if (!empty($lower_piece_1)) {
           if (preg_match('/^msie \d/iu', $lower_piece_1)) {
@@ -7121,8 +7120,13 @@ class c_base_http extends c_base_rfc_string {
           }
 
           if (isset($pieces[1])) {
-            $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
-            $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[1]));
+            $lower_cased = (string) c_base_utf8::s_lowercase($pieces[0])->get_value();
+            $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
+            unset($lower_cased);
+
+            $lower_cased = (string) c_base_utf8::s_lowercase($pieces[1])->get_value();
+            $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
+            unset($lower_cased);
 
             if ($lower_piece_1 == 'applewebkit') {
               $result['engine_name_machine'] = 'webkit';
@@ -7267,7 +7271,9 @@ class c_base_http extends c_base_rfc_string {
             unset($lower_piece_2);
           }
           elseif (isset($pieces[0])) {
-            $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
+            $lower_cased = (string) c_base_utf8::s_lowercase($pieces[0])->get_value();
+            $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
+            unset($lower_cased);
 
             if ($lower_piece_1 == 'opera') {
               $result['name_machine'] = 'opera';
@@ -7370,8 +7376,8 @@ class c_base_http extends c_base_rfc_string {
         $pieces = mb_split('/', $agent_matches[0]);
         $total_pieces = count($pieces);
         if ($total_pieces == 2) {
-          $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
-          $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[1]));
+          $lower_piece_1 = (string) preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value();
+          $lower_piece_2 = (string) preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1]))->get_value();
 
           if ($lower_piece_1 == 'curl') {
             $result['engine_name_machine'] = 'curl';
@@ -7438,7 +7444,7 @@ class c_base_http extends c_base_rfc_string {
           unset($lower_piece_2);
         }
         elseif ($total_pieces == 1) {
-          $lower_piece = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($pieces[0]));
+          $lower_piece = (string) preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value();
 
           if ($lower_piece == 'links') {
             $result['engine_name_machine'] = 'links';
@@ -7488,7 +7494,7 @@ class c_base_http extends c_base_rfc_string {
       'invalid' => FALSE,
     );
 
-    $fixed_checksum = mb_strtolower(preg_replace('/(^\s+)|(\s+$)/us', '', $checksum));
+    $fixed_checksum = (string) c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $checksum))->get_value();
     if (empty($fixed_checksum)) {
       $result['invalid'] = TRUE;
       unset($fixed_checksum);
@@ -7647,7 +7653,7 @@ class c_base_http extends c_base_rfc_string {
       'invalid' => FALSE,
     );
 
-    $fixed_checksum = mb_strtolower(preg_replace("/(^( |\t)+)|(( |\t)+$)/us", '', $checksum_headers));
+    $fixed_checksum = (string) c_base_utf8::s_lowercase(preg_replace("/(^( |\t)+)|(( |\t)+$)/us", '', $checksum_headers))->get_value();
     if (empty($fixed_checksum)) {
       $result['invalid'] = TRUE;
       unset($fixed_checksum);
@@ -7750,7 +7756,8 @@ class c_base_http extends c_base_rfc_string {
       foreach ($all_headers as $key => $value) {
         // break the header name so that it is consistent until such time that PHP stops clobbering the header names.
         $broken = preg_replace('/-/u', '_', $key);
-        $this->headers[mb_strtolower($broken)] = $value;
+        $broken = (string) c_base_utf8::s_lowercase($broken)->get_value();
+        $this->headers[$broken] = $value;
         unset($broken);
       }
       unset($broken);
@@ -7761,13 +7768,13 @@ class c_base_http extends c_base_rfc_string {
       // non-apache, or calling php from command line.
       if (isset($_SERVER) && is_array($_SERVER) && !empty($_SERVER)) {
         foreach ($_SERVER as $key => $value) {
-          $part = mb_strtolower(mb_substr($key, 0, 5));
+          $part = (string) c_base_utf8::s_lowercase(c_base_utf8::s_substring($key, 0, 5))->get_value();
 
           if ($part != 'http_') {
             continue;
           }
 
-          $part = mb_strtolower(mb_substr($key, 5));
+          $part = (string) c_base_utf8::s_lowercase(c_base_utf8::s_substring($key, 5))->get_value();
           $this->headers[$part] = $value;
         }
         unset($part);
@@ -8001,7 +8008,10 @@ class c_base_http extends c_base_rfc_string {
    */
   private function p_prepare_token($token_name, $lower_case = TRUE) {
     if ($lower_case) {
-      $trimmed = preg_replace('/(^\s+)|(\s+$)/us', '', mb_strtolower($token_name));
+      $lower_cased = (string) c_base_utf8::s_lowercase($token_name)->get_value();
+      $trimmed = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
+      unset($lower_cased);
+
       if ($trimmed === FALSE) {
         unset($trimmed);
         return FALSE;
@@ -9439,7 +9449,7 @@ class c_base_http extends c_base_rfc_string {
     }
     elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_PARTIAL) {
       $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'partial:';
-      $checkum_header = substr($checkum_header, 0, self::CHECKSUM_LENGTH_SHORTSUM);
+      $checkum_header = mt_substr($checkum_header, 0, self::CHECKSUM_LENGTH_SHORTSUM);
     }
     elseif ($this->response[self::RESPONSE_CHECKSUM_HEADER]['what'] === self::CHECKSUM_WHAT_SIGNED) {
       $header_output[self::RESPONSE_CHECKSUM_HEADER] .= 'signed:';

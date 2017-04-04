@@ -379,7 +379,7 @@ class c_base_mime {
    *   FALSE with the error bit set is returned on error.
    *   FALSE without the error flag means for an invalid mime-type string.
    *
-   * @see: mb_strtolower()
+   * @see: c_base_utf8::s_lowercase()
    */
   static function s_identify($mime, $lowercase = FALSE) {
     if (!is_string($mime)) {
@@ -393,7 +393,7 @@ class c_base_mime {
     }
 
     if ($lowercase) {
-      $lower_mime = mb_strtolower($mime);
+      $lower_mime = (string) c_base_utf8::s_lowercase($mime)->get_value();
     }
     else {
       $lower_mime = $mime;

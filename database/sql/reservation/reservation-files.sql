@@ -44,14 +44,14 @@ create table s_tables.t_files (
 
   constraint cf_files_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
   constraint cf_files_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete cascade on update cascade,
-  constraint cf_files_id_type foreign key (id_type) references s_tables.t_path_types (id) on delete restrict on update cascade,
+  constraint cf_files_id_type foreign key (id_type) references s_tables.t_file_types (id) on delete restrict on update cascade,
   constraint cf_files_id_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_files_id owned by s_tables.t_files.id;
 alter table s_tables.t_files alter column id set default nextval('s_tables.se_files_id'::regclass);
 
-grant select,insert,update on s_tables.t_path_types to r_reservation_administer;
+grant select,insert,update on s_tables.t_files to r_reservation_administer;
 grant select on s_tables.t_files to r_reservation_manager, r_reservation_auditor;
 grant select,usage on s_tables.se_files_id to r_reservation_administer;
 grant usage on s_tables.se_files_id to r_reservation, r_reservation_system;

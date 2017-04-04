@@ -363,7 +363,7 @@ class c_base_utf8 {
   /**
    * UTF-8 aware substr().
    *
-   * substr() works with bytes, while s_substring works with characters and are identical in all other aspects.
+   * All non-utf-8 characters are removed from the string.
    *
    * @param string $text
    *   The string to obtain a substring from.
@@ -392,6 +392,44 @@ class c_base_utf8 {
     }
 
     return c_base_return_string::s_new(self::p_s_substring($text, $start, $length));
+  }
+
+  /**
+   * UTF-8 aware strtolower().
+   *
+   * All non-utf-8 characters are removed from the string.
+   *
+   * @param string $text
+   *   The string to transform to lowercase from.
+   *
+   * @see: mb_strtolower()
+   */
+  public static function s_lowercase($text) {
+    if (!is_string($text)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    return c_base_return_string::s_new(self::p_s_lowercase($text));
+  }
+
+  /**
+   * UTF-8 aware strtoupper().
+   *
+   * All non-utf-8 characters are removed from the string.
+   *
+   * @param string $text
+   *   The string to transform to lowercase from.
+   *
+   * @see: mb_strtoupper()
+   */
+  public static function s_uppercase($text) {
+    if (!is_string($text)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    return c_base_return_string::s_new(self::p_s_uppercase($text));
   }
 
   /**
@@ -1045,6 +1083,28 @@ class c_base_utf8 {
     $sanitized = self::p_s_clean($text);
 
     return mb_substr($sanitized, $start, $length, self::UTF_8);
+  }
+
+  /**
+   * Private version of s_lowercase().
+   *
+   * @see: self::s_lowercase()
+   */
+  private static function p_s_lowercase($text) {
+    $sanitized = self::p_s_clean($text);
+
+    return mb_strtolower($sanitized);
+  }
+
+  /**
+   * Private version of s_uppercase().
+   *
+   * @see: self::s_uppercase()
+   */
+  private static function p_s_uppercase($text) {
+    $sanitized = self::p_s_clean($text);
+
+    return mb_strtoupper($sanitized);
   }
 
   /**

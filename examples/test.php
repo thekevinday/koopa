@@ -390,7 +390,7 @@
                 $stuff['cookie_login']['cookie'] = $cookie;
               }
 
-              ldap($stuff, $session->get_name()->get_value_exact());
+              ldap_get_user($stuff, $session->get_name()->get_value_exact());
               set_log_activity($database);
 
               if (!empty($session->get_name()->get_value_exact()) && $session->get_name()->get_value_exact() != 'u_reservation_public') {
@@ -487,7 +487,7 @@
             }
 
             $ldap_data = NULL;
-            ldap($stuff, $session->get_name()->get_value_exact());
+            ldap_get_user($stuff, $session->get_name()->get_value_exact());
             if (!empty($stuff['ldap']['data'])) {
               $ldap_data = $stuff['ldap']['data'];
             }
@@ -558,7 +558,7 @@
               $logged_in = TRUE;
 
               if (!isset($stuff['ldap']['markup'])) {
-                ldap($stuff, $session->get_name()->get_value_exact());
+                ldap_get_user($stuff, $session->get_name()->get_value_exact());
               }
 
               set_log_activity($database);
@@ -687,6 +687,16 @@
 
     if ($database->is_connected() instanceof c_base_return_true) {
       return TRUE;
+    }
+
+    // directly check to see if the current user exists in ldap (this is technically not necessary because postgresql will also do this).
+    $stuff_stub = array();
+    $found_username = ldap_get_user($stuff_stub, $username);
+    unset($stuff_stub);
+
+    if (!$found_username) {
+      unset($found_username);
+      return FALSE;
     }
 
     assign_database_string($database, $username, $password);
@@ -1304,11 +1314,11 @@
     return c_base_return_int::s_new($response_value);
   }
 
-  function ldap(&$stuff, $username) {
+  function ldap_get_user(&$stuff, $username) {
     $stuff['ldap']['markup'] = '';
     $stuff['ldap']['data'] = array();
 
-    $ldap = new c_base_ldap();
+    $ldap = new c_base_ldap_get_user();
     $ldap->set_name('ldaps://127.0.0.1:1636/');
     #$ldap->set_bind_name('');
     #$ldap->set_bind_password('');

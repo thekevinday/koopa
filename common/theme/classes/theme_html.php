@@ -79,6 +79,7 @@ class c_theme_html extends c_base_return {
 
   /**
    * Create a tag with commonly used properties.
+   *
    * @param int $type
    *   A c_base_markup_tag type id.
    * @param string|null $id

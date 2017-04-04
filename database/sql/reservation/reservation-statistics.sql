@@ -26,7 +26,7 @@ create table s_tables.t_statistics_http_status_codes (
 
   constraint cc_statistics_http_status_codes_count check (count >= 0),
 
-  constraint cf_statistics_http_status_codes_code foreign key (code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
+  constraint cf_statistics_http_status_codes_code foreign key (code) references s_tables.t_type_http_status_codes (id) on delete restrict on update cascade
 );
 
 grant select,insert,update on s_tables.t_statistics_http_status_codes to r_reservation_manager, u_reservation_statistics_update;

@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs */
-/** This depends on: reservation-users.sql **/
+/** This depends on: reservation-users.sql, reservation-types.sql **/
 start transaction;
 
 
@@ -35,7 +35,7 @@ create table s_tables.t_log_users (
   constraint cf_log_users_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_users_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade,
   constraint cf_log_users_log_severity foreign key (log_severity) references s_tables.t_log_type_severity_levels (id) on delete restrict on update cascade,
-  constraint cf_log_users_response_code foreign key (response_code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
+  constraint cf_log_users_response_code foreign key (response_code) references s_tables.t_type_http_status_codes (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_users_id owned by s_tables.t_log_users.id;
@@ -167,7 +167,7 @@ create table s_tables.t_log_user_activity (
 
   constraint cf_log_user_activity_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_user_activity_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
-  constraint cf_log_user_activity_response_code foreign key (response_code) references s_tables.t_log_type_http_status_codes (id) on delete restrict on update cascade
+  constraint cf_log_user_activity_response_code foreign key (response_code) references s_tables.t_type_http_status_codes (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_user_activity_id owned by s_tables.t_log_user_activity.id;
