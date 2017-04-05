@@ -42,7 +42,8 @@
     $settings['database_user'] = 'u_reservation_public';
     $settings['database_password'] = NULL;
     $settings['database_timeout'] = 4;
-    $settings['database_ssl_mode'] = 'require';
+    #$settings['database_ssl_mode'] = 'require';
+    $settings['database_ssl_mode'] = 'disable';
     $settings['database_create_account_host'] = '127.0.0.1';
     $settings['database_create_account_port'] = 5433;
 

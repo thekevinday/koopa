@@ -744,7 +744,8 @@
     $connection_string->set_database('reservation');
     $connection_string->set_user($username);
     $connection_string->set_password($password);
-    $connection_string->set_ssl_mode('require');
+    #$connection_string->set_ssl_mode('require');
+    $connection_string->set_ssl_mode('disable');
     $connection_string->set_connect_timeout(4);
     $database->set_connection_string($connection_string);
     unset($connection_string);
