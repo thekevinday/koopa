@@ -101,7 +101,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     unset($ordinals);
 
     $characters = c_base_utf8::s_ordinals_to_string_array($result['ordinals']);
-    if ($characters instanceof c_base_return_false) {
+    if (c_base_return::s_has_error($characters)) {
       unset($characters);
       $result['invalid'] = TRUE;
       return $result;

@@ -143,16 +143,16 @@ class c_base_utf8 {
    * @param string $text
    *   The string for which to find the character length.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   Length of the Unicode String.
-   *   FALSE with error bit set is returned on error.
+   *   0 with error bit set is returned on error.
    *
    * @see: mb_strlen()
    */
   public static function s_length_string($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     $length = self::p_s_length_string($text);
@@ -160,7 +160,7 @@ class c_base_utf8 {
       unset($length);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_length_string', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($length);
@@ -175,19 +175,19 @@ class c_base_utf8 {
    *   (optional) When TRUE, the UTF_8 BOM character is removed.
    *   When FALSE, no action related to the BOM character is performed.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   Clean UTF-8 encoded string.
-   *   FALSE with error bit set is returned on error.
+   *   An empty string with error bit set is returned on error.
    */
   public static function s_clean($text, $remove_bom = FALSE) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_bool($remove_bom)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'remove_bom', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $sanitized = self::p_s_clean($text);
@@ -195,7 +195,7 @@ class c_base_utf8 {
       unset($sanitized);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_clean', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new($sanitized);
@@ -209,19 +209,19 @@ class c_base_utf8 {
    * @param int $split_length
    *   Max character length of each array element.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing chunks of the string.
-   *   FALSE with error bit set is returned on error.
+   *   An empty string with error bit set is returned on error.
    */
   public static function s_split($text, $split_length = 1) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_int($split_length)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'split_length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $split = self::p_s_split($text, $split_length);
@@ -229,7 +229,7 @@ class c_base_utf8 {
       unset($split);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_array::s_new($split);
@@ -241,14 +241,14 @@ class c_base_utf8 {
    * @param string $text
    *   The original Unicode string.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array of byte lengths of each character.
-   *   FALSE with error bit set is returned on error.
+   *   An empty array with error bit set is returned on error.
    */
   public static function s_character_size_list($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     $size_list = self::p_s_character_size_list($text);
@@ -256,7 +256,7 @@ class c_base_utf8 {
       unset($size_list);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_character_size_list', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($size_list);
@@ -268,16 +268,16 @@ class c_base_utf8 {
    * @param string $text
    *   The original Unicode string.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An integer representing the max character width found within the passed string.
-   *   FALSE with error bit set is returned on error.
+   *   0 with error bit set is returned on error.
    *
    * @see: p_s_character_size_list()
    */
   public static function s_character_max_width($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     $size_list = self::p_s_character_size_list($text);
@@ -285,7 +285,7 @@ class c_base_utf8 {
       unset($size_list);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_character_size_list', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new(max($size_list));
@@ -297,16 +297,16 @@ class c_base_utf8 {
    * @param string $character
    *   The Unicode character to be encoded as numbered entity
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   HTML numbered entity.
-   *   FALSE with error bit set is returned on error.
+   *   An empty string error bit set is returned on error.
    *
    * @see: p_s_encode_html_character()
    */
   public static function s_encode_html_character($character) {
     if (!is_string($character)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $encoded = self::p_s_encode_html_character($character);
@@ -314,7 +314,7 @@ class c_base_utf8 {
       unset($encoded);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_encode_html_character', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new($encoded);
@@ -326,14 +326,14 @@ class c_base_utf8 {
    * @param string $text
    *   The Unicode string to be encoded as numbered entities.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   HTML numbered entities.
-   *   FALSE with error bit set is returned on error.
+   *   An empty string error bit set is returned on error.
    */
   public static function s_encode_html($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $split = self::p_s_split($text);
@@ -341,7 +341,7 @@ class c_base_utf8 {
       unset($split);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $new_array = array();
@@ -373,22 +373,26 @@ class c_base_utf8 {
    *   (optional) The length of the substring.
    *   If NULL, then the length is PHP_INT_MAX.
    *
+   * @return c_base_return_string
+   *   A substring of the specified string.
+   *   An empty string error bit set is returned on error.
+   *
    * @see: mb_substr()
    */
   public static function s_substring($text, $start = 0, $length = NULL) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_int($start)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'start', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_null($length) && !is_int($length)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'length', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new(self::p_s_substring($text, $start, $length));
@@ -402,12 +406,16 @@ class c_base_utf8 {
    * @param string $text
    *   The string to transform to lowercase from.
    *
+   * @return c_base_return_string
+   *   A string with its characters all in lowercase.
+   *   An empty string error bit set is returned on error.
+   *
    * @see: mb_strtolower()
    */
   public static function s_lowercase($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new(self::p_s_lowercase($text));
@@ -421,12 +429,16 @@ class c_base_utf8 {
    * @param string $text
    *   The string to transform to lowercase from.
    *
+   * @return c_base_return_string
+   *   A string with its characters all in uppercase.
+   *   An empty string error bit set is returned on error.
+   *
    * @see: mb_strtoupper()
    */
   public static function s_uppercase($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new(self::p_s_uppercase($text));
@@ -536,14 +548,14 @@ class c_base_utf8 {
    * @param string $text
    *   The input string.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   The string with characters in the reverse sequence.
-   *   FALSE with error bit set is returned on error.
+   *   An empty string error bit set is returned on error.
    */
   public static function s_reverse($text) {
     if (!is_string($text)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     $split = self::p_s_split($text);
@@ -551,7 +563,7 @@ class c_base_utf8 {
       unset($split);
 
       $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'self::p_s_split', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new(implode(array_reverse($split)));
@@ -676,14 +688,15 @@ class c_base_utf8 {
    * @param array $ordinals
    *   An array of ordinals.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array of characters represnting the ordinals array.
-   *   FALSE with error bit set is returned on error.
+   *   An empty array with error bit set is returned on error.
+   *   A partially populate array with error bit set is returned on error of individual characters.
    */
   public static function s_ordinals_to_string_array($ordinals) {
     if (!is_array($ordinals)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'ordinals', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     $errors = array();
@@ -807,7 +820,7 @@ class c_base_utf8 {
     }
 
     if ($offset || $length) {
-      $haystack = s_substring($haystack, $offset, $length);
+      $haystack = self::s_substring($haystack, $offset, $length)->get_value_exact();
     }
 
     if (is_null($length)) {
