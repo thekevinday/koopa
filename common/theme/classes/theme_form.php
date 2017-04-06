@@ -246,7 +246,7 @@ class c_theme_form_tag extends c_base_markup_tag {
       case self::ATTRIBUTE_WRAP:
       case self::ATTRIBUTE_VALUE:
         if (!is_string($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -258,14 +258,14 @@ class c_theme_form_tag extends c_base_markup_tag {
       case self::ATTRIBUTE_DISABLED:
       case self::ATTRIBUTE_MULTIPLE:
         if (!is_bool($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
       case self::ATTRIBUTE_ACCEPT:
       case self::ATTRIBUTE_FORM_ENCODE_TYPE:
         if (!$this->pr_validate_value_mime_type($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -274,13 +274,13 @@ class c_theme_form_tag extends c_base_markup_tag {
       case self::ATTRIBUTE_MAXIMUM_LENGTH:
       case self::ATTRIBUTE_MINIMUM:
         if (!is_int($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
       case self::ATTRIBUTE_FORM_METHOD:
         if (!$this->pr_validate_value_http_method($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 

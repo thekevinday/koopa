@@ -362,7 +362,7 @@ class c_base_http_status {
         // invalid will not be processed because it is invalid.
 
       default:
-        return c_base_return_false();
+        return new c_base_return_false();
     }
 
     return c_base_return_string::s_new($string);

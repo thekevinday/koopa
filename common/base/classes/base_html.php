@@ -106,7 +106,7 @@ class c_base_html extends c_base_return {
    */
   public function get_id() {
     if (!is_int($this->id)) {
-      return c_base_return_false();
+      return new c_base_return_false();
     }
 
     return c_base_return_int::s_new($this->id);
@@ -1166,7 +1166,7 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_XML_SPACE:
       case c_base_markup_attributes::ATTRIBUTE_ZOOM_AND_PAN:
         if (!is_string($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -1206,7 +1206,7 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_NOW:
       case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_TEXT:
         if (!is_string($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -1236,7 +1236,7 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_SORTED:
       case c_base_markup_attributes::ATTRIBUTE_SPELLCHECK:
         if (!is_bool($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -1245,14 +1245,14 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_ENCODING_TYPE:
       case c_base_markup_attributes::ATTRIBUTE_TYPE:
         if (!$this->pr_validate_value_mime_type($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
       case c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET:
       case c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET:
         if (!$this->pr_validate_value_character_set($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
@@ -1296,19 +1296,19 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_Y_1:
       case c_base_markup_attributes::ATTRIBUTE_Y_2:
         if (!is_int($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
       case c_base_markup_attributes::ATTRIBUTE_CLASS:
         if (!is_array($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 
       case c_base_markup_attributes::ATTRIBUTE_FORM_METHOD:
         if (!$this->pr_validate_value_http_method($value)) {
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         break;
 

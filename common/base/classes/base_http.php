@@ -4682,7 +4682,7 @@ class c_base_http extends c_base_rfc_string {
     if ($this->content_is_file) {
       if (empty($this->content)) {
         unset($encoding);
-        return c_base_return_false();
+        return new c_base_return_false();
       }
 
       if (is_null($max_filesize)) {
@@ -4704,7 +4704,7 @@ class c_base_http extends c_base_rfc_string {
         if (empty($content)) {
           unset($encoding);
           unset($content);
-          return c_base_return_false();
+          return new c_base_return_false();
         }
 
         $this->p_encode_content($content, $encoding, $compression, TRUE);
@@ -4736,7 +4736,7 @@ class c_base_http extends c_base_rfc_string {
         if (empty($content) || $content_length >= $max_filesize) {
           unset($encoding);
           unset($content);
-          return c_base_return_false();
+          return new c_base_return_false();
         }
         unset($content_length);
 
@@ -7777,7 +7777,7 @@ class c_base_http extends c_base_rfc_string {
       }
     }
 
-    if (isset($_SERVER) && is_array($_SERVER) && !empty($_SERVER)) {
+    if (isset($_SERVER['REQUEST_TIME_FLOAT']) && is_float($_SERVER['REQUEST_TIME_FLOAT'])) {
       // find and process potentially useful additional environment variables.
       if (array_key_exists('REQUEST_TIME_FLOAT', $_SERVER)) {
         $this->request_time = $_SERVER['REQUEST_TIME_FLOAT'];
