@@ -40,7 +40,7 @@ create table s_tables.t_files (
   constraint cu_files_field_path unique (field_path),
 
   constraint cc_files_id check (id > 0),
-  constraint cc_files_name_machine check (name_machine ~ '\w+'),
+  constraint cc_files_name_machine check (name_machine ~ '[A-Za-z]\w*'),
 
   constraint cf_files_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
   constraint cf_files_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete cascade on update cascade,

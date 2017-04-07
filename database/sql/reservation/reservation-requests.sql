@@ -31,7 +31,7 @@ create table s_tables.t_request_types (
   constraint cu_request_types_name_machine unique (name_machine),
 
   constraint cc_request_types_id check (id >= 0),
-  constraint cc_request_types_name_machine check (name_machine ~ '\w+')
+  constraint cc_request_types_name_machine check (name_machine ~ '[A-Za-z]\w*')
 );
 
 create sequence s_tables.se_request_types_id owned by s_tables.t_request_types.id;
@@ -149,7 +149,7 @@ create table s_tables.t_requests (
   constraint cc_requests_id check (id > 0),
   constraint cc_requests_id_revision check (id_revision > -1),
   constraint cc_requests_approved check ((is_approved and not is_denied) or (not is_approved and is_denied)),
-  constraint cc_requests_name_machine check (name_machine ~ '\w+'),
+  constraint cc_requests_name_machine check (name_machine ~ '[A-Za-z]\w*'),
 
   constraint cf_requests_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_requests_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete restrict on update cascade,

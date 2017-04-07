@@ -48,7 +48,7 @@ create table s_tables.t_associations (
   constraint cu_associations_name_machine unique (name_machine),
 
   constraint cc_associations_id check (id > 0),
-  constraint cc_associations_name_machine check (name_machine ~ '\w+'),
+  constraint cc_associations_name_machine check (name_machine ~ '[A-Za-z]\w*'),
 
   constraint cf_associations_manager foreign key (id_manager) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_associations_creator foreign key (id_creator) references s_tables.t_users (id) on delete restrict on update cascade,
@@ -66,6 +66,35 @@ grant select,insert,update on s_tables.t_associations to r_reservation_manager;
 grant select on s_tables.t_associations to r_reservation_auditor;
 grant select,usage on s_tables.se_associations_id to r_reservation_manager;
 grant usage on s_tables.se_associations_id to r_reservation_requester, r_reservation_reviewer;
+
+/* @todo: should associations allow names that begin with numbers?
+/* Note: id_sort is not needed when directly validating against id or name_machine because both of those are already an index. */
+create index i_associations_id_sort_a on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 97;
+create index i_associations_id_sort_b on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 98;
+create index i_associations_id_sort_c on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 99;
+create index i_associations_id_sort_d on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 100;
+create index i_associations_id_sort_e on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 101;
+create index i_associations_id_sort_f on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 102;
+create index i_associations_id_sort_g on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 103;
+create index i_associations_id_sort_h on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 104;
+create index i_associations_id_sort_i on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 105;
+create index i_associations_id_sort_j on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 106;
+create index i_associations_id_sort_k on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 107;
+create index i_associations_id_sort_l on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 108;
+create index i_associations_id_sort_m on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 109;
+create index i_associations_id_sort_n on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 110;
+create index i_associations_id_sort_o on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 111;
+create index i_associations_id_sort_p on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 112;
+create index i_associations_id_sort_q on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 113;
+create index i_associations_id_sort_r on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 114;
+create index i_associations_id_sort_s on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 115;
+create index i_associations_id_sort_t on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 116;
+create index i_associations_id_sort_u on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 117;
+create index i_associations_id_sort_v on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 118;
+create index i_associations_id_sort_w on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 119;
+create index i_associations_id_sort_x on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 120;
+create index i_associations_id_sort_y on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 121;
+create index i_associations_id_sort_z on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 122;
 
 
 /*** provide current user access to their own information ***/

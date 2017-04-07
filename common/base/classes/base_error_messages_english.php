@@ -253,6 +253,38 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to perform socket operation.');
       }
     }
+    elseif ($code === self::ACCESS_DENIED) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Access is denied, :operation_name' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Access is denied.');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_UNAVAILABLE) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Access is denied due to unavailability, :operation_name ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Access is denied due to unavailability.');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_USER) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Access is denied for user :name_machine_user (:id_user), :operation_name ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Access is denied for user.');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_ADMINISTRATION) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Access is denied for administrative reasons, :operation_name ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Access is denied for administrative reasons.');
+      }
+    }
 
     return c_base_return_string::s_new('');
   }

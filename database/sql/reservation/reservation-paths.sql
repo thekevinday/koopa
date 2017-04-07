@@ -18,6 +18,7 @@ create table s_tables.t_paths (
   id_creator bigint not null,
   id_creator_session bigint not null,
   id_group bigint,
+  id_sort smallint default 0,
 
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
@@ -47,7 +48,7 @@ create table s_tables.t_paths (
   constraint cu_paths_field_path unique (field_path),
 
   constraint cc_paths_id check (id > 0),
-  constraint cc_paths_name_machine check (name_machine ~ '\w+'),
+  constraint cc_paths_name_machine check (name_machine ~ '[A-Za-z]\w*'),
   constraint cc_paths_one_of_content_alias_redirect check ((is_content and not (is_alias or is_redirect)) or (is_alias and not (is_content or is_redirect))),
 
   constraint cf_paths_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
@@ -84,6 +85,46 @@ create index i_paths_alias on s_tables.t_paths (id)
 
 create index i_paths_redirect on s_tables.t_paths (id)
   where not is_deleted and is_redirect;
+
+/* Note: id sort here is intended for paths that do not have group paths, like '/a/hello', and '/b/world', where 'a' and 'b' are group paths, respectively. */
+/*       however, NULL (id_sort = 0) is effectively for all group paths. */
+create index i_paths_id_sort_null on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 0;
+create index i_paths_id_sort_0 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 48;
+create index i_paths_id_sort_1 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 49;
+create index i_paths_id_sort_2 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 50;
+create index i_paths_id_sort_3 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 51;
+create index i_paths_id_sort_4 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 52;
+create index i_paths_id_sort_5 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 53;
+create index i_paths_id_sort_6 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 54;
+create index i_paths_id_sort_7 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 55;
+create index i_paths_id_sort_8 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 56;
+create index i_paths_id_sort_9 on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 57;
+create index i_paths_id_sort_a on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 97;
+create index i_paths_id_sort_b on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 98;
+create index i_paths_id_sort_c on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 99;
+create index i_paths_id_sort_d on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 100;
+create index i_paths_id_sort_e on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 101;
+create index i_paths_id_sort_f on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 102;
+create index i_paths_id_sort_g on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 103;
+create index i_paths_id_sort_h on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 104;
+create index i_paths_id_sort_i on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 105;
+create index i_paths_id_sort_j on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 106;
+create index i_paths_id_sort_k on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 107;
+create index i_paths_id_sort_l on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 108;
+create index i_paths_id_sort_m on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 109;
+create index i_paths_id_sort_n on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 110;
+create index i_paths_id_sort_o on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 111;
+create index i_paths_id_sort_p on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 112;
+create index i_paths_id_sort_q on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 113;
+create index i_paths_id_sort_r on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 114;
+create index i_paths_id_sort_s on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 115;
+create index i_paths_id_sort_t on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 116;
+create index i_paths_id_sort_u on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 117;
+create index i_paths_id_sort_v on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 118;
+create index i_paths_id_sort_w on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 119;
+create index i_paths_id_sort_x on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 120;
+create index i_paths_id_sort_y on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 121;
+create index i_paths_id_sort_z on s_tables.t_paths (id_sort) with (fillfactor = 100) where id_sort = 122;
 
 
 /* @todo: provide management functionality for managers (for all user content) and users (for groups they belong to with appropriate can_manage role). */

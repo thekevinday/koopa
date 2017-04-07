@@ -258,6 +258,38 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('ソケット操作を実行できませんでした。');
       }
     }
+    elseif ($code === self::ACCESS_DENIED) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('アクセスが拒否されました。 :operation_name' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('アクセスは拒否されました。');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_UNAVAILABLE) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('利用できないためアクセスが拒否されましたが、 :operation_name ' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('利用できないためアクセスが拒否されました。');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_USER) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('ユーザーのアクセスが拒否されました :name_machine_user (:id_user), :operation_name ' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('ユーザーのアクセスが拒否されました。');
+      }
+    }
+    elseif ($code === self::ACCESS_DENIED_ADMINISTRATION) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('管理上の理由でアクセスが拒否されました, :operation_name ' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('管理上の理由からアクセスが拒否されました。');
+      }
+    }
 
     return c_base_return_string::s_new('');
   }

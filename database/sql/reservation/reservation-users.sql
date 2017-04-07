@@ -80,7 +80,7 @@ create index i_users_private_email_not on s_tables.t_users (id)
   where not is_deleted and not is_private and not (address_email).private;
 
 
-/* Note: id_sort is only needed when directly validating against id or name_machine because both of those are already an index. */
+/* Note: id_sort is not needed when directly validating against id or name_machine because both of those are already an index. */
 create index i_users_id_sort_a on s_tables.t_users (id_sort) with (fillfactor = 100) where id_sort = 97;
 create index i_users_id_sort_b on s_tables.t_users (id_sort) with (fillfactor = 100) where id_sort = 98;
 create index i_users_id_sort_c on s_tables.t_users (id_sort) with (fillfactor = 100) where id_sort = 99;

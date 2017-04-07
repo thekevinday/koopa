@@ -49,7 +49,7 @@ create table s_tables.t_groups (
 
   constraint cc_groups_id check (id > 0),
   constraint cc_groups_id_external check (id_external >= -1),
-  constraint cc_groups_name_machine check (name_machine ~ '\w+'),
+  constraint cc_groups_name_machine check (name_machine ~ '[A-Za-z]\w*'),
 
   constraint cu_groups_id_external unique (id_external),
   constraint cu_groups_name_machine unique (name_machine),
@@ -65,7 +65,7 @@ grant select on s_tables.t_groups to r_reservation_auditor;
 grant select,usage on s_tables.se_groups_id to r_reservation_manager;
 grant usage on s_tables.se_groups_id to r_reservation, r_reservation_system, u_reservation_groups_handler;
 
-/* Note: id_sort is only needed when directly validating against id or name_machine because both of those are already an index. */
+/* Note: id_sort is not needed when directly validating against id or name_machine because both of those are already an index. */
 create index i_groups_id_sort_a on s_tables.t_groups (id_sort) with (fillfactor = 100) where id_sort = 97;
 create index i_groups_id_sort_b on s_tables.t_groups (id_sort) with (fillfactor = 100) where id_sort = 98;
 create index i_groups_id_sort_c on s_tables.t_groups (id_sort) with (fillfactor = 100) where id_sort = 99;

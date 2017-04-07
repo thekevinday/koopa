@@ -31,7 +31,7 @@ create table s_tables.t_date_contexts (
   constraint cu_date_contexts_name_machine unique (name_machine),
 
   constraint cc_date_contexts_id check (id >= 0),
-  constraint cc_date_contexts_name_machine check (name_machine ~ '\w+')
+  constraint cc_date_contexts_name_machine check (name_machine ~ '[A-Za-z]\w*')
 );
 
 create sequence s_tables.se_date_contexts_id owned by s_tables.t_date_contexts.id;

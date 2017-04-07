@@ -513,6 +513,10 @@ interface i_base_error_messages {
   const POSTGRESQL_NO_CONNECTION      = 15;
   const POSTGRESQL_NO_RESOURCE        = 16;
   const SOCKET_FAILURE                = 17;
+  const ACCESS_DENIED                 = 18;
+  const ACCESS_DENIED_UNAVAILABLE     = 19;
+  const ACCESS_DENIED_USER            = 20;
+  const ACCESS_DENIED_ADMINISTRATION  = 21;
 
 
   /**

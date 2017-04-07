@@ -74,7 +74,7 @@ create table s_tables.t_type_mime_categorys (
   constraint cu_types_mime_categorys_name_machine unique (name_machine),
 
   constraint cc_types_mime_categorys_id check (id > -1),
-  constraint cc_types_mime_categorys_name_machine check (name_machine ~ '\w+')
+  constraint cc_types_mime_categorys_name_machine check (name_machine ~ '[A-Za-z]\w*')
 );
 
 grant select,insert,update on s_tables.t_type_mime_categorys to r_reservation_administer;
