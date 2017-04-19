@@ -826,7 +826,7 @@ class c_base_return_float extends c_base_return_value {
    *   The value float stored within this class.
    */
   public function get_value() {
-    if (!is_null($this->value) && !is_int($this->value)) {
+    if (!is_null($this->value) && !is_float($this->value)) {
       $this->value = NULL;
     }
 

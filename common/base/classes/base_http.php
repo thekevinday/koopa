@@ -135,8 +135,6 @@ class c_base_http extends c_base_rfc_string {
   const DELIMITER_ACCEPT_SUB_0 = 'q';
   const DELIMITER_ACCEPT_SUB_1 = '=';
 
-  const ACCEPT_LANGUAGE_CLASS_DEFAULT = 'c_base_language_limited';
-
   // cache control options
   const CACHE_CONTROL_NONE             = 0;
   const CACHE_CONTROL_NO_CACHE         = 1;
@@ -305,17 +303,19 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Returns a list of HTTP headers that can be used as an HTML meta tag.
    *
+   * The HTML language supports HTTP headers as HTML tags.
+   *
    * The relationship between HTTP headers and HTML headers is not always one to one.
-   * These should be used
    * @todo: this list will need to be reviewed once I work on the HTML meta handling code.
    *
-   * The HTML language supports HTTP headers as HTML tags.
+   * @return c_base_return_array
+   *   An array of HTTP headers that can be used as meta tags.
    *
    * @see: https://html.spec.whatwg.org/multipage/semantics.html#standard-metadata-names
    * @see: https://www.w3.org/TR/html5/document-metadata.html#the-meta-element
    */
   public function get_response_headers_for_meta() {
-    return array(
+    return c_base_return_arrray::s_new(array(
       self::RESPONSE_CACHE_CONTROL => self::RESPONSE_CACHE_CONTROL,
       self::RESPONSE_CONTENT_ENCODING => self::RESPONSE_CONTENT_ENCODING,
       self::RESPONSE_CONTENT_LANGUAGE => self::RESPONSE_CONTENT_LANGUAGE,
@@ -325,7 +325,7 @@ class c_base_http extends c_base_rfc_string {
       self::RESPONSE_LINK => self::RESPONSE_LINK,
       self::RESPONSE_PRAGMA => self::RESPONSE_PRAGMA,
       self::RESPONSE_REFRESH => self::RESPONSE_REFRESH,
-    );
+    ));
   }
 
   /**
@@ -484,7 +484,15 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_request_time() {
     if (is_null($this->request_time)) {
-      return new c_base_return_false();
+      $timestamp = c_base_defaults_global::s_get_timestamp_session();
+
+      if ($timestamp->has_error()) {
+        unset($timestamp);
+        return new c_base_return_false();
+      }
+
+      $this->request_time = $timestamp->get_value_exact();
+      unset($timestamp);
     }
 
     return c_base_return_float::s_new($this->request_time);
@@ -1711,10 +1719,11 @@ class c_base_http extends c_base_rfc_string {
    * - Avoid multiple content-encodings.
    * - The standard is poorly written and many clients do not follow the standard (probably due to its poor design).
    *
-   * @todo: this should be an array of values in the order in which the encoding is applied.
-   *
    * @param int $encoding
    *   The encoding to assign to the specified header.
+   * @param bool $append
+   *   (optional) If TRUE, then append the header value.
+   *   If FALSE, then assign the header value.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -1725,7 +1734,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.2.2
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.1
    */
-  public function set_response_content_encoding($encoding) {
+  public function set_response_content_encoding($encoding, $append = TRUE) {
     if (!is_int($encoding)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -1755,7 +1764,13 @@ class c_base_http extends c_base_rfc_string {
         return c_base_return_error::s_false($error);
     }
 
-    $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
+    if ($append) {
+      $this->response[self::RESPONSE_CONTENT_ENCODING][] = $encoding;
+    }
+    else {
+      $this->response[self::RESPONSE_CONTENT_ENCODING] = array($encoding);
+    }
+
     return new c_base_return_true();
   }
 
@@ -1883,18 +1898,62 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Assign HTTP response header: content_range.
    *
-   * @param ?? $value
-   *   The value to assign to the specified header.
+   * Currently only byte ranges are supported.
+   * Ranges used in this function represent bytes.
+   * The ranges are inclusive and start at 0.
+   *
+   * @param int|bool $start
+   *   The start range.
+   *   Set to FALSE to represent a not satisfiable range.
+   * @param int|bool $stop
+   *   The stop range.
+   *   Set to FALSE to represent a not satisfiable range.
+   * @param int|bool $total
+   *   An integer representing the total bytes.
+   *   May be set to FALSE to designate that the total range is unkown.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
+   *
+   * @see: https://tools.ietf.org/html/rfc7233#section-4.2
    */
-  public function set_response_content_range($value) {
-    // @todo: self::RESPONSE_CONTENT_RANGE
+  public function set_response_content_range($start, $stop, $total) {
+    if (!is_int($start) && $start !== FALSE) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'start', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content range', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    if (!is_int($stop) && $stop !== FALSE) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_int($total) && $total !== FALSE) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'total', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    // unsatisfiable requires a total to be specified.
+    if (($start === FALSE || $stop === FALSE) && $total === FALSE) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'total', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->response[self::RESPONSE_CONTENT_RANGE] = array(
+      'total' => $total,
+      'type' => 'bytes',
+      'range' => array(
+        'start' => $start,
+        'stop' => $stop,
+      )
+    );
+
+    if ($start === FALSE || $stop === FALSE) {
+      $this->response[self::RESPONSE_CONTENT_RANGE]['range'] = FALSE;
+    }
+
+    return new c_base_return_true();
   }
 
   /**
@@ -3438,10 +3497,10 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-origin.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   A decoded uri split into its different parts inside an array.
    *   This array also contains a key called 'wildcard' which may be either TRUE or FALSE.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    * @see: https://www.w3.org/TR/CSP2/
@@ -3450,7 +3509,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_allow_origin() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN]);
@@ -3459,7 +3518,7 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-credentials.
    *
-   * @return c_base_return_bool|c_base_return_status
+   * @return c_base_return_bool
    *   A boolean representing whether or not to allow credentials.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    *
@@ -3471,7 +3530,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_allow_credentials() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(FALSE, 'c_base_return_bool', $error);
     }
 
     return c_base_return_bool::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS]);
@@ -3480,9 +3539,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-expose-headers.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array of headers to expose.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    * @see: https://www.w3.org/TR/CSP2/
@@ -3491,7 +3550,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_expose_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS]);
@@ -3500,9 +3559,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-max-age.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An Unix timestamp representing the specified header.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    * @see: https://www.w3.org/TR/CSP2/
@@ -3511,7 +3570,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_max_age() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_MAX_AGE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_MAX_AGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_MAX_AGE]);
@@ -3520,8 +3579,8 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-methods.
    *
-   * @return c_base_return_array|c_base_return_status
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   * @return c_base_return_array
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    * @see: https://www.w3.org/TR/CSP2/
@@ -3530,7 +3589,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_allow_methods() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS]);
@@ -3539,9 +3598,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: access-control-allow-headers.
    *
-   * @return c_base_return_arrayl|c_base_return_status
+   * @return c_base_return_array
    *   An array of allowed headers is returned.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
    * @see: https://www.w3.org/TR/CSP2/
@@ -3550,7 +3609,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_access_control_allow_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS]);
@@ -3559,9 +3618,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: accept-patch.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the header values.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc5789#section-3.1
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
@@ -3570,7 +3629,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_accept_patch() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_PATCH, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ACCEPT_PATCH]);
@@ -3579,14 +3638,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: accept_ranges.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   A string representing the header value.
    *
    *   Common ranges are:
    *   - bytes
    *   - none
    *
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty string with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7233#section-2.3
    * @see: https://tools.ietf.org/html/rfc7233#section-3.1
@@ -3594,7 +3653,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_accept_ranges() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_RANGES, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_RANGES, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_ACCEPT_RANGES]);
@@ -3603,16 +3662,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: age.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   A Unix timestamp representing the header value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7234#section-5.1
    */
   public function get_response_age() {
     if (!array_key_exists(self::RESPONSE_AGE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_AGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_AGE]);
@@ -3621,16 +3680,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: allow.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array of allow method codes.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.4.1
    */
   public function get_response_allow() {
     if (!array_key_exists(self::RESPONSE_ALLOW, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ALLOW, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ALLOW]);
@@ -3648,7 +3707,7 @@ class c_base_http extends c_base_rfc_string {
    * Based on what I have seen in practice, the cache-control directive should instead be treated as:
    * 1*(tchar) *("=" 1*(1*(tchar) / quoted-string) *(*(wsp) "," *(wsp) 1*(tchar) *("=" 1*(1*(tchar) / quoted-string))
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the cache-control directives.
    *   Each array key is a name and if that directive has no value, then the related directive name will have a NULL value.
    *   For example, a directive of "no-cache" will have the following array structure:
@@ -3656,7 +3715,7 @@ class c_base_http extends c_base_rfc_string {
    *   For example, a directive of "private, max-age=32" will have the following array structure:
    *   - array("private" => NULL, "max-age" => 32)
    *
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2.3
@@ -3664,7 +3723,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_cache_control() {
     if (!array_key_exists(self::RESPONSE_CACHE_CONTROL, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CACHE_CONTROL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CACHE_CONTROL]);
@@ -3673,19 +3732,19 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: connection.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array of header names assigned to the connection header.
    *   The header name format is:
    *   - 1*(tchar)
    *
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7230#section-6.1
    */
   public function get_response_connection() {
     if (!array_key_exists(self::RESPONSE_CONNECTION, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONNECTION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONNECTION]);
@@ -3694,16 +3753,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-disposition.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An an containing the decoded content disposition and its parameters.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc6266#section-4
    */
   public function get_response_content_disposition() {
     if (!array_key_exists(self::RESPONSE_CONTENT_DISPOSITION, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_DISPOSITION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_DISPOSITION]);
@@ -3712,32 +3771,32 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-encoding.
    *
-   * @return c_base_return_int|c_base_return_status
-   *   An integer representing the content length value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   * @return c_base_return_array
+   *   An array of integers representing the content length value.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_content_encoding() {
     if (!array_key_exists(self::RESPONSE_CONTENT_ENCODING, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_ENCODING, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_ENCODING]);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_ENCODING]);
   }
 
   /**
    * Obtain HTTP response header: content-language.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An integer representing the content length value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.3.2
    */
   public function get_response_content_language() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LANGUAGE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LANGUAGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_LANGUAGE]);
@@ -3746,14 +3805,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-length.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An integer containing the response header value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
+   *
+   * @see: https://tools.ietf.org/html/rfc7230#section-3.3.2
    */
   public function get_response_content_length() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LENGTH, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LENGTH, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_LENGTH]);
@@ -3762,37 +3823,44 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content_range.
    *
-   * @todo: probably an array.
+   * Ranges returned by this function represent bytes.
+   * The ranges are inclusive and start at 0.
    *
-   * @return ??|c_base_return_status
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   * @return c_base_return_array
+   *   An array with the following keys:
+   *   - 'total': The complete length integer or '*'.
+   *   - 'type': A string representing the type of range, usually will be 'bytes'.
+   *   - 'range': an array with the following keys (or may be FALSE for not satisfiable range):
+   *     - 'start': The start range interger.
+   *     - 'stop': The stop range integer.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
+   *
+   * @see: https://tools.ietf.org/html/rfc7233#section-4.2
    */
   public function get_response_content_range() {
     if (!array_key_exists(self::RESPONSE_CONTENT_RANGE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_RANGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    // @todo
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':functionality_name' => 'http response content range', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_SUPPORT);
-    return c_base_return_error::s_false($error);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_RANGE]);
   }
 
   /**
    * Obtain HTTP response header: content_type.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the following keys:
    *   - 'type': the content type string, such as 'text/html'.
    *   - 'charset': the character set integer, such as: c_base_charset::UTF_8.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.1.5
    */
   public function get_response_content_type() {
     if (!array_key_exists(self::RESPONSE_CONTENT_TYPE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_TYPE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_TYPE]);
@@ -3801,16 +3869,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: date.
    *
-   * @return c_base_return_int|c_base_return_float|c_base_return_status
+   * @return c_base_return_int|c_base_return_float
    *   A unix timestamp integer.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0.0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.1.2
    */
   public function get_response_date() {
     if (!array_key_exists(self::RESPONSE_DATE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
     if (is_float($this->response[self::RESPONSE_DATE])) {
@@ -3827,16 +3895,16 @@ class c_base_http extends c_base_rfc_string {
    * The purpose of this is to allow clients to still receive the correct/actual date when HTTP servers, such as apache, overwrite or alter the HTTP date response header.
    * This should therefore be used and calculated with when the date variable.
    *
-   * @return c_base_return_int|c_base_return_float|c_base_return_status
+   * @return c_base_return_int|c_base_return_float
    *   A unix timestamp integer.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0.0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.1.2
    */
   public function get_response_date_actual() {
     if (!array_key_exists(self::RESPONSE_DATE_ACTUAL, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE_ACTUAL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
     if (is_float($this->response[self::RESPONSE_DATE_ACTUAL])) {
@@ -3849,18 +3917,18 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: etag.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the following:
    *   - tag: The entity tag string (without weakness).
    *   - weak: A boolean representing whether or not the entity tag is weak.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7232#section-2.3
    */
   public function get_response_etag() {
     if (!array_key_exists(self::RESPONSE_ETAG, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ETAG, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_ETAG]);
@@ -3869,16 +3937,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: expires.
    *
-   * @return c_base_return_int|c_base_return_float|c_base_return_status
+   * @return c_base_return_int|c_base_return_float
    *   A unix timestamp integer.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0.0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7234#section-5.3
    */
   public function get_response_expires() {
     if (!array_key_exists(self::RESPONSE_EXPIRES, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_EXPIRES, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
     if (is_float($this->response[self::RESPONSE_EXPIRES])) {
@@ -3891,16 +3959,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: last-modified.
    *
-   * @return c_base_return_int|c_base_return_float|c_base_return_status
+   * @return c_base_return_int|c_base_return_float
    *   A unix timestamp integer.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0.0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7232#section-2.2
    */
   public function get_response_last_modified() {
     if (!array_key_exists(self::RESPONSE_LAST_MODIFIED, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LAST_MODIFIED, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
     if (is_float($this->response[self::RESPONSE_LAST_MODIFIED])) {
@@ -3915,9 +3983,9 @@ class c_base_http extends c_base_rfc_string {
    *
    * @todo: break this into an array of the differnt parts.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   A decoded link and parameters split into an array.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc5988#section-5
    * @see: https://tools.ietf.org/html/rfc3986
@@ -3925,7 +3993,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_link() {
     if (!array_key_exists(self::RESPONSE_LINK, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LINK, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_LINK]);
@@ -3936,16 +4004,16 @@ class c_base_http extends c_base_rfc_string {
    *
    * @todo: consider changing this to an array containing the entire url parts broken into each key.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   A decoded uri split into its different parts inside an array.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc3986
    */
   public function get_response_location() {
     if (!array_key_exists(self::RESPONSE_LOCATION, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LOCATION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_LOCATION]);
@@ -3954,9 +4022,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: pragma.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the processed pragma.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc2616#section-14.32
    * @see: https://tools.ietf.org/html/rfc7234#section-5.4
@@ -3964,7 +4032,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_pragma() {
     if (!array_key_exists(self::RESPONSE_PRAGMA, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PRAGMA, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_PRAGMA]);
@@ -4050,14 +4118,14 @@ class c_base_http extends c_base_rfc_string {
    *   - value: When 'is_seconds' is FALSE, this is the unix timestamp representing when the page expires.
    *            When 'is_seconds' is FALSE, this is the relative number of seconds until the content expires.
    *   - is_seconds: A boolean that when true changes the interpretation of the 'value' key.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.3
    */
   public function get_response_retry_after() {
     if (!array_key_exists(self::RESPONSE_RETRY_AFTER, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_RETRY_AFTER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_RETRY_AFTER]);
@@ -4066,15 +4134,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: set-cookie.
    *
-   * @return c_base_cookie|c_base_return_status
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   * @return c_base_cookie
+   *   An HTTP cookie.
+   *   A cookie with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc6265
    */
   public function get_response_set_cookie() {
     if (!array_key_exists(self::RESPONSE_SET_COOKIE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_SET_COOKIE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_cookie', $error);
     }
 
     return $this->response[self::RESPONSE_SET_COOKIE];
@@ -4103,16 +4172,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: status.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An integer representing the HTTP status code.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7232#section-4
    */
   public function get_response_status() {
     if (!array_key_exists(self::RESPONSE_STATUS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STATUS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_STATUS]);
@@ -4121,16 +4190,16 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: strict-transport-security.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   A string containing the response header value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty string with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc6797#section-6.1
    */
   public function get_response_strict_transport_security() {
     if (!array_key_exists(self::RESPONSE_STRICT_TRANSPORT_SECURITY, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STRICT_TRANSPORT_SECURITY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     // @todo
@@ -4211,14 +4280,14 @@ class c_base_http extends c_base_rfc_string {
    *
    * @return c_base_return_array|c_base_return_status
    *   An array containing the response header values.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-7.1.4
    */
   public function get_response_vary() {
     if (!array_key_exists(self::RESPONSE_VARY, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_VARY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_VARY]);
@@ -4269,14 +4338,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: HTTP Protocol.
    *
-   * @return c_base_return_string|c_base_return_status
+   * @return c_base_return_string
    *   A string containing the response header value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty string with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_protocol() {
     if (!array_key_exists(self::RESPONSE_PROTOCOL, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PROTOCOL, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     return c_base_return_string::s_new($this->response[self::RESPONSE_PROTOCOL]);
@@ -4285,9 +4354,9 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-security-policy.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   A string containing the response header value.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://www.w3.org/TR/CSP2/
    * @see: https://en.wikipedia.org/wiki/Content_Security_Policy
@@ -4296,7 +4365,7 @@ class c_base_http extends c_base_rfc_string {
   public function get_response_content_security_policy() {
     if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_SECURITY_POLICY, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_SECURITY_POLICY]);
@@ -4305,14 +4374,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: x-content-type-options.
    *
-   * @return c_base_return_bool|c_base_return_status
+   * @return c_base_return_bool
    *   A boolean representing the presence of nosniff.
    *   FALSE with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_x_content_type_options() {
     if (!array_key_exists(self::RESPONSE_X_CONTENT_TYPE_OPTIONS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_CONTENT_TYPE_OPTIONS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(FALSE, 'c_base_return_bool', $error);
     }
 
     return c_base_return_bool::s_new($this->response[self::RESPONSE_X_CONTENT_TYPE_OPTIONS]);
@@ -4321,14 +4390,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: x-ua-compatible.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing the response header values.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_x_ua_compatible() {
     if (!array_key_exists(self::RESPONSE_X_UA_COMPATIBLE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_UA_COMPATIBLE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_X_UA_COMPATIBLE]);
@@ -4339,18 +4408,18 @@ class c_base_http extends c_base_rfc_string {
    *
    * @fixme: this should be auto-populated, so don
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing:
    *   - 'what': A specific way in which to interpret the checksum.
    *   - 'type': The algorithm type of the checksum.
    *   - 'checksum': The checksum value after it has been base64 decoded.
    *   - 'action': An integer representing how this checksum is processed when generating the HTTP response.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_checksum_header() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADER, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADER, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADER]);
@@ -4359,14 +4428,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: checksum_headers.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing a list of header field names.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_checksum_headers() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADERS, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADERS, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_HEADERS]);
@@ -4375,18 +4444,18 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: checksum_content.
    *
-   * @return c_base_return_array|c_base_return_status
+   * @return c_base_return_array
    *   An array containing:
    *   - 'what': A specific way in which to interpret the checksum.
    *   - 'type': The algorithm type of the checksum.
    *   - 'checksum': The checksum value after it has been base64 decoded.
    *   - 'action': An integer representing how this checksum is processed when generating the HTTP response.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_checksum_content() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_CONTENT, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_CONTENT, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     return c_base_return_array::s_new($this->response[self::RESPONSE_CHECKSUM_CONTENT]);
@@ -4395,14 +4464,14 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content_revision.
    *
-   * @return c_base_return_int|c_base_return_status
+   * @return c_base_return_int
    *   An integer representing a revision number.
-   *   FALSE with error bit set is returned on error, including when the key is not defined.
+   *   0 with error bit set is returned on error, including when the key is not defined.
    */
   public function get_response_content_revision() {
     if (!array_key_exists(self::RESPONSE_CONTENT_REVISION, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_REVISION, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_REVISION]);
@@ -4541,7 +4610,7 @@ class c_base_http extends c_base_rfc_string {
     $this->p_prepare_header_response_content_encoding($header_id_to_names[self::RESPONSE_CONTENT_ENCODING], $header_output);
     $this->p_prepare_header_response_content_language($header_id_to_names[self::RESPONSE_CONTENT_LANGUAGE], $header_output);
     $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_LENGTH], $header_output, self::RESPONSE_CONTENT_LENGTH);
-    $this->p_prepare_header_response_simple_value($header_id_to_names[self::RESPONSE_CONTENT_RANGE], $header_output, self::RESPONSE_CONTENT_RANGE);
+    $this->p_prepare_header_response_content_range($header_id_to_names[self::RESPONSE_CONTENT_RANGE], $header_output, self::RESPONSE_CONTENT_RANGE);
     $this->p_prepare_header_response_content_type($header_id_to_names[self::RESPONSE_CONTENT_TYPE], $header_output);
     $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_DATE], $header_output, $headers[self::RESPONSE_DATE], self::RESPONSE_DATE);
     $this->p_prepare_header_response_timestamp_value($header_id_to_names[self::RESPONSE_DATE_ACTUAL], $header_output, $headers[self::RESPONSE_DATE_ACTUAL], self::RESPONSE_DATE_ACTUAL);
@@ -4935,20 +5004,10 @@ class c_base_http extends c_base_rfc_string {
       $this->request[self::REQUEST_ACCEPT_LANGUAGE]['defined'] = TRUE;
       $this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight'] = array();
 
-      if (is_null($this->language_class) || !class_exists($this->language_class)) {
-        // PHP does not allow "new self::ACCEPT_LANGUAGE_CLASS_DEFAULT()", but using a variable is allowed.
-        $class = self::ACCEPT_LANGUAGE_CLASS_DEFAULT;
-        $languages = new $class();
-        unset($class);
-      }
-      else {
-        $languages = new $this->language_class();
-      }
-
       // convert the known values into integers for improved processing.
       foreach ($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
-          $id = $languages->s_get_id_by_name($c['choice']);
+          $id = c_base_defaults_global::s_get_language()->s_get_id_by_name($c['choice']);
           if ($id instanceof c_base_return_false) {
             $c['language'] = NULL;
           }
@@ -4959,7 +5018,6 @@ class c_base_http extends c_base_rfc_string {
           }
         }
       }
-      unset($languages);
 
       // sort the weight array.
       krsort($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight']);
@@ -6657,7 +6715,7 @@ class c_base_http extends c_base_rfc_string {
     $raw = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', $original))->get_value_exact();
 
     // rfc5322 is the preferred/recommended format.
-    $rfc5322 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_5322, $timestamp)))->get_value_exact();
+    $rfc5322 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', c_base_defaults_global::s_get_date(self::TIMESTAMP_RFC_5322, $timestamp)->get_value_exact()))->get_value_exact();
     if ($raw == $rfc5322) {
       unset($raw);
       unset($timestamp);
@@ -6666,7 +6724,7 @@ class c_base_http extends c_base_rfc_string {
     }
     unset($rfc5322);
 
-    $rfc1123 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_1123, $timestamp)))->get_value_exact();
+    $rfc1123 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', c_base_defaults_global::s_get_date(self::TIMESTAMP_RFC_1123, $timestamp)->get_value_exact()))->get_value_exact();
     if ($raw == $rfc1123) {
       unset($raw);
       unset($timestamp);
@@ -6675,7 +6733,7 @@ class c_base_http extends c_base_rfc_string {
     }
     unset($rfc1123);
 
-    $rfc850 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', date(self::TIMESTAMP_RFC_850, $timestamp)))->get_value_exact();
+    $rfc850 = c_base_utf8::s_lowercase(preg_replace('/(^\s+)|(\s+$)/us', '', c_base_defaults_global::s_get_date(self::TIMESTAMP_RFC_850, $timestamp)->get_value_exact()))->get_value_exact();
     if ($raw == $rfc850) {
       unset($raw);
       unset($timestamp);
@@ -7777,19 +7835,11 @@ class c_base_http extends c_base_rfc_string {
       }
     }
 
-    if (isset($_SERVER['REQUEST_TIME_FLOAT']) && is_float($_SERVER['REQUEST_TIME_FLOAT'])) {
-      // find and process potentially useful additional environment variables.
-      if (array_key_exists('REQUEST_TIME_FLOAT', $_SERVER)) {
-        $this->request_time = $_SERVER['REQUEST_TIME_FLOAT'];
-      }
-      elseif (array_key_exists('REQUEST_TIME', $_SERVER)) {
-        $this->request_time = $_SERVER['REQUEST_TIME'];
-      }
+    $timestamp = c_base_defaults_global::s_get_timestamp_session();
+    if (!$timestamp->has_error()) {
+      $this->request_time = $timestamp->get_value_exact();
     }
-
-    if (is_null($this->request_time)) {
-      $this->request_time = microtime(TRUE);
-    }
+    unset($timestamp);
   }
 
   /**
@@ -8483,42 +8533,51 @@ class c_base_http extends c_base_rfc_string {
 
     $header_output[self::RESPONSE_CONTENT_ENCODING] = $header_name . self::SEPARATOR_HEADER_NAME;
 
-    switch ($this->response[self::RESPONSE_CONTENT_ENCODING]) {
-      case self::ENCODING_CHUNKED:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'chubked';
-        break;
-      case self::ENCODING_COMPRESS:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'compress';
-        break;
-      case self::ENCODING_DEFLATE:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'deflate';
-        break;
-      case self::ENCODING_GZIP:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'gzip';
-        break;
-      case self::ENCODING_BZIP:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'bzip';
-        break;
-      case self::ENCODING_LZO:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'lzo';
-        break;
-      case self::ENCODING_XZ:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'xz';
-        break;
-      case self::ENCODING_EXI:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'exi';
-        break;
-      case self::ENCODING_IDENTITY:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'identity';
-        break;
-      case self::ENCODING_SDCH:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'sdch';
-        break;
-      case self::ENCODING_PG:
-        $header_output[self::RESPONSE_CONTENT_ENCODING] .= 'pg';
-        break;
-      default:
-        unset($header_output[self::RESPONSE_CONTENT_ENCODING]);
+    $output = NULL;
+
+    foreach ($this->response[self::RESPONSE_CONTENT_ENCODING] as $encoding) {
+      switch ($encoding) {
+        case self::ENCODING_CHUNKED:
+          $output .= ',chunked';
+          break;
+        case self::ENCODING_COMPRESS:
+          $output .= ',compress';
+          break;
+        case self::ENCODING_DEFLATE:
+          $output .= ',deflate';
+          break;
+        case self::ENCODING_GZIP:
+          $output .= ',gzip';
+          break;
+        case self::ENCODING_BZIP:
+          $output .= ',bzip';
+          break;
+        case self::ENCODING_LZO:
+          $output .= ',lzo';
+          break;
+        case self::ENCODING_XZ:
+          $output .= ',xz';
+          break;
+        case self::ENCODING_EXI:
+          $output .= ',exi';
+          break;
+        case self::ENCODING_IDENTITY:
+          $output .= ',identity';
+          break;
+        case self::ENCODING_SDCH:
+          $output .= ',sdch';
+          break;
+        case self::ENCODING_PG:
+          $output .= ',pg';
+          break;
+      }
+    }
+
+    if (is_null($output)) {
+      unset($header_output[self::RESPONSE_CONTENT_ENCODING]);
+    }
+    else {
+      $header_output[self::RESPONSE_CONTENT_ENCODING] .= substr($output, 1);
     }
   }
 
@@ -8546,6 +8605,48 @@ class c_base_http extends c_base_rfc_string {
       }
     }
     unset($language_array);
+  }
+
+  /**
+   * Prepare HTTP response header: content-range.
+   *
+   * @param string $header_name
+   *   The HTTP header name, such as: 'Age'.
+   * @param array $header_output
+   *   The header output array to make changes to.
+   *
+   * @see: https://tools.ietf.org/html/rfc7233#section-4.2
+   */
+  private function p_prepare_header_response_content_range($header_name, &$header_output) {
+    if (!array_key_exists(self::RESPONSE_CONTENT_RANGE, $this->response)) {
+      return;
+    }
+
+    $header_output[self::RESPONSE_CONTENT_RANGE] = $header_name . ': ' . $this->response[self::RESPONSE_CONTENT_RANGE]['type'] . ' ';
+
+    if ($this->response[self::RESPONSE_CONTENT_RANGE]['range'] === FALSE) {
+      $header_output[self::RESPONSE_CONTENT_RANGE] .= '*/' . $this->response[self::RESPONSE_CONTENT_RANGE]['total'];
+      return;
+    }
+
+    if (!is_null($this->response[self::RESPONSE_CONTENT_RANGE]['range']['start'])) {
+      $header_output[self::RESPONSE_CONTENT_RANGE] .= $this->response[self::RESPONSE_CONTENT_RANGE]['range']['start'];
+    }
+
+    $header_output[self::RESPONSE_CONTENT_RANGE] .= '-';
+
+    if (!is_null($this->response[self::RESPONSE_CONTENT_RANGE]['range']['stop'])) {
+      $header_output[self::RESPONSE_CONTENT_RANGE] .= $this->response[self::RESPONSE_CONTENT_RANGE]['range']['stop'];
+    }
+
+    $header_output[self::RESPONSE_CONTENT_RANGE] .= '/';
+
+    if ($this->response[self::RESPONSE_CONTENT_RANGE]['total'] === FALSE) {
+      $header_output[self::RESPONSE_CONTENT_RANGE] .= '*';
+    }
+    else {
+      $header_output[self::RESPONSE_CONTENT_RANGE] .= $this->response[self::RESPONSE_CONTENT_RANGE]['total'];
+    }
   }
 
   /**
@@ -8804,7 +8905,7 @@ class c_base_http extends c_base_rfc_string {
       $timezone = date_default_timezone_get();
       date_default_timezone_set('GMT');
 
-      $header_output[self::RESPONSE_RETRY_AFTER] .= date(self::TIMESTAMP_RFC_5322, $this->response[self::RESPONSE_RETRY_AFTER]['value']);
+      $header_output[self::RESPONSE_RETRY_AFTER] .= c_base_defaults_global::s_get_date(self::TIMESTAMP_RFC_5322, $this->response[self::RESPONSE_RETRY_AFTER]['value'])->get_value_exact();
 
       date_default_timezone_set($timezone);
       unset($timezone);
@@ -9556,7 +9657,7 @@ class c_base_http extends c_base_rfc_string {
     $timezone = date_default_timezone_get();
     date_default_timezone_set('GMT');
 
-    $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME . date(self::TIMESTAMP_RFC_5322, $this->response[$code]);
+    $header_output[$code] = $header_name . self::SEPARATOR_HEADER_NAME . c_base_defaults_global::s_get_date(self::TIMESTAMP_RFC_5322, $this->response[$code])->get_value_exact();
 
     date_default_timezone_set($timezone);
     unset($timezone);
@@ -9642,7 +9743,7 @@ class c_base_http extends c_base_rfc_string {
 
       $this->content = gzencode($this->content, $compression, FORCE_GZIP);
       $this->content_is_file = FALSE;
-      $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
+      $this->response[self::RESPONSE_CONTENT_ENCODING] = array($encoding);
 
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
@@ -9660,7 +9761,7 @@ class c_base_http extends c_base_rfc_string {
 
       $this->content = gzencode($content, $compression, FORCE_DEFLATE);
       $this->content_is_file = FALSE;
-      $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
+      $this->response[self::RESPONSE_CONTENT_ENCODING] = array($encoding);
 
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
@@ -9678,7 +9779,7 @@ class c_base_http extends c_base_rfc_string {
 
       $this->content = bzcompress($content, $compression);
       $this->content_is_file = FALSE;
-      $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
+      $this->response[self::RESPONSE_CONTENT_ENCODING] = array($encoding);
 
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);
@@ -9733,7 +9834,7 @@ class c_base_http extends c_base_rfc_string {
 
       $this->content = lzo_compress($content, $compression);
       $this->content_is_file = FALSE;
-      $this->response[self::RESPONSE_CONTENT_ENCODING] = $encoding;
+      $this->response[self::RESPONSE_CONTENT_ENCODING] = array($encoding);
 
       if ($calculate_content_length) {
         $this->response[self::RESPONSE_CONTENT_LENGTH] = strlen($this->content);

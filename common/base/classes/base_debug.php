@@ -12,7 +12,7 @@ require_once('common/base/classes/base_return.php');
  * A generic class for performing debugging.
  */
 class c_base_debug extends c_base_return {
-  private static $ps_debugging = FALSE;
+  private static $s_debugging = FALSE;
 
   private $time_start;
   private $time_stop;
@@ -95,7 +95,7 @@ class c_base_debug extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    self::$ps_debugging = $debug;
+    self::$s_debugging = $debug;
 
     return new c_base_return_true();
   }
@@ -107,7 +107,7 @@ class c_base_debug extends c_base_return {
    *   TRUE when debugging is enabled, FALSE otherwise.
    */
   public static function s_get_debugging() {
-    if (self::$ps_debugging) {
+    if (self::$s_debugging) {
       return new c_base_return_true();
     }
 
@@ -118,7 +118,7 @@ class c_base_debug extends c_base_return {
    * Begin recording the time and memory consumption.
    */
   public function do_start_consumption_recording() {
-    if (!self::$ps_debugging) {
+    if (!self::$s_debugging) {
       return;
     }
 
@@ -131,7 +131,7 @@ class c_base_debug extends c_base_return {
    * Recording begin time and memory consumption.
    */
   public function do_stop_consumption_recording() {
-    if (!self::$ps_debugging) {
+    if (!self::$s_debugging) {
       return;
     }
 
@@ -152,7 +152,7 @@ class c_base_debug extends c_base_return {
    * Record end time and memory consumption.
    */
   public function do_reset_consumption_recording() {
-    if (!self::$ps_debugging) {
+    if (!self::$s_debugging) {
       return;
     }
 
@@ -183,7 +183,7 @@ class c_base_debug extends c_base_return {
    * @see: do_reset_consumption_recording()
    */
   public function get_consumption_time($milliseconds = TRUE) {
-    if (!self::$ps_debugging) {
+    if (!self::$s_debugging) {
       return new c_base_return_false();
     }
 
@@ -223,7 +223,7 @@ class c_base_debug extends c_base_return {
    * @see: do_reset_consumption_recording()
    */
   public function get_consumption_memory_usage($option = 1, $megabytes = TRUE) {
-    if (!self::$ps_debugging) {
+    if (!self::$s_debugging) {
       return new c_base_return_false();
     }
 

@@ -191,20 +191,10 @@ abstract class c_base_path extends c_base_return_string {
       $path->set_is_private(TRUE);
     }
 
-    if (isset($_SERVER['REQUEST_TIME_FLOAT']) && is_float($_SERVER['REQUEST_TIME_FLOAT'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME_FLOAT']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME_FLOAT']);
-    }
-    elseif (isset($_SERVER['REQUEST_TIME']) && is_int($_SERVER['REQUEST_TIME'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME']);
-    }
-    else {
-      $time = microtime(TRUE);
-      $path->set_date_created($time);
-      $path->set_date_changed($time);
-      unset($time);
-    }
+    $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
+    $path->set_date_created($timestamp_session);
+    $path->set_date_changed($timestamp_session);
+    unset($timestamp_session);
 
     return $path;
   }
@@ -255,20 +245,10 @@ abstract class c_base_path extends c_base_return_string {
       $path->set_is_private(TRUE);
     }
 
-    if (isset($_SERVER['REQUEST_TIME_FLOAT']) && is_float($_SERVER['REQUEST_TIME_FLOAT'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME_FLOAT']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME_FLOAT']);
-    }
-    elseif (isset($_SERVER['REQUEST_TIME']) && is_int($_SERVER['REQUEST_TIME'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME']);
-    }
-    else {
-      $time = microtime(TRUE);
-      $path->set_date_created($time);
-      $path->set_date_changed($time);
-      unset($time);
-    }
+    $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
+    $path->set_date_created($timestamp_session);
+    $path->set_date_changed($timestamp_session);
+    unset($timestamp_session);
 
     return $path;
   }
@@ -334,20 +314,10 @@ abstract class c_base_path extends c_base_return_string {
       $path->set_is_private(TRUE);
     }
 
-    if (isset($_SERVER['REQUEST_TIME_FLOAT']) && is_float($_SERVER['REQUEST_TIME_FLOAT'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME_FLOAT']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME_FLOAT']);
-    }
-    elseif (isset($_SERVER['REQUEST_TIME']) && is_int($_SERVER['REQUEST_TIME'])) {
-      $path->set_date_created($_SERVER['REQUEST_TIME']);
-      $path->set_date_changed($_SERVER['REQUEST_TIME']);
-    }
-    else {
-      $time = microtime(TRUE);
-      $path->set_date_created($time);
-      $path->set_date_changed($time);
-      unset($time);
-    }
+    $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
+    $path->set_date_created($timestamp_session);
+    $path->set_date_changed($timestamp_session);
+    unset($timestamp_session);
 
     return $path;
   }

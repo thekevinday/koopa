@@ -236,7 +236,7 @@
     // assign expires header tag
     #$tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_META);
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HTTP_EQUIV, 'expires');
-    #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, date('r', strtotime('+30 minutes')));
+    #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CONTENT, c_base_defaults_global::s_get_date('r', strtotime('+30 minutes'))->get_value_exact());
     #$html->set_header($tag);
     #unset($tag);
 

@@ -171,7 +171,7 @@
   function program_process_request(&$data_program) {
     $timestamp = $data_program['http']->get_request_time();
     if (!($timestamp instanceof c_base_return_false)) {
-      $data_program['http']->set_response_content("The request was made on (" . $timestamp->get_value_exact() . "): " . date("Y/m/d h:i:s a", $timestamp->get_value_exact()) . ": " . "<br>\n<br>\n");
+      $data_program['http']->set_response_content("The request was made on (" . $timestamp->get_value_exact() . "): " . c_base_defaults_global::s_get_date("Y/m/d h:i:s a", $timestamp->get_value_exact())->get_value_exact() . ": " . "<br>\n<br>\n");
     }
     unset($timestamp);
 
@@ -373,7 +373,10 @@
     $data_program['debug']['memory_peak'][6] = memory_get_peak_usage();
     $time_stop = microtime(TRUE);
 
-    $encoding = $data_program['http']->get_response_content_encoding();
+    $encodings = $data_program['http']->get_response_content_encoding()->get_value_exact();
+    $encoding = array_pop($encodings);
+    unset($encodings);
+
     if ($encoding instanceof c_base_return_false || $encoding == c_base_http::ENCODING_CHUNKED) {
       $data_program['http']->set_response_content("<br>\n");
       $data_program['http']->set_response_content("<strong>Memory Used (1)</strong>: " . ($data_program['debug']['memory_usage'][1] - $data_program['debug']['memory_usage'][0]) . " bytes (". (floor(($data_program['debug']['memory_usage'][1] - $data_program['debug']['memory_usage'][0]) / 1024)) . " KB)" . "<br>\n");

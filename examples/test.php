@@ -514,7 +514,7 @@
               $result = $session->do_push(600, 1800); // (10 minutes, 30 minutes)
               $session_expire = $session->get_timeout_expire()->get_value_exact();
               $session_max = $session->get_timeout_max()->get_value_exact();
-              $expire_string = date("D, d M Y H:i:s T", $session_expire);
+              $expire_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $session_expire)->get_value_exact();
 
               $cookie->set_expires($session_expire);
               $cookie->set_max_age(NULL);
@@ -1431,8 +1431,8 @@
           break;
       }
 
-      #$expire_string = date("D, d M Y H:i:s T", $cookie->get_expires()->get_value_exact());
-      #$max_age_string = date("D, d M Y H:i:s T", $cookie->get_max_age()->get_value_exact());
+      #$expire_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $cookie->get_expires()->get_value_exact())->get_value_exact();
+      #$max_age_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $cookie->get_max_age()->get_value_exact())->get_value_exact();
       $max_age_string = $cookie->get_max_age()->get_value_exact();
 
       $validated = "Invalid";
@@ -1466,7 +1466,7 @@
     else {
       $expire = '+10 minutes';
       $expire_stamp = strtotime($expire);
-      $expire_string = date("D, d M Y H:i:s T", $expire_stamp);
+      $expire_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $expire_stamp)->get_value_exact();
       $same_site = '';
       switch ($cookie->get_same_site()->get_value_exact()) {
         case c_base_cookie::SAME_SITE_NONE:
@@ -1480,7 +1480,7 @@
           break;
       }
 
-      #$max_age_string = date("D, d M Y H:i:s T", $cookie->get_max_age()->get_value_exact());
+      #$max_age_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $cookie->get_max_age()->get_value_exact())->get_value_exact();
       $max_age_string = $cookie->get_max_age()->get_value_exact();
 
       $data = array(

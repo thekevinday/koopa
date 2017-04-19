@@ -115,11 +115,10 @@
     }
 
     $parameters = array(
-      $id_sort,
       $user_name,
     );
 
-    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = $1 and name_machine = $2', $parameters);
+    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = ascii($1) and name_machine = $1', $parameters);
     unset($parameters);
 
     if (c_base_return::s_has_error($query_result)) {
@@ -138,8 +137,6 @@
       unset($result);
 
       if (is_array($result_array) && !empty($result_array)) {
-        $result_array = $result->get_value();
-
         $user_data = array();
         $user_data['id'] = $result_array[0];
         $user_data['id_sort'] = $result_array[1];
@@ -203,11 +200,10 @@
 
     // try loading the user information again now that the user information exists in the database.
     $parameters = array(
-      $id_sort,
       $user_name,
     );
 
-    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = $1 and name_machine = $2', $parameters);
+    $query_result = $database->do_query('select id, id_sort, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self where id_sort = ascii($1) and name_machine = $1', $parameters);
     unset($parameters);
 
     if (c_base_return::s_has_error($query_result)) {
@@ -226,8 +222,6 @@
       unset($result);
 
       if (is_array($result_array) && !empty($result_array)) {
-        $result_array = $result->get_value();
-
         $user_data = array();
         $user_data['id'] = $result_array[0];
         $user_data['id_sort'] = $result_array[1];
