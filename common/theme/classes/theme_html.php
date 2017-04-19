@@ -1475,7 +1475,7 @@ class c_theme_html extends c_base_return {
     }
 
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);
@@ -1830,7 +1830,7 @@ class c_theme_html extends c_base_return {
     // attribute: lang
     $attribute = $this->html->get_attribute_body(c_base_markup_attributes::ATTRIBUTE_LANGUAGE)->get_value_exact();
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);
@@ -3057,7 +3057,7 @@ class c_theme_html extends c_base_return {
     $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_HREF_LANGUAGE)->get_value_exact();
 
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);
@@ -3433,7 +3433,7 @@ class c_theme_html extends c_base_return {
     $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_HREF_LANGUAGE)->get_value_exact();
 
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);
@@ -5130,7 +5130,7 @@ class c_theme_html extends c_base_return {
     $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_HREF_LANGUAGE)->get_value_exact();
 
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);
@@ -6840,7 +6840,7 @@ class c_theme_html extends c_base_return {
     $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_SOURCE_LANGUAGE)->get_value_exact();
 
     if (!empty($attribute)) {
-      $language_array = c_base_defaults_global::s_get_language()->s_get_aliases_by_id($attribute)->get_value_exact();
+      $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
       // use the first language alias available.
       $language = array_pop($language_array);

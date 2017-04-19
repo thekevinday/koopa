@@ -13,6 +13,7 @@
   require_once('common/base/classes/base_database.php');
   require_once('common/base/classes/base_ldap.php');
   require_once('common/base/classes/base_http.php');
+  require_once('common/base/classes/base_languages.php');
 
 
   // create an alias for the default language for error messages.
@@ -20,16 +21,24 @@
 
 
   function process_received_headers(&$stuff) {
+    // default supported languages.
+    c_base_defaults_global::s_set_languages(new c_base_language_limited());
+
     $stuff['http'] = new c_base_http();
     $stuff['http']->do_load_request();
+    $stuff['http']->set_response_content_language();
 
     // test error message handling using english or japanese.
     $supported_languages = array(
+      i_base_language::ENGLISH_US => 'c_base_error_messages_english',
       i_base_language::ENGLISH => 'c_base_error_messages_english',
       i_base_language::JAPANESE => 'c_base_error_messages_japanese',
     );
 
-    $language_chosen = i_base_language::ENGLISH;
+    $stuff['http']->set_response_content_language(i_base_language::ENGLISH_US);
+    $stuff['http']->set_response_content_language(i_base_language::ENGLISH);
+
+    $language_chosen = i_base_language::ENGLISH_US;
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
     if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
       foreach ($languages_accepted['data']['weight'] as $weight => $language) {
@@ -48,11 +57,12 @@
     }
     unset($languages_accepted);
 
-    if ($language_chosen === i_base_language::ENGLISH) {
+    if ($language_chosen === i_base_language::ENGLISH || $language_chosen === i_base_language::ENGLISH_US) {
       require_once('common/base/classes/base_error_messages_english.php');
     }
     elseif ($language_chosen === i_base_language::JAPANESE) {
       require_once('common/base/classes/base_error_messages_japanese.php');
+      $stuff['http']->set_response_content_language(i_base_language::JAPANESE);
     }
 
     $stuff['error_messages'] = new $supported_languages[$language_chosen];
@@ -68,6 +78,28 @@
   );
 
   function send_prepared_headers($stuff) {
+    // add headers
+    $stuff['http']->set_response_date();
+    $stuff['http']->set_response_content_type('text/html');
+    #$stuff['http']->set_response_etag();
+    #$stuff['http']->set_response_last_modified(strtotime('now'));
+    #$stuff['http']->set_response_expires(strtotime('+30 minutes'));
+    $stuff['http']->set_response_pragma('no-cache');
+    $stuff['http']->set_response_vary('Host');
+    $stuff['http']->set_response_vary('User-Agent');
+    $stuff['http']->set_response_vary('Accept');
+    $stuff['http']->set_response_vary('Accept-Language');
+    #$stuff['http']->set_response_warning('1234 This site is under active development.');
+
+
+    // manually disable output buffering (if enabled) when transfer headers and content.
+    $old_output_buffering = ini_get('output_buffering');
+    ini_set('output_buffering', 'off');
+
+
+    // when the headers are sent, checksums are created, so at this point all error output should be stored and not sent.
+    $stuff['http']->send_response_headers(TRUE);
+
     if (isset($stuff['cookie_existence']['cookie'])) {
       $stuff['cookie_existence']['cookie']->do_push();
     }
@@ -140,6 +172,7 @@
 
     // disclaimer: I used translate.google.com to generate the languages and provided only the default translation (expect translation errors).
     $test_strings = array(
+      i_base_language::ENGLISH_US => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
       i_base_language::ENGLISH => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
       i_base_language::JAPANESE => 'これは、ブラウザのデフォルト言語を使用したテストです。 現在、英語（デフォルト）、スペイン語、日本語、ロシア語がテストされています。',
       i_base_language::RUSSIAN => 'Это тест с помощью браузера по умолчанию язык. В настоящее время английский (по умолчанию), испанский, японский и русский тестируются.',

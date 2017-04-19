@@ -44,7 +44,7 @@ class c_base_defaults_global {
   const ERROR_BACKTRACE_ARGUMENTS = FALSE;
 
   // provide a language to fallback to if none is set.
-  const LANGUAGE_CLASS_DEFAULT = 'c_base_language_limited';
+  const LANGUAGE_CLASS_DEFAULT = 'c_base_language_us_only';
 
 
   /**
@@ -263,7 +263,7 @@ class c_base_defaults_global {
    *
    * @see: i_base_language
    */
-  public static function s_set_language($language) {
+  public static function s_set_languages($language) {
     if (!($language instanceof i_base_language)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'language', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -281,7 +281,7 @@ class c_base_defaults_global {
    *
    * @see: i_base_language
    */
-  public static function s_get_language() {
+  public static function s_get_languages() {
     if (is_null(self::$s_language)) {
       $class = self::LANGUAGE_CLASS_DEFAULT;
       self::$s_language = new $class();
@@ -289,5 +289,24 @@ class c_base_defaults_global {
     }
 
     return self::$s_language;
+  }
+
+  /**
+   * Get the name of the currently assigned language class.
+   *
+   * @return string
+   *   A string representing the class of the language.
+   *
+   * @see: i_base_language
+   */
+  public static function s_get_languages_class() {
+    if (is_null(self::$s_language)) {
+      $class = self::LANGUAGE_CLASS_DEFAULT;
+      self::$s_language = new $class();
+      return c_base_return_string::s_new($class);
+    }
+
+    $class = get_class($this->s_language);
+    return c_base_return_string::s_new($class);
   }
 }

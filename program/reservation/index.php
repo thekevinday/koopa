@@ -13,6 +13,7 @@
   require_once('common/base/classes/base_html.php');
   require_once('common/base/classes/base_charset.php');
   require_once('common/base/classes/base_database.php');
+  require_once('common/base/classes/base_languages.php');
 
   require_once('common/theme/classes/theme_html.php');
 
@@ -63,6 +64,9 @@
     $settings['ldap_server'] = 'ldaps://127.0.0.1:1636/';
     $settings['ldap_base_dn'] = 'ou=users,ou=People';
     $settings['ldap_fields'] = array('mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber');
+
+    // default supported languages.
+    c_base_defaults_global::s_set_languages(new c_base_language_limited());
 
     return $settings;
   }

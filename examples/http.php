@@ -2,11 +2,16 @@
   // make sure the class files can be loaded.
   set_include_path('.');
 
+  // load the global defaults file (this file is not included by default but is required by all).
+  // replace this with your own as you see fit.
+  require_once('common/base/classes/base_defaults_global.php');
+
 
   $root_path = 'common/base/classes/';
   require_once($root_path . 'base_http.php');
   require_once($root_path . 'base_database.php');
   require_once($root_path . 'base_cookie.php');
+  require_once($root_path . 'base_languages.php');
 
   class_alias('c_base_return', 'c_return');
   class_alias('c_base_return_status', 'c_status');
@@ -72,6 +77,9 @@
 
     // only enable output buffering during the output stage, keep it disabled until then.
     ini_set('output_buffering', FALSE);
+
+    // default supported languages.
+    c_base_defaults_global::s_set_languages(new c_base_language_limited());
   }
 
   function program_load_session(&$data_program) {
@@ -164,6 +172,7 @@
 
     $data_program['http']->do_load_request();
     $data_program['http']->set_response_content("");
+    $data_program['http']->set_response_content_language();
 
     program_load_session($data_program);
   }
@@ -299,7 +308,7 @@
   }
 
   function program_build_response(&$data_program) {
-    $data_program['http']->set_language_class('c_base_language_us_limited');
+    $data_program['http']->set_language_class(c_base_defaults_global::s_get_languages_class()->get_value_exact());
 
     $data_program['http']->set_response_protocol('HTTP/1.1');
     $data_program['http']->set_response_allow(c_base_http::HTTP_METHOD_GET);

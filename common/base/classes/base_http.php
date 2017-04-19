@@ -239,7 +239,7 @@ class c_base_http extends c_base_rfc_string {
   private $content_is_file;
   private $buffer_enabled;
 
-  private $language_class;
+  private $languages;
 
   /**
    * Class constructor.
@@ -257,7 +257,7 @@ class c_base_http extends c_base_rfc_string {
     $this->content_is_file = NULL;
     $this->buffer_enabled = FALSE;
 
-    $this->language_class = NULL;
+    $this->languages = NULL;
   }
 
   /**
@@ -274,7 +274,7 @@ class c_base_http extends c_base_rfc_string {
     unset($this->content_is_file);
     unset($this->buffer_enabled);
 
-    unset($this->language_class);
+    unset($this->languages);
 
     parent::__destruct();
   }
@@ -439,39 +439,47 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
-   * Assign the class name as the language class string.
+   * Assign the languages class.
    *
-   * @param string $class_name
+   * The languages class provides a list of supported languages.
+   *
+   * @param string|i_base_language $class_name
    *   A string name representing an object that is a sub-class of i_base_language.
+   *   Or a language class object.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_language_class($class_name) {
-    if (!is_string($class_name) || !is_subclass_of('i_base_language', $class_name) ) {
+  public function set_languages($class_name) {
+    if (!(is_string($class_name) && is_subclass_of('i_base_language', $class_name)) || !(is_object($class_name) && $class_name instanceof i_base_language)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'class_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->language_class = $class_name;
+    if (is_string($class_name)) {
+      $this->languages = new $class_name();
+    }
+    else {
+      $this->languages = $class_name;
+    }
+
     return new c_base_return_true();
   }
 
   /**
-   * Get the language class string currently assigned to this class.
+   * Get the language class object currently assigned to this class.
    *
-   * @return c_base_return_string
-   *   The language class string.
-   *   FALSE with error bit set is returned on error.
+   * @return i_base_language
+   *   The language class object.
    */
-  public function get_language_class() {
-    if (is_null($this->language_class)) {
-      // provide us-only as a failsafe/fallback.
-      $this->language_class = 'c_base_language_us_only';
+  public function get_languages() {
+    if (is_null($this->languages)) {
+      // provide a failsafe/fallback.
+      $this->languages = c_base_defaults_global::s_get_languages();
     }
 
-    return c_base_return_string::s_new($this->language_class);
+    return $this->languages;
   }
 
   /**
@@ -1781,6 +1789,10 @@ class c_base_http extends c_base_rfc_string {
    *   The language code to assign to the specified header.
    *   If NULL, then the default language according the the given language class is used.
    *   If NULL and the default language is not set, then FALSE with error bit set is returned.
+   * @param bool $append
+   *   (optional) If TRUE, then append the header name.
+   *   If FALSE, then assign the header name.
+   *   When $language is NULL, $append is treated as FALSE.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -1788,37 +1800,44 @@ class c_base_http extends c_base_rfc_string {
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.3.2
    */
-  public function set_response_content_language($language = NULL) {
+  public function set_response_content_language($language = NULL, $append = TRUE) {
     if (!is_null($language) && !is_int($language)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'language', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_object($this->languages)) {
+      $this->languages = c_base_defaults_global::s_get_languages();
+    }
 
     if (is_null($language)) {
-      if (!is_object($this->language_class) || !($this->language_class instanceof i_base_language)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->language_class', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
-        return c_base_return_error::s_false($error);
-      }
-
-      $default = $this->language_class->s_get_default_id();
+      $default = $this->languages->s_get_default_id();
       if ($default instanceof c_base_return_false) {
         unset($default);
 
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->language_class->s_get_default_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->languages->s_get_default_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         return c_base_return_error::s_false($error);
       }
 
-      $this->response[self::RESPONSE_CONTENT_LANGUAGE] = $default;
+      $this->response[self::RESPONSE_CONTENT_LANGUAGE] = array($default->get_value_exact());
       unset($default);
     }
     else {
-      if ($language_class->s_get_names_by_id($language) instanceof c_base_return_false) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'language_class->s_get_names_by_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      if ($this->languages->s_get_names_by_id($language) instanceof c_base_return_false) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->languages->s_get_names_by_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
         return c_base_return_error::s_false($error);
       }
 
-      $this->response[self::RESPONSE_CONTENT_LANGUAGE] = $language;
+      if (!isset($this->response[self::RESPONSE_CONTENT_LANGUAGE])) {
+        $this->response[self::RESPONSE_CONTENT_LANGUAGE] = array();
+      }
+
+      $this->response[self::RESPONSE_CONTENT_LANGUAGE][] = $language;
     }
 
     return new c_base_return_true();
@@ -3787,19 +3806,19 @@ class c_base_http extends c_base_rfc_string {
   /**
    * Obtain HTTP response header: content-language.
    *
-   * @return c_base_return_int
-   *   An integer representing the content length value.
-   *   0 with error bit set is returned on error, including when the key is not defined.
+   * @return c_base_return_array
+   *   An array of integers representing the content language value.
+   *   An empty array with error bit set is returned on error, including when the key is not defined.
    *
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.3.2
    */
   public function get_response_content_language() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LANGUAGE, $this->response)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LANGUAGE, ':array_name' => 'this->response', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    return c_base_return_int::s_new($this->response[self::RESPONSE_CONTENT_LANGUAGE]);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_CONTENT_LANGUAGE]);
   }
 
   /**
@@ -5007,7 +5026,7 @@ class c_base_http extends c_base_rfc_string {
       // convert the known values into integers for improved processing.
       foreach ($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['choices'] as $weight => &$choice) {
         foreach ($choice as $key => &$c) {
-          $id = c_base_defaults_global::s_get_language()->s_get_id_by_name($c['choice']);
+          $id = c_base_defaults_global::s_get_languages()->s_get_id_by_name($c['choice']);
           if ($id instanceof c_base_return_false) {
             $c['language'] = NULL;
           }
@@ -8596,15 +8615,24 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $language_array = $this->language_class->s_get_aliases_by_id($this->response[self::RESPONSE_CONTENT_LANGUAGE]);
-    if ($language_array instanceof c_base_return_array) {
-      $language_array = $language_array->get_value_exact();
+    $output = NULL;
+    foreach ($this->response[self::RESPONSE_CONTENT_LANGUAGE] as $language) {
+      $language_array = $this->languages->s_get_aliases_by_id($language);
+      if ($language_array instanceof c_base_return_array) {
+        $language_array = $language_array->get_value_exact();
 
-      if (!empty($language_array[0])) {
-        $header_output[self::RESPONSE_CONTENT_LANGUAGE] = $header_name . ': ' . $language_array[0];
+        if (!empty($language_array[0])) {
+          $output .= ', ' . $language_array[0];
+        }
       }
+      unset($language_array);
     }
-    unset($language_array);
+    unset($language);
+
+    if (!is_null($output)) {
+      $header_output[self::RESPONSE_CONTENT_LANGUAGE] = $header_name . ': ' . substr($output, 2);
+    }
+    unset($output);
   }
 
   /**
