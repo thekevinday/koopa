@@ -1,0 +1,42 @@
+The following is the URL path naming strategy that I intend to use on my projects.
+
+Paths that begin with the following:
+ /a/ = Administrative/Management/Logged-In Paths.
+ /c/ = Cache Paths.
+ /d/ = Data Paths, such as RSS Feeds.
+ /f/ = File Paths.
+ /t/ = Theme Paths.
+ /u/ = User Paths (similar to /a/, but focused on users or custom user content).
+ /x/ = Ajax Paths.
+
+All other paths are assumed to be site specific (making the paths readily available for CMS's and the like).
+
+Example /a/ paths:
+- /a/dashboard - Dashboard
+- /a/content - Listing of site content.
+- /a/logs - Listing of site logs.
+
+Example /c/ paths:
+- /c/static/index.html - Static representation of index.html
+- /c/error/404.html - Static 404 HTML page.
+
+Example /d/ paths:
+- /d/rss/ - RSS Feeds
+- /d/ical/ - iCalendar Feeds
+
+Example /f/ paths:
+- /f/i/% - Load file '%' by file id.
+- /f/c/% - Load file '%' by file checksum.
+- /f/s/% - Load checksum for file '%'.
+
+Example /t/ paths:
+- /t/main/css/all.css - All css file from main theme.
+- /t/alternate/js/slider.js - Slider javascript file from alternate.
+
+Example /u/ paths:
+- /u/reset/% - Reset Password for user '%'.
+- /u/contact/% - Contact information for user '%'.
+- /u/login/% - Login Page for user '%'.
+
+Example /x/ paths:
+- /x/login/user_name/% - Ajax Path for searching for a list of users with the data from '%'.
