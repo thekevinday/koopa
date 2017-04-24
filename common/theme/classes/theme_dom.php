@@ -207,8 +207,8 @@ class c_theme_dom extends DOMDocument {
     }
 
     $markup = '';
-    if ($parent->hasChildNodes() > 0) {
-      foreach ($parent->childNodes as $child) {
+    if (parent::hasChildNodes() > 0) {
+      foreach (parent::childNodes as $child) {
         $markup .= $this->saveHTML($child);
       }
     }
@@ -253,7 +253,7 @@ class c_theme_dom extends DOMDocument {
     }
 
     if ($parent instanceOf DOMNode) {
-      $child = $parent->replaceChild($new, $element);
+      $child = parent::replaceChild($new, $element);
     }
     else {
       $this->appendChild($element);
@@ -298,7 +298,7 @@ class c_theme_dom extends DOMDocument {
   protected function pr_change_elements($type, $parent) {
     $result = TRUE;
 
-    $elements = $parent->getElementsByTagName($type);
+    $elements = parent::getElementsByTagName($type);
     foreach ($elements as $element) {
       if ($element instanceof DOMNode) {
         $result = $this->pr_change_element($element, $type);
@@ -354,7 +354,7 @@ class c_theme_dom extends DOMDocument {
         $removed_child = $element->removeChild($child);
 
         if (is_object($removed_child)) {
-          $parent->insertBefore($removed_child, $element);
+          parent::insertBefore($removed_child, $element);
         }
       }
       unset($child);
@@ -362,7 +362,7 @@ class c_theme_dom extends DOMDocument {
       unset($children);
     }
 
-    $child = $parent->removeChild($element);
+    $child = parent::removeChild($element);
     unset($parent);
 
     if ($child instanceof DOMNode) {
@@ -397,7 +397,7 @@ class c_theme_dom extends DOMDocument {
   protected function pr_remove_elements($type, $parent, $preserve_children = TRUE) {
     $result = TRUE;
 
-    $elements = $parent->getElementsByTagName($type);
+    $elements = parent::getElementsByTagName($type);
     foreach ($elements as $element) {
       $result = $this->pr_remove_element($element, $preserve_children);
 
@@ -466,7 +466,7 @@ class c_theme_return_c_theme_dom extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !($this->value instanceof c_theme_dom)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -480,7 +480,7 @@ class c_theme_return_c_theme_dom extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!($this->value instanceof c_theme_dom)) {
-      $this->value = new c_theme_dom();
+      return new c_theme_dom();
     }
 
     return $this->value;
@@ -544,7 +544,7 @@ class c_theme_return_dom_node extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !($this->value instanceof DOMNode)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -558,7 +558,7 @@ class c_theme_return_dom_node extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!($this->value instanceof DOMNode)) {
-      $this->value = new DOMNode();
+      return new DOMNode();
     }
 
     return $this->value;
@@ -622,7 +622,7 @@ class c_theme_return_dom_comment extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !($this->value instanceof DOMComment)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -636,7 +636,7 @@ class c_theme_return_dom_comment extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!($this->value instanceof DOMComment)) {
-      $this->value = new DOMComment();
+      return new DOMComment();
     }
 
     return $this->value;
@@ -700,7 +700,7 @@ class c_theme_return_dom_element extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !($this->value instanceof DOMElement)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -714,7 +714,7 @@ class c_theme_return_dom_element extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!($this->value instanceof DOMElement)) {
-      $this->value = new DOMElement();
+      return new DOMElement();
     }
 
     return $this->value;
@@ -778,7 +778,7 @@ class c_theme_return_dom_text extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !($this->value instanceof DOMText)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -792,7 +792,7 @@ class c_theme_return_dom_text extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!($this->value instanceof DOMText)) {
-      $this->value = new DOMText();
+      return new DOMText();
     }
 
     return $this->value;

@@ -2502,7 +2502,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       elseif (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code == c_base_asccii::SLASH_FORWARD) {
+      elseif ($code == c_base_ascii::SLASH_FORWARD) {
         // do nothing, valid.
       }
       else {
@@ -2592,7 +2592,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       elseif (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code == c_base_asccii::SLASH_FORWARD || $code == c_base_asccii::QUESTION_MARK) {
+      elseif ($code == c_base_ascii::SLASH_FORWARD || $code == c_base_ascii::QUESTION_MARK) {
         // do nothing, valid.
       }
       else {
@@ -2813,6 +2813,267 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       $result['text'] .= $characters[$result['current']];
     }
     unset($code);
+
+    return $result;
+  }
+
+  /**
+   * Processes a string based on the syntax: numeric.
+   *
+   * This is not part of any specific rfc.
+   *
+   * A string that has the following syntax:
+   * - *(wsp) [('-' | '+')] 1*(DIGIT) ['.' . 1*(DIGIT)] *(wsp)
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'text': A string containing the processed text.
+   *   - 'current': an integer representing the position the counter stopped at.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: base_rfc_char::pr_rfc_char_is_digit()
+   */
+  protected function pr_rfc_string_is_numeric($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'text' => NULL,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+
+    // ignore leading whitespaces
+    $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+    if ($result['invalid']) {
+      return $result;
+    }
+
+    // no numbers found.
+    if ($result['current'] >= $stop) {
+      $result['invalid'] = TRUE;
+      return $result;
+    }
+
+
+    // first look for a leading positive or negative sign.
+    if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+      // @fixme: should error be reported? do some debugging with this.
+      $result['invalid'] = TRUE;
+      return $result;
+    }
+
+    $code = $ordinals[$result['current']];
+    if ($code === c_base_ascii::MINUS && $code === c_base_ascii::PLUS) {
+      $result['text'] .= $code;
+      $result['current']++;
+
+      // must have a digit in addition to the leading +/-.
+      if ($result['current'] >= $stop) {
+        unset($code);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+    }
+    unset($code);
+
+
+    // look for digit, but only allow a single period.
+    $found_period = FALSE;
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($code === c_base_ascii::PERIOD) {
+        if ($found_period) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $found_period = TRUE;
+      }
+      elseif (!$this->pr_rfc_char_is_digit($ordinals[$result['current']])) {
+        // ignore trailing whitespaces
+        if ($this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
+          $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+          if ($result['invalid']) {
+            unset($found_period);
+            return $result;
+          }
+
+          if ($result['current'] >= $stop) {
+            // this is not an error, because only whitespace was found at the end of the number.
+            break;
+          }
+        }
+
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
+    unset($found_period);
+
+    // if there exists only a single period, then this is not a valid number.
+    if ($result['text'] == '.') {
+      $result['text'] = '';
+      $result['invalid'] = TRUE;
+    }
+
+    return $result;
+  }
+
+  /**
+   * Processes a string based on the syntax: hexadecimal numeric.
+   *
+   * This is not part of any specific rfc.
+   *
+   * A string that has the following syntax:
+   * - *(wsp) [('-' | '+')] 1*(HEXDIGIT) ['.' . 1*(HEXDIGIT)] *(wsp)
+   *
+   * @param array $ordinals
+   *   An array of integers representing each character of the string.
+   * @param array $characters
+   *   An array of characters representing the string.
+   * @param int $start
+   *   (optional) The position in the arrays to start checking.
+   * @param int|null $stop
+   *   (optional) The position in the arrays to stop checking.
+   *   If NULL, then the entire string is processed.
+   *
+   * @return array
+   *   The processed information:
+   *   - 'text': A string containing the processed text.
+   *   - 'current': an integer representing the position the counter stopped at.
+   *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
+   *
+   * @see: base_rfc_char::pr_rfc_char_is_hexdigit()
+   */
+  protected function pr_rfc_string_is_hexanumeric($ordinals, $characters, $start = 0, $stop = NULL) {
+    $result = array(
+      'text' => NULL,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
+
+    if (is_null($stop)) {
+      $stop = count($ordinals);
+    }
+
+    if ($start >= $stop) {
+      return $result;
+    }
+
+
+    // ignore leading whitespaces
+    $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+    if ($result['invalid']) {
+      return $result;
+    }
+    unset($result);
+
+    // no numbers found.
+    if ($result['current'] >= $stop) {
+      $result['invalid'] = TRUE;
+      return $result;
+    }
+
+
+    // first look for a leading positive or negative sign.
+    if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+      // @fixme: should error be reported? do some debugging with this.
+      $result['invalid'] = TRUE;
+      return $result;
+    }
+
+    $code = $ordinals[$result['current']];
+    if ($code === c_base_ascii::MINUS && $code === c_base_ascii::PLUS) {
+      $result['text'] .= $code;
+      $result['current']++;
+
+      // must have a digit in addition to the leading +/-.
+      if ($result['current'] >= $stop) {
+        unset($code);
+
+        $result['invalid'] = TRUE;
+        return $result;
+      }
+    }
+    unset($code);
+
+
+    // look for digit, but only allow a single period.
+    $found_period = FALSE;
+    for (; $result['current'] < $stop; $result['current']++) {
+      if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
+        // @fixme: should error be reported? do some debugging with this.
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$result['current']];
+
+      if ($code === c_base_ascii::PERIOD) {
+        if ($found_period) {
+          $result['invalid'] = TRUE;
+          break;
+        }
+
+        $found_period = TRUE;
+      }
+      elseif (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+        // ignore trailing whitespaces
+        if ($this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
+          $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
+          if ($result['invalid']) {
+            unset($found_period);
+            return $result;
+          }
+
+          if ($result['current'] >= $stop) {
+            // this is not an error, because only whitespace was found at the end of the number.
+            break;
+          }
+        }
+
+        $result['invalid'] = TRUE;
+        break;
+      }
+
+      $result['text'] .= $characters[$result['current']];
+    }
+    unset($code);
+    unset($found_period);
+
+    // if there exists only a single period, then this is not a valid number.
+    if ($result['text'] == '.') {
+      $result['text'] = '';
+      $result['invalid'] = TRUE;
+    }
 
     return $result;
   }

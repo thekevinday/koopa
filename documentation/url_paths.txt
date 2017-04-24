@@ -5,6 +5,7 @@ Paths that begin with the following:
  /c/ = Cache Paths.
  /d/ = Data Paths, such as RSS Feeds.
  /f/ = File Paths.
+ /s/ = Form Submit Paths.
  /t/ = Theme Paths.
  /u/ = User Paths (similar to /a/, but focused on users or custom user content).
  /x/ = Ajax Paths.
@@ -28,6 +29,11 @@ Example /f/ paths:
 - /f/i/% - Load file '%' by file id.
 - /f/c/% - Load file '%' by file checksum.
 - /f/s/% - Load checksum for file '%'.
+
+Example /s/ paths:
+- /s/login - Login form
+- /s/logout - Logout form
+- /s/my_form_id/% - "My_form_id" form with parameter '%'.
 
 Example /t/ paths:
 - /t/main/css/all.css - All css file from main theme.

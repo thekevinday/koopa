@@ -405,10 +405,23 @@ class c_base_return_status extends c_base_return {
 class c_base_return_true extends c_base_return_status {
 
   /**
+   * Assign the value.
+   *
+   * @param $value
+   *   This is ignored.
+   *
+   * @return bool
+   *   Always returns TRUE.
+   */
+  public function set_value($value) {
+    return TRUE;
+  }
+
+  /**
    * Return the value.
    *
    * @return bool $value
-   *   The value within this class.
+   *   Always returns TRUE.
    */
   public function get_value() {
     return TRUE;
@@ -418,7 +431,7 @@ class c_base_return_true extends c_base_return_status {
    * Return the value of the expected type.
    *
    * @return bool $value
-   *   The value c_base_markup_tag stored within this class.
+   *   Always returns TRUE.
    */
   public function get_value_exact() {
     return TRUE;
@@ -433,10 +446,23 @@ class c_base_return_true extends c_base_return_status {
 class c_base_return_false extends c_base_return_status {
 
   /**
+   * Assign the value.
+   *
+   * @param $value
+   *   This is ignored.
+   *
+   * @return bool
+   *   Always returns TRUE.
+   */
+  public function set_value($value) {
+    return TRUE;
+  }
+
+  /**
    * Return the value.
    *
    * @return bool $value
-   *   The value within this class.
+   *   Always returns FALSE.
    */
   public function get_value() {
     return FALSE;
@@ -446,7 +472,7 @@ class c_base_return_false extends c_base_return_status {
    * Return the value of the expected type.
    *
    * @return bool $value
-   *   The value c_base_markup_tag stored within this class.
+   *   Always returns FALSE.
    */
   public function get_value_exact() {
     return FALSE;
@@ -459,6 +485,39 @@ class c_base_return_false extends c_base_return_status {
  * This class will not have any values.
  */
 class c_base_return_null extends c_base_return_status {
+
+  /**
+   * Assign the value.
+   *
+   * @param $value
+   *   This is ignored.
+   *
+   * @return bool
+   *   Always returns TRUE.
+   */
+  public function set_value($value) {
+    return TRUE;
+  }
+
+  /**
+   * Return the value.
+   *
+   * @return $value
+   *   Always returns NULL.
+   */
+  public function get_value() {
+    return NULL;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return $value
+   *   Always returns NULL.
+   */
+  public function get_value_exact() {
+    return NULL;
+  }
 }
 
 /**
@@ -504,7 +563,7 @@ class c_base_return_value extends c_base_return {
    */
   public function get_value() {
     if (!isset($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -518,7 +577,7 @@ class c_base_return_value extends c_base_return {
    */
   public function get_value_exact() {
     if (!isset($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -582,7 +641,7 @@ class c_base_return_bool extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !is_bool($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -596,7 +655,7 @@ class c_base_return_bool extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_bool($this->value)) {
-      $this->value = FALSE;
+      return FALSE;
     }
 
     return $this->value;
@@ -659,7 +718,7 @@ class c_base_return_string extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !is_string($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -673,7 +732,7 @@ class c_base_return_string extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_string($this->value)) {
-      $this->value = '';
+      return '';
     }
 
     return $this->value;
@@ -743,7 +802,7 @@ class c_base_return_int extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !is_int($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -757,7 +816,7 @@ class c_base_return_int extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_int($this->value)) {
-      $this->value = 0;
+      return 0;
     }
 
     return $this->value;
@@ -827,7 +886,7 @@ class c_base_return_float extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !is_float($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -841,7 +900,7 @@ class c_base_return_float extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_float($this->value)) {
-      $this->value = 0.0;
+      return 0.0;
     }
 
     return $this->value;
@@ -985,6 +1044,87 @@ class c_base_return_array extends c_base_return_value {
   }
 
   /**
+   * Append the value at the end of the array.
+   *
+   * @param array $value
+   *   Any value so long as it is an array.
+   *   NULL is not allowed.
+   * @param string $type
+   *   (optional) When key is not NULL, a specific known type to assign.
+   *   This does nothing if $key is not provided.
+   *   This is used for validation purposes.
+   *
+   *   Supported known types:
+   *     'bool': a boolean value.
+   *     'int': an integer value.
+   *     'string': a string value.
+   *     'array': an array value.
+   *     'object': an object value.
+   *     'resource': a generic resource value.
+   *     'stream': a stream resource value.
+   *     'socket': a socket resource value.
+   *     'numeric': a string value that represents either an int or float.
+   *     'null': A null value.
+   *     NULL: no specific type requirements.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value_append($value, $type = NULL) {
+    // when type is not supplied, return a generic type.
+    if (is_null($type)) {
+      $this->value[] = $value;
+      return TRUE;
+    }
+
+    // if type is supplied, it must be string.
+    if (!is_string($type) || empty($type)) {
+      return FALSE;
+    }
+
+    if ($type == 'bool' && !is_bool($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'int' && !is_int($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'float' && !is_float($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'numeric' && !is_numeric($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'string' && !is_string($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'array' && !is_array($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'object' && !is_object($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'resource' && !is_resource($value)) {
+      return FALSE;
+    }
+    elseif ($type == 'stream') {
+      if (!is_resource($value) || get_resource_type($value) != 'stream') {
+        return FALSE;
+      }
+    }
+    elseif ($type == 'socket') {
+      if (!is_resource($value) || get_resource_type($value) != 'socket') {
+        return FALSE;
+      }
+    }
+    elseif ($type == 'null' && !is_null($value)) {
+      return FALSE;
+    }
+
+    $this->value[] = $value;
+    return TRUE;
+  }
+
+  /**
    * Return the value.
    *
    * @return array|null $value
@@ -993,7 +1133,7 @@ class c_base_return_array extends c_base_return_value {
    */
   public function get_value() {
     if (!is_null($this->value) && !is_array($this->value)) {
-      $this->value = NULL;
+      return NULL;
     }
 
     return $this->value;
@@ -1007,7 +1147,7 @@ class c_base_return_array extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_array($this->value)) {
-      $this->value = array();
+      return array();
     }
 
     return $this->value;
@@ -1125,6 +1265,34 @@ class c_base_return_array extends c_base_return_value {
     }
 
     return $this->value[$key];
+  }
+
+  /**
+   * Return the total number of values in the array.
+   *
+   * @return int
+   *   A positive integer.
+   */
+  public function get_value_count() {
+    if (empty($this->value)) {
+      return 0;
+    }
+
+    return count($this->value);
+  }
+
+  /**
+   * Return the array keys assigned to the value.
+   *
+   * @return array
+   *   An array of array keys.
+   */
+  public function get_value_keys() {
+    if (empty($this->value)) {
+      return array();
+    }
+
+    return array_keys($this->value);
   }
 }
 

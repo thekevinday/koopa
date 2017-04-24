@@ -20,8 +20,29 @@
  * A collection of global settings for use by the entire project.
  *
  * This is intended to be modified by the developers or site developers of a project.
+ *
+ * Warning: Any variables defined here (due to being global) must be considered not thread-safe.
+ *          Be sure to handle carefully when using threads.
+ *          It is recommended to process and pre-set as much of this as possible before starting threads.
  */
 class c_base_defaults_global {
+  // set to NULL for auto, TRUE to always enable backtrace on error, and FALSE to always disable backtrace on error.
+  const ERROR_BACKTRACE_ALWAYS = NULL;
+
+  // set to NULL for auto, TRUE to enable backtrace for parameter-type errors, and FALSE to disable.
+  // this is overriden when ERROR_BACKTRACE_ALWAYS is not NULL.
+  const ERROR_BACKTRACE_ARGUMENTS = FALSE;
+
+  // provide a language to fallback to if none is set.
+  const LANGUAGE_CLASS_DEFAULT = 'c_base_language_us_only';
+
+  // reserved path groups: array(97, 99, 100, 102, 115, 116, 120, 121).
+  const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
+
+  // a class name to prepend to css classes or id attributes.
+  const CSS_BASE = 'reservation-';
+
+
   // Represents the current timestamp of this PHP process/session, see: self::s_get_timestamp_session().
   private static $s_timestamp_session = NULL;
 
@@ -34,17 +55,6 @@ class c_base_defaults_global {
   // This must be a class that implements: i_base_language.
   // In most cases, this should be expected to be defined.
   private static $s_language = NULL;
-
-
-  // set to NULL for auto, TRUE to always enable backtrace on error, and FALSE to always disable backtrace on error.
-  const ERROR_BACKTRACE_ALWAYS = NULL;
-
-  // set to NULL for auto, TRUE to enable backtrace for parameter-type errors, and FALSE to disable.
-  // this is overriden when ERROR_BACKTRACE_ALWAYS is not NULL.
-  const ERROR_BACKTRACE_ARGUMENTS = FALSE;
-
-  // provide a language to fallback to if none is set.
-  const LANGUAGE_CLASS_DEFAULT = 'c_base_language_us_only';
 
 
   /**
@@ -215,7 +225,7 @@ class c_base_defaults_global {
   }
 
   /**
-   * Get the current timestamp of the session, relative to UTC..
+   * Get the current timestamp of the session, relative to UTC.
    *
    * @param bool $use_request_time
    *   (optional) Set to TRUE to attempt to use REQUEST_TIME_FLOAT or REQUEST_TIME where available.

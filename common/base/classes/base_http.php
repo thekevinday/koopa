@@ -45,23 +45,27 @@ class c_base_http extends c_base_rfc_string {
   const REQUEST_DATE                           = 14;
   const REQUEST_EXPECT                         = 15;
   const REQUEST_FROM                           = 16;
-  const REQUEST_HOST                           = 17;
-  const REQUEST_IF_MATCH                       = 18;
-  const REQUEST_IF_MODIFIED_SINCE              = 19;
-  const REQUEST_IF_NONE_MATCH                  = 20;
-  const REQUEST_IF_RANGE                       = 21;
-  const REQUEST_IF_UNMODIFIED_SINCE            = 22;
-  const REQUEST_MAX_FORWARDS                   = 23;
-  const REQUEST_ORIGIN                         = 24;
-  const REQUEST_PRAGMA                         = 25;
-  const REQUEST_PROXY_AUTHORIZATION            = 26;
-  const REQUEST_RANGE                          = 27;
-  const REQUEST_REFERER                        = 28;
-  const REQUEST_TE                             = 29;
-  const REQUEST_USER_AGENT                     = 30;
-  const REQUEST_UPGRADE                        = 31;
-  const REQUEST_VIA                            = 32;
-  const REQUEST_WARNING                        = 33;
+  const REQUEST_GET                            = 17;
+  const REQUEST_HOST                           = 18;
+  const REQUEST_IF_MATCH                       = 19;
+  const REQUEST_IF_MODIFIED_SINCE              = 20;
+  const REQUEST_IF_NONE_MATCH                  = 21;
+  const REQUEST_IF_RANGE                       = 22;
+  const REQUEST_IF_UNMODIFIED_SINCE            = 23;
+  const REQUEST_MAX_FORWARDS                   = 24;
+  const REQUEST_ORIGIN                         = 25;
+  const REQUEST_POST                           = 26;
+  const REQUEST_PRAGMA                         = 27;
+  const REQUEST_PROXY_AUTHORIZATION            = 28;
+  const REQUEST_RANGE                          = 29;
+  const REQUEST_REFERER                        = 30;
+  const REQUEST_SCRIPT_NAME                    = 31;
+  const REQUEST_TE                             = 32;
+  const REQUEST_UPGRADE                        = 33;
+  const REQUEST_URI                            = 34;
+  const REQUEST_USER_AGENT                     = 35;
+  const REQUEST_VIA                            = 36;
+  const REQUEST_WARNING                        = 37;
   const REQUEST_UNKNOWN                        = 999;
 
   // non-standard, but supported, request headers
@@ -74,6 +78,7 @@ class c_base_http extends c_base_rfc_string {
   const REQUEST_CHECKSUM_CONTENT        = 1007;
   const REQUEST_CONTENT_ENCODING        = 1008;
   const REQUEST_SIGNATURE_PG            = 1009;
+  // @todo: should PHP's REMOTE_ADDRESS be added and handled here?
 
   // standard response headers
   const RESPONSE_NONE                             = 0;
@@ -228,6 +233,9 @@ class c_base_http extends c_base_rfc_string {
   // http separators
   const SEPARATOR_HEADER_NAME = ': ';
   const SEPARATOR_HEADER_LINE = "\n";
+
+  // fallbacks/failsafes
+  const FALLBACK_PROTOCOL = 'HTTP/1.1';
 
   private $headers;
   private $headers_sent;
@@ -550,9 +558,11 @@ class c_base_http extends c_base_rfc_string {
       self::REQUEST_PROXY_AUTHORIZATION,
       self::REQUEST_RANGE,
       self::REQUEST_REFERER,
+      self::REQUEST_SCRIPT_NAME,
       self::REQUEST_TE,
-      self::REQUEST_USER_AGENT,
       self::REQUEST_UPGRADE,
+      self::REQUEST_URI,
+      self::REQUEST_USER_AGENT,
       self::REQUEST_VIA,
       self::REQUEST_WARNING,
       self::REQUEST_X_REQUESTED_WITH,
@@ -732,19 +742,29 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['referer']);
     }
 
+    if (array_key_exists('script_name', $this->headers)) {
+      $this->p_load_request_script_name();
+      unset($headers['script_name']);
+    }
+
     if (array_key_exists('te', $this->headers)) {
       $this->p_load_request_te();
       unset($headers['te']);
     }
 
-    if (array_key_exists('user_agent', $this->headers)) {
-      $this->p_load_request_user_agent();
-      unset($headers['user_agent']);
-    }
-
     if (array_key_exists('upgrade', $this->headers)) {
       $this->p_load_request_upgrade();
       unset($headers['upgrade']);
+    }
+
+    if (array_key_exists('uri', $this->headers)) {
+      $this->p_load_request_uri();
+      unset($headers['uri']);
+    }
+
+    if (array_key_exists('user_agent', $this->headers)) {
+      $this->p_load_request_user_agent();
+      unset($headers['user_agent']);
     }
 
     if (array_key_exists('via', $this->headers)) {
@@ -2765,6 +2785,7 @@ class c_base_http extends c_base_rfc_string {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    *
+   * // @fixme: there are more response status definitions, the see: needs to be updated.
    * @see: https://tools.ietf.org/html/rfc7232#section-4
    */
   public function set_response_status($code) {
@@ -2950,7 +2971,7 @@ class c_base_http extends c_base_rfc_string {
    * Assign HTTP response header: HTTP Protocol.
    *
    * @param string $protocol
-   *   A string representing the HTTP protocol, such as: "HTTP 1.1".
+   *   A string representing the HTTP protocol, such as: "HTTP/1.1".
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -4598,8 +4619,13 @@ class c_base_http extends c_base_rfc_string {
     // response status, this must always be first.
     unset($headers[self::RESPONSE_STATUS]);
     $status_string = NULL;
-    if (array_key_exists(self::RESPONSE_PROTOCOL, $this->response) && array_key_exists(self::RESPONSE_STATUS, $this->response)) {
-      $status_string = $this->response[self::RESPONSE_PROTOCOL] . ' ';
+    if (array_key_exists(self::RESPONSE_STATUS, $this->response)) {
+      if (array_key_exists(self::RESPONSE_PROTOCOL, $this->response)) {
+        $status_string = $this->response[self::RESPONSE_PROTOCOL] . ' ';
+      }
+      else {
+        $status_string = self::FALLBACK_PROTOCOL . ' ';
+      }
 
       $status_text = c_base_http_status::to_text($this->response[self::RESPONSE_STATUS]);
       if ($status_text instanceof c_base_return_false) {
@@ -4712,6 +4738,22 @@ class c_base_http extends c_base_rfc_string {
     }
 
     return c_base_return_string::s_new($this->content);
+  }
+
+  /**
+   * Returns whether or not response content is defined.
+   *
+   * @return c_base_return_bool
+   *   TRUE if content is defined.
+   *   FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function has_response_content() {
+    if (empty($this->content)) {
+      return new c_base_return_false();
+    }
+
+    return new c_base_return_true();
   }
 
   /**
@@ -4886,6 +4928,40 @@ class c_base_http extends c_base_rfc_string {
     }
 
     return new c_base_return_true();
+  }
+
+  /**
+   * Sanitizes a given path to ensure certain combinations of characters are not allowed.
+   *
+   * This removes any '../' in the path.
+   * This removes multiple consecutive '/'.
+   * This removes any '/' prefix.
+   * This removes any '/' suffix.
+   *
+   * @param string $path
+   *   The path to sanitize
+   *
+   * @return c_base_return_string
+   *   The sanitized string on success.
+   *   An empty string with the error bit set is returned on error.
+   */
+  public function sanitize_path($path) {
+    if (!is_string($path)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    // do not support '../' in the url paths (primarily for security reasons).
+    $sanitized = preg_replace('@^\.\./(\.\./)*@', '', $path);
+    $sanitized = preg_replace('@/(\.\./)+@', '/', $sanitized);
+
+    // remove redundant path parts, such as replacing '//////' with '/'.
+    $sanitized = preg_replace('@/(/)+@', '/', $sanitized);
+
+    // remove leading and trailing slashes.
+    $sanitized = preg_replace('@(^/|/$)@', '', $sanitized);
+
+    return c_base_return_string::s_new($sanitized);
   }
 
   /**
@@ -6335,6 +6411,39 @@ class c_base_http extends c_base_rfc_string {
     unset($this->request[self::REQUEST_UPGRADE]['data']['invalid']);
 
     $this->request[self::REQUEST_UPGRADE]['invalid'] = FALSE;
+  }
+
+  /**
+   * Load and process the HTTP request parameter: uri.
+   *
+   * @see: https://tools.ietf.org/html/rfc7231#section-5.5.3
+   */
+  private function p_load_request_uri() {
+    if (empty($this->headers['uri'])) {
+      $this->request[self::REQUEST_URI]['invalid'] = TRUE;
+      return;
+    }
+
+    $text = $this->pr_rfc_string_prepare($this->headers['uri']);
+    if ($text['invalid']) {
+      $this->request[self::REQUEST_URI]['invalid'] = TRUE;
+      unset($text);
+      return;
+    }
+
+    $this->request[self::REQUEST_URI]['data'] = $this->pr_rfc_string_is_uri($text['ordinals'], $text['characters']);
+    unset($text);
+
+    if ($this->request[self::REQUEST_URI]['data']['invalid']) {
+      $this->request[self::REQUEST_URI]['invalid'] = TRUE;
+    }
+    else {
+      $this->request[self::REQUEST_URI]['defined'] = TRUE;
+    }
+    unset($this->request[self::REQUEST_URI]['data']['invalid']);
+    unset($this->request[self::REQUEST_URI]['data']['current']);
+
+    $this->request[self::REQUEST_URI]['invalid'] = FALSE;
   }
 
   /**
@@ -7828,6 +7937,7 @@ class c_base_http extends c_base_rfc_string {
         // break the header name so that it is consistent until such time that PHP stops clobbering the header names.
         $broken = preg_replace('/-/u', '_', $key);
         $broken = c_base_utf8::s_lowercase($broken)->get_value_exact();
+
         $this->headers[$broken] = $value;
         unset($broken);
       }
@@ -7852,6 +7962,11 @@ class c_base_http extends c_base_rfc_string {
         unset($key);
         unset($value);
       }
+    }
+
+    $this->headers['uri'] = '';
+    if (isset($_SERVER['REQUEST_URI'])) {
+      $this->headers['uri'] = $_SERVER['REQUEST_URI'];
     }
 
     $timestamp = c_base_defaults_global::s_get_timestamp_session();
@@ -8596,7 +8711,7 @@ class c_base_http extends c_base_rfc_string {
       unset($header_output[self::RESPONSE_CONTENT_ENCODING]);
     }
     else {
-      $header_output[self::RESPONSE_CONTENT_ENCODING] .= substr($output, 1);
+      $header_output[self::RESPONSE_CONTENT_ENCODING] .= c_base_utf8::s_substring($output, 1)->get_value_exact();
     }
   }
 
@@ -8630,7 +8745,7 @@ class c_base_http extends c_base_rfc_string {
     unset($language);
 
     if (!is_null($output)) {
-      $header_output[self::RESPONSE_CONTENT_LANGUAGE] = $header_name . ': ' . substr($output, 2);
+      $header_output[self::RESPONSE_CONTENT_LANGUAGE] = $header_name . ': ' . c_base_utf8::s_substring($output, 2)->get_value_exact();
     }
     unset($output);
   }

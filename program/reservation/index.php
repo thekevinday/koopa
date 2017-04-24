@@ -7,6 +7,7 @@
   require_once('common/base/classes/base_defaults_global.php');
 
   require_once('common/base/classes/base_http.php');
+  require_once('common/base/classes/base_http_status.php');
   require_once('common/base/classes/base_cookie.php');
   require_once('common/base/classes/base_ldap.php');
   require_once('common/base/classes/base_markup.php');
@@ -20,6 +21,7 @@
   require_once('program/reservation/reservation_database.php');
   require_once('program/reservation/reservation_session.php');
   require_once('program/reservation/reservation_paths.php');
+  require_once('program/reservation/reservation_redirects.php');
 
   /**
    * Load all custom settings.
@@ -65,6 +67,11 @@
     $settings['ldap_base_dn'] = 'ou=users,ou=People';
     $settings['ldap_fields'] = array('mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber');
 
+    // base settings
+    $settings['base_scheme'] = 'https';
+    $settings['base_host'] = 'localhost';
+    $settings['base_path'] = $settings['cookie_path'];
+
     // default supported languages.
     c_base_defaults_global::s_set_languages(new c_base_language_limited());
 
@@ -80,6 +87,12 @@
   function reservation_receive_request() {
     $http = new c_base_http();
     $http->do_load_request();
+
+    // Assign a default response protocol.
+    $http->set_response_protocol('HTTP/1.1');
+
+    // Assign a default response status (expected to be overridden by path handlers).
+    $http->set_response_status(c_base_http_status::OK);
 
     return $http;
   }
@@ -116,12 +129,10 @@
 
     // when the headers are sent, checksums are created, so at this point all error output should be stored and not sent.
     $http->send_response_headers(TRUE);
-    flush();
 
 
     // once the header are sent, send the content.
     $http->send_response_content();
-    flush();
 
 
     ini_set('output_buffering', $old_output_buffering);
@@ -139,6 +150,10 @@
    *   System settings
    * @param c_base_session &$session
    *   Session information.
+   *
+   * @return c_base_html|c_base_return_array
+   *   The generated html is returned on success.
+   *   In certain cases, an array is returned for special handling, such as redirects.
    */
   function reservation_process_request(&$http, &$database, &$settings, &$session) {
     $html = new c_base_html();
@@ -252,60 +267,39 @@
     $html->set_header($tag);
     unset($tag);
 
-    // finish building pages.
     if (!isset($_SERVER["HTTPS"])) {
-      reservation_build_page_require_https($html, $settings, $session);
+      //reservation_login_page_require_https($settings, $session, $html);
+      // @todo: provide custom https required page.
+      return $html;
     }
-    elseif ($settings['database_user'] == 'u_reservation_public') {
-      // if the session cookie exists, but the user is still u_reservation_public, then the cookie is no longer valid.
-      if (empty($session->get_session_id()->get_value_exact())) {
-        // check to see if user has filled out the login form.
-        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id']) && $_POST['form_id'] == 'login_form') {
-          $logged_in = reservation_attempt_login($database, $settings, $session);
 
-          if ($logged_in instanceof c_base_return_true) {
-            reservation_build_page_dashboard($html, $settings, $session);
-            // @todo: process and handle different paths here and load page as requested.
-          }
-          else {
-            // store the problems in the session object (because session as a subclass of c_base_return).
-            $session->set_problems($logged_in->get_value_exact());
+    $session_user = $session->get_name()->get_value_exact();
+    if (is_null($session_user)) {
+      $logged_in = FALSE;
 
-            // @todo: render login failure.
-            reservation_process_path_public($html, $settings, $session);
-          }
-          unset($logged_in);
-        }
-        else {
-          reservation_process_path_public($html, $settings, $session);
-        }
-      }
-      else {
-        $cookie_login = $session->get_cookie();
+      // @todo: delete old cookies, if they expire.
+      $cookie_login = $session->get_cookie();
 
-        // delete the cookie.
+      // @fixme: shouldn't this check be in the session management code?
+      // the session should already be logged into at this point.
+      // if the session id exists, but no user id is defined, then the session is no longer valid, so delete the invalid cookie.
+      if (!empty($session->get_session_id()->get_value_exact())) {
         $cookie_login->set_expires(-1);
         $cookie_login->set_max_age(-1);
         $session->set_cookie($cookie_login);
         unset($cookie_login);
 
-        reservation_process_path_public($html, $settings, $session);
+        $session->set_session_id(NULL);
       }
     }
     else {
-      // load current database settings.
-      reservation_database_string($database, $settings);
-
-      // load current user roles
-      reservation_get_current_roles($database, $settings, $session); // @todo: handle returnr result errors.
-
-      if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['form_id'])) {
-        reservation_process_forms($html, $settings, $session);
-      }
-      else {
-        reservation_process_path($html, $settings, $session);
-      }
+      $logged_in = TRUE;
     }
+
+    $paths = new c_reservation_paths();
+    $paths->reservation_process_path($http, $database, $session, $html, $settings, $logged_in);
+    unset($logged_in);
+    unset($paths);
 
     return $html;
   }
@@ -359,6 +353,17 @@
 
   /**
    * Main Program Function
+   *
+   * note: Future designs will likely include content caching.
+   *       There are different designs based on the type of content that can be used for caching.
+   *       The following are some common generic areas to cache:
+   *       - design 1 (public content): 3, 4. 5 (cache handling happens between 2 and 3).
+   *       - design 2 (database bypass): 4 (4 is to be replaced with cache handling).
+   *       - design 3 (theme bypass): 4. 5 (4 is to be replaced with cache handling).
+   *       - design 4 (full private cache): 4. 5, 6* (should still handling login access, only (vary) headers are to be changed in 6).
+   *       - design 5 (full public cache): 3, 4. 5, 6* (should still handling login access, only (vary) headers are to be changed in 6).
+   *
+   *       It is also recommended that some placeholders are added to the css body to provide dynamic css class names, even on cached content.
    */
   function reservation_main() {
     // 1: local settings:

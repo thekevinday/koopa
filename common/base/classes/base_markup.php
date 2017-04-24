@@ -10,6 +10,7 @@ require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_mime.php');
 require_once('common/base/classes/base_charset.php');
 require_once('common/base/classes/base_languages.php');
+require_once('common/base/classes/base_rfc_string.php');
 
 /**
  * A generic class for html attribute types.
@@ -338,6 +339,23 @@ class c_base_markup_attributes {
 }
 
 /**
+ * A generic class for html sanitization filters.
+ */
+class c_base_markup_filters {
+  const FILTER_NONE                 = 0;
+  const FILTER_ALPHA_NUMERIC        = 1;
+  const FILTER_DATE                 = 2;
+  const FILTER_EMAIL                = 3;
+  const FILTER_MONTH                = 4;
+  const FILTER_NUMERIC              = 5;
+  const FILTER_TEXT                 = 6;
+  const FILTER_TEXT_PLAIN           = 7;
+  const FILTER_TEXT_HTML            = 8;
+  const FILTER_TYPE_DATE_TIME_LOCAL = 9;
+  const FILTER_WEEK                 = 10;
+}
+
+/**
  * A generic class for html tags.
  *
  * The structure and attributes may be used to communicate information, therefore the attributes extend to both input and output (theme).
@@ -352,7 +370,7 @@ class c_base_markup_attributes {
  *
  * @todo: add support for non-standard tag attributes, which will just be a string or NULL.
  */
-class c_base_markup_tag extends c_base_return {
+class c_base_markup_tag extends c_base_rfc_string {
   const TYPE_NONE                       = 0;
   const TYPE_A                          = 1;
   const TYPE_ABBR                       = 2;
@@ -514,11 +532,11 @@ class c_base_markup_tag extends c_base_return {
   const TYPE_WEEK                       = 158;
   const TYPE_WIDE_BREAK                 = 159;
 
-  private $attributes;
-  private $tags;
-  private $tags_total;
-  private $text;
-  private $type;
+  protected $attributes;
+  protected $tags;
+  protected $tags_total;
+  protected $text;
+  protected $type;
 
   /**
    * Class constructor.
@@ -1354,6 +1372,174 @@ class c_base_markup_tag extends c_base_return {
   }
 
   /**
+   * Checks that the assigned HTML attribute 'value' is valid according to the tag type.
+   *
+   * @param int $attribute
+   *   The attribute to assign.
+   * @param bool $sanitize
+   *   (optional) When TRUE, the text is altered and replaced with new text.
+   *   When FALSE, no changes are made.
+   * @param int|null $type
+   *   (optional) The filter type to sanitize as.
+   *   When NULL, evaluate the attribute based on the tag type (if supported, only a few form tags are supported).
+   * @param int|string|null $sub_type
+   *   The sub-type to validate "value" as.
+   *   This is not directly implemented by this class and is provided so that extending classes may have more fine-tuned control.
+   *   This should accept either an int, a string, or NULL.
+   * @param array $options
+   *   (optional) any additional options that are specific to a given sanitization type.
+   *
+   * @return c_base_return_status
+   *   NULL is returned if not defined.
+   *   TRUE if changes were made, when $sanitize is TRUE.
+   *   TRUE on valid string, when $sanitize is FALSE.
+   *   TRUE with error bit set is returned on error, when $sanitize is TRUE.
+   *   FALSE if no changes, when $sanitize is TRUE.
+   *   FALSE on invalid string, when $sanitize is FALSE.
+   *   FALSE with error bit set is returned on error and no changes were made.
+   *
+   * @see: self::pr_check_attribute_as_text()
+   */
+  public function check_attribute($attribute, $sanitize = FALSE, $type = NULL, $sub_type = NULL, $options = array()) {
+    if (!is_int($attribute)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($sanitize)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'sanitize', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_int($type)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($sub_type) && !is_int($sub_type) && !is_string($sub_type)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'sub_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($options)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($this->attributes) || !array_key_exists($attribute, $this->attributes)) {
+      return new c_base_return_null();
+    }
+
+    if (is_null($type)) {
+      if ($this->type === TYPE_CHECKBOX) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_COLOR) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_DATE) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_DATE_TIME_LOCAL) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_EMAIL) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_HIDDEN) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_IMAGE) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_INPUT) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_MONTH) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_NUMBER) {
+        return $this->pr_check_attribute_as_numeric($sanitize);
+      }
+
+      if ($this->type === TYPE_OPTION) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_PASSWORD) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_RADIO) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_SEARCH) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_TELEPHONE) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_TEXT) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_TEXT_AREA) {
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_TIME) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_URL) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      if ($this->type === TYPE_WEEK) {
+        // @todo: sanitize specifically to possible types.
+        return $this->pr_check_attribute_as_text($sanitize);
+      }
+
+      // for all other types, do nothing.
+      return new c_base_return_false();
+    }
+
+    // when type is not null, process based on passed validation filter code.
+    if ($type === c_base_markup_filters::FILTER_TEXT) {
+      return $this->pr_check_attribute_as_text($sanitize);
+    }
+    elseif ($type === c_base_markup_filters::FILTER_NUMERIC) {
+      return $this->pr_check_attribute_as_numeric($sanitize);
+    }
+
+    // @todo: finish this.
+
+    // for all other types, do nothing.
+    return new c_base_return_false();
+  }
+
+  /**
    * Add or append a given tag to the object.
    *
    * @param c_base_markup_tag $tag
@@ -1841,5 +2027,156 @@ class c_base_markup_tag extends c_base_return {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Removes all invalid characters for text fields.
+   *
+   * @param bool $sanitize
+   *   (optional) When TRUE, the text is altered and replaced with new text.
+   *   When FALSE, no changes are made.
+   *
+   * @return c_base_return_status
+   *   TRUE if changes were made, when $sanitize is TRUE.
+   *   TRUE on valid string, when $sanitize is FALSE.
+   *   TRUE with error bit set is returned on error, when $sanitize is TRUE.
+   *   FALSE if no changes, when $sanitize is TRUE.
+   *   FALSE on invalid string, when $sanitize is FALSE.
+   *   FALSE with error bit set is returned on error and no changes were made.
+   *
+   * @see: self::check_attribute()
+   */
+  protected function pr_check_attribute_as_text($attribute, $sanitize = TRUE) {
+    if (is_string($this->attributes[$attribute])) {
+      $value = $this->attributes[$attribute];
+    }
+    elseif (is_numeric($this->attributes[$attribute])) {
+      $value = (string) $this->attributes[$attribute];
+    }
+    else {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $prepared = $this->pr_rfc_string_prepare($value);
+    if ($prepared instanceof c_base_return_false) {
+      unset($prepared);
+      unset($value);
+
+      $this->attributes[$attribute] = NULL;
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+
+      if ($sanitize) {
+        return c_base_return_error::s_true($error);
+      }
+
+      return c_base_return_error::s_false($error);
+    }
+    unset($value);
+
+    $text = $prepared->get_value_exact();
+    unset($prepared);
+
+    $invalid = FALSE;
+    $changed = FALSE;
+    $sanitized = '';
+    $current = 0;
+    $stop = count($ordinals);
+
+    for (; $current < $stop; $current++) {
+      if (!array_key_exists($current, $ordinals) || !array_key_exists($current, $characters)) {
+        $invalid = TRUE;
+        break;
+      }
+
+      $code = $ordinals[$current];
+
+      if (!$this->pr_rfc_char_is_text($code)) {
+        $invalid = TRUE;
+        $changed = TRUE;
+        continue;
+      }
+
+      $sanitized .= $characters[$current];
+    }
+    unset($code);
+    unset($current);
+    unset($stop);
+
+    if ($sanitize && $changed) {
+      $this->attributes[$attribute] = $sanitized;
+    }
+    unset($sanitized);
+
+    if ($invalid) {
+      unset($invalid);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      if ($changed) {
+        unset($changed);
+        return c_base_return_error::s_true($error);
+      }
+      unset($changed);
+
+      return c_base_return_error::s_false($error);
+    }
+    unset($invalid);
+
+    if ($changed) {
+      unset($changed);
+      return new c_base_return_true();
+    }
+    unset($changed);
+
+    return new c_base_return_false();
+  }
+
+  /**
+   * Removes all invalid characters for numeric fields.
+   *
+   * @param bool $sanitize
+   *   (optional) When TRUE, the text is altered and replaced with new text.
+   *   When FALSE, no changes are made.
+   *
+   * @return c_base_return_status
+   *   TRUE if changes were made, when $sanitize is TRUE.
+   *   TRUE on valid string, when $sanitize is FALSE.
+   *   TRUE with error bit set is returned on error, when $sanitize is TRUE.
+   *   FALSE if no changes, when $sanitize is TRUE.
+   *   FALSE on invalid string, when $sanitize is FALSE.
+   *   FALSE with error bit set is returned on error and no changes were made.
+   *
+   * @see: self::check_attribute()
+   */
+  protected function pr_check_attribute_as_numeric($attribute, $sanitize = TRUE) {
+    if (!is_numeric($this->attributes[$attribute])) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'number', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+
+    // @fixme: this is just a quick and dirty implementation, come back and re-design this more effectively.
+
+    $value = floatval($this->attributes[$attribute]);
+    if (floor($value) == $value) {
+      $value = (int) $value;
+    }
+
+    if ($this->attribute[$attribute] == $value) {
+      unset($value);
+
+      if ($sanitize) {
+        return new c_base_return_false();
+      }
+
+      return new c_base_return_true();
+    }
+
+    if ($sanitize) {
+      $this->attribute[$attribute] = $value;
+      return new c_base_return_true();
+    }
+
+    return new c_base_return_false();
   }
 }

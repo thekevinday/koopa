@@ -22,9 +22,15 @@ require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_ascii.php');
 require_once('common/base/classes/base_utf8.php');
 require_once('common/base/classes/base_http.php');
+require_once('common/base/classes/base_http_status.php');
+require_once('common/base/classes/base_markup.php');
+require_once('common/base/classes/base_html.php');
+require_once('common/base/classes/base_cookie.php');
 
 /**
  * A generic class for managing paths information.
+ *
+ * @todo: update this class documentation.
  *
  * Note: There are still a.lot of changes going on in this and this comments may become out of date.
  *       At this time, I am considering having system defined paths be 'group-paths', existing at: '/a/, '/b/', '/c/', .., '/0/', '/1/', .., '/9'.
@@ -52,32 +58,33 @@ require_once('common/base/classes/base_http.php');
  *
  * The variables provided by this object are based on v_paths and not t_paths.
  *
+ * $id_group is used to represent the 'group-path' using an ordinal of one of the following 'a-z', 'A-Z', or '0-9'.
+ * These paths are case-sensitive.
  *
- * $id_path is used to represent the 'group-path' using an ordinal of one of the following 'a-z', 'A-Z', or '0-9'.
- * Interpretation of case-sensitivity is implimentation specific.
+ * @todo: add support to conditionally handle HTTP Request Methods and handle errors as desired by implementing classes.
  *
  * // c_base_utf8::s_substring($path_string, 0, 1);
  */
-abstract class c_base_path extends c_base_return_string {
-  private $id       = NULL;
-  private $id_path  = NULL;
-  private $id_sort  = NULL;
+class c_base_path extends c_base_rfc_string {
+  use t_base_return_value_exact;
 
-  private $is_content  = NULL;
-  private $is_alias    = NULL;
-  private $is_redirect = NULL;
-  private $is_private  = NULL;
-  private $is_locked   = NULL;
+  protected $id_group = NULL;
 
-  //private $field_path  = NULL; // stored as $this->value (this is temporary notation and will be removed).
-  private $field_destination   = NULL;
-  private $field_response_code = NULL;
+  protected $is_content  = NULL;
+  protected $is_alias    = NULL;
+  protected $is_redirect = NULL;
+  protected $is_private  = NULL;
+  protected $is_locked   = NULL;
+  protected $is_root     = NULL;
 
-  private $date_created = NULL;
-  private $date_changed = NULL;
-  private $date_locked  = NULL;
+  protected $field_destination   = NULL;
+  protected $field_response_code = NULL;
 
-  private $processed = NULL;
+  protected $date_created = NULL;
+  protected $date_changed = NULL;
+  protected $date_locked  = NULL;
+
+  protected $include = NULL;
 
   /**
    * Class constructor.
@@ -85,15 +92,15 @@ abstract class c_base_path extends c_base_return_string {
   public function __construct() {
     parent::__construct();
 
-    $this->id       = NULL;
-    $this->id_path  = NULL;
-    $this->id_sort  = NULL;
+    $this->id_group = NULL;
 
     $this->is_content  = TRUE;
     $this->is_alias    = FALSE;
     $this->is_redirect = FALSE;
     $this->is_private  = TRUE;
     $this->is_locked   = FALSE;
+    $this->is_root     = FALSE;
+
 
     $this->field_destination   = NULL;
     $this->field_response_code = NULL;
@@ -102,22 +109,21 @@ abstract class c_base_path extends c_base_return_string {
     $this->date_changed = NULL;
     $this->date_locked  = NULL;
 
-    $this->processed = NULL;
+    $this->include = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->id);
-    unset($this->id_path);
-    unset($this->id_sort);
+    unset($this->id_group);
 
     unset($this->is_content);
     unset($this->is_alias);
     unset($this->is_redirect);
     unset($this->is_private);
     unset($this->is_locked);
+    unset($this->is_root);
 
     unset($this->field_destination);
     unset($this->field_response_code);
@@ -126,7 +132,7 @@ abstract class c_base_path extends c_base_return_string {
     unset($this->date_changed);
     unset($this->date_locked);
 
-    unset($this->processed);
+    unset($this->include);
 
     parent::__destruct();
   }
@@ -153,11 +159,96 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
+   * Assign the value.
+   *
+   * The string must be a valid URL path.
+   *
+   * This removes multiple consecutive '/'.
+   * This removes any '/' prefix.
+   * This removes any '/' suffix.
+   * This limits the string size to 256 characters.
+   *
+   * @param string $value
+   *   Any value so long as it is a string.
+   *   NULL is not allowed.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value($value) {
+    if (!is_string($value)) {
+      return FALSE;
+    }
+
+    $sanitized = self::pr_sanitize_path($value);
+
+    // the path wildcard is intentionally non-standard.
+    // remove it so that it does not cause the validator to fail.
+    $without_wildcard = preg_replace('@(^%/|^%$|/%/|/%$)@', '', $sanitized);
+    if (!is_string($without_wildcard)) {
+      return FALSE;
+    }
+
+    // check to see if sanitized value is allowed.
+    $without_wilcard_parts = $this->pr_rfc_string_prepare($without_wildcard);
+    unset($without_wildcard);
+
+    if ($without_wilcard_parts['invalid']) {
+      unset($without_wilcard_parts);
+      unset($sanitized);
+      return FALSE;
+    }
+
+    $validated = $this->pr_rfc_string_is_path($without_wilcard_parts['ordinals'], $without_wilcard_parts['characters']);
+    if ($validated['invalid']) {
+      unset($without_wilcard_parts);
+      unset($validated);
+      unset($sanitized);
+      return FALSE;
+    }
+    unset($without_wilcard_parts);
+    unset($validated);
+
+    $this->value = $sanitized;
+    unset($sanitized);
+
+    return TRUE;
+  }
+
+  /**
+   * Return the value.
+   *
+   * @return string|null $value
+   *   The value array stored within this class.
+   */
+  public function get_value() {
+    if (!is_string($this->value)) {
+      return NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return DOMNode $value
+   *   The value DOMNode stored within this class.
+   */
+  public function get_value_exact() {
+    if (!is_string($this->value)) {
+      return '';
+    }
+
+    return $this->value;
+  }
+
+  /**
    * Create a content path.
    *
-   * @param int $id_path
+   * @param int $id_group
    *   An ordinal of one of the characters a-z, A-Z, or 0-9.
-   *   Used for grouping paths.
+   *   0 may be assigned to represent no group.
    * @param string $field_path
    *   The URL path assigned to this field.
    *   This is not assigned on parameter error.
@@ -170,14 +261,16 @@ abstract class c_base_path extends c_base_return_string {
    *   Always returns the newly created tag.
    *   Error bit is set on error.
    */
-  public static function s_create_content($id_path, $field_path, $is_private = TRUE) {
-    $path = new __CLASS__();
+  public static function s_create_content($id_group, $field_path, $is_private = TRUE) {
+    $class = __CLASS__;
+    $path = new $class();
+    unset($class);
 
-    // store all errors on return.
+    // @todo: store all errors on return.
     $errors = array();
 
-    if (is_int($id_path)) {
-      $path->set_id_path($id_path);
+    if (is_int($id_group)) {
+      $path->set_id_group($id_group);
     }
 
     if (is_string($field_path)) {
@@ -190,6 +283,8 @@ abstract class c_base_path extends c_base_return_string {
     else {
       $path->set_is_private(TRUE);
     }
+
+    $path->set_is_content(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
@@ -204,8 +299,9 @@ abstract class c_base_path extends c_base_return_string {
    *
    * Defaults are silently forced on invalid parameters.
    *
-   * @param int $id_path
+   * @param int $id_group
    *   An ordinal of one of the characters a-z, A-Z, or 0-9.
+   *   0 may be assigned to represent no group.
    * @param string $field_path
    *   The URL path assigned to this field.
    *   This is not assigned on parameter error.
@@ -220,14 +316,16 @@ abstract class c_base_path extends c_base_return_string {
    *   A newly created tag is returned on success.
    *   FALSE with the error bit set is returned on error.
    */
-  public static function s_create_alias($id_path, $field_path, $field_destination, $is_private = TRUE) {
-    $path = new __CLASS__();
+  public static function s_create_alias($id_group, $field_path, $field_destination, $is_private = TRUE) {
+    $class = __CLASS__;
+    $path = new $class();
+    unset($class);
 
-    // store all errors on return.
+    // @todo: store all errors on return.
     $errors = array();
 
-    if (is_int($id_path)) {
-      $path->set_id_path($id_path);
+    if (is_int($id_group)) {
+      $path->set_id_group($id_group);
     }
 
     if (is_string($field_path)) {
@@ -245,6 +343,8 @@ abstract class c_base_path extends c_base_return_string {
       $path->set_is_private(TRUE);
     }
 
+    $path->set_is_alias(TRUE);
+
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
     $path->set_date_changed($timestamp_session);
@@ -258,11 +358,6 @@ abstract class c_base_path extends c_base_return_string {
    *
    * Defaults are silently forced on invalid parameters.
    *
-   * @param int $id_path
-   *   An ordinal of one of the characters a-z, A-Z, or 0-9.
-   * @param string $field_path
-   *   The URL path assigned to this field.
-   *   This is not assigned on parameter error.
    * @param string $field_destination
    *   A destination URL to redirect to.
    * @param int $response_code
@@ -285,26 +380,20 @@ abstract class c_base_path extends c_base_return_string {
    *   A newly created tag is returned on success.
    *   FALSE with the error bit set is returned on error.
    */
-  public static function s_create_redirect($id_path, $field_path, $field_destination, $field_response_code, $is_private = TRUE) {
-    $path = new __CLASS__();
+  public static function s_create_redirect($field_destination, $field_response_code, $is_private = TRUE) {
+    $class = __CLASS__;
+    $path = new $class();
+    unset($class);
 
-    // store all errors on return.
+    // @todo: store all errors on return.
     $errors = array();
-
-    if (is_int($id_path)) {
-      $path->set_id_path($id_path);
-    }
-
-    if (is_string($field_path)) {
-      $path->set_value($field_path);
-    }
 
     if (is_string($field_destination)) {
       $path->set_field_destination($field_destination);
     }
 
     if (is_int($field_response_code)) {
-      $path->set_response_code($field_response_code);
+      $path->set_field_response_code($field_response_code);
     }
 
     if (is_bool($is_private)) {
@@ -313,6 +402,8 @@ abstract class c_base_path extends c_base_return_string {
     else {
       $path->set_is_private(TRUE);
     }
+
+    $path->set_is_redirect(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
@@ -323,73 +414,23 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
-   * Assigns the machine name setting.
+   * Assigns sort id.
    *
-   * @param int $id
-   *   The machine name associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_id($id) {
-    if (!is_int($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->id = $id;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the machine name setting.
-   *
-   * @param int $id_path
-   *   The machine name associated with the path.
+   * @param int $id_group
+   *   A id used for grouping and sorting the path.
+   *   Must be >= 0.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_id_path($id_path) {
-    if (!is_int($id_path)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id_path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_id_group($id_group) {
+    if (!is_int($id_group) || $id_group < 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id_group', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->id_path = $id_path;
+    $this->id_group = $id_group;
     return new c_base_return_true();
-  }
-
-  /**
-   * Assign the value.
-   *
-   * This removes multiple consecutive '/'.
-   * This removes any '/' prefix.
-   * This removes any '/' suffix.
-   * This limits the string size to 256 characters.
-   *
-   * @param string $value
-   *   Any value so long as it is a string.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_value($value) {
-    if (!is_string($value)) {
-      return FALSE;
-    }
-
-    $this->value = $this->p_sanitize_value($value);
-
-    if (mb_strleng($this->value) == 0) {
-      $this->id_sort = 0;
-    }
-    else {
-      $this->id_sort = ord(c_base_utf8::s_substring($this->value, 0, 1)->get_value_exact());
-    }
-
-    return TRUE;
   }
 
   /**
@@ -545,6 +586,25 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
+   * Assigns the is root boolean setting.
+   *
+   * @param bool $is_root
+   *   The is root boolean associated with the path.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_is_root($is_root) {
+    if (!is_bool($is_root)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_root', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->is_root = $is_root;
+    return new c_base_return_true();
+  }
+
+  /**
    * Assigns the destination field setting.
    *
    * @param string $field_destination
@@ -640,55 +700,40 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
-   * Gets the id setting.
+   * Assign an include file needed to process this path.
    *
-   * @return c_base_return_int
-   *   ID on success.
-   *   An ID of 0 means that there is no valid ID specified.
-   *   Error bit is set on error.
+   * @param string $path
+   *   A path to a file that may be found via the PHP search path.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
    */
-  public function get_id() {
-    if (!is_int($this->id)) {
-      return c_base_return_int::s_new(0);
+  public function set_include($path) {
+    if (!is_string($path)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_int::s_new($this->id);
+    $this->include = $path;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the ID path setting.
+   * Gets the ID sort setting.
    *
    * @return c_base_return_int
    *   ID group on success.
    *   A path ID of 0 means that there is no valid ID specified.
    *   Error bit is set on error.
    */
-  public function get_id_path() {
-    if (!is_int($this->id_path)) {
+  public function get_id_group() {
+    if (!is_int($this->id_group)) {
       return c_base_return_int::s_new(0);
     }
 
-    return c_base_return_int::s_new($this->id_path);
+    return c_base_return_int::s_new($this->id_group);
   }
 
-  /**
-   * Gets the ID sort value.
-   *
-   * The ID sort value is the ordinal of the first character of the path.
-   * This is used for minor optimization.
-   *
-   * @return c_base_return_int
-   *   ID group on success.
-   *   A path ID of 0 means that there is no valid ID specified.
-   *   Error bit is set on error.
-   */
-  public function get_id_sort() {
-    if (!is_int($this->id_sort)) {
-      return c_base_return_int::s_new(0);
-    }
-
-    return c_base_return_int::s_new($this->id_sort);
-  }
 
   /**
    * Gets the is content boolean setting.
@@ -766,6 +811,21 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
+   * Gets the is root boolean setting.
+   *
+   * @return c_base_return_bool
+   *   Is root on success.
+   *   Error bit is set on error.
+   */
+  public function get_is_root() {
+    if (!is_bool($this->is_root)) {
+      $this->is_root = FALSE;
+    }
+
+    return c_base_return_bool::s_new($this->is_root);
+  }
+
+  /**
    * Gets the destination field setting.
    *
    * @return c_base_return_string
@@ -834,7 +894,7 @@ abstract class c_base_path extends c_base_return_string {
    *
    * @return c_base_return_float|c_base_return_null
    *   Date locked on success.
-   *   FALSE is returned if the date is not assigned.
+   *   NULL is returned if the date is not assigned.
    *   Error bit is set on error.
    */
   public function get_date_locked() {
@@ -846,102 +906,158 @@ abstract class c_base_path extends c_base_return_string {
   }
 
   /**
-   * Get the results of when this given path is executed.
+   * Get the assigned include path.
    *
-   * @return c_base_return_null|c_base_return_bool|c_base_return_int|c_base_return_float|c_base_return_array
-   *   This can be any of NULL, bool, int, float, or array as defined by this class.
-   *   The class c_base_return can be used as a catch all.
-   *   NULL is intended to represent that execution has not happend or do_execute was called and no operations were performed.
-   *   This does set the error bit.
-   *
-   * @see: $this->do_execute()
+   * @return c_base_return_string|c_base_return_null
+   *   Include path string on success.
+   *   NULL is returned if the include path is not assigned.
+   *   Error bit is set on error.
    */
-  final public function get_processed() {
-    if (is_bool($this->processed)) {
-      if ($this->processed) {
-        return new c_base_return_true();
-      }
-
-      return new c_base_return_false();
+  public function get_include() {
+    if (!is_string($this->include)) {
+      return new c_base_return_null();
     }
 
-    if (is_int($this->processed)) {
-      return c_base_return_int::s_new($this->processed);
-    }
-
-    if (is_float($this->processed)) {
-      return c_base_return_float::s_new($this->processed);
-    }
-
-    if (is_array($this->processed)) {
-      return c_base_return_array::s_new($this->processed);
-    }
-
-    return new c_base_return_null();
+    return c_base_return_string::s_new($this->include);
   }
 
   /**
-   * Execute using the specified path.
-   *
-   * The results of this function are stored in a 'processed' string.
+   * Execute using the specified path, rendering the page.
    *
    * @param c_base_http $http
    *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database $database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @pram c_base_html &$html
+   *   The HTML object.
+   *   If the content is not renderring HTML, the output parameter should instead be used for providing content.
+   * @param array $settings
+   *   (optional) An array of additional settings that are usually site-specific.
    *
-   * @return c_base_return_null|c_base_return_bool
-   *   NULL is returned if no operation was performed.
-   *   TRUE is returned if function executed.
-   *   FALSE is returned if function was not execution, but should have.
-   *   NULL is returned with error bit set if no operation was performed because $http is an invalid parameter.
-   *   TRUE is returned with error bit set if function executed but an error occured.
-   *   FALSE is returned with error bit set if function did not execute, but should have, and an error occured.
-   *
-   * @see: $this->get_processed();
+   * @return c_base_path_executed
+   *   An executed array object is returned on success.
+   *   An executed array object with error bit set is returned on error.
    */
-  public function do_execute($http) {
+  public function do_execute(&$http, &$database, &$session, &$html, $settings = array()) {
+    if (!($database instanceof c_base_database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'c_base_http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(0, 'c_base_return_null', $error);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
-    if (!is_null($this->processed)) {
-      $this->processed = NULL;
+    if (!($session instanceof c_base_session)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
-    return new c_base_return_null();
+    if (!($html instanceof c_base_html)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'html', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    if (!is_array($settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    return new c_base_path_executed();
   }
 
   /**
    * Returns a sanitized string for use as the url path string.
    *
+   * This removes any '../' in the path.
    * This removes multiple consecutive '/'.
    * This removes any '/' prefix.
    * This removes any '/' suffix.
    * This limits the string size to 256 characters.
    *
+   * @param string $path
+   *   The path string to sanitize.
+   *
    * @return string
    *   The sanitized string.
    */
-  private function p_sanitize_value($value) {
-    $value = preg_replace('@/+@i', '/', $value);
-    $value = preg_replace('@(^/|/$)@', '', $value);
-    $value = c_base_utf8::s_substring($value, 0, 256);
+  protected static function pr_sanitize_path($path) {
+    // do not support '../' in the url paths (primarily for security reasons).
+    $sanitized = preg_replace('@^\.\./(\.\./)*@', '', $path);
+    $sanitized = preg_replace('@/(\.\./)+@', '/', $sanitized);
 
-    return $value->get_value_exact();
+    // remove redundant path parts, such as replacing '//////' with '/'.
+    $sanitized = preg_replace('@/(/)+@', '/', $sanitized);
+
+    // remove leading and trailing slashes.
+    $sanitized = preg_replace('@(^/|/$)@', '', $sanitized);
+
+    // enforce a max path size of 256 characters.
+    $sanitized = c_base_utf8::s_substring($sanitized, 0, 256);
+
+    return $sanitized->get_value_exact();
+  }
+
+  /**
+   * @todo: write type sanitization code by implementing protected functions that can be overwritten by the calling class as necessary.
+   *
+   * It may be useful to provide the variables, such as $http, $database, $settings, etc.., to this class to allow for more advanced handling of types.
+   *
+   * @param string $id
+   *   The unique id representing the value.
+   * @param int $type
+   *   The data type to sanitize the value as.
+   * @param string|int|null $type_sub
+   *   (optional) a sub-type to provide additional customization on each type.
+   *   This is intended to be used in site-specific ways and is not implemented by the base project.
+   *   Instead, extend this class and implement this function to utilize $type_sub.
+   *   If this is not a string, int, or null, it is forced to be NULL without an error bit being assigned.
+   *
+   * @return c_base_return_value|c_base_return_null
+   *   The sanitized value, in whatever form it needs to be.
+   *   NULL is returned if unable to process or value is supposed to be NULL.
+   *   NULL is returned with error bit set on error.
+   */
+  protected function pr_sanitize($id, $type, $type_sub = NULL) {
+    if (!is_string($id) && mb_strlen($id) > 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
+    }
+
+    if (!is_int($type)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
+    }
+
+    if (!is_array($_POST) || !array_key_exists($id, $_POST)) {
+      return new c_base_return_null();
+    }
+
+    if (!is_null($type_sub) && !is_int($type_sub) && !is_string($type_sub)) {
+      $type_sub = NULL;
+    }
+
+    // @fixme: $value is returned unsanitized until this code is implemented.
+    return c_base_return_value::s_new($_POST[$id]);
   }
 }
 
 /**
- * Provides a collection of possible paths for selection and execution.
+ * A generic class for provided returns values of the do_execute() functions from c_base_path.
  *
- * This utilizes some very basic path based optimizations.
- * First, the path group is optimized (an ordinal representing one of: NULL, a-z, A-Z, or 0-9).
- * Second, the first character of the path string (expects utf-8).
- * Third, the paths are exploded and searched based on all their sub-parts.
+ * The array value of this class is intended to be used for any additional return values (such as form errors).
+ * The $cookies is meant to hold any HTTP cookies to be processed after the execution.
+ * The $output is meant to hold the output for any non-HTML content in the event that HTML is not to be renderred..
+ *
+ * @see: c_base_path
  */
-class c_base_paths extends c_base_return {
-  private $root  = NULL;
-  private $paths = NULL;
+class c_base_path_executed extends c_base_return_array {
+  private $cookies = NULL;
+  private $output  = NULL;
+  private $form    = NUll;
 
 
   /**
@@ -950,16 +1066,18 @@ class c_base_paths extends c_base_return {
   public function __construct() {
     parent::__construct();
 
-    $this->root  = NULL;
-    $this->paths = array();
+    $this->cookies = NULL;
+    $this->output  = NULL;
+    $this->form    = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->root);
-    unset($this->paths);
+    unset($this->cookies);
+    unset($this->output);
+    unset($this->form);
 
     parent::__destruct();
   }
@@ -986,57 +1104,232 @@ class c_base_paths extends c_base_return {
   }
 
   /**
-   * Assign the path object string to this class.
+   * Assign cookies.
    *
-   * Duplicate paths overwrite previous paths.
-   *
-   * @param c_base_path $path
-   *   An implentation of c_base_path to be executed when the path is requested.
-   *   If path value is an empty string, then this is treated as the root path.
+   * @param c_base_cookie
+   *   The cookie to assign.
+   * @param bool $append
+   *   (optional) When TRUE the $cookie is appended.
+   *   When FALSE, the array is reset with $cookie as the only value in the array.
    *
    * @return c_base_return_status
    *   TRUE is returned on success.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_path($path) {
-    if (!($path instanceof c_base_path)) {
+  public function set_cookies($cookie, $append = TRUE) {
+    if (!($cookie instanceof c_base_cookie)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'cookie', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!$append || !is_array($this->cookies)) {
+      $this->cookies = array();
+    }
+
+    $this->cookies[] = $cookie;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assign output.
+   *
+   * @param c_base_value
+   *   The output to assign.
+   *
+   * @return c_base_return_status
+   *   TRUE is returned on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_output($output) {
+    if (!($output instanceof c_base_value)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'output', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->output = $output;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Gets the assigned output
+   *
+   * @return c_base_return_value|c_base_return_null
+   *   The assigned output is returned.
+   *   If there is no assigned output (generally when execution is not performed) NULL is returned.
+   */
+  public function get_output() {
+    if (is_null($this->output)) {
+      return new c_base_return_null();
+    }
+
+    return $this->output;
+  }
+}
+
+/**
+ * Provides a collection of possible paths for selection and execution.
+ *
+ * This utilizes some very basic path based optimizations.
+ * First, the path group is optimized (an ordinal representing one of: NULL, a-z, A-Z, or 0-9).
+ * Second, the first character of the path string (expects utf-8).
+ * Third, the paths are exploded and searched based on all their sub-parts.
+ */
+class c_base_paths extends c_base_return {
+  private $paths = NULL;
+  private $root  = NULL;
+
+
+  /**
+   * Class constructor.
+   */
+  public function __construct() {
+    parent::__construct();
+
+    $this->paths = array();
+    $this->root  = NULL;
+  }
+
+  /**
+   * Class destructor.
+   */
+  public function __destruct() {
+    unset($this->paths);
+    unset($this->root);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, array());
+  }
+
+  /**
+   * Assign a specific path handler.
+   *
+   * Duplicate paths overwrite previous paths.
+   *
+   * @todo: should redirect and alias booleans be added as parameters?
+   *
+   * @pram string $path
+   *   The url path in which the handler applies to.
+   * @param string $handler
+   *   The name of an implementation of c_base_path.
+   * @param string|null $include
+   *   (optional) The file path (relative to the PHP includes) to include that contains the requested path.
+   *
+   * @return c_base_return_status
+   *   TRUE is returned on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_path($path, $handler, $include = NULL) {
+    if (!is_string($path)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $path_string = $path->get_value();
-
-    // No default will be specified, so return error if the value is not properly defined.
-    if (!is_string($path_string)) {
-      return new c_base_return_false();
+    if (!is_string($handler)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'handler', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    if (mb_strlen($path_string) == 0) {
-      $this->root = $path;
+    if (!is_null($include) && !is_string($include)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'include', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (mb_strlen($path) == 0) {
+      $this->root = array('handler' => $handler, 'include' => $include);
       return new c_base_return_true();
     }
 
-    // array is optimized based on the path group id and then the first character of a given path.
-    $ordinal = $this->get_id_path()->get_value_exact();
-    $sort = $this->get_id_sort()->get_value_exact();
+    $path_object = new c_base_path();
+    $valid_path = $path_object->set_value($path);
+
+    if (!$valid_path) {
+      unset($path_object);
+      unset($valid_path);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+    unset($valid_path);
+
+
+    $path_string = $path_object->get_value_exact();
+    unset($path_object);
+
+    // assign each path part to the path
+    $path_parts = explode('/', $path_string);
+    unset($path_string);
+
+
+    // load the path group, if available.
+    $id_group = 0;
+    if (mb_strlen($path_parts[0]) == 1) {
+      $ordinal = ord($path_parts[0]);
+      if (in_array($ordinal, c_base_defaults_global::RESERVED_PATH_GROUP)) {
+        $id_group = $ordinal;
+      }
+      unset($ordinal);
+      unset($path_pats[0]);
+    }
 
     if (!is_array($this->paths)) {
       $this->paths = array();
     }
 
-    if (!array_key_exists($ordinal, $this->paths)) {
-      $this->paths[$ordinal] = array();
+    if (!array_key_exists($id_group, $this->paths)) {
+      $this->paths[$id_group] = array();
     }
 
-    if (!array_key_exists($sort, $this->paths[$ordinal])) {
-      $this->paths[$ordinal][$sort] = array();
+    $path_tree = &$this->paths[$id_group];
+
+    $depth_current = 1;
+    $depth_total = count($path_parts);
+    foreach ($path_parts as $path_part) {
+      if ($depth_current == $depth_total) {
+        $path_tree['include'] = $include;
+        $path_tree['handler'] = $handler;
+        break;
+      }
+
+      if (!isset($path_tree['paths'][$path_part])) {
+        $path_tree['paths'][$path_part] = array(
+          'paths' => array(),
+          'include' => NULL,
+          'handler' => NULL,
+        );
+      }
+
+      $path_tree = &$path_tree['paths'][$path_part];
+      $depth_current++;
     }
-
-    $path_parts = explode('/', $path);
-
-    // @todo: explode this into parts and place them into array.
-    //        the line below is incorrect, but is used as a notation until I finish writing this.
-    //$this->paths[$ordinal][$sort][$path_string] = $path;
+    unset($path_part);
+    unset($path_parts);
+    unset($depth_current);
+    unset($depth_total);
 
     return new c_base_return_true();
   }
@@ -1044,17 +1337,115 @@ class c_base_paths extends c_base_return {
   /**
    * Gets a path object for the specified path.
    *
-   * @param string $path_string
+   * @param string|null $path_string
    *   The URL path without any path arguments.
    *   This does not accept wildcards.
+   *   Set to NULL or an empty string for the root path.
    *
-   * @return c_base_path|c_base_status
-   *   A path object is returned if the path matches, with wildcards.
+   * @return c_base_return_array|c_base_return_int|c_base_return_null
+   *   An array containing:
+   *   - 'include': the file to include that contains the handler class implementation.
+   *   - 'handler': the name of the handler class.
+   *   - 'redirect': if specified, then a redirect path (instead of include/handler).
+   *   - 'code': if redirect is specified, then the http response code associated with the redirect.
    *   Wildcards are matched after all non-wildcards.
-   *   FALSE without error bit set is return if path was not found.
+   *   NULL is returned if not found.
    *   FALSE with error bit set is returned on error.
+   *
+   * @see: self::set_login()
+   * @see: self::process_path()
    */
-  public function get_path($path_string) {
-    // @todo
+  public function find_path($path_string) {
+    if (!is_null($path_string) && !is_string($path_string)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path_string', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($path_string) || mb_strlen($path_string) == 0) {
+      if (is_array($this->root)) {
+        return $this->root;
+      }
+
+      return new c_base_return_null();
+    }
+
+
+    // sanitize the url path.
+    $path = new c_base_path();
+    if (!$path->set_value($path_string)) {
+      unset($path);
+
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'path_string', ':expected_format' => 'Valid URL path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $sanitized = $path->get_value_exact();
+    unset($path);
+
+    // if the sanitized path is different from the original, then send a url redirect.
+    if (strcmp($path_string, $sanitized) != 0) {
+      return c_base_return_array::s_new(array('redirect' => $sanitized, 'code' => c_base_http_status::MOVED_PERMANENTLY));
+    }
+
+    $path_parts = explode('/', $sanitized);
+    unset($sanitized);
+
+
+    // load the path group, if available.
+    $id_group = 0;
+    if (mb_strlen($path_parts[0]) == 1) {
+      $ordinal = ord($path_parts[0]);
+      if (in_array($ordinal, c_base_defaults_global::RESERVED_PATH_GROUP)) {
+        $id_group = $ordinal;
+      }
+      unset($ordinal);
+      unset($path_pats[0]);
+    }
+
+
+    $depth_current = 1;
+    $depth_total = count($path_parts);
+    $found = NULL;
+    $path_tree = &$this->paths[$sort];
+    foreach ($path_parts as $path_part) {
+      if ($depth_current == $depth_total) {
+        if (isset($path_tree['handler'])) {
+          $found = array('include' => $path_tree['include'], 'handler' => $path_tree['handler']);
+          break;
+        }
+      }
+
+      if (!isset($path_tree['paths'][$path_part])) {
+        if ($depth_current == $depth_total) {
+          if (isset($path_tree['handler'])) {
+            $found = array('include' => $path_tree['include'], 'handler' => $path_tree['handler']);
+            break;
+          }
+        }
+
+        if (isset($path_tree['paths']['%'])) {
+          $path_tree = &$path_tree['paths']['%'];
+          $depth_current++;
+          continue;
+        }
+
+        break;
+      }
+
+      $path_tree = &$path_tree['paths'][$path_part];
+      $depth_current++;
+    }
+    unset($path_part);
+    unset($path_parts);
+    unset($depth_current);
+    unset($depth_total);
+    unset($path_tree);
+
+    if (is_array($found)) {
+      return c_base_return_array::s_new($found);
+    }
+    unset($found);
+
+    return new c_base_return_null();
   }
 }

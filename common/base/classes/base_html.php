@@ -77,7 +77,7 @@ class c_base_html extends c_base_return {
   }
 
   /**
-   * Assign a unique numeric id to represent this form.
+   * Assign a unique numeric id to represent this HTML page.
    *
    * @param int $id
    *   The unique form tag id to assign.
@@ -97,7 +97,7 @@ class c_base_html extends c_base_return {
   }
 
   /**
-   * Get the unique id assigned to this object.
+   * Get the unique id assigned to this HTML page.
    *
    * @return c_base_return_int|c_base_return_status
    *   The unique numeric id assigned to this object.

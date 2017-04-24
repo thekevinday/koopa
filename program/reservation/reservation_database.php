@@ -16,12 +16,18 @@
    *   The database to connect to.
    * @param array $settings
    *   Custom settings.
+   * @param string|null $username
+   *   The username string.
+   *   If NULL, then the global username is used.
+   * @param string|null $password
+   *   The password string.
+   *   If NULL, then the global password is used.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set on error.
    */
-  function reservation_database_string(&$database, $settings) {
+  function reservation_database_string(&$database, $settings, $user_name = NULL, $password = NULL) {
     if (!($database instanceof c_base_database)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -32,14 +38,34 @@
       return c_base_return_error::s_false($error);
     }
 
+    if (!is_null($user_name) && !is_string($user_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'user_name', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($password) && !is_string($password)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'password', ':function_name' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
     $connection_string = new c_base_connection_string();
     $connection_string->set_host($settings['database_host']);
     $connection_string->set_port($settings['database_port']);
     $connection_string->set_database($settings['database_name']);
-    $connection_string->set_user($settings['database_user']);
 
-    if (!is_null($settings['database_password'])) {
-      $connection_string->set_password($settings['database_password']);
+    if (is_null($user_name)) {
+      $connection_string->set_user($settings['database_user']);
+
+      if (!is_null($settings['database_password'])) {
+        $connection_string->set_password($settings['database_password']);
+      }
+    }
+    else {
+      $connection_string->set_user($user_name);
+
+      if (!is_null($password)) {
+        $connection_string->set_password($password);
+      }
     }
 
     $connection_string->set_ssl_mode($settings['database_ssl_mode']);

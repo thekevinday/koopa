@@ -8,583 +8,375 @@
   require_once('common/base/classes/base_markup.php');
   require_once('common/base/classes/base_html.php');
   require_once('common/base/classes/base_charset.php');
+  require_once('common/base/classes/base_ascii.php');
   require_once('common/base/classes/base_form.php');
+  require_once('common/base/classes/base_path.php');
 
   require_once('program/reservation/reservation_database.php');
   require_once('program/reservation/reservation_session.php');
 
-/**
- * Build the login page.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- */
-function reservation_build_login_page(&$html, $settings, $session) {
-  $problem_fields = array();
-  $problem_messages = array();
+class c_reservation_paths {
+  // paths to common files (not url paths).
+  private const PATH_LOGIN         = 'program/reservation/paths/u/login.php';
+  private const PATH_LOGOUT        = 'program/reservation/paths/u/logout.php';
+  private const PATH_ACCESS_DENIED = 'program/reservation/internal/access_denied.php';
+  private const PATH_NOT_FOUND     = 'program/reservation/internal/not_found.php';
 
-  // @fixme: create a form problems array in session and use that.
-  $problems = $session->get_problems();
-  if ($problems instanceof c_base_return_array) {
-    $problems = $problems->get_value_exact();
+  private $http      = NULL;
+  private $database  = NULL;
+  private $settings  = NULL;
+  private $session   = NULL;
+  private $markup    = NULL;
+  private $logged_in = NULL;
+  private $paths     = NULL;
 
-    foreach ($problems as $problem) {
-      $fields = $problem->get_fields();
-      if ($fields instanceof c_base_return_array) {
-        foreach ($fields->get_value_exact() as $field) {
-          $problem_fields[] = $field;
-        }
-        unset($field);
-      }
-      unset($fields);
-
-      $problem_messages[] = $problem->get_value_exact();
-    }
-    unset($problem);
-  }
-  unset($problems);
-
-  if (!empty($problem_messages)) {
-    $messages = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems', array('form_problems'));
-    foreach ($problem_messages as $problem_delta => $problem_message) {
-      $class = array(
-        'form_problems-problem',
-        'form_problems-problem-' . $problem_delta,
-      );
-
-      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems-problem-' . $problem_delta, $class);
-      $tag->set_text($problem_message);
-      unset($class);
-
-      $messages->set_tag($tag);
-      unset($tag);
-    }
-    unset($problem_message);
-    unset($problem_delta);
-
-    $html->set_tag($messages);
-    unset($messages);
-  }
-  unset($problem_messages);
-
-  // login form
-  $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', array('login_form'));
-  $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_METHOD, 'post');
-  $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ROLE, 'form');
-  $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET, c_base_charset::UTF_8);
-
-
-  // H1
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-  $tag->set_text('Login to System');
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // hidden form data
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id', array('login_form-id'));
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'login_form');
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // label: username
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-username'));
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-username');
-  $tag->set_text('Username');
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // field: username
-  $class = array(
-    'login_form-input-username',
-  );
-  if (array_key_exists('login_form-username', $problem_fields)) {
-    $class[] = 'field_has_problem';
+  /**
+   * Class constructor.
+   */
+  public function __construct() {
+    $this->uri       = NULL;
+    $this->http      = NULL;
+    $this->database  = NULL;
+    $this->settings  = NULL;
+    $this->session   = NULL;
+    $this->markup    = NULL;
+    $this->logged_in = NULL;
+    $this->paths     = NULL;
+    $this->path      = NULL;
   }
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TEXT, 'login_form-username', $class);
-  unset($class);
-
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // label: password
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'));
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-password');
-  $tag->set_text('Password');
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // field: password
-  $class = array(
-    'login_form-input-password',
-  );
-  if (array_key_exists('login_form-password', $problem_fields)) {
-    $class[] = 'field_has_problem';
+  /**
+   * Class destructor.
+   */
+  public function __destruct() {
+    unset($this->uri);
+    unset($this->http);
+    unset($this->settings);
+    unset($this->session);
+    unset($this->markup);
+    unset($this->logged_in);
+    unset($this->paths);
+    unset($this->path);
   }
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_PASSWORD, 'login_form-password', $class);
-  unset($class);
-
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // button: reset
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'));
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Reset');
-  $form->set_tag($tag);
-  unset($tag);
-
-
-  // button: submit
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
-  $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Login');
-  $form->set_tag($tag);
-  unset($tag);
-  unset($problem_fields);
-
-  $html->set_tag($form);
-  unset($form);
-}
-
-/**
- * Validate the login form.
- *
- * @param c_base_database &$database
- *   The database object.
- * @param array &$settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- *
- * @return c_base_return_array|c_base_return_status
- *   TRUE on success.
- *   An array of problems on failure.
- */
-function reservation_attempt_login(&$database, &$settings, &$session) {
-  $problems = array();
-  if (empty($_POST['login_form-username'])) {
-    $problems[] = c_base_form_problem::s_create_error('login_form-username', 'No valid username has been supplied.');
-  }
-
-  if (empty($_POST['login_form-password'])) {
-    $problems[] = c_base_form_problem::s_create_error('login_form-password', 'No valid password has been supplied.');
-  }
-
-  // explicitly deny access to internal user accounts
-  if ($_POST['login_form-username'] == 'u_reservation_public') {
-    $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user name or password has been specified.');
-  }
-
-  // return current list of problems before continuing to login attempt with credentials.
-  if (!empty($problems)) {
-    return c_base_return_array::s_new($problems);
-  }
-
-  $session->set_name($_POST['login_form-username']);
-  $session->set_password($_POST['login_form-password']);
-  $settings['database_user'] = $_POST['login_form-username'];
-  $settings['database_password'] = $_POST['login_form-password'];
-
-  // the database string must be rebuilt using the new username and password.
-  reservation_database_string($database, $settings);
-
-  $access_denied = FALSE;
-  $error_messages = array();
-  $connected = reservation_database_connect($database);
-  if (c_base_return::s_has_error($connected)) {
-    // try to determine what the warning is.
-    // this is not very accurate/efficient, but scanning the string appears to be the only way to identify the error.
-    $errors = $connected->get_error();
-
-    // @todo: walk through all errors instead of just checking the first.
-    $error = reset($errors);
-    unset($errors);
-
-    $details = $error->get_details();
-    unset($error);
-
-    if (isset($details['arguments'][':failure_reasons'][0]['message'])) {
-      // in the case where the database cannot be connected to, do not attempt to ensure user account.
-      if (preg_match('/could not connect to server: connection refused/i', $details['arguments'][':failure_reasons'][0]['message']) > 0) {
-        // @todo: separate messages for admin users and public users.
-        #foreach ($details['arguments'][':failure_reasons'] as $error_message) {
-        #  $error_messages[] = $error_message;
-        #}
-        #unset($error_message);
-        unset($details);
-
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, cannot connect to the database.');
-        return c_base_return_array::s_new($problems);
-      }
-      elseif (preg_match('/no pg_hba\.conf entry for host/i', $details['arguments'][':failure_reasons'][0]['message']) > 0) {
-        // the account either does note exist or is not authorized.
-        // it is a pity that postgresql doesn't differentiate the two.
-        $access_denied = TRUE;
-      }
-      else {
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, reason: ' . $details['arguments'][':failure_reasons'][0]['message'] . '.');
-        unset($details);
-
-        return c_base_return_array::s_new($problems);
-      }
-    }
-    unset($details);
-
-    if ($access_denied) {
-      // it is possible the user name might not exist, so try to auto-create the username if the username does not exist.
-      $ensure_result = reservation_ensure_user_account($settings, $_POST['login_form-username']);
-      if ($ensure_result instanceof c_base_return_int) {
-        $ensure_result = $ensure_result->get_value_exact();
-
-        $connected = new c_base_return_false();
-        if ($ensure_result === 0) {
-          // try again now that the system has attempted to ensure the user account exists.
-          $connected = reservation_database_connect($database);
-          if ($connected instanceof c_base_return_true) {
-            // @todo: add log entry.
-            #set_log_user($database, 'create_user');
-          }
-        }
-        elseif ($ensure_result === 1) {
-          // invalid user name, bad characters, or name too long.
-        }
-        elseif ($ensure_result === 2) {
-          // failed to connect to the ldap server and could not query the ldap name.
-        }
-        elseif ($ensure_result === 3) {
-          // user name not found in ldap database.
-        }
-        elseif ($ensure_result === 4) {
-          //    4 = failed to connect to the database.
-        }
-        elseif ($ensure_result === 5) {
-          //    5 = error returned while executing the SQL command.
-        }
-        elseif ($ensure_result === 6) {
-          //    6 = error occured while reading input from the user (such as via recv()).
-        }
-        elseif ($ensure_result === 7) {
-          //    7 = error occured while writing input from the user (such as via send()).
-        }
-        elseif ($ensure_result === 8) {
-          //    8 = the received packet is invalid, such as wrong length.
-        }
-        elseif ($ensure_result === 9) {
-          //   10 = connection timed out when reading or writing.
-        }
-        elseif ($ensure_result === 10) {
-          //   10 = the connection is being forced closed.
-        }
-        elseif ($ensure_result === 11) {
-          //   11 = the connection is closing because the service is quitting.
-        }
-      }
-      unset($ensure_result);
-    }
-  }
-
-  if (c_base_return::s_has_error($connected) || $connected instanceof c_base_return_false) {
-    // @todo: rewrite this function to handle multiple errors.
-    if ($access_denied) {
-      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user or password has been specified.');
-    }
-    else {
-      $errors = $connected->get_error();
-
-      $error = reset($errors);
-      unset($errors);
-
-      $details = $error->get_details();
-      unset($error);
-
-      // @todo: not just database errors, but also session create errors need to be checked.
-      if (isset($details['arguments'][':failure_reasons'][0]['message']) && is_string($details['arguments'][':failure_reasons'][0]['message'])) {
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, ' . $details['arguments'][':failure_reasons'][0]['message']);
-      }
-      else {
-        // here the reason for failure is unknown.
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login,');
-      }
-      unset($details);
+  /**
+   * Process request path and determine what to do.
+   *
+   * @param c_base_http &$http
+   *   The HTTP settings.
+   * @param c_base_database &database
+   *   The current database.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param c_base_html &$html
+   *   The html page object.
+   * @param array $settings
+   *   The system settings array.
+   * @param bool $logged_in
+   *   (optional) TRUE of logged in, FALSE otherwise.
+   *
+   * @return c_base_path_executed
+   *   The execution results.
+   *   The execution results with the error bit set on error.
+   */
+  public function reservation_process_path(&$http, &$database, &$session, &$html, $settings, $logged_in = TRUE) {
+    // @todo: these parameter errors might need a custom service unavailable and system log support.
+    if (!($http instanceof c_base_http)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
-    unset($access_denied);
-    unset($connected);
+    if (!($database instanceof c_base_database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
 
-    if (empty($problems)) {
-      unset($problems);
+    if (!($session instanceof c_base_session)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    if (!($html instanceof c_base_html)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'html', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    if (!is_array($settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    if (!is_bool($logged_in)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'logged_in', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+    }
+
+    $this->http = &$http;
+    $this->database = &$database;
+    $this->settings = $settings;
+    $this->session = &$session;
+    $this->markup = &$html;
+    $this->logged_in = $logged_in;
+
+    // require HTTPS for access to any part of this website.
+    if (!isset($_SERVER["HTTPS"])) {
+      // @todo: redirect to https version of requested uri.
+      $failure_path = $this->p_get_path_not_found();
+
+      return $failure_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+    }
+
+
+    $request_uri = $http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+
+    $this->uri = array(
+      'scheme' => '',
+      'authority' => '',
+      'path' => '',
+      'query' => array(),
+      'fragment' => '',
+      'url' => TRUE,
+    );
+
+    if (isset($request_uri['data'])) {
+      $this->uri = $request_uri['data'];
+    }
+    unset($request_uri);
+
+    // strip the base path from the requested uri.
+    if (!empty($settings['base_path'])) {
+      $this->uri['path'] = preg_replace('@^' . preg_quote($settings['base_path'], '@') . '@i', '', $this->uri['path']);
+      $this->uri['path'] = preg_replace('@/$@', '', $this->uri['path']);
+    }
+
+
+    // load all available paths.
+    $this->p_paths_create();
+
+
+    // find the path
+    $handler_settings = $this->paths->find_path($this->uri['path']);
+
+    if (!is_array($handler_settings)) {
+      unset($handler_settings);
+
+      // @todo: handle error case and failsafe (404)?.
       return new c_base_return_false();
     }
 
-    return c_base_return_array::s_new($problems);
-  }
-  unset($access_denied);
-
-  // @todo: add log entry.
-  #set_log_user($database, 'login');
-
-  // @todo: load and store custom settings (loaded from the database and/or ldap).
-  #$session->set_settings($user_data);
-
-  // the session needs to be opened and the data needs to be saved on successful login.
-  $result = $session->do_connect();
-  if (c_base_return::s_has_error($result)) {
-    $socket_error = $session->get_error_socket();
-    if ($socket_error instanceof c_base_return_int) {
-      $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
+    if (array_key_exists('redirect', $handler_settings)) {
+      // @todo: handle redirect.
     }
     else {
-      $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to load session.');
-    }
-    unset($socket_error);
-  }
-  else {
-    $ldap = reservation_database_load_ldap_data($settings, $_POST['login_form-username'])->get_value();
-    if ($ldap instanceof c_base_return_false || !is_array($ldap)) {
-      $ldap = array(
-        'data' => NULL,
-      );
-    }
+      if (!empty($handler_settings['include']) && is_string($handler_settings['include'])) {
+        require_once($handler_settings['include']);
+      }
 
-    if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
-      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
-
-      // @todo: handle error situation.
-    }
-
-    $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();
-
-    // @todo: get and use user id from $user_data.
-
-    $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
-    $session->do_disconnect();
-
-    $cookie_login = NULL;
-    if (c_base_return::s_has_error($pushed)) {
-      $socket_error = $session->get_error_socket();
-      if ($socket_error instanceof c_base_return_int) {
-        $problems = c_base_form_problem::s_create_error(NULL, 'Failed to push session, due to socket error (' . $socket_error->get_value_exact() . '): ' . @socket_strerror($socket_error->get_value_exact()) . '.');
+      if (empty($handler_settings['handler']) || !class_exists($handler_settings['handler'])) {
+        // @todo: handle error case.
       }
       else {
-        $problems[] = c_base_form_problem::s_create_error(NULL, 'Failed to push session.');
+        $this->path = new $handler_settings['handler']();
       }
-      unset($socket_error);
+    }
+    unset($handler_settings);
+
+    // handle request method validation.
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+      // @todo: considering limiting _POST to different path groups here.
+    }
+    elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+      $id_group = $this->path->get_id_group()->get_value_exact();
+
+      // all paths except /s/ and /x/ may use GET.
+      if ($id_group === c_base_ascii::LOWER_S || $id_group === c_base_ascii::LOWER_X) {
+        $failure_path = $this->p_get_path_bad_method();
+
+        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+      }
+      unset($id_group);
     }
     else {
-      $session_expire = $session->get_timeout_expire()->get_value_exact();
-      $cookie_login = $session->get_cookie();
+      $failure_path = $this->p_get_path_bad_method();
+
+      return $failure_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
     }
 
-    if ($cookie_login instanceof c_base_cookie) {
-      $cookie_login->set_expires($session_expire);
-      $cookie_login->set_max_age(NULL);
 
-      if ($pushed instanceof c_base_return_true) {
-        $data = array(
-          'session_id' => $session->get_session_id()->get_value_exact(),
-          'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
-        );
+    return $this->p_paths_normal();
+  }
 
-        $cookie_login->set_value($data);
-        $session->set_cookie($cookie_login);
+  /**
+   * Creates and returns a list of all available paths.
+   *
+   * Add/modify paths here as desired.
+   *
+   * @return c_base_paths
+   *   The generated paths object.
+   */
+  private function p_paths_create() {
+    $this->paths = new c_base_paths();
+
+
+    // set root path to be the user dashboard.
+    $this->paths->set_path('', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/dashboard.php');
+
+
+    // create login/logout paths
+    $path = c_base_path::s_create_content(c_base_ascii::LOWER_U, 'login', FALSE);
+    $this->paths->set_path($path, 'c_reservation_path_user_login', 'program/reservation/login.php');
+    unset($path);
+
+    $path = c_base_path::s_create_content(c_base_ascii::LOWER_U, 'logout', FALSE);
+    $this->paths->set_path($path, 'c_reservation_path_user_logout', 'program/reservation/logout.php');
+    unset($path);
+
+
+    // user dashboard
+    $path = c_base_path::s_create_content(c_base_ascii::LOWER_U, 'dashboard', FALSE);
+    $this->paths->set_path($path, 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/dashboard.php');
+    unset($path);
+  }
+
+  /**
+   * Process request paths and determine what to do.
+   *
+   * @return c_base_path_executed
+   *   The execution results.
+   *   The execution results with the error bit set on error.
+   */
+  private function p_paths_normal() {
+    $id_group = $this->path->get_id_group()->get_value_exact();
+
+    // regardless of path-specific settings, the following paths always require login credentials to access.
+    if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_U) {
+      $this->path->set_is_private(TRUE);
+    }
+
+    if ($this->path instanceof c_reservation_path_user_login) {
+      unset($id_group);
+      return $this->path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+    }
+
+
+    // if the request is private, make sure the user is logged in.
+    if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_U || $this->path->get_is_private()->get_value_exact()) {
+      if ($this->logged_in) {
+        unset($id_group);
+        return $this->path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+      }
+      elseif ($this->path->get_is_root()->get_value_exact()) {
+        unset($id_group);
+
+        $this->http->set_response_status(c_base_http_status::FORBIDDEN);
+
+        $login_path = $this->p_get_path_login();
+        return $login_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+      }
+      else {
+        // some special case paths always provide login prompt along with access denied.
+        if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_U) {
+          unset($id_group);
+
+          $this->http->set_response_status(c_base_http_status::FORBIDDEN);
+
+          $login_path = $this->p_get_path_login();
+          return $login_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+        }
       }
     }
-    unset($cookie_login);
-    unset($session_expire);
-    unset($pushed);
-  }
-  unset($result);
-  unset($connected);
-
-  if (empty($problems)) {
-    unset($problems);
-    return new c_base_return_true();
-  }
-
-  return c_base_return_array::s_new($problems);
-}
-
-/**
- * Build the HTTPS requirement page.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
-   * @param c_base_session &$session
-   *   The current session.
- */
-function reservation_build_page_require_https(&$html, $settings, &$session) {
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-  $tag->set_text('HTTPS Connection is Required');
-  $html->set_tag($tag);
-  unset($tag);
-
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-  $tag->set_text('Please use a secure connection to access this website.');
-  $html->set_tag($tag);
-  unset($tag);
-}
-
-/**
- * Build the dashboard page.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- */
-function reservation_build_page_dashboard(&$html, $settings, &$session) {
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-  $tag->set_text('Dashboard');
-  $html->set_tag($tag);
-  unset($tag);
-
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-  $tag->set_text('All links will go here.');
-  $html->set_tag($tag);
-  unset($tag);
-
-  $roles = array();
-  $roles_object = $session->get_setting('roles');
-  if ($roles_object instanceof c_base_roles) {
-    $roles = $roles_object->get_roles()->get_value_exact();
-  }
-  unset($roles_object);
-
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-  $tag->set_text('You are currently logged in as: ' . $settings['database_user']);
-  $html->set_tag($tag);
-  unset($tag);
-
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-  $tag->set_text('You are currently assigned the following roles:');
-  $html->set_tag($tag);
-  unset($tag);
-
-  $tag_ul = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNORDERED_LIST);
-
-  foreach ($roles as $role) {
-    $tag_li = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LIST_ITEM);
-
-    switch ($role) {
-      case c_base_roles::PUBLIC:
-        $tag_li->set_text('Public');
-        break;
-      case c_base_roles::USER:
-        $tag_li->set_text('User');
-        break;
-      case c_base_roles::REQUESTER:
-        $tag_li->set_text('Requester');
-        break;
-      case c_base_roles::DRAFTER:
-        $tag_li->set_text('Drafter');
-        break;
-      case c_base_roles::EDITOR:
-        $tag_li->set_text('Editor');
-        break;
-      case c_base_roles::REVIEWER:
-        $tag_li->set_text('Reviewer');
-        break;
-      case c_base_roles::FINANCER:
-        $tag_li->set_text('Financer');
-        break;
-      case c_base_roles::INSURER:
-        $tag_li->set_text('Insurer');
-        break;
-      case c_base_roles::PUBLISHER:
-        $tag_li->set_text('Publisher');
-        break;
-      case c_base_roles::AUDITOR:
-        $tag_li->set_text('Auditor');
-        break;
-      case c_base_roles::MANAGER:
-        $tag_li->set_text('Manager');
-        break;
-      case c_base_roles::ADMINISTER:
-        $tag_li->set_text('Administer');
-        break;
+    else {
+      unset($id_group);
+      return $this->path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
     }
 
-    $tag_ul->set_tag($tag_li);
-    unset($tag_li);
+    // return access denied or page not found depending on path and privacy settings.
+    if ($id_group === c_base_ascii::LOWER_C || $id_group === c_base_ascii::LOWER_D || $id_group === c_base_ascii::LOWER_T || $id_group === c_base_ascii::LOWER_X || $id_group === c_base_ascii::LOWER_F) {
+      // these always return not found for these paths.
+      $failsafe_path = $this->p_get_path_not_found();
+    }
+    elseif ($this->path->get_is_private()->get_value_exact() && $id_group !== c_base_ascii::NULL) {
+      // non private, and non-special case paths should return access denied as per normal behavior.
+      $failsafe_path = $this->p_get_path_access_denied();
+    }
+    else {
+      // all other case, return not found.
+      $failsafe_path = $this->p_get_path_not_found();
+    }
+    unset($id_group);
+
+    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
   }
-  unset($role);
 
-  $html->set_tag($tag_ul);
-}
+  /**
+   * Process request path form paths and determine what to do.
+   *
+   * @return c_base_path_executed
+   *   The execution results.
+   *   The execution results with the error bit set on error.
+   */
+  private function p_paths_forms() {
+    // @todo
 
-/**
- * Process and build requested forms.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- */
-function reservation_process_forms(&$html, $settings, &$session) {
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-  $tag->set_text('Form Processing');
-  $html->set_tag($tag);
-  unset($tag);
+    // always return not found, do not inform user if the access is denied.
+    $failsafe_path = $this->p_get_path_not_found();
 
-  $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-  $tag->set_text('This function is called to process specific forms.');
-  $html->set_tag($tag);
-  unset($tag);
-
-  if (!empty($_POST['form_id'])) {
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BREAK);
-    $html->set_tag($tag);
-    unset($tag);
-
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text('The form has the id: ' . $_POST['form_id'] . '.');
-    $html->set_tag($tag);
-    unset($tag);
+    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
   }
-}
 
-/**
- * Process request path and determine what to do.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- */
-function reservation_process_path(&$html, $settings, &$session) {
-  reservation_build_page_dashboard($html, $settings, $session);
-}
+  /**
+   * Process request path ajax paths and determine what to do.
+   *
+   * @return c_base_path_executed
+   *   The execution results.
+   *   The execution results with the error bit set on error.
+   */
+  private function p_paths_ajax() {
+    // @todo
 
-/**
- * Process request path for public users and determine what to do.
- *
- * @param c_base_html &$html
- *   The html page object.
- * @param array $settings
- *   The system settings array.
- * @param c_base_session &$session
- *   The current session.
- */
-function reservation_process_path_public(&$html, $settings, &$session) {
-  reservation_build_login_page($html, $settings, $session);
+    // always return not found, do not inform user if the access is denied.
+    $failsafe_path = $this->p_get_path_not_found();
+
+    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->markup, $this->settings);
+  }
+
+  /**
+   * Load and return the login path.
+   */
+  private function p_get_path_login() {
+    require_once(self::PATH_LOGIN);
+    return new c_reservation_path_user_login();
+  }
+
+  /**
+   * Load and return the logout path.
+   */
+  private function p_get_path_logout() {
+    require_once(self::PATH_LOGOUT);
+    return new c_reservation_path_user_logout();
+  }
+
+  /**
+   * Load and return the access denied path.
+   */
+  private function p_get_path_access_denied() {
+    require_once(self::PATH_ACCESS_DENIED);
+    return new c_reservation_path_access_denied();
+  }
+
+  /**
+   * Load and return the not found path.
+   */
+  private function p_get_path_not_found() {
+    require_once(self::PATH_NOT_FOUND);
+    return new c_reservation_path_not_found();
+  }
+
+  /**
+   * Load and return the not found path.
+   */
+  private function p_get_path_bad_method() {
+    require_once(self::PATH_BAD_METHOD);
+    return new c_reservation_path_bad_method();
+  }
 }
