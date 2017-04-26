@@ -53,7 +53,7 @@ final class c_reservation_path_redirect extends c_base_path {
     // @todo: store all errors on return.
     $errors = array();
 
-    if (is_string($field_destination)) {
+    if (is_string($field_destination) || is_array($field_destination)) {
       $path->set_field_destination($field_destination);
     }
 

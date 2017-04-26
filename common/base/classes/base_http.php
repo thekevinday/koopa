@@ -2547,7 +2547,7 @@ class c_base_http extends c_base_rfc_string {
       $uri_string = $uri;
     }
 
-    $text = $this->pr_rfc_string_prepare($$uri_string);
+    $text = $this->pr_rfc_string_prepare($uri_string);
     if ($text['invalid']) {
       unset($text);
 
@@ -4118,7 +4118,7 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    return c_base_return_string::s_new($this->response[self::RESPONSE_LOCATION]);
+    return c_base_return_array::s_new($this->response[self::RESPONSE_LOCATION]);
   }
 
   /**
@@ -6486,7 +6486,21 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['uri']);
+    // attempt to reconstruct the uri as a full url, if possible.
+    $uri = $this->headers['uri'];
+
+    if (isset($_SERVER['SERVER_NAME']) && is_string($_SERVER['SERVER_NAME']) && mb_strlen($_SERVER['SERVER_NAME']) > 0) {
+      if (isset($_SERVER['HTTPS'])) {
+        $uri = 'https://' . $_SERVER['SERVER_NAME'] . $uri;
+      }
+      else {
+        $uri = 'http://' . $_SERVER['SERVER_NAME'] . $uri;
+      }
+    }
+
+    $text = $this->pr_rfc_string_prepare($uri);
+    unset($uri);
+
     if ($text['invalid']) {
       $this->request[self::REQUEST_URI]['invalid'] = TRUE;
       unset($text);
