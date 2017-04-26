@@ -71,7 +71,7 @@ class c_reservation_path_user_login extends c_base_path {
         $redirect = c_reservation_path_redirect::s_create_redirect($destination, c_base_http_status::SEE_OTHER, FALSE);
         unset($destination);
 
-        return $redirect->do_execute($http, $database, $session, $html, $settings);
+        return $redirect->do_execute($http, $database, $session, $settings);
       }
 
       unset($login_result);
