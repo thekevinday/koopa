@@ -827,6 +827,54 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
+   * Chooses a language based on available languages and the requested languages.
+   *
+   * Because multiple languages may be returned, this does not explicitly define the langugae headers.
+   *
+   * @param array $supported_languages
+   *   An array of supported languages as defined in i_base_language.
+   *
+   * @return c_base_return_int
+   *   An integer representing the language code as defined in i_base_language.
+   *   0 with the error bit set is returned on error.
+   *   An integer representing the language code as defined in i_base_language with the error bit set is returned on error.
+   */
+  public function select_language($supported_languages) {
+    if (!is_array($supported_languages) || empty($supported_languages)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'supported_languages', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
+    }
+
+    // specify a failsafe in case decision making has trouble.
+    $language_chosen = reset($supported_languages);
+
+    if (isset($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']) && is_array($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data'])) {
+      if (isset($this->request[self::REQUEST_ACCEPT_LANGUAGE]['invalid']) && $this->request[self::REQUEST_ACCEPT_LANGUAGE]['invalid']) {;
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'supported_languages', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_value($language_chosen, 'c_base_return_int', $error);
+      }
+
+      if (isset($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight']) && is_array($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight'])) {
+        foreach ($this->request[self::REQUEST_ACCEPT_LANGUAGE]['data']['weight'] as $weight => $aliases) {
+          $alias = end($aliases);
+          $language_code = c_base_defaults_global::s_get_languages()::s_get_id_by_alias($alias)->get_value_exact();
+          unset($alias);
+
+          if (array_key_exists($language_code, $supported_languages)) {
+            $language_chosen = $language_code;
+            break;
+          }
+        }
+        unset($weight);
+        unset($aliases);
+        unset($language_code);
+      }
+    }
+
+    return c_base_return_int::s_new($language_chosen);
+  }
+
+  /**
    * Assign HTTP response header: access-control-allow-origin.
    *
    * Note on multiple urls: The standard appears to only support one url.
@@ -2468,8 +2516,9 @@ class c_base_http extends c_base_rfc_string {
    *
    * Use self::SCHEME_LOCAL for a local filesystem link.
    *
-   * @param string $uri
-   *   The URI to assign to the specified header.
+   * @param stringarray $uri
+   *   When a string, the URI to assign to the specified header.
+   *   When an array, an array of the destination url parts to assign to the specified header.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -2478,13 +2527,27 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc3986
    */
   public function set_response_location($uri) {
-    if (!is_string($uri)) {
+    if (!is_string($uri) && !is_array($uri)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'uri', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
+    if (is_array($uri)) {
+      $uri_string = $this->pr_rfc_string_combine_uri_array($uri);
+      if ($combined === FALSE) {
+        unset($parts);
+        unset($combined);
 
-    $text = $this->pr_rfc_string_prepare($uri);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'URI or URL', ':expected_format' => 'URI or URL', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+        return c_base_return_error::s_false($error);
+      }
+      unset($combined);
+    }
+    else {
+      $uri_string = $uri;
+    }
+
+    $text = $this->pr_rfc_string_prepare($$uri_string);
     if ($text['invalid']) {
       unset($text);
 
@@ -2501,7 +2564,6 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
     unset($parsed['invalid']);
-
 
     $this->response[self::RESPONSE_LOCATION] = $parsed;
     unset($parsed);
@@ -8735,10 +8797,11 @@ class c_base_http extends c_base_rfc_string {
       $language_array = $this->languages->s_get_aliases_by_id($language);
       if ($language_array instanceof c_base_return_array) {
         $language_array = $language_array->get_value_exact();
-
-        if (!empty($language_array[0])) {
-          $output .= ', ' . $language_array[0];
+        $alias = end($language_array);
+        if (!empty($alias)) {
+          $output .= ', ' . $alias;
         }
+        unset($alias);
       }
       unset($language_array);
     }
@@ -8920,7 +8983,13 @@ class c_base_http extends c_base_rfc_string {
       return;
     }
 
-    // @todo
+    $header_output[self::RESPONSE_LOCATION] = $header_name . self::SEPARATOR_HEADER_NAME;
+
+    $combined = self::pr_rfc_string_combine_uri_array($this->response[self::RESPONSE_LOCATION]);
+    if (is_string($combined)) {
+      $header_output[self::RESPONSE_LOCATION] .= $combined;
+    }
+    unset($combined);
   }
 
   /**

@@ -251,7 +251,6 @@ class c_base_path extends c_base_rfc_string {
    *   0 may be assigned to represent no group.
    * @param string $field_path
    *   The URL path assigned to this field.
-   *   This is not assigned on parameter error.
    * @param bool $is_private
    *   (optional) When TRUE, path is considered private and requires specific access privileges.
    *   When FALSE, the path is accessible without any access privileges.
@@ -269,13 +268,8 @@ class c_base_path extends c_base_rfc_string {
     // @todo: store all errors on return.
     $errors = array();
 
-    if (is_int($id_group)) {
-      $path->set_id_group($id_group);
-    }
-
-    if (is_string($field_path)) {
-      $path->set_value($field_path);
-    }
+    $path->set_id_group($id_group);
+    $path->set_value($field_path);
 
     if (is_bool($is_private)) {
       $path->set_is_private($is_private);
@@ -304,9 +298,9 @@ class c_base_path extends c_base_rfc_string {
    *   0 may be assigned to represent no group.
    * @param string $field_path
    *   The URL path assigned to this field.
-   *   This is not assigned on parameter error.
-   * @param string $field_destination
-   *   A destination URL to in which this is an alias of.
+   * @param string|array $field_destination
+   *   When a string, a destination URL to redirect to.
+   *   When an array, an array of the destination url parts.
    * @param bool $is_private
    *   (optional) When TRUE, path is considered private and requires specific access privileges.
    *   When FALSE, the path is accessible without any access privileges.
@@ -324,17 +318,9 @@ class c_base_path extends c_base_rfc_string {
     // @todo: store all errors on return.
     $errors = array();
 
-    if (is_int($id_group)) {
-      $path->set_id_group($id_group);
-    }
-
-    if (is_string($field_path)) {
-      $path->set_value($field_path);
-    }
-
-    if (is_string($field_destination)) {
-      $path->set_field_destination($field_destination);
-    }
+    $path->set_id_group($id_group);
+    $path->set_value($field_path);
+    $path->set_field_destination($field_destination);
 
     if (is_bool($is_private)) {
       $path->set_is_private($is_private);
@@ -358,8 +344,9 @@ class c_base_path extends c_base_rfc_string {
    *
    * Defaults are silently forced on invalid parameters.
    *
-   * @param string $field_destination
-   *   A destination URL to redirect to.
+   * @param string|array $field_destination
+   *   When a string, a destination URL to redirect to.
+   *   When an array, an array of the destination url parts.
    * @param int $response_code
    *   The HTTP code to use when performing the redirect.
    *   Should be one of 3xx error code integers.
@@ -370,7 +357,6 @@ class c_base_path extends c_base_rfc_string {
    *   - 300 (Multiple Choices):
    *   - 301 (Moved Permanently):
    *   - 303 (See Other):
-   *   This is not assigned on parameter error.
    * @param bool $is_private
    *   (optional) When TRUE, path is considered private and requires specific access privileges.
    *   When FALSE, the path is accessible without any access privileges.
@@ -388,13 +374,8 @@ class c_base_path extends c_base_rfc_string {
     // @todo: store all errors on return.
     $errors = array();
 
-    if (is_string($field_destination)) {
-      $path->set_field_destination($field_destination);
-    }
-
-    if (is_int($field_response_code)) {
-      $path->set_field_response_code($field_response_code);
-    }
+    $path->set_field_destination($field_destination);
+    $path->set_field_response_code($field_response_code);
 
     if (is_bool($is_private)) {
       $path->set_is_private($is_private);
@@ -607,14 +588,15 @@ class c_base_path extends c_base_rfc_string {
   /**
    * Assigns the destination field setting.
    *
-   * @param string $field_destination
-   *   The destination field associated with the path.
+   * @param string|array $field_destination
+   *   When a string, a destination URL to redirect to.
+   *   When an array, an array of the destination url parts.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    */
   public function set_field_destination($field_destination) {
-    if (!is_string($field_destination)) {
+    if (!is_string($field_destination) && !is_array($field_destination)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'field_destination', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -828,17 +810,21 @@ class c_base_path extends c_base_rfc_string {
   /**
    * Gets the destination field setting.
    *
-   * @return c_base_return_string
+   * @return c_base_return_string|c_base_return_array
    *   Destination field on success.
    *   An empty string is returned if not defined.
    *   Error bit is set on error.
    */
   public function get_field_destination() {
-    if (!is_string($this->field_destination)) {
+    if (!is_string($this->field_destination) && !is_array($this->field_destination)) {
       return c_base_return_string::s_new('');
     }
 
-    return c_base_return_string::s_new($this->field_destination);
+    if (is_string($this->field_destination)) {
+      return c_base_return_string::s_new($this->field_destination);
+    }
+
+    return c_base_return_array::s_new($this->field_destination);
   }
 
   /**
@@ -930,9 +916,6 @@ class c_base_path extends c_base_rfc_string {
    *   The database object, which is usually used by form and ajax paths.
    * @param c_base_session &$session
    *   The current session.
-   * @pram c_base_html &$html
-   *   The HTML object.
-   *   If the content is not renderring HTML, the output parameter should instead be used for providing content.
    * @param array $settings
    *   (optional) An array of additional settings that are usually site-specific.
    *
@@ -940,7 +923,7 @@ class c_base_path extends c_base_rfc_string {
    *   An executed array object is returned on success.
    *   An executed array object with error bit set is returned on error.
    */
-  public function do_execute(&$http, &$database, &$session, &$html, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = array()) {
     if (!($database instanceof c_base_database)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
@@ -953,11 +936,6 @@ class c_base_path extends c_base_rfc_string {
 
     if (!($session instanceof c_base_session)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
-    }
-
-    if (!($html instanceof c_base_html)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'html', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
@@ -1138,7 +1116,7 @@ class c_base_path_executed extends c_base_return_array {
   /**
    * Assign output.
    *
-   * @param c_base_value
+   * @param c_base_return
    *   The output to assign.
    *
    * @return c_base_return_status
@@ -1146,7 +1124,7 @@ class c_base_path_executed extends c_base_return_array {
    *   FALSE with error bit set is returned on error.
    */
   public function set_output($output) {
-    if (!($output instanceof c_base_value)) {
+    if (!($output instanceof c_base_return)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'output', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -1158,7 +1136,7 @@ class c_base_path_executed extends c_base_return_array {
   /**
    * Gets the assigned output
    *
-   * @return c_base_return_value|c_base_return_null
+   * @return c_base_return|c_base_return_null
    *   The assigned output is returned.
    *   If there is no assigned output (generally when execution is not performed) NULL is returned.
    */
@@ -1260,7 +1238,7 @@ class c_base_paths extends c_base_return {
     }
 
     if (mb_strlen($path) == 0) {
-      $this->root = array('handler' => $handler, 'include' => $include);
+      $this->root = array('handler' => $handler, 'include' => $include, 'is_root' => TRUE);
       return new c_base_return_true();
     }
 
@@ -1293,7 +1271,7 @@ class c_base_paths extends c_base_return {
         $id_group = $ordinal;
       }
       unset($ordinal);
-      unset($path_pats[0]);
+      unset($path_parts[0]);
     }
 
     if (!is_array($this->paths)) {
@@ -1363,7 +1341,7 @@ class c_base_paths extends c_base_return {
 
     if (is_null($path_string) || mb_strlen($path_string) == 0) {
       if (is_array($this->root)) {
-        return $this->root;
+        return c_base_return_array::s_new($this->root);
       }
 
       return new c_base_return_null();
@@ -1383,7 +1361,7 @@ class c_base_paths extends c_base_return {
     unset($path);
 
     // if the sanitized path is different from the original, then send a url redirect.
-    if (strcmp($path_string, $sanitized) != 0) {
+    if (strcmp($path_string, $sanitized) != 0 && $path_string != '/' . $sanitized) {
       return c_base_return_array::s_new(array('redirect' => $sanitized, 'code' => c_base_http_status::MOVED_PERMANENTLY));
     }
 
@@ -1399,14 +1377,14 @@ class c_base_paths extends c_base_return {
         $id_group = $ordinal;
       }
       unset($ordinal);
-      unset($path_pats[0]);
+      unset($path_parts[0]);
     }
 
 
     $depth_current = 1;
     $depth_total = count($path_parts);
     $found = NULL;
-    $path_tree = &$this->paths[$sort];
+    $path_tree = &$this->paths[$id_group];
     foreach ($path_parts as $path_part) {
       if ($depth_current == $depth_total) {
         if (isset($path_tree['handler'])) {

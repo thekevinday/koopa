@@ -12,6 +12,7 @@
  * @see: http://www.loc.gov/standards/iso639-2/php/code_list.php
  */
 interface i_base_language {
+  const NONE                    = 0;
   const AFAR                    = 1;   // aar, aa
   const ABKHAZIAN               = 2;   // abk, ab
   const ACHINESE                = 3;   // ace
@@ -508,23 +509,23 @@ interface i_base_language {
    * @param int $id
    *   The id of the names to return.
    *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given id.
+   * @return c_base_return_array
+   *   An array of names.
+   *   An empty array with the error bit set is returned on error.
    */
-  static function s_get_names_by_id($id);
+  public static function s_get_names_by_id($id);
 
   /**
    * Get the language names associated with the alias.
    *
    * @param string $alias
-   *   The id of the names to return.
+   *   The alias of the names to return.
    *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given alias.
+   * @return c_base_return_array
+   *   An array of names.
+   *   An empty array with the error bit set is returned on error.
    */
-  static function s_get_names_by_alias($alias);
+  public static function s_get_names_by_alias($alias);
 
   /**
    * Get the id associated with the language name.
@@ -532,11 +533,11 @@ interface i_base_language {
    * @param string $name
    *   The string associated with the id
    *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * @return c_base_return_int
+   *   The numeric id.
+   *   0 with the error bit set is returned on error.
    */
-  static function s_get_id_by_name($name);
+  public static function s_get_id_by_name($name);
 
   /**
    * Get the id associated with the language name.
@@ -544,11 +545,11 @@ interface i_base_language {
    * @param string $name
    *   The string associated with the id
    *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * @return c_base_return_int
+   *   The numeric id.
+   *   0 with the error bit set is returned on error.
    */
-  static function s_get_id_by_alias($alias);
+  public static function s_get_id_by_alias($alias);
 
   /**
    * Get the language aliases associated with the id.
@@ -556,11 +557,11 @@ interface i_base_language {
    * @param int $id
    *   The id of the aliases to return.
    *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given id.
+   * @return c_base_return_array
+   *   An array of aliases.
+   *   An empty array with the error bit set is returned on error.
    */
-  static function s_get_aliases_by_id($id);
+  public static function s_get_aliases_by_id($id);
 
   /**
    * Get the language aliases associated with the name.
@@ -568,29 +569,57 @@ interface i_base_language {
    * @param string $name
    *   The language name of the aliases to return.
    *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given name.
+   * @return c_base_return_array
+   *   An array of aliases.
+   *   An empty array with the error bit set is returned on error.
    */
-  static function s_get_aliases_by_name($name);
+  public static function s_get_aliases_by_name($name);
 
   /**
    * Get the id of the language considered to be default by the implementing class.
    *
-   * @return c_base_return_status|c_base_return_int
+   * @return c_base_return_int
    *   An integer representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   *   0 without the error bit set is returned if there is no default language.
+   *   0 with the error bit set is returned on error.
    */
-  static function s_get_default_id();
+  public static function s_get_default_id();
 
   /**
    * Get the name of the language considered to be default by the implementing class.
    *
-   * @return c_base_return_status|c_base_return_string
+   * @return c_base_return_string
    *   A string representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   *   An empty string with the error bit set is returned on error.
    */
-  static function s_get_default_name();
+  public static function s_get_default_name();
+
+  /**
+   * Get an array of all ids associated with this class.
+   *
+   * @return c_base_return_array
+   *   An array of ids, keyed by the unique ids.
+   *   An empty array with the error bit set is returned on error.
+   */
+  public static function s_get_ids();
+
+  /**
+   * Get an array of all aliases associated with this class.
+   *
+   * @return c_base_return_array
+   *   An array of aliases, keyed by the unique ids.
+   *   An empty array with error bit set is returned on error.
+   */
+  public static function s_get_aliases();
+
+  /**
+   * Get an array of all names associated with this class.
+   *
+   * @return c_base_return_array
+   *   An array of names, keyed by the unique ids.
+   *   An empty array with error bit set is returned on error.
+   */
+  public static function s_get_names();
 }
 
 /**
@@ -624,163 +653,141 @@ final class c_base_language_us_only implements i_base_language {
 
 
   /**
-   * Get the language names associated with the id.
-   *
-   * @param int $id
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given id.
+   * Implementation of s_get_names_by_id().
    */
-  static function s_get_names_by_id($id) {
+  public static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
       return c_base_return_array::s_new(self::$s_names[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language names associated with the alias.
-   *
-   * @param string $alias
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given alias.
+   * Implementation of s_get_names_by_alias().
    */
-  static function s_get_names_by_alias($alias) {
-    if (!is_int($id) && !is_numeric($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+  public static function s_get_names_by_alias($alias) {
+    if (!is_string($alias)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    if (array_key_exists($id, self::$s_aliases)) {
-      return c_base_return_array::s_new(self::$s_aliases[$id]);
+    if (array_key_exists($alias, self::$s_ids) && array_key_exists(self::$s_ids[$alias], self::$s_names)) {
+      return c_base_return_array::s_new(self::$s_names[$self::$s_ids[$alias]]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_name().
    */
-  static function s_get_id_by_name($name) {
+  public static function s_get_id_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_alias().
    */
-  static function s_get_id_by_alias($alias) {
+  public static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$alias]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the language aliases associated with the id.
-   *
-   * @param int $id
-   *   The id of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given id.
+   * Implementation of s_get_aliases_by_id().
    */
-  static function s_get_aliases_by_id($id) {
+  public static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language aliases associated with the name.
-   *
-   * @param string $name
-   *   The language name of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given name.
+   * Implementation of s_get_aliases_by_name().
    */
-  static function s_get_aliases_by_name($name) {
+  public static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   An integer representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_id().
    */
-  static function s_get_default_id() {
+  public static function s_get_default_id() {
     return c_base_return_int::s_new(self::ENGLISH_US);
   }
 
   /**
-   * Get the name of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_string
-   *   A string representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_name().
    */
-  static function s_get_default_name() {
+  public static function s_get_default_name() {
     return c_base_return_string::s_new($this->s_aliases[self::ENGLISH_US]);
+  }
+
+  /**
+   * Implementation of s_get_ids().
+   */
+  public static function s_get_ids() {
+    $ids = array();
+    foreach (self::$s_aliases as $key => $value) {
+      $ids[$key] = $key;
+    }
+    unset($key);
+    unset($value);
+
+    return c_base_return_array::s_new($ids);
+  }
+
+  /**
+   * Implementation of s_get_aliases().
+   */
+  public static function s_get_aliases() {
+    return c_base_return_array::s_new(self::$s_aliases);
+  }
+
+  /**
+   * Implementation of s_get_names().
+   */
+  public static function s_get_names() {
+    return c_base_return_array::s_new(self::$s_names);
   }
 }
 
@@ -849,163 +856,141 @@ final class c_base_language_limited implements i_base_language {
 
 
   /**
-   * Get the language names associated with the id.
-   *
-   * @param int $id
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given id.
+   * Implementation of s_get_names_by_id().
    */
-  static function s_get_names_by_id($id) {
+  public static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
       return c_base_return_array::s_new(self::$s_names[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language names associated with the alias.
-   *
-   * @param string $alias
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given alias.
+   * Implementation of s_get_names_by_alias().
    */
-  static function s_get_names_by_alias($alias) {
-    if (!is_int($id) && !is_numeric($id)) {
+  public static function s_get_names_by_alias($alias) {
+    if (!is_string($alias)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    if (array_key_exists($id, self::$s_aliases)) {
-      return c_base_return_array::s_new(self::$s_aliases[$id]);
+    if (array_key_exists($alias, self::$s_ids) && array_key_exists(self::$s_ids[$alias], self::$s_names)) {
+      return c_base_return_array::s_new(self::$s_names[$self::$s_ids[$alias]]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_name().
    */
-  static function s_get_id_by_name($name) {
+  public static function s_get_id_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_alias().
    */
-  static function s_get_id_by_alias($alias) {
+  public static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$alias]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the language aliases associated with the id.
-   *
-   * @param int $id
-   *   The id of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given id.
+   * Implementation of s_get_aliases_by_id().
    */
-  static function s_get_aliases_by_id($id) {
+  public static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language aliases associated with the name.
-   *
-   * @param string $name
-   *   The language name of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given name.
+   * Implementation of s_get_aliases_by_name().
    */
-  static function s_get_aliases_by_name($name) {
+  public static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   An integer representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_id().
    */
-  static function s_get_default_id() {
+  public static function s_get_default_id() {
     return c_base_return_int::s_new(self::ENGLISH_US);
   }
 
   /**
-   * Get the name of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_string
-   *   A string representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_name().
    */
-  static function s_get_default_name() {
+  public static function s_get_default_name() {
     return c_base_return_string::s_new($this->s_aliases[self::ENGLISH_US]);
+  }
+
+  /**
+   * Implementation of s_get_ids().
+   */
+  public static function s_get_ids() {
+    $ids = array();
+    foreach (self::$s_aliases as $key => $value) {
+      $ids[$key] = $key;
+    }
+    unset($key);
+    unset($value);
+
+    return c_base_return_array::s_new($ids);
+  }
+
+  /**
+   * Implementation of s_get_aliases().
+   */
+  public static function s_get_aliases() {
+    return c_base_return_array::s_new(self::$s_aliases);
+  }
+
+  /**
+   * Implementation of s_get_names().
+   */
+  public static function s_get_names() {
+    return c_base_return_array::s_new(self::$s_names);
   }
 }
 
@@ -2690,162 +2675,140 @@ final class c_base_language_all implements i_base_language {
 
 
   /**
-   * Get the language names associated with the id.
-   *
-   * @param int $id
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given id.
+   * Implementation of s_get_names_by_id().
    */
-  static function s_get_names_by_id($id) {
+  public static function s_get_names_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_names)) {
       return c_base_return_array::s_new(self::$s_names[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language names associated with the alias.
-   *
-   * @param string $alias
-   *   The id of the names to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of names or FALSE on error.
-   *   FALSE without the error flag means that there are no names associated with the given alias.
+   * Implementation of s_get_names_by_alias().
    */
-  static function s_get_names_by_alias($alias) {
-    if (!is_int($id) && !is_numeric($id)) {
+  public static function s_get_names_by_alias($alias) {
+    if (!is_string($alias)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
-    if (array_key_exists($id, self::$s_aliases)) {
-      return c_base_return_array::s_new(self::$s_aliases[$id]);
+    if (array_key_exists($alias, self::$s_ids) && array_key_exists(self::$s_ids[$alias], self::$s_names)) {
+      return c_base_return_array::s_new(self::$s_names[$self::$s_ids[$alias]]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_name().
    */
-  static function s_get_id_by_name($name) {
+  public static function s_get_id_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($name, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the id associated with the language name.
-   *
-   * @param string $name
-   *   The string associated with the id
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   The numeric id or FALSE on error.
-   *   FALSE without the error flag means that there are no ids associated with the given name.
+   * Implementation of s_get_id_by_alias().
    */
-  static function s_get_id_by_alias($alias) {
+  public static function s_get_id_by_alias($alias) {
     if (!is_string($alias)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
     if (array_key_exists($alias, self::$s_ids)) {
       return c_base_return_int::s_new(self::$s_ids[$alias]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_int();
   }
 
   /**
-   * Get the language aliases associated with the id.
-   *
-   * @param int $id
-   *   The id of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given id.
+   * Implementation of s_get_aliases_by_id().
    */
-  static function s_get_aliases_by_id($id) {
+  public static function s_get_aliases_by_id($id) {
     if (!is_int($id) && !is_numeric($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($id, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$id]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the language aliases associated with the name.
-   *
-   * @param string $name
-   *   The language name of the aliases to return.
-   *
-   * @return c_base_return_status|c_base_return_array
-   *   An array of aliases or FALSE on error.
-   *   FALSE without the error flag means that there are no aliases associated with the given name.
+   * Implementation of s_get_aliases_by_name().
    */
-  static function s_get_aliases_by_name($name) {
+  public static function s_get_aliases_by_name($name) {
     if (!is_string($name)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
     if (array_key_exists($name, self::$s_aliases)) {
       return c_base_return_array::s_new(self::$s_aliases[$name]);
     }
 
-    return new c_base_return_false();
+    return new c_base_return_array();
   }
 
   /**
-   * Get the id of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_int
-   *   An integer representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_id().
    */
-  static function s_get_default_id() {
+  public static function s_get_default_id() {
     return c_base_return_int::s_new(self::ENGLISH_US);
   }
 
   /**
-   * Get the name of the language considered to be default by the implementing class.
-   *
-   * @return c_base_return_status|c_base_return_string
-   *   A string representing the default language.
-   *   FALSE without the error flag means that there are no languages assigned as default.
+   * Implementation of s_get_default_name().
    */
-  static function s_get_default_name() {
+  public static function s_get_default_name() {
     return c_base_return_string::s_new($this->s_aliases[self::ENGLISH_US]);
+  }
+
+  /**
+   * Implementation of s_get_ids().
+   */
+  public static function s_get_ids() {
+    $ids = array();
+    foreach (self::$s_aliases as $key => $value) {
+      $ids[$key] = $key;
+    }
+    unset($key);
+    unset($value);
+
+    return c_base_return_array::s_new($ids);
+  }
+
+  /**
+   * Implementation of s_get_aliases().
+   */
+  public static function s_get_aliases() {
+    return c_base_return_array::s_new(self::$s_aliases);
+  }
+
+  /**
+   * Implementation of s_get_names().
+   */
+  public static function s_get_names() {
+    return c_base_return_array::s_new(self::$s_names);
   }
 }

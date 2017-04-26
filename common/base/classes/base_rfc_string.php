@@ -3671,7 +3671,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
     $combined = NULL;
     if (isset($uri_array['scheme'])) {
-      $combined .= $uri_array['scheme'] . ':';
+      $combined .= $uri_array['scheme'] . '://';
     }
 
     if (isset($uri_array['authority'])) {
@@ -3687,30 +3687,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $combined .= '?' . $uri_array['query'];
       }
       elseif (is_array($uri_array['query'])) {
-        $combined .= '?';
-
-        reset($uri_array['query']);
-        $query_name = key($uri_array['query']);
-        $query_value = $uri_array['query'][$query_name];
-        unset($uri_array['query'][$query_name]);
-
-        if (is_null($query_value)) {
-          $combined .= $query_name;
-        }
-        else {
-          $combined .= $query_name . '=' . $query_value;
-        }
-
-        foreach ($uri_array['query'] as $query_name => $query_value) {
-          if (is_null($query_value)) {
-            $combined .= $query_name;
-            continue;
-          }
-
-          $combined .= '&' . $query_name . '=' . $query_value;
-        }
-        unset($query_name);
-        unset($query_value);
+        $combined .= '?' . http_build_query($uri_array['query'], '', '&', PHP_QUERY_RFC3986);
       }
     }
 

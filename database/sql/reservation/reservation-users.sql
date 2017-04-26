@@ -654,7 +654,7 @@ create function s_administers.f_users_update_materialized_views() returns trigge
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_users_update_as_administer() owner to r_reservation_administer;
+alter function s_administers.f_users_update_materialized_views() owner to r_reservation_administer;
 
 create trigger tr_users_insert_actions
   before insert on s_tables.t_users

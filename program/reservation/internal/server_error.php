@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides path handler for the not found pages.
+ * Provides path handler for the server rror pages.
  */
 
 require_once('common/base/classes/base_error.php');
@@ -13,7 +13,7 @@ require_once('common/base/classes/base_session.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_reservation_path_not_found extends c_base_path {
+class c_reservation_path_server_error extends c_base_path {
   /**
    * Implements do_execute().
    */
@@ -54,7 +54,7 @@ class c_reservation_path_not_found extends c_base_path {
 
 
     // assign HTTP response status.
-    $http->set_response_status(c_base_http_status::NOT_FOUND);
+    $http->set_response_status(c_base_http_status::INTERNAL_SERVER_ERROR);
 
 
     return $executed;
@@ -82,9 +82,9 @@ class c_reservation_path_not_found extends c_base_path {
   protected function pr_get_text($code) {
     switch ($code) {
       case 0:
-        return 'Page Not Found';
+        return 'Server Error';
       case 1:
-        return 'The page you requested is not available.';
+        return 'Something went wrong while processing your request, please try again later.';
     }
 
     return '';

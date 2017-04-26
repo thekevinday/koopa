@@ -17,17 +17,21 @@ require_once('common/theme/classes/theme_html.php');
  *
  * This listens on: /u/login
  */
-final class c_reservation_path_user_login extends c_base_path {
+class c_reservation_path_user_login extends c_base_path {
+  private const PATH_REDIRECTS = 'program/reservation/reservation_redirects.php';
 
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, &$html, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = array()) {
     // the parent function performs validation on the parameters.
-    $executed = parent::do_execute($http, $database, $session, $html, $settings);
+    $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
       return $executed;
     }
+
+    // initialize the content as HTML.
+    $html = c_reservation_build::s_create_html($http, $database, $session, $settings);
 
 
     // handle any resulting errors.
@@ -58,8 +62,15 @@ final class c_reservation_path_user_login extends c_base_path {
       }
       elseif ($login_result instanceof c_base_return_true) {
         // successfully logged in.
+        require_once(self::PATH_REDIRECTS);
+
+        $destination = $settings['uri'];
+        $destination['path'] = $settings['base_path'] . '/u/dashboard';
+
         // note: by using a SEE OTHER redirect, the client knows to make a GET request and that the redirect is temporary.
-        $redirect = c_reservation_path_redirect::s_create_redirect('/u/dashboard', c_base_http_status::SEE_OTHER, FALSE);
+        $redirect = c_reservation_path_redirect::s_create_redirect($destination, c_base_http_status::SEE_OTHER, FALSE);
+        unset($destination);
+
         return $redirect->do_execute($http, $database, $session, $html, $settings);
       }
 
@@ -101,7 +112,7 @@ final class c_reservation_path_user_login extends c_base_path {
 
     // H1
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text('Login to System');
+    $tag->set_text($this->pr_get_text(0));
     $form->set_tag($tag);
     unset($tag);
 
@@ -130,7 +141,7 @@ final class c_reservation_path_user_login extends c_base_path {
     // label: username
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-username'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-username');
-    $tag->set_text('Username');
+    $tag->set_text($this->pr_get_text(1));
     $form->set_tag($tag);
     unset($tag);
 
@@ -155,7 +166,7 @@ final class c_reservation_path_user_login extends c_base_path {
     // label: password
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-password');
-    $tag->set_text('Password');
+    $tag->set_text($this->pr_get_text(2));
     $form->set_tag($tag);
     unset($tag);
 
@@ -198,8 +209,14 @@ final class c_reservation_path_user_login extends c_base_path {
     $wrapper->set_tag($form);
     unset($form);
 
+
+    // assing the content.
     $html->set_tag($wrapper);
     unset($wrapper);
+
+    $executed = new c_base_path_executed();
+    $executed->set_output($html);
+    unset($html);
 
     return $executed;
   }
@@ -415,6 +432,8 @@ final class c_reservation_path_user_login extends c_base_path {
       $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
       $session->do_disconnect();
 
+      reservation_get_current_roles($database, $session, $settings);
+
       $cookie_login = NULL;
       if (c_base_return::s_has_error($pushed)) {
         $socket_error = $session->get_error_socket();
@@ -458,5 +477,24 @@ final class c_reservation_path_user_login extends c_base_path {
     }
 
     return c_base_return_array::s_new($problems);
+  }
+
+  /**
+   * Load text for a supported language.
+   *
+   * @param int $index
+   *   A number representing which block of text to return.
+   */
+  protected function pr_get_text($code) {
+    switch ($code) {
+      case 0:
+        return 'Login to System';
+      case 1:
+        return 'Username';
+      case 2:
+        return 'Password';
+    }
+
+    return '';
   }
 }

@@ -13,15 +13,15 @@ require_once('common/base/classes/base_session.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-final class c_reservation_path_not_found extends c_base_path {
+class c_reservation_path_bad_method extends c_base_path {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, &$html, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = array()) {
     // @todo: This needs to return the HTTP invalid method response status.
 
     // the parent function performs validation on the parameters.
-    $executed = parent::do_execute($http, $database, $session, $html, $settings);
+    $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
       return $executed;
     }
@@ -33,20 +33,26 @@ final class c_reservation_path_not_found extends c_base_path {
 
     // H1
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text('Bad Method');
+    $tag->set_text($this->pr_get_text(0));
     $wrapper->set_tag($tag);
     unset($tag);
 
 
     // Content
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text('The provided HTTP request method is either unsupported or invalid for the request path.');
+    $tag->set_text($this->pr_get_text(1));
     $wrapper->set_tag($tag);
     unset($tag);
 
 
+    // initialize the content as HTML.
+    $html = c_reservation_build::s_create_html($http, $database, $session, $settings, $this->pr_get_title());
     $html->set_tag($wrapper);
     unset($wrapper);
+
+    $executed = new c_base_path_executed();
+    $executed->set_output($html);
+    unset($html);
 
 
     // assign HTTP response status.
@@ -54,5 +60,35 @@ final class c_reservation_path_not_found extends c_base_path {
 
 
     return $executed;
+  }
+
+  /**
+   * Load the title text associated with this page.
+   *
+   * This is provided here as a means for a language class to override with a custom language for the title.
+   *
+   * @return string|null
+   *   A string is returned as the custom title.
+   *   NULL is returned to enforce default title.
+   */
+  protected function pr_get_title() {
+    return NULL;
+  }
+
+  /**
+   * Load text for a supported language.
+   *
+   * @param int $index
+   *   A number representing which block of text to return.
+   */
+  protected function pr_get_text($code) {
+    switch ($code) {
+      case 0:
+        return 'Bad Method';
+      case 1:
+        return 'The provided HTTP request method is either unsupported or invalid for the request path.';
+    }
+
+    return '';
   }
 }
