@@ -3415,6 +3415,25 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       if ($code == c_base_ascii::SLASH_FORWARD) {
         unset($code);
 
+        // A second '/' should immediately follow the first to designate the authority.
+        if ($result['current'] + 1 < $stop) {
+          $result['current']++;
+          $code = $ordinals[$result['current']];
+
+          if ($code == c_base_ascii::SLASH_FORWARD) {
+            // begin processing authority.
+            $result['current']++;
+
+            $this->p_rfc_string_is_uri_authority($ordinals, $characters, $stop, $result);
+            if ($result['invalid'] || $result['current'] >= $stop) {
+              return $result;
+            }
+          }
+          else {
+            $result['current']--;
+          }
+        }
+
         // at this point it is known that this is a url instead of a urn.
         $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
         if ($result['invalid'] || $result['current'] >= $stop) {
@@ -3756,7 +3775,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::PERCENT) {
+      if ($code == c_base_ascii::SLASH_FORWARD) {
+        // the slash designates the end of the authority.
+        break;
+      }
+      elseif ($code == c_base_ascii::PERCENT) {
         // valid only if two hex digits immediately follow.
         $result['current']++;
         if ($result['current'] >= $stop) {
