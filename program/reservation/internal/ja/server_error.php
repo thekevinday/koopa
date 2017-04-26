@@ -4,7 +4,11 @@
  * Provides path handler for the server error pages.
  */
 
+/**
+ * Implements c_reservation_path_server_error().
+ */
 final class c_reservation_path_server_error_ja extends c_reservation_path_server_error {
+
   /**
    * Implements pr_get_title().
    */

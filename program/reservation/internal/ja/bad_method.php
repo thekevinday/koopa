@@ -4,7 +4,11 @@
  * Provides path handler for the not found pages.
  */
 
+/**
+ * Implements c_reservation_path_bad_method().
+ */
 final class c_reservation_path_bad_method_ja extends c_reservation_path_bad_method {
+
   /**
    * Implements pr_get_title().
    */

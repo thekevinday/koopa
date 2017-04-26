@@ -8,6 +8,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_path.php');
 require_once('common/base/classes/base_http_status.php');
+require_once('common/base/classes/base_cookie.php');
 
 require_once('common/theme/classes/theme_html.php');
 

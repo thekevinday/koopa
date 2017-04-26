@@ -4,7 +4,11 @@
  * Provides path handler for the not found pages.
  */
 
+/**
+ * Implements c_reservation_path_not_found().
+ */
 final class c_reservation_path_not_found_ja extends c_reservation_path_not_found {
+
   /**
    * Implements pr_get_title().
    */

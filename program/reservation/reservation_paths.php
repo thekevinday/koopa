@@ -39,7 +39,11 @@ class c_reservation_paths {
   private $session   = NULL;
   private $output    = NULL;
   private $logged_in = NULL;
-  private $paths     = NULL;
+
+  private $paths = NULL;
+  private $path  = NULL;
+
+  private $alias = NULL;
 
   /**
    * Class constructor.
@@ -51,8 +55,11 @@ class c_reservation_paths {
     $this->session   = NULL;
     $this->output    = NULL;
     $this->logged_in = NULL;
-    $this->paths     = NULL;
-    $this->path      = NULL;
+
+    $this->paths = NULL;
+    $this->path  = NULL;
+
+    $this->alias = NULL;
   }
 
   /**
@@ -64,8 +71,11 @@ class c_reservation_paths {
     unset($this->session);
     unset($this->output);
     unset($this->logged_in);
+
     unset($this->paths);
     unset($this->path);
+
+    unset($this->alias);
   }
 
   /**
@@ -122,6 +132,7 @@ class c_reservation_paths {
     $this->output = NULL;
     $this->logged_in = $logged_in;
 
+    $this->p_get_language_alias();
 
     // require HTTPS for access to any part of this website.
     if (!isset($_SERVER["HTTPS"])) {
@@ -183,19 +194,49 @@ class c_reservation_paths {
       return $redirect->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
     else {
-      if (!empty($handler_settings['include']) && is_string($handler_settings['include'])) {
-        require_once($handler_settings['include']);
+      if (!empty($handler_settings['include_name']) && is_string($handler_settings['include_name'])) {
+        require_once($handler_settings['include_directory'] . $handler_settings['include_name']);
       }
 
-      if (empty($handler_settings['handler']) || !class_exists($handler_settings['handler'])) {
-        $not_found = $this->p_get_path_server_error();
-        return $not_found->do_execute($this->http, $this->database, $this->session, $this->settings);
+      // execute path handler, using custom-language if defined.
+      if (empty($handler_settings['handler'])) {
+        $server_error = $this->p_get_path_server_error();
+        return $server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
+      }
+      elseif (is_string($this->alias)) {
+        @include_once($handler_settings['include_directory'] . $this->alias . '/' . $handler_settings['include_name']);
+
+        $handler_class = $handler_settings['handler'] . '_' . $this->alias;
+        if (class_exists($handler_class)) {
+          $this->path = new $handler_class();
+
+          unset($handler_class);
+        }
+        else {
+          unset($handler_class);
+
+          // attempt to fallback to default handler if the language-specific handler class is not found.
+          if (!class_exists($handler_settings['handler'])) {
+            $server_error = $this->p_get_path_server_error();
+            return $server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
+          }
+          else {
+            $this->path = new $handler_settings['handler']();
+          }
+        }
       }
       else {
-        $this->path = new $handler_settings['handler']();
-        if (isset($handler_settings['is_root']) && $handler_settings['is_root']) {
-          $this->path->set_is_root(TRUE);
+        if (class_exists($handler_settings['handler'])) {
+          $this->path = new $handler_settings['handler']();
         }
+        else {
+          $server_error = $this->p_get_path_server_error();
+          return $server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
+        }
+      }
+
+      if (isset($handler_settings['is_root']) && $handler_settings['is_root']) {
+        $this->path->set_is_root(TRUE);
       }
     }
     unset($handler_settings);
@@ -236,14 +277,14 @@ class c_reservation_paths {
     $this->paths = new c_base_paths();
 
     // set root path to be the user dashboard.
-    $this->paths->set_path('', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/dashboard.php');
+    $this->paths->set_path('', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/', 'dashboard.php');
 
     // create login/logout paths
-    $this->paths->set_path('/u/login', 'c_reservation_path_user_login', 'program/reservation/login.php');
-    $this->paths->set_path('/u/logout', 'c_reservation_path_user_logout', 'program/reservation/logout.php');
+    $this->paths->set_path('/u/login', 'c_reservation_path_user_login', 'program/reservation/', 'login.php');
+    $this->paths->set_path('/u/logout', 'c_reservation_path_user_logout', 'program/reservation/', 'logout.php');
 
     // user dashboard
-    $this->paths->set_path('/u/dashboard', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/dashboard.php');
+    $this->paths->set_path('/u/dashboard', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/', 'dashboard.php');
   }
 
   /**
@@ -391,6 +432,43 @@ class c_reservation_paths {
   }
 
   /**
+   * Load and save the current preferred language alias.
+   *
+   * This will be stored in $this->alias.
+   */
+  private function p_get_language_alias() {
+    $aliases = array();
+    $languages = $this->http->get_response_content_language()->get_value_exact();
+    if (is_array($languages) && !empty($languages)) {
+      $language = reset($languages);
+
+      // us-english is the default, so do not attempt to include any external files.
+      if ($language == i_base_language::ENGLISH_US || $language == i_base_language::ENGLISH) {
+        unset($language);
+        unset($aliases);
+        unset($languages);
+
+        $this->alias = NULL;
+        return;
+      }
+
+      $aliases = c_base_defaults_global::s_get_languages()::s_get_aliases_by_id($language)->get_value_exact();
+    }
+    unset($language);
+
+    // use default if no aliases are found.
+    if (empty($aliases)) {
+      unset($aliases);
+      unset($languages);
+
+      $this->alias = NULL;
+      return;
+    }
+
+    $this->alias = end($aliases);
+  }
+
+  /**
    * Will include a custom language path if one exists.
    *
    * The default language files ends in "${path}${name}.php".
@@ -415,43 +493,18 @@ class c_reservation_paths {
   private function p_include_path($path, $name, $class) {
     require_once($path . $name . '.php');
 
-    $aliases = array();
-    $languages = $this->http->get_response_content_language()->get_value_exact();
-    if (is_array($languages) && !empty($languages)) {
-      $language = reset($languages);
-
-      // us-english is the default, so do not attempt to include any external files.
-      if ($language == i_base_language::ENGLISH_US || $language == i_base_language::ENGLISH) {
-        unset($language);
-        unset($aliases);
-        unset($languages);
-        return new $class();
-      }
-
-      $aliases = c_base_defaults_global::s_get_languages()::s_get_aliases_by_id($language)->get_value_exact();
-    }
-    unset($language);
-
     // use default if no aliases are found.
-    if (empty($aliases)) {
-      unset($aliases);
-      unset($languages);
+    if (is_null($this->alias)) {
       return new $class();
     }
 
-    $alias = end($aliases);
-    unset($aliases);
-
     // use include_once instead of require_require to allow for failsafe behavior.
-    @include_once($path . $alias . '/' . $name . '.php');
+    @include_once($path . $this->alias . '/' . $name . '.php');
 
-    $language_class = $class . '_' . $alias;
+    $language_class = $class . '_' . $this->alias;
     if (class_exists($language_class)) {
-      unset($alias);
-
       return new $language_class();
     }
-    unset($alias);
     unset($language_class);
 
     // if unable to find, fallback to original class

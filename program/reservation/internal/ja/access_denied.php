@@ -4,7 +4,11 @@
  * Provides path handler for the access denied pages.
  */
 
+/**
+ * Implements c_reservation_path_access_denied().
+ */
 final class c_reservation_path_access_denied_ja extends c_reservation_path_access_denied {
+
   /**
    * Implements pr_get_title().
    */

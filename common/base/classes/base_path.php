@@ -84,7 +84,8 @@ class c_base_path extends c_base_rfc_string {
   protected $date_changed = NULL;
   protected $date_locked  = NULL;
 
-  protected $include = NULL;
+  protected $include_directory = NULL;
+  protected $include_name      = NULL;
 
   /**
    * Class constructor.
@@ -109,7 +110,8 @@ class c_base_path extends c_base_rfc_string {
     $this->date_changed = NULL;
     $this->date_locked  = NULL;
 
-    $this->include = NULL;
+    $this->include_directory = NULL;
+    $this->include_name      = NULL;
   }
 
   /**
@@ -132,7 +134,8 @@ class c_base_path extends c_base_rfc_string {
     unset($this->date_changed);
     unset($this->date_locked);
 
-    unset($this->include);
+    unset($this->include_directory);
+    unset($this->include_name);
 
     parent::__destruct();
   }
@@ -682,21 +685,44 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
-   * Assign an include file needed to process this path.
+   * Assign an include path directory needed to process this path.
    *
-   * @param string $path
+   * This is the prefix part of the path.
+   *
+   * @param string|null $directory
    *   A path to a file that may be found via the PHP search path.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_include($path) {
-    if (!is_string($path)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_include_directory($directory) {
+    if (!is_string($directory) && !is_null($directory)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_directory' => 'directory', ':function_directory' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->include = $path;
+    $this->include_directory = $directory;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assign an include path name needed to process this path.
+   *
+   * This is the suffix part of the path.
+   *
+   * @param string|null $path
+   *   A path to a file that may be found via the PHP search path.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_include_name($name) {
+    if (!is_string($name) && !is_null($name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->include_name = $name;
     return new c_base_return_true();
   }
 
@@ -892,19 +918,39 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
-   * Get the assigned include path.
+   * Get the assigned include path directory.
+   *
+   * This is the prefix part of the path.
    *
    * @return c_base_return_string|c_base_return_null
    *   Include path string on success.
    *   NULL is returned if the include path is not assigned.
    *   Error bit is set on error.
    */
-  public function get_include() {
-    if (!is_string($this->include)) {
+  public function get_include_directory() {
+    if (!is_string($this->include_directory)) {
       return new c_base_return_null();
     }
 
-    return c_base_return_string::s_new($this->include);
+    return c_base_return_string::s_new($this->include_directory);
+  }
+
+  /**
+   * Get the assigned include path name.
+   *
+   * This is the suffix part of the path.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   Include path string on success.
+   *   NULL is returned if the include path is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_include_name() {
+    if (!is_string($this->include_name)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->include_name);
   }
 
   /**
@@ -924,13 +970,13 @@ class c_base_path extends c_base_rfc_string {
    *   An executed array object with error bit set is returned on error.
    */
   public function do_execute(&$http, &$database, &$session, $settings = array()) {
-    if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+    if (!($http instanceof c_base_http)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
-    if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+    if (!($database instanceof c_base_database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
     }
 
@@ -1210,18 +1256,24 @@ class c_base_paths extends c_base_return {
    *
    * @todo: should redirect and alias booleans be added as parameters?
    *
+   * @pram string $directory
+   *   The first part of the file path
    * @pram string $path
    *   The url path in which the handler applies to.
    * @param string $handler
    *   The name of an implementation of c_base_path.
-   * @param string|null $include
-   *   (optional) The file path (relative to the PHP includes) to include that contains the requested path.
+   * @param string|null $directory
+   *   (optional) The prefix path (relative to the PHP includes) to include that contains the requested path.
+   *   When not NULL, both $directory and $name must not be NULL.
+   * @param string|null $name
+   *   (optional) The suffix path (relative to the PHP includes) to include that contains the requested path.
+   *   When not NULL, both $directory and $name must not be NULL.
    *
    * @return c_base_return_status
    *   TRUE is returned on success.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_path($path, $handler, $include = NULL) {
+  public function set_path($path, $handler, $include_directory = NULL, $include_name = NULL) {
     if (!is_string($path)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -1232,13 +1284,18 @@ class c_base_paths extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_null($include) && !is_string($include)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'include', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+    if ((!is_null($include_directory) || (is_null($include_directory) && !is_null($include_name))) && !is_string($include_directory)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'include_directory', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if ((!is_null($include_name) || (is_null($include_name) && !is_null($include_directory))) && !is_string($include_name)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'include_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (mb_strlen($path) == 0) {
-      $this->root = array('handler' => $handler, 'include' => $include, 'is_root' => TRUE);
+      $this->root = array('handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE);
       return new c_base_return_true();
     }
 
@@ -1288,7 +1345,8 @@ class c_base_paths extends c_base_return {
     $depth_total = count($path_parts);
     foreach ($path_parts as $path_part) {
       if ($depth_current == $depth_total) {
-        $path_tree['include'] = $include;
+        $path_tree['include_directory'] = $include_directory;
+        $path_tree['include_name'] = $include_name;
         $path_tree['handler'] = $handler;
         break;
       }
@@ -1296,7 +1354,8 @@ class c_base_paths extends c_base_return {
       if (!isset($path_tree['paths'][$path_part])) {
         $path_tree['paths'][$path_part] = array(
           'paths' => array(),
-          'include' => NULL,
+          'include_directory' => NULL,
+          'include_name' => NULL,
           'handler' => NULL,
         );
       }
@@ -1322,7 +1381,8 @@ class c_base_paths extends c_base_return {
    *
    * @return c_base_return_array|c_base_return_int|c_base_return_null
    *   An array containing:
-   *   - 'include': the file to include that contains the handler class implementation.
+   *   - 'include_directory': the prefix path of the file to include that contains the handler class implementation.
+   *   - 'include_name': the suffix path of the file to include that contains the handler class implementation.
    *   - 'handler': the name of the handler class.
    *   - 'redirect': if specified, then a redirect path (instead of include/handler).
    *   - 'code': if redirect is specified, then the http response code associated with the redirect.
@@ -1388,7 +1448,7 @@ class c_base_paths extends c_base_return {
     foreach ($path_parts as $path_part) {
       if ($depth_current == $depth_total) {
         if (isset($path_tree['handler'])) {
-          $found = array('include' => $path_tree['include'], 'handler' => $path_tree['handler']);
+          $found = array('include_directory' => $path_tree['include_directory'], 'include_name' => $path_tree['include_name'], 'handler' => $path_tree['handler']);
           break;
         }
       }
@@ -1396,7 +1456,7 @@ class c_base_paths extends c_base_return {
       if (!isset($path_tree['paths'][$path_part])) {
         if ($depth_current == $depth_total) {
           if (isset($path_tree['handler'])) {
-            $found = array('include' => $path_tree['include'], 'handler' => $path_tree['handler']);
+            $found = array('include_directory' => $path_tree['include_directory'], 'include_name' => $path_tree['include_name'], 'handler' => $path_tree['handler']);
             break;
           }
         }

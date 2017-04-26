@@ -7,13 +7,11 @@
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_path.php');
-require_once('common/base/classes/base_html.php');
-require_once('common/base/classes/base_cookie.php');
-require_once('common/base/classes/base_session.php');
 
 require_once('common/theme/classes/theme_html.php');
 
 class c_reservation_path_user_dashboard extends c_base_path {
+
   /**
    * Implements do_execute().
    */
@@ -48,7 +46,7 @@ class c_reservation_path_user_dashboard extends c_base_path {
     unset($roles_object);
 
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(2) . $settings['database_user']);
+    $tag->set_text($this->pr_get_text(2) . ' ' . $settings['database_user']);
     $wrapper->set_tag($tag);
     unset($tag);
 
@@ -132,7 +130,7 @@ class c_reservation_path_user_dashboard extends c_base_path {
       case 1:
         return 'All links will go here.';
       case 2:
-        return 'You are currently logged in as: ';
+        return 'You are currently logged in as:';
       case 3:
         return 'You are currently assigned the following roles:';
       case 4:
