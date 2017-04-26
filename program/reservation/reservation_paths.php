@@ -37,7 +37,7 @@ class c_reservation_paths {
   private $database  = NULL;
   private $settings  = NULL;
   private $session   = NULL;
-  private $content   = NULL;
+  private $output    = NULL;
   private $logged_in = NULL;
   private $paths     = NULL;
 
@@ -49,7 +49,7 @@ class c_reservation_paths {
     $this->database  = NULL;
     $this->settings  = NULL;
     $this->session   = NULL;
-    $this->content   = NULL;
+    $this->output    = NULL;
     $this->logged_in = NULL;
     $this->paths     = NULL;
     $this->path      = NULL;
@@ -62,7 +62,7 @@ class c_reservation_paths {
     unset($this->http);
     unset($this->settings);
     unset($this->session);
-    unset($this->content);
+    unset($this->output);
     unset($this->logged_in);
     unset($this->paths);
     unset($this->path);
@@ -119,7 +119,7 @@ class c_reservation_paths {
     $this->database = &$database;
     $this->settings = $settings;
     $this->session = &$session;
-    $this->content = NULL;
+    $this->output = NULL;
     $this->logged_in = $logged_in;
 
 
@@ -430,6 +430,7 @@ class c_reservation_paths {
 
       $aliases = c_base_defaults_global::s_get_languages()::s_get_aliases_by_id($language)->get_value_exact();
     }
+    unset($language);
 
     // use default if no aliases are found.
     if (empty($aliases)) {
@@ -438,25 +439,20 @@ class c_reservation_paths {
       return new $class();
     }
 
-    foreach ($aliases as $alias) {
-      // use include_once instead of require_require to allow for failsafe behavior.
-      @include_once($path . $alias . '/' . $name . '.php');
-
-      $language_class = $class . '_' . $alias;
-      if (class_exists($language_class)) {
-        unset($aliases);
-        unset($alias);
-
-        $this->html->set_attribute(c_base_markup_attributes::ATTRIBUTE_LANGUAGE, $language);
-        unset($language);
-
-        return new $language_class();
-      }
-    }
+    $alias = end($aliases);
     unset($aliases);
+
+    // use include_once instead of require_require to allow for failsafe behavior.
+    @include_once($path . $alias . '/' . $name . '.php');
+
+    $language_class = $class . '_' . $alias;
+    if (class_exists($language_class)) {
+      unset($alias);
+
+      return new $language_class();
+    }
     unset($alias);
     unset($language_class);
-    unset($language);
 
     // if unable to find, fallback to original class
     return new $class();
