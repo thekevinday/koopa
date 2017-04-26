@@ -1596,10 +1596,12 @@ class c_base_return_error {
   /**
    * Creates a return boolean TRUE with the error value populated.
    *
+   * This will assign a value to the class.
+   *
    * @param $value
    *   A value to provide
    * @param $class
-   *   A custom class name.
+   *   A custom class name of any class that is an instance of c_base_return_value.
    * @param c_base_error|null $error
    *   (optional) a custom error setting.
    *   Can be an array of c_base_error for returning multiple errors.
@@ -1608,6 +1610,8 @@ class c_base_return_error {
    * @return c_base_return_false|c_base_return_value
    *   A c_base_return_value object is returned with the error value populated
    *   If the passed class is invalid or not of type c_base_return_value, then a c_base_return_true object with the error value populated.
+   *
+   * * @see: self::s_return()
    */
   public static function s_value($value, $class, $error = NULL) {
     if (!class_exists($class) || !($class instanceof c_base_return_value)) {
@@ -1633,6 +1637,50 @@ class c_base_return_error {
     }
 
     $object_return->set_value($value);
+    return $object_return;
+  }
+
+  /**
+   * Creates a return boolean TRUE with the error value populated.
+   *
+   * This will not assign any value to the class.
+   *
+   * @param $class
+   *   A custom class name of any class that is an instance of c_base_return.
+   * @param c_base_error|null $error
+   *   (optional) a custom error setting.
+   *   Can be an array of c_base_error for returning multiple errors.
+   *   When NULL, no errors are defined.
+   *
+   * @return c_base_return_false|c_base_return_value
+   *   A c_base_return_value object is returned with the error value populated
+   *   If the passed class is invalid or not of type c_base_return_value, then a c_base_return_true object with the error value populated.
+   *
+   * @see: self::s_value()
+   */
+  public static function s_return($class, $error = NULL) {
+    if (!class_exists($class) || !($class instanceof c_base_return)) {
+      return self::s_false($error);
+    }
+
+    $object_return = new $class();
+
+    if (is_null($error)) {
+      $object_error = new c_base_error();
+      $object_return->set_error($object_error);
+      unset($object_error);
+    }
+    elseif (is_array($error)) {
+      foreach ($error as $delta => $value) {
+        $object_return->set_error($error, $delta);
+      }
+      unset($delta);
+      unset($value);
+    }
+    else {
+      $object_return->set_error($error);
+    }
+
     return $object_return;
   }
 }
