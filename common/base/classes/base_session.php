@@ -44,6 +44,8 @@ class c_base_session extends c_base_return {
 
   private $problems;
 
+  private $logged_in;
+
 
   /**
    * Class constructor.
@@ -71,6 +73,8 @@ class c_base_session extends c_base_return {
     $this->timeout_max = NULL;
 
     $this->problems = NULL;
+
+    $this->logged_in = TRUE;
   }
 
   /**
@@ -104,6 +108,8 @@ class c_base_session extends c_base_return {
     unset($this->timeout_max);
 
     unset($this->problems);
+
+    unset($this->logged_in);
 
     parent::__destruct();
   }
@@ -171,21 +177,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the stored socket directory name.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   The system name string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_socket_directory() {
-    if (is_null($this->socket_directory)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->socket_directory);
-  }
-
-  /**
    * Assigns the cookie associated with this session.
    *
    * @param c_base_cookie|null $cookie
@@ -205,21 +196,6 @@ class c_base_session extends c_base_return {
     $this->cookie = $cookie;
 
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the stored system name.
-   *
-   * @return c_base_cookie|c_base_return_null
-   *   The session cookie or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_cookie() {
-    if (is_null($this->cookie)) {
-      return new c_base_return_null();
-    }
-
-    return $this->cookie;
   }
 
   /**
@@ -248,21 +224,6 @@ class c_base_session extends c_base_return {
     $this->socket_path = $this->socket_directory . $this->system_name . self::SOCKET_PATH_SUFFIX;
 
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the stored system name.
-   *
-   * @return c_base_return_string
-   *   The system name string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_system_name() {
-    if (is_null($this->system_name)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->system_name);
   }
 
   /**
@@ -297,21 +258,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the stored user name.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   The user name string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_name() {
-    if (is_null($this->name)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->name);
-  }
-
-  /**
    * Assigns the host ip address associated with the session.
    *
    * @param string|null $host
@@ -340,21 +286,6 @@ class c_base_session extends c_base_return {
 
     $this->host = $host;
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the stored host ip address.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   The host ip address string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_host() {
-    if (is_null($this->host)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->host);
   }
 
   /**
@@ -395,21 +326,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the stored password.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   The password string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_password() {
-    if (is_null($this->password)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->password);
-  }
-
-  /**
    * Assigns the settings associated with the session.
    *
    * The settings provides optional information that a service may want to store with a particular session.
@@ -437,38 +353,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns a specific index within the stored settings.
-   *
-   * @param int|string $delta
-   *   (optional) If an integer or a string, represents a specific index in the given settings array.
-   *
-   * @return c_base_return_value|c_base_return_null
-   *   The settings array value at the specified delta or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_setting($delta) {
-    if (!is_int($delta) && !is_string($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (is_null($this->settings)) {
-      return new c_base_return_null();
-    }
-
-    if (!array_key_exists($delta, $this->settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
-    }
-
-    if ($this->settings[$delta] instanceof c_base_return) {
-      return $this->settings[$delta];
-    }
-
-    return c_base_return_value::s_new($this->settings[$delta]);
-  }
-
-  /**
    * Assigns the settings associated with the session.
    *
    * The settings provides optional information that a service may want to store with a particular session.
@@ -489,36 +373,6 @@ class c_base_session extends c_base_return {
 
     $this->settings = $settings;
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the stored settings.
-   *
-   * @return c_base_return_array|c_base_return_null
-   *   The settings array or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_settings() {
-    if (is_null($this->settings)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_array::s_new($this->settings);
-  }
-
-  /**
-   * Uses an unproven technique in an attempt to 'delete' a password from memory and then unallocating the resource.
-   *
-   * The password will be set to a hopefully large enough string of whitespaces.
-   * The password variable will then be unset.
-   *
-   * This does not perform the garbage collection, but it is suggested that the caller consider calling gc_collect_cycles().
-   *
-   * @see: gc_collect_cycles()
-   */
-  public function clear_password() {
-    $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
-    unset($this->password);
   }
 
   /**
@@ -559,21 +413,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the stored session id.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   The session id string or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_session_id() {
-    if (is_null($this->session_id)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->session_id);
-  }
-
-  /**
    * Assigns the session expiration timeout.
    *
    * @param int|null $timeout_expire
@@ -597,21 +436,6 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the unix timestamp for the session expiration timeout.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   The unix timestamp for the session expiration timeout or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_timeout_expire() {
-    if (is_null($this->timeout_expire)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_int::s_new($this->timeout_expire);
-  }
-
-  /**
    * Assigns the max session timeout.
    *
    * @param int|null $timeout_max
@@ -632,21 +456,6 @@ class c_base_session extends c_base_return {
 
     $this->timeout_max = $timeout_max;
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the unix timestamp for the max timeout.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   The unix timestamp for the max timeout or NULL if undefined.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_timeout_max() {
-    if (is_null($this->timeout_max)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_int::s_new($this->timeout_max);
   }
 
   /**
@@ -681,21 +490,6 @@ class c_base_session extends c_base_return {
 
     $this->problems = $problems;
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the unix timestamp for the max timeout.
-   *
-   * @return c_base_return_array
-   *   An array containing any problems associated with forms for this session.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_problems() {
-    if (is_null($this->problems)) {
-      $this->problems = array();
-    }
-
-    return c_base_return_array::s_new($this->problems);
   }
 
   /**
@@ -777,6 +571,241 @@ class c_base_session extends c_base_return {
   }
 
   /**
+   * Assigns the logged in session status.
+   *
+   * @param bool $logged_in
+   *   Set to TRUE to designate logged in.
+   *   Set to FALSE to designate logged out.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
+   *
+   * @see: c_base_session::save()
+   */
+  public function set_logged_in($logged_in) {
+    if (!is_bool($logged_in)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'logged_in', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->logged_in = $logged_in;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Uses an unproven technique in an attempt to 'delete' a password from memory and then unallocating the resource.
+   *
+   * The password will be set to a hopefully large enough string of whitespaces.
+   * The password variable will then be unset.
+   *
+   * This does not perform the garbage collection, but it is suggested that the caller consider calling gc_collect_cycles().
+   *
+   * @see: gc_collect_cycles()
+   */
+  public function clear_password() {
+    $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
+    unset($this->password);
+  }
+
+  /**
+   * Returns the stored socket directory name.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   The system name string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_socket_directory() {
+    if (is_null($this->socket_directory)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->socket_directory);
+  }
+
+  /**
+   * Returns the stored system name.
+   *
+   * @return c_base_cookie|c_base_return_null
+   *   The session cookie or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_cookie() {
+    if (is_null($this->cookie)) {
+      return new c_base_return_null();
+    }
+
+    return $this->cookie;
+  }
+
+  /**
+   * Returns the stored system name.
+   *
+   * @return c_base_return_string
+   *   The system name string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_system_name() {
+    if (is_null($this->system_name)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->system_name);
+  }
+
+  /**
+   * Returns the stored user name.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   The user name string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_name() {
+    if (is_null($this->name)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->name);
+  }
+
+  /**
+   * Returns the stored host ip address.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   The host ip address string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_host() {
+    if (is_null($this->host)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->host);
+  }
+
+  /**
+   * Returns the stored password.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   The password string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_password() {
+    if (is_null($this->password)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->password);
+  }
+
+  /**
+   * Returns a specific index within the stored settings.
+   *
+   * @param int|string $delta
+   *   (optional) If an integer or a string, represents a specific index in the given settings array.
+   *
+   * @return c_base_return_value|c_base_return_null
+   *   The settings array value at the specified delta or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_setting($delta) {
+    if (!is_int($delta) && !is_string($delta)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($this->settings)) {
+      return new c_base_return_null();
+    }
+
+    if (!array_key_exists($delta, $this->settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      return c_base_return_error::s_false($error);
+    }
+
+    if ($this->settings[$delta] instanceof c_base_return) {
+      return $this->settings[$delta];
+    }
+
+    return c_base_return_value::s_new($this->settings[$delta]);
+  }
+
+  /**
+   * Returns the stored settings.
+   *
+   * @return c_base_return_array|c_base_return_null
+   *   The settings array or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_settings() {
+    if (is_null($this->settings)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_array::s_new($this->settings);
+  }
+
+  /**
+   * Returns the stored session id.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   The session id string or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_session_id() {
+    if (is_null($this->session_id)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->session_id);
+  }
+
+  /**
+   * Returns the unix timestamp for the session expiration timeout.
+   *
+   * @return c_base_return_int|c_base_return_null
+   *   The unix timestamp for the session expiration timeout or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_timeout_expire() {
+    if (is_null($this->timeout_expire)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->timeout_expire);
+  }
+
+  /**
+   * Returns the unix timestamp for the max timeout.
+   *
+   * @return c_base_return_int|c_base_return_null
+   *   The unix timestamp for the max timeout or NULL if undefined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_timeout_max() {
+    if (is_null($this->timeout_max)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->timeout_max);
+  }
+
+  /**
+   * Returns the unix timestamp for the max timeout.
+   *
+   * @return c_base_return_array
+   *   An array containing any problems associated with forms for this session.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_problems() {
+    if (is_null($this->problems)) {
+      $this->problems = array();
+    }
+
+    return c_base_return_array::s_new($this->problems);
+  }
+
+  /**
    * Returns the unix timestamp for the max timeout.
    *
    * @return c_base_return_int|c_base_return_null
@@ -811,6 +840,26 @@ class c_base_session extends c_base_return {
     }
 
     return c_base_return_int::s_new($this->socket_error);
+  }
+
+  /**
+   * Get the logged in status of the session.
+   *
+   * @return c_base_return_status
+   *   TRUE if logged in.
+   *   FALSE if logged out.
+   *   The error bit set is returned on error.
+   */
+  public function get_logged_in() {
+    if (!is_bool($this->logged_in)) {
+      $this->logged_in = FALSE;
+    }
+
+    if ($this->logged_in) {
+      return new c_base_return_true();
+    }
+
+    return new c_base_return_false();
   }
 
   /**
