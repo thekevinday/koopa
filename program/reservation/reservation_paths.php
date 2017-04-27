@@ -7,6 +7,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_markup.php');
 require_once('common/base/classes/base_html.php');
+require_once('common/base/classes/base_http.php');
 require_once('common/base/classes/base_charset.php');
 require_once('common/base/classes/base_ascii.php');
 require_once('common/base/classes/base_form.php');
@@ -170,15 +171,65 @@ class c_reservation_paths {
     $this->p_paths_create();
 
 
+    // load the http method.
+    $method = $this->http->get_request(c_base_http::REQUEST_METHOD)->get_value_exact();
+      if (isset($method['data']) && is_int($method['data'])) {
+      $method = $method['data'];
+    }
+    else {
+      $method = c_base_http::HTTP_METHOD_NONE;
+    }
+
+
     // find the path
     $handler_settings = $this->paths->find_path($this->settings['uri']['path'])->get_value();
-
     if (!is_array($handler_settings)) {
+      // for all invalid pages, report bad method if not HTTP GET or HTTP POST.
+      if ($method !== c_base_http::HTTP_METHOD_GET && $method !== c_base_http::HTTP_METHOD_POST) {
+        unset($method);
+
+        $failure_path = $this->p_get_path_bad_method();
+
+        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+      }
+      unset($method);
+
       $not_found = $this->p_get_path_not_found();
       return $not_found->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
 
+    // validate allowed methods.
+    if (isset($handler_settings['methods']) && is_array($handler_settings['methods'])) {
+      if (!array_key_exists($method, $handler_settings['methods'])) {
+        unset($method);
+
+        $failure_path = $this->p_get_path_bad_method();
+
+        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+      }
+    }
+
+
+    // HTTP OPTIONS method does not process the page, only returns available methods.
+    if ($method === c_base_http::HTTP_METHOD_OPTIONS) {
+      unset($method);
+
+      $options_method_path = $this->p_get_path_options_method();
+
+      if (isset($handler_settings['methods']) && is_array($handler_settings['methods'])) {
+        $options_method_path->set_allowed_methods($handler_settings['methods']);
+      }
+      else {
+        $options_method_path->set_allowed_methods(array());
+      }
+
+      return $options_method_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+    }
+
+
     if (array_key_exists('redirect', $handler_settings)) {
+      unset($method);
+
       // successfully logged in.
       require_once(self::PATH_REDIRECTS . self::NAME_REDIRECTS . '.php');
 
@@ -241,28 +292,7 @@ class c_reservation_paths {
     }
     unset($handler_settings);
 
-    // handle request method validation.
-    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-      // @todo: considering limiting _POST to different path groups here.
-    }
-    elseif (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
-      $id_group = $this->path->get_id_group()->get_value_exact();
-
-      // all paths except /s/ and /x/ may use GET.
-      if ($id_group === c_base_ascii::LOWER_S || $id_group === c_base_ascii::LOWER_X) {
-        $failure_path = $this->p_get_path_bad_method();
-
-        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
-      }
-      unset($id_group);
-    }
-    else {
-      $failure_path = $this->p_get_path_bad_method();
-
-      return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
-    }
-
-    return $this->p_paths_normal();
+    return $this->p_paths_normal($method);
   }
 
   /**
@@ -280,8 +310,8 @@ class c_reservation_paths {
     $this->paths->set_path('', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/', 'dashboard.php');
 
     // create login/logout paths
-    $this->paths->set_path('/u/login', 'c_reservation_path_user_login', 'program/reservation/', 'login.php');
-    $this->paths->set_path('/u/logout', 'c_reservation_path_user_logout', 'program/reservation/', 'logout.php');
+    $this->paths->set_path('/u/login', 'c_reservation_path_user_login', 'program/reservation/paths/u/', 'login.php');
+    $this->paths->set_path('/u/logout', 'c_reservation_path_user_logout', 'program/reservation/paths/u/', 'logout.php');
 
     // user dashboard
     $this->paths->set_path('/u/dashboard', 'c_reservation_path_user_dashboard', 'program/reservation/paths/u/', 'dashboard.php');
@@ -290,11 +320,14 @@ class c_reservation_paths {
   /**
    * Process request paths and determine what to do.
    *
+   * @param int $method
+   *   The id of the HTTP request method.
+   *
    * @return c_base_path_executed
    *   The execution results.
    *   The execution results with the error bit set on error.
    */
-  private function p_paths_normal() {
+  private function p_paths_normal($method) {
     $id_group = $this->path->get_id_group()->get_value_exact();
 
     // regardless of path-specific settings, the following paths always require login credentials to access.
@@ -432,6 +465,13 @@ class c_reservation_paths {
   }
 
   /**
+   * Load and return the internal server error path.
+   */
+  private function p_get_path_options_method() {
+    return new c_reservation_path_options_method();
+  }
+
+  /**
    * Load and save the current preferred language alias.
    *
    * This will be stored in $this->alias.
@@ -511,3 +551,69 @@ class c_reservation_paths {
     return new $class();
   }
 }
+
+/**
+ * Provide the HTTP options response.
+ *
+ * This does not provide any content body.
+ */
+final class c_reservation_path_options_method extends c_base_path {
+
+  /**
+   * Implements do_execute().
+   */
+  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+    // the parent function performs validation on the parameters.
+    $executed = parent::do_execute($http, $database, $session, $settings);
+    if (c_base_return::s_has_error($executed)) {
+      return $executed;
+    }
+
+
+    // assign HTTP response status.
+    $allowed_methods = $this->allowed_methods;
+    $allowed_method = array_shift($allowed_methods);
+    $http->set_response_allow($allowed_method, TRUE);
+
+    if (!empty($allowed_methods)) {
+      foreach ($allowed_methods as $allowed_method) {
+        $http->set_response_allow($allowed_method);
+      }
+    }
+    unset($allowed_method);
+    unset($allowed_methods);
+
+    return $executed;
+  }
+
+  /**
+   * Load the title text associated with this page.
+   *
+   * This is provided here as a means for a language class to override with a custom language for the title.
+   *
+   * @return string|null
+   *   A string is returned as the custom title.
+   *   NULL is returned to enforce default title.
+   */
+  protected function pr_get_title() {
+    return NULL;
+  }
+
+  /**
+   * Load text for a supported language.
+   *
+   * @param int $index
+   *   A number representing which block of text to return.
+   */
+  protected function pr_get_text($code) {
+    switch ($code) {
+      case 0:
+        return 'Server Error';
+      case 1:
+        return 'Something went wrong while processing your request, please try again later.';
+    }
+
+    return '';
+  }
+}
+

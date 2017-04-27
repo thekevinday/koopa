@@ -53,19 +53,20 @@ class c_base_http extends c_base_rfc_string {
   const REQUEST_IF_RANGE                       = 22;
   const REQUEST_IF_UNMODIFIED_SINCE            = 23;
   const REQUEST_MAX_FORWARDS                   = 24;
-  const REQUEST_ORIGIN                         = 25;
-  const REQUEST_POST                           = 26;
-  const REQUEST_PRAGMA                         = 27;
-  const REQUEST_PROXY_AUTHORIZATION            = 28;
-  const REQUEST_RANGE                          = 29;
-  const REQUEST_REFERER                        = 30;
-  const REQUEST_SCRIPT_NAME                    = 31;
-  const REQUEST_TE                             = 32;
-  const REQUEST_UPGRADE                        = 33;
-  const REQUEST_URI                            = 34;
-  const REQUEST_USER_AGENT                     = 35;
-  const REQUEST_VIA                            = 36;
-  const REQUEST_WARNING                        = 37;
+  const REQUEST_METHOD                         = 25;
+  const REQUEST_ORIGIN                         = 26;
+  const REQUEST_POST                           = 27;
+  const REQUEST_PRAGMA                         = 28;
+  const REQUEST_PROXY_AUTHORIZATION            = 29;
+  const REQUEST_RANGE                          = 30;
+  const REQUEST_REFERER                        = 31;
+  const REQUEST_SCRIPT_NAME                    = 32;
+  const REQUEST_TE                             = 33;
+  const REQUEST_UPGRADE                        = 34;
+  const REQUEST_URI                            = 35;
+  const REQUEST_USER_AGENT                     = 36;
+  const REQUEST_VIA                            = 37;
+  const REQUEST_WARNING                        = 38;
   const REQUEST_UNKNOWN                        = 999;
 
   // non-standard, but supported, request headers
@@ -553,6 +554,7 @@ class c_base_http extends c_base_rfc_string {
       self::REQUEST_IF_RANGE,
       self::REQUEST_IF_UNMODIFIED_SINCE,
       self::REQUEST_MAX_FORWARDS,
+      self::REQUEST_METHOD,
       self::REQUEST_ORIGIN,
       self::REQUEST_PRAGMA,
       self::REQUEST_PROXY_AUTHORIZATION,
@@ -725,6 +727,11 @@ class c_base_http extends c_base_rfc_string {
     if (array_key_exists('max_forwards', $this->headers)) {
       $this->p_load_request_max_forwards();
       unset($headers['max_forwards']);
+    }
+
+    // request method is stored in $_SERVER['REQUEST_METHOD'] and should always be defined (by PHP) for valid HTTP requests.
+    if (isset($_SERVER['REQUEST_METHOD'])) {
+      $this->p_load_request_method();
     }
 
     if (array_key_exists('origin', $this->headers)) {
@@ -2534,7 +2541,7 @@ class c_base_http extends c_base_rfc_string {
 
     if (is_array($uri)) {
       $uri_string = $this->pr_rfc_string_combine_uri_array($uri);
-      if ($combined === FALSE) {
+      if ($uri_string === FALSE) {
         unset($parts);
         unset($combined);
 
@@ -6221,6 +6228,57 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
+   * Load and process the HTTP request parameter: request method.
+   *
+   * @see: https://tools.ietf.org/html/rfc2616#section-5.1.1
+   */
+  private function p_load_request_method() {
+    $this->request[self::REQUEST_METHOD]['defined'] = TRUE;
+
+    $method_string = c_base_utf8::s_lowercase($_SERVER['REQUEST_METHOD'])->get_value_exact();
+    if ($method_string == 'get') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_GET;
+    }
+    elseif ($method_string == 'head') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_HEAD;
+    }
+    elseif ($method_string == 'post') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_POST;
+    }
+    elseif ($method_string == 'put') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_PUT;
+    }
+    elseif ($method_string == 'delete') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_DELETE;
+    }
+    elseif ($method_string == 'trace') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_TRACE;
+    }
+    elseif ($method_string == 'options') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_OPTIONS;
+    }
+    elseif ($method_string == 'connect') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_CONNECT;
+    }
+    elseif ($method_string == 'patch') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_PATCH;
+    }
+    elseif ($method_string == 'track') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_TRACK;
+    }
+    elseif ($method_string == 'debug') {
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_DEBUG;
+    }
+    else {
+      // use 'none' to represent all unknown methods.
+      $this->request[self::REQUEST_METHOD]['data'] = self::HTTP_METHOD_NONE;
+    }
+    unset($method_string);
+
+    $this->request[self::REQUEST_METHOD]['invalid'] = FALSE;
+  }
+
+  /**
    * Load and process the HTTP request parameter: origin.
    *
    * Errata: I cannot find Origin specified in the RFC's that I looked at.
@@ -7303,8 +7361,8 @@ class c_base_http extends c_base_rfc_string {
       }
 
       if (isset($pieces[1])) {
-        $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value_exact();
-        $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1]))->get_value_exact();
+        $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0])->get_value_exact());
+        $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1])->get_value_exact());
 
         if ($lower_piece_1 == 'trident') {
           $result['engine_name_machine'] = 'trident';
@@ -7638,8 +7696,8 @@ class c_base_http extends c_base_rfc_string {
         $pieces = mb_split('/', $agent_matches[0]);
         $total_pieces = count($pieces);
         if ($total_pieces == 2) {
-          $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value_exact();
-          $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1]))->get_value_exact();
+          $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0])->get_value_exact());
+          $lower_piece_2 = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[1])->get_value_exact());
 
           if ($lower_piece_1 == 'curl') {
             $result['engine_name_machine'] = 'curl';

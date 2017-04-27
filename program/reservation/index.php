@@ -61,9 +61,9 @@ function reservation_load_settings() {
   $settings['session_max'] = 1800; // 30 minutes
 
   // ldap information
-  $settings['ldap_server'] = 'ldaps://127.0.0.1:1636/';
-  $settings['ldap_base_dn'] = 'ou=users,ou=People';
-  $settings['ldap_fields'] = array('mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber');
+  $settings['ldap_server'] = NULL; // 'ldaps://127.0.0.1:1636/';
+  $settings['ldap_base_dn'] = '';
+  $settings['ldap_fields'] = array();
 
   // base settings
   $settings['base_scheme'] = 'https';
@@ -127,6 +127,15 @@ function reservation_receive_request() {
  *   Http object.
  */
 function reservation_send_response($http) {
+  // get current http header method, which may determine which headers to set or not set.
+  $method = $http->get_request(c_base_http::REQUEST_METHOD)->get_value_exact();
+    if (isset($method['data']) && is_int($method['data'])) {
+    $method = $method['data'];
+  }
+  else {
+    $method = c_base_http::HTTP_METHOD_NONE;
+  }
+
   // add headers
   $http->set_response_date();
   $http->set_response_content_type('text/html');
@@ -140,8 +149,14 @@ function reservation_send_response($http) {
   $http->set_response_vary('Accept-Language');
   #$http->set_response_warning('1234 This site is under active development.');
 
+
   // finalize the content prior to sending headers to ensure header accuracy.
   $http->encode_response_content();
+
+  // http head method responses do not sent content.
+  if ($method === c_base_http::HTTP_METHOD_HEAD) {
+    $http->set_response_content('', FALSE);
+  }
 
 
   // manually disable output buffering (if enabled) when transfer headers and content.
@@ -249,12 +264,13 @@ function reservation_render_theme($http, $output) {
  *   Http object.
  * @param c_base_session &$session
  *   Session information.
- * @param string $markup
- *   The HTML markup.
+ * @param string $output
+ *   The output string.
+ *   Can be any string, such as HTML markup.
  */
-function reservation_build_response(&$http, &$session, $markup) {
+function reservation_build_response(&$http, &$session, $output) {
   $http->set_response_checksum_header(c_base_http::CHECKSUM_ACTION_AUTO);
-  $http->set_response_content($markup);
+  $http->set_response_content($output);
 
 
   // send the session cookie if a session id is specified.
@@ -314,14 +330,18 @@ function reservation_main() {
 
 
   // 5: build or finalize theme.
-  $markup = reservation_render_theme($http, $output)->get_value_exact();
-  unset($output);
+  if (($output instanceof c_base_return_null)) {
+    $output = '';
+  }
+  else {
+    $output = reservation_render_theme($http, $output)->get_value_exact();
+  }
   gc_collect_cycles();
 
 
   // 6: build response information.
-  reservation_build_response($http, $session, $markup);
-  unset($markup);
+  reservation_build_response($http, $session, $output);
+  unset($output);
   gc_collect_cycles();
 
 

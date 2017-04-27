@@ -66,7 +66,7 @@ class c_reservation_path_user_login extends c_base_path {
         require_once(self::PATH_REDIRECTS);
 
         $destination = $settings['uri'];
-        $destination['path'] = $settings['base_path'] . '/u/dashboard';
+        $destination['path'] = $settings['base_path'] . 'u/dashboard';
 
         // note: by using a SEE OTHER redirect, the client knows to make a GET request and that the redirect is temporary.
         $redirect = c_reservation_path_redirect::s_create_redirect($destination, c_base_http_status::SEE_OTHER, FALSE);
@@ -241,14 +241,13 @@ class c_reservation_path_user_login extends c_base_path {
     if (empty($_POST['login_form-username'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-username', 'No valid username has been supplied.');
     }
+    elseif ($_POST['login_form-username'] == 'u_reservation_public') {
+      // explicitly deny access to internal user accounts
+      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user name or password has been specified.');
+    }
 
     if (empty($_POST['login_form-password'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-password', 'No valid password has been supplied.');
-    }
-
-    // explicitly deny access to internal user accounts
-    if ($_POST['login_form-username'] == 'u_reservation_public') {
-      $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Unable to login, an incorrect user name or password has been specified.');
     }
 
     // return current list of problems before continuing to login attempt with credentials.
@@ -422,8 +421,6 @@ class c_reservation_path_user_login extends c_base_path {
 
       if (isset($ldap['status']) && $ldap['status'] instanceof c_base_return_false) {
         $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
-
-        // @todo: handle error situation.
       }
 
       $user_data = reservation_database_get_user_data($database, $_POST['login_form-username'], $ldap['data'])->get_value();

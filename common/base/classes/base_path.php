@@ -68,6 +68,13 @@ require_once('common/base/classes/base_cookie.php');
 class c_base_path extends c_base_rfc_string {
   use t_base_return_value_exact;
 
+  private const DEFAULT_ALLOWED_METHODS = array(
+    c_base_http::HTTP_METHOD_GET => c_base_http::HTTP_METHOD_GET,
+    c_base_http::HTTP_METHOD_POST => c_base_http::HTTP_METHOD_POST,
+    c_base_http::HTTP_METHOD_HEAD => c_base_http::HTTP_METHOD_HEAD,
+    c_base_http::HTTP_METHOD_OPTIONS => c_base_http::HTTP_METHOD_OPTIONS,
+  );
+
   protected $id_group = NULL;
 
   protected $is_content  = NULL;
@@ -86,6 +93,8 @@ class c_base_path extends c_base_rfc_string {
 
   protected $include_directory = NULL;
   protected $include_name      = NULL;
+
+  protected $allowed_methods = NULL;
 
   /**
    * Class constructor.
@@ -112,6 +121,8 @@ class c_base_path extends c_base_rfc_string {
 
     $this->include_directory = NULL;
     $this->include_name      = NULL;
+
+    $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
   }
 
   /**
@@ -136,6 +147,8 @@ class c_base_path extends c_base_rfc_string {
 
     unset($this->include_directory);
     unset($this->include_name);
+
+    unset($this->allowed_methods);
 
     parent::__destruct();
   }
@@ -727,6 +740,63 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Assign an allowed http method.
+   *
+   * @param int $method
+   *   The id of the method to allow.
+   * @param bool $append
+   *   (optional) When TRUE, the method id is appended.
+   *   When FALSE, the array is re-created with $method as the only array value.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_allowed_method($method, $append = TRUE) {
+    if (!is_int($method)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'method', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_bool($append)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'append', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!$append) {
+      $this->allowed_methods = array();
+    }
+
+    $this->allowed_methods[$method] = $method;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assign all allowed http methods.
+   *
+   * @param array $method
+   *   An array of method ids of the method to allow.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_allowed_methods($methods) {
+    if (!is_array($methods)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'methods', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->allowed_methods = array();
+    foreach ($methods as $method) {
+      if (is_int($method)) {
+        $this->allowed_methods[$method] = $method;
+      }
+    }
+    unset($method);
+
+    return new c_base_return_true();
+  }
+
+  /**
    * Gets the ID sort setting.
    *
    * @return c_base_return_int
@@ -954,6 +1024,23 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Get the assigned include path name.
+   *
+   * This is the suffix part of the path.
+   *
+   * @return c_base_return_array
+   *   An array of allowed methods is returned.
+   *   An empty array with the error bit set is returned on error.
+   */
+  public function get_allowed_methods() {
+    if (!is_array($this->allowed_methods)) {
+      $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
+    }
+
+    return c_base_return_array::s_new($this->allowed_methods);
+  }
+
+  /**
    * Execute using the specified path, rendering the page.
    *
    * @param c_base_http $http
@@ -970,27 +1057,30 @@ class c_base_path extends c_base_rfc_string {
    *   An executed array object with error bit set is returned on error.
    */
   public function do_execute(&$http, &$database, &$session, $settings = array()) {
+    $executed = new c_base_path_executed();
+
     if (!($http instanceof c_base_http)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      $executed->set_error($error);
+      unset($error);
     }
-
-    if (!($database instanceof c_base_database)) {
+    elseif (!($database instanceof c_base_database)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'database', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      $executed->set_error($error);
+      unset($error);
     }
-
-    if (!($session instanceof c_base_session)) {
+    elseif (!($session instanceof c_base_session)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      $executed->set_error($error);
+      unset($error);
     }
-
-    if (!is_array($settings)) {
+    elseif (!is_array($settings)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      $executed->set_error($error);
+      unset($error);
     }
 
-    return new c_base_path_executed();
+    return $executed;
   }
 
   /**
@@ -1066,6 +1156,27 @@ class c_base_path extends c_base_rfc_string {
 
     // @fixme: $value is returned unsanitized until this code is implemented.
     return c_base_return_value::s_new($_POST[$id]);
+  }
+
+  /**
+   * Obtains the current HTTP request method.
+   *
+   * @param c_base_http &$http
+   *   The HTTP information object.
+   *
+   * @return int
+   *   An HTTP request method is always returned.
+   */
+  protected function pr_get_method(&$http) {
+    $method = $http->get_request(c_base_http::REQUEST_METHOD)->get_value_exact();
+      if (isset($method['data']) && is_int($method['data'])) {
+      $method = $method['data'];
+    }
+    else {
+      $method = c_base_http::HTTP_METHOD_NONE;
+    }
+
+    return $method;
   }
 }
 
@@ -1162,15 +1273,16 @@ class c_base_path_executed extends c_base_return_array {
   /**
    * Assign output.
    *
-   * @param c_base_return
+   * @param c_base_return|null
    *   The output to assign.
+   *   NULL may be specified to remove any output.
    *
    * @return c_base_return_status
    *   TRUE is returned on success.
    *   FALSE with error bit set is returned on error.
    */
   public function set_output($output) {
-    if (!($output instanceof c_base_return)) {
+    if (!is_null($output) && !($output instanceof c_base_return)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'output', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -1268,12 +1380,15 @@ class c_base_paths extends c_base_return {
    * @param string|null $name
    *   (optional) The suffix path (relative to the PHP includes) to include that contains the requested path.
    *   When not NULL, both $directory and $name must not be NULL.
+   * @param array|null $allowed_methods
+   *   (optional) An array of ids of allowed methods.
+   *   When NULL, this value is ignored.
    *
    * @return c_base_return_status
    *   TRUE is returned on success.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_path($path, $handler, $include_directory = NULL, $include_name = NULL) {
+  public function set_path($path, $handler, $include_directory = NULL, $include_name = NULL, $allowed_methods = NULL) {
     if (!is_string($path)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -1294,14 +1409,33 @@ class c_base_paths extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
+
+    // get allowed methods
+    $path_object = new c_base_path();
+    if (is_null($allowed_methods)) {
+      $methods = $path_object->get_allowed_methods()->get_value_exact();
+      if (!is_array($methods)) {
+        $methods = array();
+      }
+    }
+    else {
+      $methods = $allowed_methods;
+    }
+
+
     if (mb_strlen($path) == 0) {
-      $this->root = array('handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE);
+      unset($path_object);
+      $this->root = array('handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE, 'methods' => $methods);
       return new c_base_return_true();
     }
 
-    $path_object = new c_base_path();
-    $valid_path = $path_object->set_value($path);
+    if (!is_null($allowed_methods) && !is_array($allowed_methods)) {
+      unset($path_object);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'allowed_methods', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
 
+    $valid_path = $path_object->set_value($path);
     if (!$valid_path) {
       unset($path_object);
       unset($valid_path);
@@ -1310,7 +1444,6 @@ class c_base_paths extends c_base_return {
       return c_base_return_error::s_false($error);
     }
     unset($valid_path);
-
 
     $path_string = $path_object->get_value_exact();
     unset($path_object);
@@ -1343,25 +1476,49 @@ class c_base_paths extends c_base_return {
 
     $depth_current = 1;
     $depth_total = count($path_parts);
-    foreach ($path_parts as $path_part) {
-      if ($depth_current == $depth_total) {
-        $path_tree['include_directory'] = $include_directory;
-        $path_tree['include_name'] = $include_name;
-        $path_tree['handler'] = $handler;
-        break;
-      }
 
-      if (!isset($path_tree['paths'][$path_part])) {
-        $path_tree['paths'][$path_part] = array(
-          'paths' => array(),
-          'include_directory' => NULL,
-          'include_name' => NULL,
-          'handler' => NULL,
-        );
-      }
+    // make sure the first path exists.
+    $path_part = array_shift($path_parts);
+    if (!array_key_exists($path_part, $path_tree)) {
+      $path_tree[$path_part] = array(
+        'paths' => array(),
+        'include_directory' => NULL,
+        'include_name' => NULL,
+        'handler' => NULL,
+        'methods' => array(),
+      );
+    }
 
-      $path_tree = &$path_tree['paths'][$path_part];
-      $depth_current++;
+    $path_tree = &$path_tree[$path_part];
+    if ($depth_current == $depth_total) {
+      $path_tree['include_directory'] = $include_directory;
+      $path_tree['include_name'] = $include_name;
+      $path_tree['handler'] = $handler;
+      $path_tree['methods'] = $methods;
+    }
+    else {
+      foreach ($path_parts as $path_part) {
+        if (!isset($path_tree['paths'][$path_part])) {
+          $path_tree['paths'][$path_part] = array(
+            'paths' => array(),
+            'include_directory' => NULL,
+            'include_name' => NULL,
+            'handler' => NULL,
+            'methods' => array(),
+          );
+        }
+
+        $path_tree = &$path_tree['paths'][$path_part];
+        $depth_current++;
+
+        if ($depth_current == $depth_total) {
+          $path_tree['include_directory'] = $include_directory;
+          $path_tree['include_name'] = $include_name;
+          $path_tree['handler'] = $handler;
+          $path_tree['methods'] = $methods;
+          break;
+        }
+      }
     }
     unset($path_part);
     unset($path_parts);
@@ -1445,33 +1602,50 @@ class c_base_paths extends c_base_return {
     $depth_total = count($path_parts);
     $found = NULL;
     $path_tree = &$this->paths[$id_group];
-    foreach ($path_parts as $path_part) {
-      if ($depth_current == $depth_total) {
-        if (isset($path_tree['handler'])) {
-          $found = array('include_directory' => $path_tree['include_directory'], 'include_name' => $path_tree['include_name'], 'handler' => $path_tree['handler']);
-          break;
-        }
+
+    // @fixme: the current design needs to handle multiple possible wildcard paths when searching (such as '/a/b/c/%', '/a/%/c', where '/a/b/c/%' would prevent '/a/%/c' from ever matching).
+    $path_part = array_shift($path_parts);
+    if (array_key_exists($path_part, $path_tree) || array_key_exists('%', $path_tree)) {
+      if (array_key_exists($path_part, $path_tree)) {
+        $path_tree = &$path_tree[$path_part];
+      }
+      else {
+        $path_tree = &$path_tree['%'];
       }
 
-      if (!isset($path_tree['paths'][$path_part])) {
-        if ($depth_current == $depth_total) {
-          if (isset($path_tree['handler'])) {
-            $found = array('include_directory' => $path_tree['include_directory'], 'include_name' => $path_tree['include_name'], 'handler' => $path_tree['handler']);
+      if ($depth_current == $depth_total)  {
+        $found = array(
+          'include_directory' => $path_tree['include_directory'],
+          'include_name' => $path_tree['include_name'],
+          'handler' => $path_tree['handler'],
+          'methods' => $path_tree['methods'],
+        );
+      }
+      else {
+        foreach ($path_parts as $path_part) {
+          if (array_key_exists($path_part, $path_tree['paths'])) {
+            $path_tree = &$path_tree['paths'][$path_part];
+            $depth_current++;
+          }
+          elseif (array_key_exists('%', $path_tree['paths'])) {
+            $path_tree = &$path_tree['paths']['%'];
+            $depth_current++;
+          }
+          else {
+            break;
+          }
+
+          if ($depth_current == $depth_total) {
+            $found = array(
+              'include_directory' => $path_tree['include_directory'],
+              'include_name' => $path_tree['include_name'],
+              'handler' => $path_tree['handler'],
+              'methods' => $path_tree['methods'],
+            );
             break;
           }
         }
-
-        if (isset($path_tree['paths']['%'])) {
-          $path_tree = &$path_tree['paths']['%'];
-          $depth_current++;
-          continue;
-        }
-
-        break;
       }
-
-      $path_tree = &$path_tree['paths'][$path_part];
-      $depth_current++;
     }
     unset($path_part);
     unset($path_parts);
@@ -1479,7 +1653,7 @@ class c_base_paths extends c_base_return {
     unset($depth_total);
     unset($path_tree);
 
-    if (is_array($found)) {
+    if (is_array($found) && !is_null($found['handler'])) {
       return c_base_return_array::s_new($found);
     }
     unset($found);

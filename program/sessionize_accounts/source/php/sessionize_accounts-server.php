@@ -99,9 +99,9 @@ function main($argc, $argv) {
   // long running processes should have PHP's garbage collection enabled, otherwise no cleanup ever happens.
   gc_enable();
 
-  $pid_path_directory = '/var/run/sessionize_accounts/';
+  $pid_path_directory = '/programs/run/sessionize_accounts/';
   $pid_path = $pid_path_directory . $argv[1] . '.pid';
-  $socket_path = '/var/www/sockets/sessionize_accounts/' . $argv[1] . '/sessions.socket';
+  $socket_path = '/programs/sockets/sessionize_accounts/' . $argv[1] . '/sessions.socket';
   $socket_family = AF_UNIX;
   $socket_port = 0;
   $socket_protocol = 0;

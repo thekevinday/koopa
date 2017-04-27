@@ -321,6 +321,13 @@ function reservation_database_load_ldap_data($settings, $user_name) {
     'data' => NULL,
   );
 
+
+  // ldap support is disabled if ldap_server is set to NULL.
+  if (is_null($settings['ldap_server'])) {
+    return c_base_return_array::s_new($return_data);
+  }
+
+
   $ldap = new c_base_ldap();
   $ldap->set_name($settings['ldap_server']);
   #$ldap->set_bind_name('');

@@ -16,7 +16,9 @@
 ### END INIT INFO
 
 # Source function library.
-. /etc/rc.d/init.d/functions
+if [[ -f /etc/rc.d/init.d/functions ]] ; then
+  . /etc/rc.d/init.d/functions
+fi
 
 main() {
   local process_owner=
@@ -25,8 +27,9 @@ main() {
   local path_service="/usr/local/bin/php ${path_programs}bin/sessionize_accounts-server.php"
   local path_settings="${path_programs}settings/sessionize_accounts/"
   local path_systems="${path_settings}systems.settings"
-  local path_pids="/var/run/sessionize_accounts/"
-  local path_socket_directory="/var/www/sockets/sessionize_accounts/"
+  local path_pids="/programs/run/sessionize_accounts/"
+  local path_socket_directory="/programs/sockets/sessionize_accounts/"
+  local path_socket_name="sessions.socket"
   local parameter_system=$2
   local sa_systems=
   local i=
@@ -271,8 +274,8 @@ start_command() {
 
   # make sure no session socket already exists before starting.
   # this assumes that the pid file has already been checked and therefore no existing process is using the socket file (aka: assume this is a stale socket file).
-  if [[ -e $path_socket_directory/$sa_system/sessions.socket ]] ; then
-    rm -f $path_socket_directory/$sa_system/sessions.socket
+  if [[ -e $path_socket_directory/$sa_system/$path_socket_name ]] ; then
+    rm -f $path_socket_directory/$sa_system/$path_socket_name
   fi
 
   if [[ $process_owner == "" ]] ; then
@@ -281,6 +284,11 @@ start_command() {
   else
     su $process_owner -l -c "$path_service \"$sa_system\""
     result=$?
+  fi
+
+  # make sure the socket can be written to.
+  if [[ -e $path_socket_directory/$sa_system/$path_socket_name ]] ; then
+    chmod ugo+w $path_socket_directory/$sa_system/$path_socket_name
   fi
 
   if [[ $result -ne 0 ]] ; then
@@ -306,7 +314,7 @@ stop_command() {
     sleep 0.1
 
     # cleanup the session socket ad pid file.
-    rm -f $path_socket_directory/$sa_system/sessions.socket
+    rm -f $path_socket_directory/$sa_system/$path_socket_name
     rm -f $pid_file
   fi
 }

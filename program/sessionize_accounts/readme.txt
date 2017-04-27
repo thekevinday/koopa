@@ -6,9 +6,9 @@ Compile the source code:
   gcc -g source/c/sessionize_ldap_accounts_in_postgresql.c -o /programs/bin/sessionize_ldap_accounts_in_postgresql
 
 Add and enable the init script:
-  cp -v source/bash/sessionize_ldap_accounts_in_postgresql.sh /etc/init.d/sessionize_ldap_accounts_in_postgresql
-  chkconfig --add sessionize_ldap_accounts_in_postgresql
-  chkconfig sessionize_ldap_accounts_in_postgresql on
+  cp -v source/bash/sessionize_accounts.sh /etc/init.d/sessionize_accounts
+  chkconfig --add sessionize_accounts
+  chkconfig sessionize_accounts on
 
 Configure the settings (assuming system called "example"):
   mkdir -vp /programs/settings/sessionize_ldap_accounts_in_postgresql/

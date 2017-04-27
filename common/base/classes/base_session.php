@@ -161,6 +161,12 @@ class c_base_session extends c_base_return {
     // require a single closing '/' at the end of the path.
     $this->socket_directory = preg_replace('@/*$@i', '', $socket_directory) . '/';
 
+
+    // if the directory is changed after the socket path is defined, then update the socket path.
+    if (!is_null($this->socket_path)) {
+      $this->socket_path = $this->socket_directory . $this->system_name . self::SOCKET_PATH_SUFFIX;
+    }
+
     return new c_base_return_true();
   }
 
@@ -231,6 +237,11 @@ class c_base_session extends c_base_return {
     if (!is_null($system_name) && (!is_string($system_name) || empty($system_name))) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'system_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
+    }
+
+    // make sure the socket directory is defined before assigning the socket path based on the system name.
+    if (is_null($this->socket_directory)) {
+      $this->socket_directory = self::SOCKET_PATH_PREFIX;
     }
 
     $this->system_name = basename($system_name);
