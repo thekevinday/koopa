@@ -822,8 +822,8 @@ class c_reservation_path extends c_base_path {
     $class[] = 'date-week_day-' . $html->sanitize_css(strtolower(date('l', $instance)))->get_value_exact();
     $class[] = 'date-day-' . $html->sanitize_css(date('d', $instance))->get_value_exact();
     $class[] = 'time-hour-' . $html->sanitize_css(date('H', $instance))->get_value_exact();
-    $class[] = 'time-minutes-' . $html->sanitize_css(date('m', $instance))->get_value_exact();
-    $class[] = 'time-seconds-' . $html->sanitize_css(date('s', $instance))->get_value_exact();
+    $class[] = 'time-minute-' . $html->sanitize_css(date('m', $instance))->get_value_exact();
+    $class[] = 'time-second-' . $html->sanitize_css(date('s', $instance))->get_value_exact();
     unset($instance);
 
     // add path classes
