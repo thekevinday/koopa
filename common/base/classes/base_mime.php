@@ -54,12 +54,13 @@ class c_base_mime {
   const TYPE_AUDIO       = 3000;
   const TYPE_AUDIO_WAV   = 3001;
   const TYPE_AUDIO_OGG   = 3002;
-  const TYPE_AUDIO_SPEEX = 3003;
-  const TYPE_AUDIO_FLAC  = 3004;
-  const TYPE_AUDIO_MP3   = 3005;
-  const TYPE_AUDIO_MP4   = 3006;
-  const TYPE_AUDIO_MIDI  = 3007;
-  const TYPE_AUDIO_BASIC = 3008;
+  const TYPE_AUDIO_OPUS  = 3003;
+  const TYPE_AUDIO_SPEEX = 3004;
+  const TYPE_AUDIO_FLAC  = 3005;
+  const TYPE_AUDIO_MP3   = 3006;
+  const TYPE_AUDIO_MP4   = 3007;
+  const TYPE_AUDIO_MIDI  = 3008;
+  const TYPE_AUDIO_BASIC = 3009;
 
   const TYPE_VIDEO           = 4000;
   const TYPE_VIDEO_MPEG      = 4001;
@@ -132,6 +133,7 @@ class c_base_mime {
     self::TYPE_AUDIO       => array('audio/*'),
     self::TYPE_AUDIO_WAV   => array('audio/wav'),
     self::TYPE_AUDIO_OGG   => array('audio/ogg'),
+    self::TYPE_AUDIO_OPUS  => array('audio/opus'),
     self::TYPE_AUDIO_SPEEX => array('audio/speex'),
     self::TYPE_AUDIO_FLAC  => array('audio/flac'),
     self::TYPE_AUDIO_MP3   => array('audio/mpeg'),
@@ -282,8 +284,8 @@ class c_base_mime {
     if (is_null($category)) {
       $result = NULL;
 
-      if (array_key_exists($id, self::$s_names_basic)) {
-        return c_base_return_array::s_new(self::$s_names_basic[$id]);
+      if (array_key_exists($id, self::$s_names_provided)) {
+        return c_base_return_array::s_new(self::$s_names_provided[$id]);
       }
 
       if (array_key_exists($id, self::$s_names_text)) {
@@ -317,8 +319,8 @@ class c_base_mime {
       }
 
       if ($category == self::CATEGORY_PROVIDED) {
-        if (array_key_exists($id, self::$s_names_basic)) {
-          return c_base_return_array::s_new(self::$s_names_basic[$id]);
+        if (array_key_exists($id, self::$s_names_provided)) {
+          return c_base_return_array::s_new(self::$s_names_provided[$id]);
         }
       }
       elseif ($category == self::CATEGORY_TEXT) {

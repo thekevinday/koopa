@@ -244,6 +244,9 @@ class c_base_http extends c_base_rfc_string {
   private $request_time;
   private $response;
 
+  private $request_uri_relative;
+  private $request_uri_query;
+
   private $content;
   private $content_is_file;
   private $buffer_enabled;
@@ -262,6 +265,9 @@ class c_base_http extends c_base_rfc_string {
     $this->request_time = NULL;
     $this->response = array();
 
+    $this->request_uri_relative = NULL;
+    $this->request_uri_query    = NULL;
+
     $this->content = NULL;
     $this->content_is_file = NULL;
     $this->buffer_enabled = FALSE;
@@ -278,6 +284,9 @@ class c_base_http extends c_base_rfc_string {
     unset($this->request);
     unset($this->request_time);
     unset($this->response);
+
+    unset($this->request_uri_relative);
+    unset($this->request_uri_query);
 
     unset($this->content);
     unset($this->content_is_file);
@@ -388,6 +397,65 @@ class c_base_http extends c_base_rfc_string {
     }
 
     return c_base_return_array::s_new($this->request[$header_name]);
+  }
+
+  /**
+   * Return the relative part of the request URI that is also relative to the base path.
+   *
+   * @param string $base_path
+   *   The base_path to remove from the request uri.
+   * @param, bool $with_query
+   *   (optional) If TRUE, the query is appended to the string.
+   *   If FALSE, the query is ommitted.
+   *
+   * @return c_base_return_string
+   *   A string is always returned.
+   *   A string with error bit set is returned on error.
+   */
+  public function get_request_uri_relative($base_path, $with_query = FALSE) {
+    if (!is_string($base_path)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'base_path', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    if (!is_bool($with_query)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'with_query', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    if (is_string($this->request_uri_relative)) {
+      if ($with_query) {
+        return c_base_return_string::s_new($this->request_uri_relative . '?' . $this->request_uri_query);
+      }
+
+      return c_base_return_string::s_new($this->request_uri_relative);
+    }
+
+    $request_uri = $this->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+    if (!isset($request_uri['defined']) || !$request_uri['defined']) {
+      unset($request_uri);
+      return c_base_return_string::s_new('');
+    }
+
+    // strip the base path from the requested uri.
+    if (strlen($base_path) > 0) {
+      $request_uri['data']['path'] = preg_replace('@^' . preg_quote($base_path, '@') . '@i', '', $request_uri['data']['path']);
+      $request_uri['data']['path'] = preg_replace('@/$@', '', $request_uri['data']['path']);
+    }
+
+    $this->request_uri_relative = $request_uri['data']['path'];
+    $this->request_uri_query = '';
+
+    if (is_string($request_uri['data']['query'])) {
+      $this->request_uri_query = http_build_query($request_uri['data']['query']);
+    }
+    unset($request_uri);
+
+    if ($with_query) {
+      return c_base_return_string::s_new($this->request_uri_relative . '?' . $this->request_uri_query);
+    }
+
+    return c_base_return_string::s_new($this->request_uri_relative);
   }
 
   /**

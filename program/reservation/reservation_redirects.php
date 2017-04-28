@@ -62,13 +62,13 @@ final class c_reservation_path_redirect extends c_base_path {
     }
 
     if (is_bool($is_private)) {
-      $path->set_is_private($is_private);
+      $path->is_private($is_private);
     }
     else {
-      $path->set_is_private(TRUE);
+      $path->is_private(TRUE);
     }
 
-    $path->set_is_redirect(TRUE);
+    $path->is_redirect(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);

@@ -77,6 +77,52 @@ class c_base_html extends c_base_return {
   }
 
   /**
+   * Sanitizes a string to ensure it can be used as a CSS class name (or an id attribute name).
+   *
+   * Full performs the complete sanitization, only allowing dash, a-z, A-Z, underscore, 0-9,and ISO characters.
+   * Partial will replace all non-words with '_'.
+   * - After calling partial, a full sanitization still must be performed.
+   *
+   * @param string $text
+   *   The text to sanitize.
+   * @param bool $partial
+   *   (optional) When TRUE, the text is treated as a partial name.
+   *   When FALSE, the text is treated as a full name.
+   *
+   * @return c_base_return_string
+   *   A string is always returned.
+   *   An empty string with the error bit set is returned on error.
+   */
+  public static function sanitize_css($text, $partial = FALSE) {
+    if (!is_string($text)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    if (!is_bool($partial)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'partial', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    if ($partial) {
+      $sanitized = preg_replace('/(\W)+/i', '_', $text);
+    }
+    else {
+      // (From drupal 7's drupal_clean_css_identifier() function.)
+      // Allowed characters: the dash (U+002D),  a-z (U+0030 - U+0039), A-Z (U+0041 - U+005A), the underscore (U+005F), 0-9 (U+0061 - U+007A), and ISO 10646 characters U+00A1 and higher.
+      $sanitized = preg_replace('/[^\x{002D}\x{0030}-\x{0039}\x{0041}-\x{005A}\x{005F}\x{0061}-\x{007A}\x{00A1}-\x{FFFF}]/u', '', $text);
+    }
+
+    if (is_string($sanitized)) {
+      return c_base_return_string::s_new($sanitized);
+    }
+    unset($sanitized);
+
+    $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':operation_name' => 'preg_replace', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    return c_base_return_error::s_value('', 'c_base_return_string', $error);
+  }
+
+  /**
    * Assign a unique numeric id to represent this HTML page.
    *
    * @param int $id
@@ -409,7 +455,6 @@ class c_base_html extends c_base_return {
       case c_base_mime::TYPE_UNKNOWN:
       case c_base_mime::TYPE_PROVIDED:
       case c_base_mime::TYPE_STREAM:
-      case c_base_mime::TYPE_MULTIPART:
       case c_base_mime::TYPE_TEXT_PLAIN:
       case c_base_mime::TYPE_TEXT_HTML:
       case c_base_mime::TYPE_TEXT_RSS:
@@ -810,6 +855,16 @@ class c_base_html extends c_base_return {
           return c_base_return_string::s_new($this->attributes[$attribute]);
         }
 
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_ACTUATE:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_HREF:
+        if ($body) {
+          return c_base_return_string::s_new($this->attributes_body[$attribute]);
+        }
+        else {
+          return c_base_return_string::s_new($this->attributes[$attribute]);
+        }
+
       case c_base_markup_attributes::ATTRIBUTE_ASYNCHRONOUS:
       case c_base_markup_attributes::ATTRIBUTE_ATTRIBUTE_NAME:
       case c_base_markup_attributes::ATTRIBUTE_AUTO_COMPLETE:
@@ -1165,6 +1220,14 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_XMLNS_XLINK:
       case c_base_markup_attributes::ATTRIBUTE_XML_SPACE:
       case c_base_markup_attributes::ATTRIBUTE_ZOOM_AND_PAN:
+        if (!is_string($value)) {
+          return new c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_ACTUATE:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_HREF:
         if (!is_string($value)) {
           return new c_base_return_false();
         }

@@ -10,7 +10,7 @@ require_once('common/base/classes/base_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_reservation_path_user_dashboard extends c_base_path {
+class c_reservation_path_user_dashboard extends c_reservation_path {
 
   /**
    * Implements do_execute().
@@ -22,21 +22,11 @@ class c_reservation_path_user_dashboard extends c_base_path {
       return $executed;
     }
 
+    $this->pr_assign_defaults($settings);
 
-    // Wrapper
-    $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, c_base_defaults_global::CSS_BASE . c_base_defaults_global::CSS_BASE . 'content-wrapper', array(c_base_defaults_global::CSS_BASE . 'dashboard-user', 'dashboard-user'));
-
-
-    // Dashboard Content
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text($this->pr_get_text(0));
-    $wrapper->set_tag($tag);
-    unset($tag);
-
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(1));
-    $wrapper->set_tag($tag);
-    unset($tag);
+    $wrapper = $this->pr_create_tag_wrapper();
+    $wrapper->set_tag($this->pr_create_tag_title(0));
+    $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
     $roles = array();
     $roles_object = $session->get_setting('roles');
@@ -45,15 +35,10 @@ class c_reservation_path_user_dashboard extends c_base_path {
     }
     unset($roles_object);
 
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(2) . ' ' . $settings['database_user']);
-    $wrapper->set_tag($tag);
-    unset($tag);
+    $wrapper->set_tag($this->pr_create_tag_text_block($this->pr_get_text(2, array('@{user}' => $this->user_name))));
 
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(3));
-    $wrapper->set_tag($tag);
-    unset($tag);
+    $block = $this->pr_create_tag_text_block(NULL);
+    $block->set_tag($this->pr_create_tag_text(3));
 
     $tag_ul = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNORDERED_LIST);
 
@@ -104,13 +89,16 @@ class c_reservation_path_user_dashboard extends c_base_path {
     }
     unset($role);
 
-    $wrapper->set_tag($tag_ul);
+    $block->set_tag($tag_ul);
+    unset($tag_ul);
+
+    $wrapper->set_tag($block);
+    unset($block);
 
     // initialize the content as HTML.
-    $html = c_reservation_build::s_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html($http, $database, $session, $settings);
     $html->set_tag($wrapper);
 
-    $executed = new c_base_path_executed();
     $executed->set_output($html);
     unset($html);
 
@@ -118,47 +106,64 @@ class c_reservation_path_user_dashboard extends c_base_path {
   }
 
   /**
-   * Load text for a supported language.
-   *
-   * @param int $index
-   *   A number representing which block of text to return.
+   * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
     switch ($code) {
       case 0:
-        return 'Dashboard';
+        $string = 'Dashboard';
+        break;
       case 1:
-        return 'All links will go here.';
+        $string = 'All links will go here.';
+        break;
       case 2:
-        return 'You are currently logged in as:';
+        $string = 'You are currently logged in as: @{user}.';
+        break;
       case 3:
-        return 'You are currently assigned the following roles:';
+        $string = 'You are currently assigned the following roles:';
+        break;
       case 4:
-        return 'Public';
+        $string = 'Public';
+        break;
       case 5:
-        return 'User';
+        $string = 'User';
+        break;
       case 6:
-        return 'Requester';
+        $string = 'Requester';
+        break;
       case 7:
-        return 'Drafter';
+        $string = 'Drafter';
+        break;
       case 8:
-        return 'Editor';
+        $string = 'Editor';
+        break;
       case 9:
-        return 'Reviewer';
+        $string = 'Reviewer';
+        break;
       case 10:
-        return 'Financer';
+        $string = 'Financer';
+        break;
       case 11:
-        return 'Insurer';
+        $string = 'Insurer';
+        break;
       case 12:
-        return 'Publisher';
+        $string = 'Publisher';
+        break;
       case 13:
-        return 'Auditor';
+        $string = 'Auditor';
+        break;
       case 14:
-        return 'Manager';
+        $string = 'Manager';
+        break;
       case 15:
-        return 'Administer';
+        $string = 'Administer';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

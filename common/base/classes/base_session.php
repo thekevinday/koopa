@@ -74,7 +74,7 @@ class c_base_session extends c_base_return {
 
     $this->problems = NULL;
 
-    $this->logged_in = TRUE;
+    $this->logged_in = FALSE;
   }
 
   /**
@@ -193,7 +193,7 @@ class c_base_session extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    $this->cookie = $cookie;
+    $this->cookie = clone($cookie);
 
     return new c_base_return_true();
   }
@@ -624,7 +624,7 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Returns the stored system name.
+   * Returns the cookie associated with this session.
    *
    * @return c_base_cookie|c_base_return_null
    *   The session cookie or NULL if undefined.
@@ -635,7 +635,7 @@ class c_base_session extends c_base_return {
       return new c_base_return_null();
     }
 
-    return $this->cookie;
+    return clone($this->cookie);
   }
 
   /**

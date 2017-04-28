@@ -36,11 +36,8 @@ class c_base_defaults_global {
   // provide a language to fallback to if none is set.
   const LANGUAGE_CLASS_DEFAULT = 'c_base_language_us_only';
 
-  // reserved path groups: array(97, 99, 100, 102, 115, 116, 120, 121).
-  const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
-
-  // a class name to prepend to css classes or id attributes.
-  const CSS_BASE = 'reservation-';
+  // reserved path groups: array(97, 99, 100, 102, 109, 115, 116, 120, 121).
+  const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
 
 
   // Represents the current timestamp of this PHP process/session, see: self::s_get_timestamp_session().
@@ -54,8 +51,50 @@ class c_base_defaults_global {
   // Represents the default language class in use.
   // This must be a class that implements: i_base_language.
   // In most cases, this should be expected to be defined.
-  private static $s_language = NULL;
+  private static $s_languages = NULL;
 
+
+  /**
+   * Set the default timezone.
+   *
+   * @param string $timezone
+   *   The timezone string.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public static function s_set_timezone($timezone) {
+    if (!($timezone instanceof i_base_language)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timezone', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    self::$s_timezone = $timezone;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Set the default language.
+   *
+   * @param i_base_language $languages
+   *   Must be a class that implements i_base_language.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: i_base_language()
+   */
+  public static function s_set_languages($languages) {
+    if (!($languages instanceof i_base_language)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'languages', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    self::$s_languages = $languages;
+    return new c_base_return_true();
+  }
 
   /**
    * Get a date string, relative to UTC, with support for milliseconds and microseconds.
@@ -262,28 +301,6 @@ class c_base_defaults_global {
   }
 
   /**
-   * Set the default language.
-   *
-   * @param i_base_language $language
-   *   Must be a class that implements i_base_language.
-   *
-   * @return c_base_return_status
-   *   TRUE on success.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: i_base_language
-   */
-  public static function s_set_languages($language) {
-    if (!($language instanceof i_base_language)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'language', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    self::$s_language = $language;
-    return new c_base_return_true();
-  }
-
-  /**
    * Get the currently assigned language class.
    *
    * @return i_base_language
@@ -292,13 +309,13 @@ class c_base_defaults_global {
    * @see: i_base_language
    */
   public static function s_get_languages() {
-    if (is_null(self::$s_language)) {
+    if (is_null(self::$s_languages)) {
       $class = self::LANGUAGE_CLASS_DEFAULT;
-      self::$s_language = new $class();
+      self::$s_languages = new $class();
       unset($class);
     }
 
-    return self::$s_language;
+    return self::$s_languages;
   }
 
   /**
@@ -310,13 +327,13 @@ class c_base_defaults_global {
    * @see: i_base_language
    */
   public static function s_get_languages_class() {
-    if (is_null(self::$s_language)) {
+    if (is_null(self::$s_languages)) {
       $class = self::LANGUAGE_CLASS_DEFAULT;
-      self::$s_language = new $class();
+      self::$s_languages = new $class();
       return c_base_return_string::s_new($class);
     }
 
-    $class = get_class($this->s_language);
+    $class = get_class($this->s_languages);
     return c_base_return_string::s_new($class);
   }
 }

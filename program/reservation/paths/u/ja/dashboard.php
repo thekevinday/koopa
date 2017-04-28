@@ -12,43 +12,64 @@ class c_reservation_path_user_dashboard_ja extends c_reservation_path_user_dashb
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'ダッシュボード';
+        $string = 'ダッシュボード';
+        break;
       case 1:
         // note: currently not converting this because all text in this area will undergo major changes.
-        return parent::pr_get_text($code);
+        $string = parent::pr_get_text($code);
+        break;
       case 2:
-        return 'あなたは現在次のようにログインしています：';
+        $string = 'あなたは現在、@{user}としてログインしています。';
+        break;
       case 3:
-        return '現在、次の役割が割り当てられています。';
+        $string = '現在、次の役割が割り当てられています。';
+        break;
       case 4:
-        return 'パブリック';
+        $string = 'パブリック';
+        break;
       case 5:
-        return 'ユーザー';
+        $string = 'ユーザー';
+        break;
       case 6:
-        return 'リクエスタ';
+        $string = 'リクエスタ';
+        break;
       case 7:
-        return 'ドレイター';
+        $string = 'ドレイター';
+        break;
       case 8:
-        return '編集者';
+        $string = '編集者';
+        break;
       case 9:
-        return 'レビューア';
+        $string = 'レビューア';
+        break;
       case 10:
-        return 'ファイナンサー';
+        $string = 'ファイナンサー';
+        break;
       case 11:
-        return '保険会社';
+        $string = '保険会社';
+        break;
       case 12:
-        return '出版社';
+        $string = '出版社';
+        break;
       case 13:
-        return '審査員';
+        $string = '審査員';
+        break;
       case 14:
-        return 'マネージャー';
+        $string = 'マネージャー';
+        break;
       case 15:
-        return '管理者';
+        $string = '管理者';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

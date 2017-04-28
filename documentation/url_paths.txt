@@ -1,11 +1,12 @@
 The following is the URL path naming strategy that I intend to use on my projects.
 
 Paths that begin with the following:
- /a/ = Administrative/Management/Logged-In Paths.
+ /a/ = Administrative Paths.
  /c/ = Cache Paths.
  /d/ = Data Paths, such as RSS Feeds.
  /f/ = File Paths.
  /s/ = Form Submit Paths.
+ /m/ = Management / System Paths.
  /t/ = Theme Paths.
  /u/ = User Paths (similar to /a/, but focused on users or custom user content).
  /x/ = Ajax Paths.
@@ -29,6 +30,11 @@ Example /f/ paths:
 - /f/i/% - Load file '%' by file id.
 - /f/c/% - Load file '%' by file checksum.
 - /f/s/% - Load checksum for file '%'.
+
+Example /m/ paths:
+- /m/dashboard - Dashboard
+- /m/content - Listing of site content.
+- /m/logs - Listing of site logs.
 
 Example /s/ paths:
 - /s/login - Login form

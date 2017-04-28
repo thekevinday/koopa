@@ -19,7 +19,6 @@ require_once('common/base/classes/base_languages.php');
 require_once('program/reservation/reservation_database.php');
 require_once('program/reservation/reservation_session.php');
 require_once('program/reservation/reservation_paths.php');
-require_once('program/reservation/reservation_build.php');
 
 /**
  * Load all custom settings.
@@ -68,14 +67,28 @@ function reservation_load_settings() {
   // base settings
   $settings['base_scheme'] = 'https';
   $settings['base_host'] = 'localhost';
-  $settings['base_path'] = $settings['cookie_path'];
+  $settings['base_path'] = $settings['cookie_path']; // must end in a trailing slash.
 
   if (!isset($_SERVER["HTTPS"])) {
     $settings['base_scheme'] = 'http';
   }
 
+  // The HTML tag <p>, represents a paragraph.
+  // However, many sites, services, and developers incorrectly use it to represent text.
+  // The definition of the word 'paragraph' contradicts this current usage of the HTML tag <p>.
+  // It is also important to note that many browsers will alter the content of the <p> tag to remove blocks of any kind, such as <ul>.
+  // The <span> tag does not seem to have this issue.
+  // Therefore, the use of HTML <p> tag is consider non-safe and likely to cause problems with formatting (because client browsers alter the HTML).
+  // This provides a way to still use <p> tags despite the implementation, usage, and context flaws.
+  $settings['standard_issue-use_p_tags'] = FALSE;
+
   // default supported languages.
   c_base_defaults_global::s_set_languages(new c_base_language_limited());
+
+  // default time related settings.
+  c_base_defaults_global::s_get_timestamp_session(TRUE);
+  c_base_defaults_global::s_set_timezone('America/Chicago');
+
 
   return $settings;
 }
@@ -196,7 +209,7 @@ function reservation_send_response($http) {
 function reservation_process_request(&$http, &$database, &$session, &$settings) {
   $session_user = $session->get_name()->get_value_exact();
   if (is_null($session_user)) {
-    $logged_in = FALSE;
+    $session->set_logged_in(FALSE);
 
     // @todo: delete old cookies, if they expire.
     $cookie_login = $session->get_cookie();
@@ -221,10 +234,10 @@ function reservation_process_request(&$http, &$database, &$session, &$settings) 
       unset($user_name);
       unset($password);
 
-      $logged_in = FALSE;
+      $session->set_logged_in(FALSE);
     }
     else {
-      $logged_in = TRUE;
+      $session->set_logged_in(TRUE);
       reservation_database_string($database, $settings, $user_name, $password);
 
       unset($user_name);
@@ -233,8 +246,7 @@ function reservation_process_request(&$http, &$database, &$session, &$settings) 
   }
 
   $paths = new c_reservation_paths();
-  $executed = $paths->reservation_process_path($http, $database, $session, $settings, $logged_in);
-  unset($logged_in);
+  $executed = $paths->reservation_process_path($http, $database, $session, $settings);
   unset($paths);
 
   return $executed->get_output();

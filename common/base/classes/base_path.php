@@ -75,6 +75,11 @@ class c_base_path extends c_base_rfc_string {
     c_base_http::HTTP_METHOD_OPTIONS => c_base_http::HTTP_METHOD_OPTIONS,
   );
 
+  private const DEFAULT_SANITIZE_HTML = array(
+    'flags' => ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE,
+    'encoding' => 'UTF-8',
+  );
+
   protected $id_group = NULL;
 
   protected $is_content  = NULL;
@@ -95,6 +100,8 @@ class c_base_path extends c_base_rfc_string {
   protected $include_name      = NULL;
 
   protected $allowed_methods = NULL;
+  protected $sanitize_html   = NULL;
+
 
   /**
    * Class constructor.
@@ -123,6 +130,7 @@ class c_base_path extends c_base_rfc_string {
     $this->include_name      = NULL;
 
     $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
+    $this->sanitize_html   = self::DEFAULT_SANITIZE_HTML;
   }
 
   /**
@@ -149,6 +157,7 @@ class c_base_path extends c_base_rfc_string {
     unset($this->include_name);
 
     unset($this->allowed_methods);
+    unset($this->sanitize_html);
 
     parent::__destruct();
   }
@@ -288,13 +297,13 @@ class c_base_path extends c_base_rfc_string {
     $path->set_value($field_path);
 
     if (is_bool($is_private)) {
-      $path->set_is_private($is_private);
+      $path->is_private($is_private);
     }
     else {
-      $path->set_is_private(TRUE);
+      $path->is_private(TRUE);
     }
 
-    $path->set_is_content(TRUE);
+    $path->is_content(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
@@ -339,13 +348,13 @@ class c_base_path extends c_base_rfc_string {
     $path->set_field_destination($field_destination);
 
     if (is_bool($is_private)) {
-      $path->set_is_private($is_private);
+      $path->is_private($is_private);
     }
     else {
-      $path->set_is_private(TRUE);
+      $path->is_private(TRUE);
     }
 
-    $path->set_is_alias(TRUE);
+    $path->is_alias(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
@@ -394,13 +403,13 @@ class c_base_path extends c_base_rfc_string {
     $path->set_field_response_code($field_response_code);
 
     if (is_bool($is_private)) {
-      $path->set_is_private($is_private);
+      $path->is_private($is_private);
     }
     else {
-      $path->set_is_private(TRUE);
+      $path->is_private(TRUE);
     }
 
-    $path->set_is_redirect(TRUE);
+    $path->is_redirect(TRUE);
 
     $timestamp_session = c_base_defaults_global::s_get_timestamp_session();
     $path->set_date_created($timestamp_session);
@@ -419,6 +428,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_id_group($id_group) {
     if (!is_int($id_group) || $id_group < 0) {
@@ -431,177 +441,6 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
-   * Assigns the is content boolean setting.
-   *
-   * @param bool $is_content
-   *   The is content boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_content($is_content) {
-    if (!is_bool($is_content)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_content', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_content = $is_content;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is alias boolean setting.
-   *
-   * @param bool $is_alias
-   *   The is alias boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_alias($is_alias) {
-    if (!is_bool($is_alias)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_alias = $is_alias;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is redirect boolean setting.
-   *
-   * @param bool $is_redirect
-   *   The is redirect boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_redirect($is_redirect) {
-    if (!is_bool($is_redirect)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_redirect', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_redirect = $is_redirect;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is coded boolean setting.
-   *
-   * @param bool $is_coded
-   *   The is coded boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_coded($is_coded) {
-    if (!is_bool($is_coded)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_coded', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_coded = $is_coded;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is dynamic boolean setting.
-   *
-   * @param bool $is_dynamic
-   *   The is dynamic boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_dynamic($is_dynamic) {
-    if (!is_bool($is_dynamic)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_dynamic', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_dynamic = $is_dynamic;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is user boolean name setting.
-   *
-   * @param bool $is_user
-   *   The is user boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_user($is_user) {
-    if (!is_bool($is_user)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_user', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_user = $is_user;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is private boolean setting.
-   *
-   * @param bool $is_private
-   *   The is private boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_private($is_private) {
-    if (!is_bool($is_private)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_private', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_private = $is_private;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is locked boolean setting.
-   *
-   * @param bool $is_locked
-   *   The is locked boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_locked($is_locked) {
-    if (!is_bool($is_locked)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_locked', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_locked = $is_locked;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns the is root boolean setting.
-   *
-   * @param bool $is_root
-   *   The is root boolean associated with the path.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_is_root($is_root) {
-    if (!is_bool($is_root)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_root', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->is_root = $is_root;
-    return new c_base_return_true();
-  }
-
-  /**
    * Assigns the destination field setting.
    *
    * @param string|array $field_destination
@@ -610,6 +449,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_field_destination($field_destination) {
     if (!is_string($field_destination) && !is_array($field_destination)) {
@@ -629,6 +469,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_field_response_code($field_response_code) {
     if (!is_int($field_response_code)) {
@@ -648,6 +489,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_date_created($date_created) {
     if (!is_float($date_created) && !is_int($date_created)) {
@@ -667,6 +509,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_date_changed($date_changed) {
     if (!is_float($date_changed) && !is_int($date_changed)) {
@@ -686,6 +529,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_date_locked($date_locked) {
     if (!is_float($date_locked) && !is_int($date_locked)) {
@@ -707,6 +551,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_include_directory($directory) {
     if (!is_string($directory) && !is_null($directory)) {
@@ -728,6 +573,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_include_name($name) {
     if (!is_string($name) && !is_null($name)) {
@@ -750,6 +596,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_allowed_method($method, $append = TRUE) {
     if (!is_int($method)) {
@@ -778,6 +625,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   public function set_allowed_methods($methods) {
     if (!is_array($methods)) {
@@ -792,6 +640,46 @@ class c_base_path extends c_base_rfc_string {
       }
     }
     unset($method);
+
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assign html sanitization settings.
+   *
+   * @param int|null $flags
+   *   (optional) An integer representing the flags to be directly passed to htmlspecialchars().
+   * @param string|null $encoding
+   *   (optional) A string representing the encodong to be directly passed to htmlspecialchars().
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: htmlspecialchars()
+   */
+  public function set_sanitize_html($flags = NULL, $encoding = NULL) {
+    if (!is_null($flags) && !is_int($flags)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'flags', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($encoding) && !is_string($encoding)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'encoding', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($this->sanitize_html)) {
+      $this->sanitize_html = self::DEFAULT_SANITIZE_HTML;
+    }
+
+    if (!is_null($flags)) {
+      $this->sanitize_html['flags'] = $flags;
+    }
+
+    if (!is_null($encoding)) {
+      $this->sanitize_html['encoding'] = $encoding;
+    }
 
     return new c_base_return_true();
   }
@@ -812,95 +700,202 @@ class c_base_path extends c_base_rfc_string {
     return c_base_return_int::s_new($this->id_group);
   }
 
-
   /**
-   * Gets the is content boolean setting.
+   * Get or Assign the is content boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is content on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_content
+   *   When a boolean, this is assigned as the current is content setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_content is NULL, is content boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_content() {
-    if (!is_bool($this->is_content)) {
-      $this->is_content = FALSE;
+  public function is_content($is_content = NULL) {
+    if (!is_null($is_content) && !is_bool($is_content)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_content', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_content);
+    if (is_null($is_content)) {
+      if (!is_bool($this->is_content)) {
+        $this->is_content = FALSE;
+      }
+
+      if ($this->is_content) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_content = $is_content;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the is alias boolean setting.
+   * Get or Assign the is alias boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is alias on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_alias
+   *   When a boolean, this is assigned as the current is alias setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_alias is NULL, is alias boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_alias() {
-    if (!is_bool($this->is_alias)) {
-      $this->is_alias = FALSE;
+  public function is_alias($is_alias = NULL) {
+    if (!is_null($is_alias) && !is_bool($is_alias)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_alias', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_alias);
+    if (is_null($is_alias)) {
+      if (!is_bool($this->is_alias)) {
+        $this->is_alias = FALSE;
+      }
+
+      if ($this->is_alias) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_alias = $is_alias;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the is redirect boolean setting.
+   * Get or Assign the is redirect boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is redirect on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_redirect
+   *   When a boolean, this is assigned as the current is redirect setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_redirect is NULL, is redirect boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_redirect() {
-    if (!is_bool($this->is_redirect)) {
-      $this->is_redirect = FALSE;
+  public function is_redirect($is_redirect = NULL) {
+    if (!is_null($is_redirect) && !is_bool($is_redirect)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_redirect', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_redirect);
+    if (is_null($is_redirect)) {
+      if (!is_bool($this->is_redirect)) {
+        $this->is_redirect = FALSE;
+      }
+
+      if ($this->is_redirect) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_redirect = $is_redirect;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the is private boolean setting.
+   * Get or Assign the is private boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is private on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_private
+   *   When a boolean, this is assigned as the current is private setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_private is NULL, is private boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_private() {
-    if (!is_bool($this->is_private)) {
-      $this->is_private = FALSE;
+  public function is_private($is_private = NULL) {
+    if (!is_null($is_private) && !is_bool($is_private)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_private', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_private);
+    if (is_null($is_private)) {
+      if (!is_bool($this->is_private)) {
+        $this->is_private = FALSE;
+      }
+
+      if ($this->is_private) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_private = $is_private;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the is locked boolean setting.
+   * Get or Assign the is locked boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is locked on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_locked
+   *   When a boolean, this is assigned as the current is locked setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_locked is NULL, is locked boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_locked() {
-    if (!is_bool($this->is_locked)) {
-      $this->is_locked = FALSE;
+  public function is_locked($is_locked = NULL) {
+    if (!is_null($is_locked) && !is_bool($is_locked)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_locked', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_locked);
+    if (is_null($is_locked)) {
+      if (!is_bool($this->is_locked)) {
+        $this->is_locked = FALSE;
+      }
+
+      if ($this->is_locked) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_locked = $is_locked;
+    return new c_base_return_true();
   }
 
   /**
-   * Gets the is root boolean setting.
+   * Get or Assign the is root boolean setting.
    *
-   * @return c_base_return_bool
-   *   Is root on success.
-   *   Error bit is set on error.
+   * @param bool|null $is_root
+   *   When a boolean, this is assigned as the current is root setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_root is NULL, is root boolean setting on success.
+   *   FALSE with error bit is set on error.
    */
-  public function get_is_root() {
-    if (!is_bool($this->is_root)) {
-      $this->is_root = FALSE;
+  public function is_root($is_root = NULL) {
+    if (!is_null($is_root) && !is_bool($is_root)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'is_root', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
-    return c_base_return_bool::s_new($this->is_root);
+    if (is_null($is_root)) {
+      if (!is_bool($this->is_root)) {
+        $this->is_root = FALSE;
+      }
+
+      if ($this->is_root) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->is_root = $is_root;
+    return new c_base_return_true();
   }
 
   /**
@@ -1041,6 +1036,23 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Get the currently assigned HTML sanitization settings.
+   *
+   * @return c_base_return_array
+   *   An array of html sanitization settings.
+   *   An empty array with the error bit set is returned on error.
+   *
+   * @see: htmlspecialchars()
+   */
+  public function get_sanitize_html() {
+    if (!is_array($this->sanitize_html)) {
+      $this->sanitize_html = self::DEFAULT_SANITIZE_HTML;
+    }
+
+    return c_base_return_array::s_new($this->sanitize_html);
+  }
+
+  /**
    * Execute using the specified path, rendering the page.
    *
    * @param c_base_http $http
@@ -1177,6 +1189,49 @@ class c_base_path extends c_base_rfc_string {
     }
 
     return $method;
+  }
+
+  /**
+   * Replace all occurences of arguments within string.
+   *
+   * Perform sanitization based on the first character.
+   * If first character is ':', do not perform sanitization.
+   * If first character is '@', santize as HTML text.
+   *
+   * I recommend wrapping placeholders in '{' and '}' to help enforce uniqueness.
+   * - For example the string ':words' could be confused with two different placeholders: ':word' and ':words'.
+   * - By using ':{words}' and ':{word}', there there should be fewer chances of mixups.
+   *
+   * @param string &$string
+   *   The string to perform replacements on.
+   * @param array $arguments
+   *   An array of replacement arguments.
+   *
+   * @see: htmlspecialchars()
+   * @see: str_replace()
+   */
+  protected function pr_process_replacements(&$string, $arguments) {
+    foreach ($arguments as $place_holder => $replacement) {
+      $type = mb_substr($place_holder, 0, 1);
+
+      if ($type == ':') {
+        $sanitized = $replacement;
+      }
+      elseif ($type == '@') {
+        $sanitized = htmlspecialchars($replacement, $this->sanitize_html['flags'], $this->sanitize_html['encoding']);
+      }
+      else {
+        unset($type);
+
+        // do not perform replacements on unknown placeholders.
+        continue;
+      }
+      unset($type);
+
+      $string = str_replace($place_holder, $sanitized, $string);
+    }
+    unset($place_holder);
+    unset($replacement);
   }
 }
 

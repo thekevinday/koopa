@@ -4,16 +4,12 @@
  * Provides path handler for the access denied pages.
  */
 
-require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-require_once('common/base/classes/base_path.php');
-require_once('common/base/classes/base_html.php');
-require_once('common/base/classes/base_cookie.php');
-require_once('common/base/classes/base_session.php');
+require_once('common/base/classes/base_http_status.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_reservation_path_access_denied extends c_base_path {
+class c_reservation_path_access_denied extends c_reservation_path {
   /**
    * Implements do_execute().
    */
@@ -24,31 +20,18 @@ class c_reservation_path_access_denied extends c_base_path {
       return $executed;
     }
 
+    $this->pr_assign_defaults($settings);
 
-    // Wrapper
-    $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, c_base_defaults_global::CSS_BASE . c_base_defaults_global::CSS_BASE . 'content-wrapper', array(c_base_defaults_global::CSS_BASE . 'error-path', 'error-path-access_denied', 'error-path-access_denied'));
-
-
-    // H1
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text($this->pr_get_text(0));
-    $wrapper->set_tag($tag);
-    unset($tag);
-
-
-    // Content
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(1));
-    $wrapper->set_tag($tag);
-    unset($tag);
+    $wrapper = $this->pr_create_tag_wrapper();
+    $wrapper->set_tag($this->pr_create_tag_title(0));
+    $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
 
     // initialize the content as HTML.
-    $html = c_reservation_build::s_create_html($http, $database, $session, $settings, $this->pr_get_title());
+    $html = $this->pr_create_html($http, $database, $session, $settings);
     $html->set_tag($wrapper);
     unset($wrapper);
 
-    $executed = new c_base_path_executed();
     $executed->set_output($html);
     unset($html);
 
@@ -61,32 +44,23 @@ class c_reservation_path_access_denied extends c_base_path {
   }
 
   /**
-   * Load the title text associated with this page.
-   *
-   * This is provided here as a means for a language class to override with a custom language for the title.
-   *
-   * @return string|null
-   *   A string is returned as the custom title.
-   *   NULL is returned to enforce default title.
+   * Implements pr_get_text().
    */
-  protected function pr_get_title() {
-    return NULL;
-  }
-
-  /**
-   * Load text for a supported language.
-   *
-   * @param int $index
-   *   A number representing which block of text to return.
-   */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'Access Denied';
+        $string = 'Access Denied';
+        break;
       case 1:
-        return 'You are not authorized to access this resource.';
+        $string = 'You are not authorized to access this resource.';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

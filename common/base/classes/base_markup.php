@@ -336,6 +336,11 @@ class c_base_markup_attributes {
   const ATTRIBUTE_ARIA_VALUE_MINIMIM     = 309; // text
   const ATTRIBUTE_ARIA_VALUE_NOW         = 310; // text
   const ATTRIBUTE_ARIA_VALUE_TEXT        = 311; // text
+
+  // xml attributes
+  const ATTRIBUTE_XLINK_SHOW    = 312; // text
+  const ATTRIBUTE_XLINK_ACTUATE = 313; // text
+  const ATTRIBUTE_XLINK_HREF    = 314; // text
 }
 
 /**
@@ -875,6 +880,14 @@ class c_base_markup_tag extends c_base_rfc_string {
         }
         break;
 
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_SHOW:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_ACTUATE:
+      case c_base_markup_attributes::ATTRIBUTE_XLINK_HREF:
+        if (!is_string($value)) {
+          return new c_base_return_false();
+        }
+        break;
+
       case c_base_markup_attributes::ATTRIBUTE_ASYNCHRONOUS:
       case c_base_markup_attributes::ATTRIBUTE_ATTRIBUTE_NAME:
       case c_base_markup_attributes::ATTRIBUTE_AUTO_COMPLETE:
@@ -1277,6 +1290,11 @@ class c_base_markup_tag extends c_base_rfc_string {
         case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MINIMIM:
         case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_NOW:
         case c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_TEXT:
+          return c_base_return_string::s_new($this->attributes[$attribute]);
+
+        case c_base_markup_attributes::ATTRIBUTE_XLINK_SHOW:
+        case c_base_markup_attributes::ATTRIBUTE_XLINK_ACTUATE:
+        case c_base_markup_attributes::ATTRIBUTE_XLINK_HREF:
           return c_base_return_string::s_new($this->attributes[$attribute]);
 
         case c_base_markup_attributes::ATTRIBUTE_ASYNCHRONOUS:
@@ -1930,7 +1948,6 @@ class c_base_markup_tag extends c_base_rfc_string {
       case c_base_mime::TYPE_UNKNOWN:
       case c_base_mime::TYPE_PROVIDED:
       case c_base_mime::TYPE_STREAM:
-      case c_base_mime::TYPE_MULTIPART:
       case c_base_mime::TYPE_TEXT_PLAIN:
       case c_base_mime::TYPE_TEXT_HTML:
       case c_base_mime::TYPE_TEXT_RSS:

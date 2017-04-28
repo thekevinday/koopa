@@ -12,21 +12,28 @@ final class c_reservation_path_access_denied_ja extends c_reservation_path_acces
   /**
    * Implements pr_get_title().
    */
-  protected function pr_get_title() {
+  protected function pr_get_title($arguments = array()) {
     return '予約システム';
   }
 
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'アクセス拒否';
+        $string = 'アクセス拒否';
+        break;
       case 1:
-        return 'このリソースにアクセスする権限がありません。';
+        $string = 'このリソースにアクセスする権限がありません。';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

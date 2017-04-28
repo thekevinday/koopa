@@ -12,21 +12,28 @@ final class c_reservation_path_bad_method_ja extends c_reservation_path_bad_meth
   /**
    * Implements pr_get_title().
    */
-  protected function pr_get_title() {
+  protected function pr_get_title($arguments = array()) {
     return '予約システム';
   }
 
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return '悪い方法';
+        $string = '悪い方法';
+        break;
       case 1:
-        return '指定されたHTTP要求メソッドは、要求パスに対してサポートされていないか無効です。';
+        $string = '指定されたHTTP要求メソッドは、要求パスに対してサポートされていないか無効です。';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

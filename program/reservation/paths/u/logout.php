@@ -15,9 +15,9 @@ require_once('common/theme/classes/theme_html.php');
 /**
  * Provides a form for the user logout.
  *
- * This listens on: /s/u/logout
+ * This listens on: /u/logout
  */
-class c_reservation_path_form_user_logout extends c_base_path {
+class c_reservation_path_user_logout extends c_reservation_path {
 
   /**
    * Implements do_execute().
@@ -29,34 +29,22 @@ class c_reservation_path_form_user_logout extends c_base_path {
       return $executed;
     }
 
+    $this->pr_assign_defaults($settings);
 
-    // Wrapper
-    $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, c_base_defaults_global::CSS_BASE . c_base_defaults_global::CSS_BASE . 'content-wrapper', array(c_base_defaults_global::CSS_BASE . 'content-wrapper', 'content-wrapper'));
+    $result = $this->p_do_logout($database, $session, $settings);
 
-
-    // H1
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text($this->pr_get_text(0));
-    $wrapper->set_tag($tag);
-    unset($tag);
-
-    // H1
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER);
-    $tag->set_text($this->pr_get_text(1));
-    $wrapper->set_tag($tag);
-    unset($tag);
+    $wrapper = $this->pr_create_tag_wrapper();
+    $wrapper->set_tag($this->pr_create_tag_title(0));
+    $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
 
     // initialize the content as HTML.
-    $html = c_reservation_build::s_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html($http, $database, $session, $settings);
     $html->set_tag($wrapper);
     unset($wrapper);
 
-    $executed = new c_base_path_executed();
     $executed->set_output($html);
     unset($html);
-
-    reservation_session_logout($database, $session, $settings);
 
     return $executed;
   }
@@ -76,22 +64,57 @@ class c_reservation_path_form_user_logout extends c_base_path {
    *   An array of problems on failure.
    */
   private function p_do_logout(&$database, &$session, $settings) {
+    if (!$database->is_connected()->get_value_exact()) {
+      $connected = reservation_database_connect($database);
+      if (c_base_return::s_has_error($connected)) {
+        unset($connected);
+        unset($already_connected);
+        return FALSE;
+      }
+      unset($connected);
+    }
+
+    // @todo: write to database logout log entry.
+
+    $cookie_login = $session->get_cookie();
+
+    $database->do_disconnect();
+    $session->do_terminate();
+    $session->do_disconnect();
+    $session->set_logged_in(FALSE);
+
+    // remove username and password from database string.
+    reservation_database_string($database, $settings);
+
+    // delete the login cookie.
+    if ($cookie_login instanceof c_base_cookie) {
+      $cookie_login->set_expires(-1);
+      $cookie_login->set_max_age(-1);
+      $result = $session->set_cookie($cookie_login);
+    }
+    unset($cookie_login);
+
+    return TRUE;
   }
 
   /**
-   * Load text for a supported language.
-   *
-   * @param int $index
-   *   A number representing which block of text to return.
+   * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'You Have Logged Out';
+        $string = 'You Have Logged Out';
+        break;
       case 1:
-        return 'You have been logged out of the system.';
+        $string = 'You have been logged out of the system.';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

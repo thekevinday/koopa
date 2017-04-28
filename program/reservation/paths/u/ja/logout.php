@@ -13,14 +13,21 @@ class c_reservation_path_user_logout_ja extends c_reservation_path_user_logout {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'あなたはログアウトしました';
+        $string = 'あなたはログアウトしました';
+        break;
       case 1:
-        return 'あなたはシステムからログアウトされています。';
+        $string = 'あなたはシステムからログアウトされています。';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

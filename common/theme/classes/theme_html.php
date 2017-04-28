@@ -87,12 +87,14 @@ class c_theme_html extends c_base_return {
    *   If null, this is variable ignored.
    * @param array|null $classes
    *   (optional) An array of strings representing additional classes to append.
+   * @param string|null $text
+   *   (optional) Text to assign the tag.
    *
    * @return c_base_markup_tag|c_base_return_status
    *   A newly created tag is returned on success.
    *   FALSE with the error bit set is returned on error.
    */
-  public static function s_create_tag($type, $id = NULL, $classes = NULL) {
+  public static function s_create_tag($type, $id = NULL, $classes = NULL, $text = NULL) {
     if (!is_null($id) && !is_string($id)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
@@ -105,6 +107,11 @@ class c_theme_html extends c_base_return {
 
     if (!is_null($classes) && !is_array($classes)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'classes', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($text) && !is_string($text)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -137,7 +144,29 @@ class c_theme_html extends c_base_return {
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class);
     unset($class);
 
+    if (is_string($text)) {
+      $tag->set_text($text);
+    }
+
     return $tag;
+  }
+
+  /**
+   * Create a tag with the supplied text.
+   *
+   * @param int $type
+   *   A c_base_markup_tag type id.
+   * @param string $text
+   *   Text to assign the tag.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A newly created tag is returned on success.
+   *   FALSE with the error bit set is returned on error.
+   *
+   * @see: self::s_create_tag()
+   */
+  public static function s_create_tag_text($type, $text) {
+    return self::s_create_tag($type, NULL, NULL, $text);
   }
 
   /**
@@ -2979,10 +3008,10 @@ class c_theme_html extends c_base_return {
       $markup .= '</u>';
     }
     elseif ($type === c_base_markup_tag::TYPE_UNORDERED_LIST) {
-      $markup .= '<a' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
+      $markup .= '<ul' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
       $markup .= $tag->get_text()->get_value_exact();
       $markup .= $child_markup;
-      $markup .= '</a>';
+      $markup .= '</ul>';
     }
     elseif ($type === c_base_markup_tag::TYPE_URL) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'url') . $this->p_render_markup_attributes_event_handler($tag) . '>';
@@ -6299,7 +6328,7 @@ class c_theme_html extends c_base_return {
     // attribute: type
     $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_TYPE)->get_value_exact();
     if (!empty($attribute)) {
-      $mime_types = c_base_mime::s_get_names_by_id($attribute);
+      $mime_types = c_base_mime::s_get_names_by_id($attribute)->get_value();
 
       if (is_array($mime_types)) {
         // use the first mime type available.

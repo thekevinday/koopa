@@ -18,7 +18,7 @@ require_once('common/theme/classes/theme_html.php');
  *
  * This listens on: /u/login
  */
-class c_reservation_path_user_login extends c_base_path {
+class c_reservation_path_user_login extends c_reservation_path {
   private const PATH_REDIRECTS = 'program/reservation/reservation_redirects.php';
 
   /**
@@ -31,8 +31,62 @@ class c_reservation_path_user_login extends c_base_path {
       return $executed;
     }
 
+    $this->pr_assign_defaults($settings);
+
     // initialize the content as HTML.
-    $html = c_reservation_build::s_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html($http, $database, $session, $settings);
+    $wrapper = $this->pr_create_tag_wrapper();
+
+    $logged_in = $session->get_logged_in()->get_value_exact();
+    if ($logged_in) {
+      $method = $this->pr_get_method($http);
+
+      if ($method == c_base_http::HTTP_METHOD_POST) {
+        unset($method);
+
+
+        // forbid POST request on login pages for already logged in users.
+        $this->http->set_response_status(c_base_http_status::FORBIDDEN);
+
+
+        // Content
+        $wrapper->set_tag($this->pr_create_tag_title(8));
+        $wrapper->set_tag($this->pr_create_tag_text_block(9));
+      }
+      else {
+        unset($method);
+
+
+        // Content
+        $wrapper->set_tag($this->pr_create_tag_title(3));
+        $wrapper->set_tag($this->pr_create_tag_text_block(4, array('@{user}' => $this->user_name)));
+
+        $wrapper->set_tag($this->pr_create_tag_break());
+
+        $wrapper->set_tag($this->pr_create_tag_text_block(9));
+
+        $block = $this->pr_create_tag_text_block(NULL);
+        $block->set_tag($this->pr_create_tag_text(5));
+
+        $href = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A);
+        $href->set_text($this->pr_get_text(6));
+        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->base_path . 'u/logout');
+        $block->set_tag($href);
+        unset($href);
+
+        $block->set_tag(c_theme_html::s_create_tag_text(c_base_markup_tag::TYPE_SPAN, $this->pr_get_text(7)));
+        $wrapper->set_tag($block);
+        unset($block);
+      }
+
+      $html->set_tag($wrapper);
+      unset($wrapper);
+
+      $executed->set_output($html);
+      unset($html);
+
+      return $executed;
+    }
 
 
     // handle any resulting errors.
@@ -65,7 +119,24 @@ class c_reservation_path_user_login extends c_base_path {
         // successfully logged in.
         require_once(self::PATH_REDIRECTS);
 
-        $destination = $settings['uri'];
+        $request_uri = $http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+        if (isset($request_uri['data']) && is_array($request_uri['data'])) {
+          $destination = $request_uri['data'];
+        }
+        else {
+          $destination = array(
+            'scheme' => NULL,
+            'authority' => NULL,
+            'path' => NULL,
+            'query' => NULL,
+            'fragment' => NULL,
+            'url' => TRUE,
+            'current' => $start,
+            'invalid' => FALSE,
+          );
+        }
+        unset($request_uri);
+
         $destination['path'] = $settings['base_path'] . 'u/dashboard';
 
         // note: by using a SEE OTHER redirect, the client knows to make a GET request and that the redirect is temporary.
@@ -103,6 +174,7 @@ class c_reservation_path_user_login extends c_base_path {
     else {
       $form_defaults = array();
     }
+    unset($logged_in);
 
     // login form
     $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', array('login_form'));
@@ -110,12 +182,7 @@ class c_reservation_path_user_login extends c_base_path {
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ROLE, 'form');
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET, c_base_charset::UTF_8);
 
-
-    // H1
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_H1);
-    $tag->set_text($this->pr_get_text(0));
-    $form->set_tag($tag);
-    unset($tag);
+    $form->set_tag($this->pr_create_tag_title(0));
 
 
     // form id: represents the form.
@@ -199,14 +266,13 @@ class c_reservation_path_user_login extends c_base_path {
     // button: submit
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Login');
-    #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACTION, $settings['base_path'] . '/s/u/login'); // custom submit destination, but would require /s/u/login to redirect back to here.
+    #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACTION, $settings['base_path'] . 's/u/login'); // custom submit destination, but would require /s/u/login to redirect back to here.
     $form->set_tag($tag);
     unset($tag);
     unset($problem_fields);
 
 
     // Wrapper
-    $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, c_base_defaults_global::CSS_BASE . c_base_defaults_global::CSS_BASE . 'content-wrapper', array(c_base_defaults_global::CSS_BASE . 'content-wrapper', 'content-wrapper'));
     $wrapper->set_tag($form);
     unset($form);
 
@@ -215,7 +281,6 @@ class c_reservation_path_user_login extends c_base_path {
     $html->set_tag($wrapper);
     unset($wrapper);
 
-    $executed = new c_base_path_executed();
     $executed->set_output($html);
     unset($html);
 
@@ -478,21 +543,47 @@ class c_reservation_path_user_login extends c_base_path {
   }
 
   /**
-   * Load text for a supported language.
-   *
-   * @param int $index
-   *   A number representing which block of text to return.
+   * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'Login to System';
+        $string = 'Login to System';
+        break;
       case 1:
-        return 'Username';
+        $string = 'Username';
+        break;
       case 2:
-        return 'Password';
+        $string = 'Password';
+        break;
+      case 3:
+        $string = 'Logged In';
+        break;
+      case 4:
+        $string = 'You are currently logged in to the system as @{user}.';
+        break;
+      case 5:
+        $string = 'You may ';
+        break;
+      case 6:
+        $string = 'logout';
+        break;
+      case 7:
+        $string = ' at any time.';
+        break;
+      case 8:
+        $string = 'Login Failure';
+        break;
+      case 9:
+        $string = 'You are already logged in.';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }

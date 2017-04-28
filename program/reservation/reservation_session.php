@@ -108,6 +108,8 @@ function reservation_process_sessions(&$http, &$settings) {
       $settings['database_user'] = $user_name;
       $settings['database_password'] = $password;
     }
+
+    $session->set_logged_in(TRUE);
   }
 
 

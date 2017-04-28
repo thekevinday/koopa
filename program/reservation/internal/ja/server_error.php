@@ -12,21 +12,28 @@ final class c_reservation_path_server_error_ja extends c_reservation_path_server
   /**
    * Implements pr_get_title().
    */
-  protected function pr_get_title() {
+  protected function pr_get_title($arguments = array()) {
     return '予約システム';
   }
 
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code) {
+  protected function pr_get_text($code, $arguments = array()) {
+    $string = '';
     switch ($code) {
       case 0:
-        return 'サーバーエラー';
+        $string = 'サーバーエラー';
+        break;
       case 1:
-        return 'リクエストの処理中に問題が発生しました。しばらくしてからもう一度お試しください。';
+        $string = 'リクエストの処理中に問題が発生しました。しばらくしてからもう一度お試しください。';
+        break;
     }
 
-    return '';
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 }
