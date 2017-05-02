@@ -103,7 +103,7 @@ create index i_signatures_deleted_not on s_tables.t_signatures (id)
 
 /*** provide current user access to their own information ***/
 create view s_users.v_signatures_self with (security_barrier=true) as
-  with this_user as (select id from public.v_users_self_locked_not)
+  with this_user as (select id from v_users_self_locked_not)
   select id, id_type, id_request, date_created, field_fingerprint, field_signature from s_tables.t_signatures
     where not is_deleted and id_creator in (select * from this_user);
 
@@ -113,7 +113,7 @@ grant select on s_users.v_signatures_self to r_reservation, r_reservation_system
 /** provide current user access to insert their own associations **/
 create view s_users.v_signatures_self_insert with (security_barrier=true) as
   select id, id_type, id_creator, id_request, field_fingerprint, field_signature from s_tables.t_signatures
-    where not is_deleted and id_creator in (select id from public.v_users_self_locked_not)
+    where not is_deleted and id_creator in (select id from v_users_self_locked_not)
     with check option;
 
 grant insert on s_users.v_signatures_self_insert to r_reservation, r_reservation_system;

@@ -100,7 +100,7 @@ create index i_associations_id_sort_z on s_tables.t_associations (id_sort) with 
 
 /*** provide current user access to their own information ***/
 create view s_users.v_associations_self with (security_barrier=true) as
-  with this_user as (select id from public.v_users_self_locked_not),
+  with this_user as (select id from v_users_self_locked_not),
     allowed_groups as (select id from s_users.v_groups_self)
   select id, id_manager, id_coordinator, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and (id_manager in (select * from this_user) or id_group in (select * from allowed_groups));
@@ -110,7 +110,7 @@ grant select on s_users.v_associations_self to r_reservation_requester, r_reserv
 
 /*** provide current user access to associations who they are assigned as the manager of ***/
 create view s_users.v_associations_manage with (security_barrier=true) as
-  with this_user as (select id from public.v_users_self_locked_not)
+  with this_user as (select id from v_users_self_locked_not)
   select id, id_creator, id_coordinator, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and id_manager in (select * from this_user);
 
@@ -119,7 +119,7 @@ grant select on s_users.v_associations_manage to r_reservation_requester, r_rese
 
 /*** provide current user access to associations who they are assigned as the coordinator of ***/
 create view s_users.v_associations_coordinate with (security_barrier=true) as
-  with this_user as (select id from public.v_users_self_locked_not)
+  with this_user as (select id from v_users_self_locked_not)
   select id, id_creator, id_manager, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and id_coordinator in (select * from this_user);
 
@@ -129,7 +129,7 @@ grant select on s_users.v_associations_coordinate to r_reservation_requester, r_
 /** provide current user access to insert their own associations (with them as the manager) **/
 create view s_users.v_associations_self_insert with (security_barrier=true) as
   select id_manager, id_group, id_coordinator, name_machine, name_human, field_affiliation, field_classification from s_tables.t_associations
-    where not is_deleted and id_manager in (select id from public.v_users_self_locked_not)
+    where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
 
 grant insert on s_users.v_associations_self_insert to r_reservation_requester, r_reservation_reviewer;
@@ -138,7 +138,7 @@ grant insert on s_users.v_associations_self_insert to r_reservation_requester, r
 /** provide current user access to update associations they manager **/
 create view s_users.v_associations_self_update with (security_barrier=true) as
   select id_manager, id_group, id_coordinator, name_machine, name_human, date_changed, field_affiliation, field_classification from s_tables.t_associations
-    where not is_deleted and id_manager in (select id from public.v_users_self_locked_not)
+    where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
 
 grant update on s_users.v_associations_self_update to r_reservation_requester, r_reservation_reviewer;

@@ -100,7 +100,7 @@ create unique index i_groups_one_user_group on s_tables.t_groups (id_manager) wh
 
 /*** provide group managers access to manage their groups ***/
 create view s_users.v_groups_manage_self with (security_barrier=true) as
-  with this_user as (select id from public.v_users_self_locked_not)
+  with this_user as (select id from v_users_self_locked_not)
   select id, id_external, name_machine, name_human, is_locked, is_composite, is_user, can_manage_paths, settings from s_tables.t_groups
     where not is_deleted and id_manager in (select * from this_user);
 
@@ -108,7 +108,7 @@ grant select on s_users.v_groups_manage_self to r_reservation, r_reservation_sys
 
 create view s_users.v_groups_manage_update with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked, is_composite, is_user, can_manage_paths, settings from s_tables.t_groups
-    where not is_deleted and id_manager in (select id from public.v_users_self_locked_not)
+    where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
 
 grant update on s_users.v_groups_manage_update to r_reservation, r_reservation_system;
@@ -181,7 +181,7 @@ grant select on s_tables.t_groups to r_reservation_auditor;
 
 /*** provide current user access to their own information ***/
 create view s_users.v_groups_self with (security_barrier=true) as
-  with allowed_groups as (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from public.v_users_self_locked_not))
+  with allowed_groups as (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not))
   select id, id_external, id_manager, name_machine, name_human, is_locked, is_composite, date_created, date_changed, date_synced, can_manage_paths, settings from s_tables.t_groups
     where not is_deleted and id in (select * from allowed_groups);
 
@@ -189,7 +189,7 @@ grant select on s_users.v_groups_self to r_reservation, r_reservation_system;
 
 /*** provide group managers access to manage users assigned to their groups (any user id less than 1000 is reserved/special case, prohibit those). ***/
 create view s_users.v_group_users_manage with (security_barrier=true) as
-  with managed_groups as (select id from s_tables.t_groups where not is_deleted and id_manager in (select id from public.v_users_self_locked_not)),
+  with managed_groups as (select id from s_tables.t_groups where not is_deleted and id_manager in (select id from v_users_self_locked_not)),
     available_users as (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
   select id_user, id_group, is_locked from s_tables.t_group_users
     where not is_deleted and id_group in (select * from managed_groups) and id_user in (select * from available_users);
@@ -198,14 +198,14 @@ grant select on s_users.v_group_users_manage to r_reservation, r_reservation_sys
 
 create view s_users.v_group_users_manage_insert with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
-    where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from public.v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
+    where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
     with check option;
 
 grant insert on s_users.v_group_users_manage_insert to r_reservation, r_reservation_system;
 
 create view s_users.v_group_users_manage_update with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
-    where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from public.v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
+    where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
     with check option;
 
 grant update on s_users.v_group_users_manage_update to r_reservation, r_reservation_system;
