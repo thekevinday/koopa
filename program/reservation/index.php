@@ -22,10 +22,7 @@ class c_reservation_index extends c_standard_index {
     $this->settings['database_name']        = 'reservation';
     $this->settings['database_user_public'] = 'u_reservation_public';
 
-    $this->settings['database_name'] = 'reservation';
-    $this->settings['database_user'] = 'u_reservation_public';
-
-    $this->settings['session_system']   = 'reservation';
+    $this->settings['session_system'] = 'reservation';
 
     $this->settings['cookie_name'] = 'reservation-session';
   }

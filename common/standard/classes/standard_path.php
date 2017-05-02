@@ -38,7 +38,6 @@ class c_standard_path extends c_base_path {
 
   protected $use_p_tags = NULL;
   protected $base_path  = NULL;
-  protected $user_name  = NULL;
 
 
   /**
@@ -49,7 +48,6 @@ class c_standard_path extends c_base_path {
 
     $this->use_p_tags = FALSE;
     $this->base_path  = '';
-    $this->user_name  = '';
   }
 
   /**
@@ -58,7 +56,6 @@ class c_standard_path extends c_base_path {
   public function __destruct() {
     unset($this->use_p_tags);
     unset($this->base_path);
-    unset($this->user_name);
 
     parent::__destruct();
   }
@@ -76,10 +73,6 @@ class c_standard_path extends c_base_path {
 
     if (isset($settings['base_path']) && is_string($settings['base_path'])) {
       $this->base_path = $settings['base_path'];
-    }
-
-    if (isset($settings['database_user']) && is_string($settings['database_user'])) {
-      $this->user_name = $settings['database_user'];
     }
   }
 

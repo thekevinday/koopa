@@ -67,7 +67,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         // Content
         $wrapper->set_tag($this->pr_create_tag_title(3));
-        $wrapper->set_tag($this->pr_create_tag_text_block(4, array('@{user}' => $this->user_name)));
+        $wrapper->set_tag($this->pr_create_tag_text_block(4, array('@{user}' => $session->get_name()->get_value_exact())));
 
         $wrapper->set_tag($this->pr_create_tag_break());
 
