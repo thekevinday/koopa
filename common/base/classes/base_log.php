@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing the logs.
  */
+require_once('common/base/classes/base_error.php');
+require_once('common/base/classes/base_return.php');
 
 /**
  * A generic class for managing the logs.
@@ -67,8 +69,8 @@ class c_base_log extends c_base_return {
   const SEVERITY_CRITICAL    = 6; // this is a big problem.
   const SEVERITY_EMERGENCY   = 7; // this is the most serious type of problem.
 
-  private $type;
-  private $data;
+  protected $type;
+  protected $data;
 
 
   /**
@@ -124,7 +126,7 @@ class c_base_log extends c_base_return {
    */
   public function set_type($type) {
     if (!is_int($type) || $type < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -174,12 +176,12 @@ class c_base_log extends c_base_return {
    */
   public function get_data_jsonized($options = 0, $depth = 512) {
     if (!is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($depth) || $depth < 1) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'depth', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -187,7 +189,7 @@ class c_base_log extends c_base_return {
     if ($encoded === FALSE) {
       unset($encoded);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_encode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -209,12 +211,12 @@ class c_base_log extends c_base_return {
   protected function pr_set_data($key, $value) {
     if (is_int($key)) {
       if ($key < 0) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
       }
     }
     elseif (!is_string($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -236,17 +238,17 @@ class c_base_log extends c_base_return {
   protected function pr_get_data($key) {
     if (is_int($key)) {
       if ($key < 0) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
     }
     elseif (!is_string($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'key', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!array_key_exists($key, $this->data)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $key, ':array_name' => 'this->data', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $key, ':{array_name}' => 'this->data', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 

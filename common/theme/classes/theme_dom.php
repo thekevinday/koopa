@@ -61,12 +61,12 @@ class c_theme_dom extends DOMDocument {
    */
   public function change_element($element, $type) {
     if (!($element instanceof DOMNode)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'element', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'element', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($type) || empty($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -90,17 +90,17 @@ class c_theme_dom extends DOMDocument {
    */
   public function change_elements($type_old, $type_new) {
     if (!is_string($type_old) || strlen($type_old) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type_old', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type_old', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($type_new) || strlen($type_empty) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type_empty', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type_empty', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!($this->content instanceof DOMNode)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->content', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->content', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -129,12 +129,12 @@ class c_theme_dom extends DOMDocument {
    */
   public function remove_element($element, $preserve_children = TRUE) {
     if (!($element instanceof DOMNode)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'element', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'element', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($preserve_children)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'preserve_children', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'preserve_children', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -167,17 +167,17 @@ class c_theme_dom extends DOMDocument {
    */
   public function remove_elements($type, $preserve_children = TRUE) {
     if (!is_string($type) || strlen($type) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($preserve_children)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'preserve_children', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'preserve_children', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!($this->content instanceof DOMNode)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->content', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->content', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 

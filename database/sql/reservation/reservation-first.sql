@@ -48,6 +48,8 @@ grant r_reservation_public to u_reservation_grant_roles with admin option;
 /** If the data is meant to be private, then have the public account use the system user with ssl connections **/
 create role u_reservation_public inherit login;
 
+grant r_reservation_public to u_reservation_public;
+
 
 /** These are the roles and role group the database should use for system activity (such as executing cron-jobs). **/
 create role u_reservation_system inherit login;

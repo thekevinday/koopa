@@ -22,7 +22,7 @@
 
   function process_received_headers(&$stuff) {
     // default supported languages.
-    c_base_defaults_global::s_set_languages(new c_base_language_limited());
+    c_base_defaults_global::s_set_languages(new c_base_languages_limited());
 
     $stuff['http'] = new c_base_http();
     $stuff['http']->do_load_request();
@@ -30,15 +30,15 @@
 
     // test error message handling using english or japanese.
     $supported_languages = array(
-      i_base_language::ENGLISH_US => 'c_base_error_messages_english',
-      i_base_language::ENGLISH => 'c_base_error_messages_english',
-      i_base_language::JAPANESE => 'c_base_error_messages_japanese',
+      i_base_languages::ENGLISH_US => 'c_base_error_messages_english',
+      i_base_languages::ENGLISH => 'c_base_error_messages_english',
+      i_base_languages::JAPANESE => 'c_base_error_messages_japanese',
     );
 
-    $stuff['http']->set_response_content_language(i_base_language::ENGLISH_US);
-    $stuff['http']->set_response_content_language(i_base_language::ENGLISH);
+    $stuff['http']->set_response_content_language(i_base_languages::ENGLISH_US);
+    $stuff['http']->set_response_content_language(i_base_languages::ENGLISH);
 
-    $language_chosen = i_base_language::ENGLISH_US;
+    $language_chosen = i_base_languages::ENGLISH_US;
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
     if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
       foreach ($languages_accepted['data']['weight'] as $weight => $language) {
@@ -57,12 +57,12 @@
     }
     unset($languages_accepted);
 
-    if ($language_chosen === i_base_language::ENGLISH || $language_chosen === i_base_language::ENGLISH_US) {
+    if ($language_chosen === i_base_languages::ENGLISH || $language_chosen === i_base_languages::ENGLISH_US) {
       require_once('common/base/classes/base_error_messages_english.php');
     }
-    elseif ($language_chosen === i_base_language::JAPANESE) {
+    elseif ($language_chosen === i_base_languages::JAPANESE) {
       require_once('common/base/classes/base_error_messages_japanese.php');
-      $stuff['http']->set_response_content_language(i_base_language::JAPANESE);
+      $stuff['http']->set_response_content_language(i_base_languages::JAPANESE);
     }
 
     $stuff['error_messages'] = new $supported_languages[$language_chosen];
@@ -172,14 +172,14 @@
 
     // disclaimer: I used translate.google.com to generate the languages and provided only the default translation (expect translation errors).
     $test_strings = array(
-      i_base_language::ENGLISH_US => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
-      i_base_language::ENGLISH => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
-      i_base_language::JAPANESE => 'これは、ブラウザのデフォルト言語を使用したテストです。 現在、英語（デフォルト）、スペイン語、日本語、ロシア語がテストされています。',
-      i_base_language::RUSSIAN => 'Это тест с помощью браузера по умолчанию язык. В настоящее время английский (по умолчанию), испанский, японский и русский тестируются.',
-      i_base_language::SPANISH => 'Se trata de una prueba que utiliza el idioma predeterminado de su navegador. Actualmente se ponen a prueba el inglés (predeterminado), el español, el japonés y el ruso.',
+      i_base_languages::ENGLISH_US => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
+      i_base_languages::ENGLISH => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
+      i_base_languages::JAPANESE => 'これは、ブラウザのデフォルト言語を使用したテストです。 現在、英語（デフォルト）、スペイン語、日本語、ロシア語がテストされています。',
+      i_base_languages::RUSSIAN => 'Это тест с помощью браузера по умолчанию язык. В настоящее время английский (по умолчанию), испанский, японский и русский тестируются.',
+      i_base_languages::SPANISH => 'Se trata de una prueba que utiliza el idioma predeterminado de su navegador. Actualmente se ponen a prueba el inglés (predeterminado), el español, el japonés y el ruso.',
     );
 
-    $language_chosen = i_base_language::ENGLISH;
+    $language_chosen = i_base_languages::ENGLISH;
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
     if (isset($languages_accepted['data']['weight']) && is_array($languages_accepted['data']['weight'])) {
       foreach ($languages_accepted['data']['weight'] as $weight => $language) {
@@ -771,7 +771,7 @@
   }
 
   function assign_database_string(&$database, $username, $password) {
-    $connection_string = new c_base_connection_string();
+    $connection_string = new c_base_database_connection_string();
     $connection_string->set_host('127.0.0.1');
     $connection_string->set_port(5432);
     $connection_string->set_database('reservation');
@@ -1253,7 +1253,7 @@
 
       @socket_clear_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_create', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1269,7 +1269,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_connect', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1297,7 +1297,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_write', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1314,7 +1314,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':socket_error' => $socket_error, ':socket_error_message' => @socket_strerror($socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_read', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);

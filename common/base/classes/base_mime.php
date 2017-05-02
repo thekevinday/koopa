@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing mime-type information.
  */
+require_once('common/base/classes/base_error.php');
+require_once('common/base/classes/base_return.php');
 
 /**
  * A generic class for managing mime-type information.
@@ -277,7 +279,7 @@ class c_base_mime {
    */
   static function s_get_names_by_id($id, $category = NULL) {
     if (!is_int($id) && !is_numeric($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -314,7 +316,7 @@ class c_base_mime {
     }
     else {
       if (!is_int($category)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'category', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'category', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
       }
 
@@ -385,12 +387,12 @@ class c_base_mime {
    */
   static function s_identify($mime, $lowercase = FALSE) {
     if (!is_string($mime)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'mime', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'mime', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($lowercase)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'lowercase', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'lowercase', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

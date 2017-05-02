@@ -3,12 +3,9 @@
  * @file
  * Provides a class for managing e-mail related functionality.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_ascii.php');
-require_once('common/base/classes/base_utf8.php');
 require_once('common/base/classes/base_rfc_string.php');
 
 /**

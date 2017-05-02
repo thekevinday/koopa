@@ -96,22 +96,22 @@ class c_theme_html extends c_base_return {
    */
   public static function s_create_tag($type, $id = NULL, $classes = NULL, $text = NULL) {
     if (!is_null($id) && !is_string($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($classes) && !is_array($classes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'classes', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'classes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($text) && !is_string($text)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -119,7 +119,7 @@ class c_theme_html extends c_base_return {
 
     $result = $tag->set_type($type);
     if ($result instanceof c_base_return_false) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -181,11 +181,11 @@ class c_theme_html extends c_base_return {
    */
   public function set_html($html) {
     if (!($html instanceof c_base_html)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'html', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->html = $html;
+    $this->html = clone($html);
     return new c_base_return_true();
   }
 
@@ -202,7 +202,7 @@ class c_theme_html extends c_base_return {
       $this->html = new c_base_html();
     }
 
-    return $this->html;
+    return clone($this->html);
   }
 
   /**
@@ -230,7 +230,7 @@ class c_theme_html extends c_base_return {
    */
   public function render_markup() {
     if (!($this->html instanceof c_base_html)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->html', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -254,11 +254,11 @@ class c_theme_html extends c_base_return {
    */
   public function set_http($http) {
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'http', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->http = $http;
+    $this->http = clone($http);
     return new c_base_return_true();
   }
 
@@ -275,7 +275,7 @@ class c_theme_html extends c_base_return {
       $this->http = new c_base_http();
     }
 
-    return $this->http;
+    return clone($this->http);
   }
 
   /**
@@ -290,7 +290,7 @@ class c_theme_html extends c_base_return {
    */
   public function set_max_recursion_depth($max_recursion_depth) {
     if (!is_int($max_recursion_depth)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'max_recursion_depth', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'max_recursion_depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

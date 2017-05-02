@@ -42,7 +42,7 @@ class c_base_charset {
    */
   public static function s_is_valid($charset) {
     if (!is_int($charset)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'charset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -65,7 +65,7 @@ class c_base_charset {
    */
   public static function s_to_string($charset) {
     if (!is_int($charset)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'charset', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'charset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -112,7 +112,7 @@ class c_base_charset {
         return c_base_return_string::s_new('ISO-8859-16');
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':function_name' => __CLASS__ . '::' . __FUNCTION__), i_base_error_messages::FUNCTION_FAILURE));
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '::' . __FUNCTION__), i_base_error_messages::FUNCTION_FAILURE));
     return c_base_return_error::s_false($error);
   }
 }

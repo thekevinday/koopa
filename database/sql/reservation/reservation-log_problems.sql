@@ -63,7 +63,7 @@ grant select on s_tables.t_log_problems_users to r_reservation_auditor;
 
 /** only allow select, insert, and delete for users when user id is current user **/
 create view s_users.v_log_problems_users_self with (security_barrier=true) as
-  with this_user as (select id from s_users.v_users_locked_not_self)
+  with this_user as (select id from public.v_users_self_locked_not)
   select id_problem, date_created, date_changed, log_details from s_tables.t_log_problems_users
     where id_user in (select * from this_user);
 
@@ -72,7 +72,7 @@ grant select on s_users.v_log_problems_users_self to r_reservation, r_reservatio
 
 create view s_users.v_log_problems_users_self_insert with (security_barrier=true) as
   select id_problem, date_changed, log_details from s_tables.t_log_problems_users
-    where id_user in (select id from s_users.v_users_locked_not_self)
+    where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
 grant insert on s_users.v_log_problems_users_self_insert to r_reservation, r_reservation_system;
@@ -80,7 +80,7 @@ grant insert on s_users.v_log_problems_users_self_insert to r_reservation, r_res
 
 create view s_users.v_log_problems_users_self_delete with (security_barrier=true) as
   select id_problem from s_tables.t_log_problems_users
-    where id_user in (select id from s_users.v_users_locked_not_self)
+    where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
 grant delete on s_users.v_log_problems_users_self_delete to r_reservation, r_reservation_system;

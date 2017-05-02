@@ -3,8 +3,6 @@
  * @file
  * Provides a class for managing sessions.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_form.php');
@@ -19,32 +17,44 @@ require_once('common/base/classes/base_form.php');
  */
 class c_base_session extends c_base_return {
   const PACKET_MAX_LENGTH = 8192;
+
   const SOCKET_PATH_PREFIX = '/programs/sockets/sessionize_accounts/';
   const SOCKET_PATH_SUFFIX = '/sessions.socket';
+
   const PASSWORD_CLEAR_TEXT_LENGTH = 2048;
 
-  private $socket;
-  private $socket_directory;
-  private $socket_path;
-  private $socket_timeout;
-  private $socket_error;
+  // @todo: currently not implemented, but added as concepts.
+  #const SESSION_TYPE_NONE       = 0;
+  #const SESSION_TYPE_SESSIONIZE = 1; // currently implemented behavior.
+  #const SESSION_TYPE_PHP        = 2;
+  #const SESSION_TYPE_DATABASE   = 3;
 
-  private $system_name;
+  protected $socket;
+  protected $socket_directory;
+  protected $socket_path;
+  protected $socket_timeout;
+  protected $socket_error;
 
-  private $cookie;
+  protected $system_name;
 
-  private $name;
-  private $host;
-  private $password;
-  private $session_id;
-  private $settings;
+  protected $cookie;
 
-  private $timeout_expire;
-  private $timeout_max;
+  protected $name;
+  protected $host;
+  protected $password;
+  protected $session_id;
+  protected $settings;
 
-  private $problems;
+  protected $timeout_expire;
+  protected $timeout_max;
 
-  private $logged_in;
+  protected $problems;
+
+  protected $user_current;
+  protected $user_session;
+
+  protected $logged_in;
+  protected $expired;
 
 
   /**
@@ -74,7 +84,11 @@ class c_base_session extends c_base_return {
 
     $this->problems = NULL;
 
+    $this->user_current = NULL;
+    $this->user_session = NULL;
+
     $this->logged_in = FALSE;
+    $this->expired   = FALSE;
   }
 
   /**
@@ -109,7 +123,11 @@ class c_base_session extends c_base_return {
 
     unset($this->problems);
 
+    unset($this->user_current);
+    unset($this->user_session);
+
     unset($this->logged_in);
+    unset($this->expired);
 
     parent::__destruct();
   }
@@ -150,7 +168,7 @@ class c_base_session extends c_base_return {
    */
   public function set_socket_directory($socket_directory) {
     if (!is_null($socket_directory) && (!is_string($socket_directory) || empty($socket_directory))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'socket_directory', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'socket_directory', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -160,7 +178,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!is_dir($socket_directory)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':directory_name' => $socket_directory, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_DIRECTORY);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{directory_name}' => $socket_directory, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_DIRECTORY);
       return c_base_return_error::s_false($error);
     }
 
@@ -189,7 +207,7 @@ class c_base_session extends c_base_return {
    */
   public function set_cookie($cookie) {
     if (!is_null($cookie) && !($cookie instanceof c_base_cookie)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'cookie', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'cookie', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -211,7 +229,7 @@ class c_base_session extends c_base_return {
    */
   public function set_system_name($system_name) {
     if (!is_null($system_name) && (!is_string($system_name) || empty($system_name))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'system_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'system_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -239,7 +257,7 @@ class c_base_session extends c_base_return {
    */
   public function set_name($name) {
     if (!is_null($name) && (!is_string($name) || empty($name))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -249,7 +267,7 @@ class c_base_session extends c_base_return {
     }
 
     if (mb_strlen($name) == 0 || preg_match('/^(\w|-)+$/i', $name) != 1) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'name', ':expected_format' => '. Alphanumeric and dash characters only', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'name', ':{expected_format}' => '. Alphanumeric and dash characters only', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
 
@@ -270,7 +288,7 @@ class c_base_session extends c_base_return {
    */
   public function set_host($host) {
     if (!is_null($host) && (!is_string($host) || empty($host))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -280,7 +298,7 @@ class c_base_session extends c_base_return {
     }
 
     if (mb_strlen($host) == 0 || ip2long($host) === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -306,7 +324,7 @@ class c_base_session extends c_base_return {
    */
   public function set_password($password) {
     if (!is_null($password) && (!is_string($password) || empty($password))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'password', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -317,7 +335,7 @@ class c_base_session extends c_base_return {
 
     // deny 0-length passwords.
     if (mb_strlen($password) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'password', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -340,7 +358,7 @@ class c_base_session extends c_base_return {
    */
   public function set_setting($delta, $setting) {
     if (!is_int($delta) && !is_string($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -367,7 +385,7 @@ class c_base_session extends c_base_return {
    */
   public function set_settings($settings) {
     if (!is_null($settings) && !is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'settings', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -393,7 +411,7 @@ class c_base_session extends c_base_return {
    */
   public function set_session_id($session_id) {
     if (!is_null($session_id) && (!is_string($session_id) || empty($session_id))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -404,7 +422,7 @@ class c_base_session extends c_base_return {
 
     // deny 0-length session_id.
     if (mb_strlen($session_id) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'session_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -427,7 +445,7 @@ class c_base_session extends c_base_return {
    */
   public function set_timeout_expire($timeout_expire) {
     if (!is_null($timeout_expire) && !is_int($timeout_expire)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timeout_expire', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'timeout_expire', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -450,7 +468,7 @@ class c_base_session extends c_base_return {
    */
   public function set_timeout_max($timeout_max) {
     if (!is_null($timeout_max) && !is_int($timeout_max)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'timeout_max', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'timeout_max', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -471,7 +489,7 @@ class c_base_session extends c_base_return {
    */
   public function set_problems($problems) {
     if (!is_null($problems) && !is_array($problems)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'problems', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'problems', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -512,17 +530,17 @@ class c_base_session extends c_base_return {
    */
   public function set_socket_timeout($seconds, $microseconds = 0, $receive = TRUE) {
     if (!is_null($seconds) && (!is_int($seconds) || $seconds < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'seconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'seconds', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($microseconds) || $microseconds < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'microseconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'microseconds', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($receive)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'receive', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'receive', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -546,7 +564,7 @@ class c_base_session extends c_base_return {
           unset($result);
 
           $this->socket_error = @socket_last_error($this->socket);
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_set_option', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_set_option', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
           return c_base_return_error::s_false($error);
         }
         unset($result);
@@ -560,7 +578,7 @@ class c_base_session extends c_base_return {
           unset($result);
 
           $this->socket_error = @socket_last_error($this->socket);
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_set_option', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_set_option', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
           return c_base_return_error::s_false($error);
         }
         unset($result);
@@ -571,25 +589,56 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Assigns the logged in session status.
+   * Assigns the current user object.
    *
-   * @param bool $logged_in
-   *   Set to TRUE to designate logged in.
-   *   Set to FALSE to designate logged out.
+   * @param c_base_users_user|null $user
+   *   The current user object (generally populated from the database).
+   *   If NULL, then the user object is removed.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
-   *
-   * @see: c_base_session::save()
    */
-  public function set_logged_in($logged_in) {
-    if (!is_bool($logged_in)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'logged_in', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function set_user_current($user) {
+    if (!is_null($user) && !($user instanceof c_base_users_user)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->logged_in = $logged_in;
+    if (is_object($user)) {
+      $this->user_current = clone($user);
+    }
+    else {
+      $this->user_current = NULL;
+    }
+
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assigns the current user object.
+   *
+   * @param c_base_users_user|null $user
+   *   The current user object (generally populated from the database).
+   *   If NULL, then the user object is removed.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function set_user_session($user) {
+    if (!is_null($user) && !($user instanceof c_base_users_user)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_object($user)) {
+      $this->user_session = clone($user);
+    }
+    else {
+      $this->user_session = NULL;
+    }
+
     return new c_base_return_true();
   }
 
@@ -710,7 +759,7 @@ class c_base_session extends c_base_return {
    */
   public function get_setting($delta) {
     if (!is_int($delta) && !is_string($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -719,7 +768,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!array_key_exists($delta, $this->settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -843,19 +892,115 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Get the logged in status of the session.
+   * Get the current user object
    *
-   * @return c_base_return_status
-   *   TRUE if logged in.
-   *   FALSE if logged out.
+   * @return c_base_users_user|c_base_return_null
+   *   The user object is returned on success.
+   *   NULL is returned if there is no user object assigned.
    *   The error bit set is returned on error.
    */
-  public function get_logged_in() {
-    if (!is_bool($this->logged_in)) {
-      $this->logged_in = FALSE;
+  public function get_user_current() {
+    if (is_object($this->user_current)) {
+      return clone($this->user_current);
     }
 
-    if ($this->logged_in) {
+    return new c_base_return_null();
+  }
+
+  /**
+   * Get the session user object
+   *
+   * @return c_base_users_user|c_base_return_null
+   *   The user object is returned on success.
+   *   NULL is returned if there is no user object assigned.
+   *   The error bit set is returned on error.
+   */
+  public function get_user_session() {
+    if (is_object($this->user_session)) {
+      return clone($this->user_session);
+    }
+
+    return new c_base_return_null();
+  }
+
+  /**
+   * Get or Assign the is logged_in boolean setting.
+   *
+   * @param bool|null $is_logged_in
+   *   When a boolean, this is assigned as the current is logged_in setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_logged_in is NULL, is logged_in boolean setting on success.
+   *   FALSE with error bit is set on error.
+   */
+  public function is_logged_in($is_logged_in = NULL) {
+    if (!is_null($is_logged_in) && !is_bool($is_logged_in)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_logged_in', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($is_logged_in)) {
+      if (!is_bool($this->logged_in)) {
+        $this->logged_in = FALSE;
+      }
+
+      if ($this->logged_in) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->logged_in = $is_logged_in;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Get or Assign the is expired boolean setting.
+   *
+   * @param bool|null $is_expired
+   *   When a boolean, this is assigned as the current is expired setting.
+   *   When NULL, the current setting is returned.
+   *
+   * @return c_base_return_bool|c_base_return_status
+   *   When $is_expired is NULL, is expired boolean setting on success.
+   *   FALSE with error bit is set on error.
+   */
+  public function is_expired($is_expired = NULL) {
+    if (!is_null($is_expired) && !is_bool($is_expired)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_expired', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($is_expired)) {
+      if (!is_bool($this->expired)) {
+        $this->expired = FALSE;
+      }
+
+      if ($this->expired) {
+        return new c_base_return_true();
+      }
+
+      return new c_base_return_false();
+    }
+
+    $this->expired = $is_expired;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Returns the connected status.
+   *
+   * This represents whether or not the self::do_connect() function was successfully called.
+   * The state of the connection should still be checked.
+   *
+   * @return c_base_return_status
+   *   TRUE when connected, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function is_connected() {
+    if (is_resource($this->socket)) {
       return new c_base_return_true();
     }
 
@@ -876,12 +1021,12 @@ class c_base_session extends c_base_return {
    */
   function do_connect() {
     if (is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->system_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->system_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->system_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -893,7 +1038,7 @@ class c_base_session extends c_base_return {
 
       @socket_clear_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_create', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_create', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -906,7 +1051,7 @@ class c_base_session extends c_base_return {
 
       $this->do_disconnect();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_connect', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_connect', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
     unset($connected);
@@ -933,7 +1078,7 @@ class c_base_session extends c_base_return {
    */
   public function do_disconnect() {
     if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -941,24 +1086,6 @@ class c_base_session extends c_base_return {
 
     $this->socket = NULL;
     return new c_base_return_true();
-  }
-
-  /**
-   * Returns the connected status.
-   *
-   * This represents whether or not the self::do_connect() function was successfully called.
-   * The state of the connection should still be checked.
-   *
-   * @return c_base_return_status
-   *   TRUE when connected, FALSE otherwise.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function is_connected() {
-    if (is_resource($this->socket)) {
-      return new c_base_return_true();
-    }
-
-    return new c_base_return_false();
   }
 
   /**
@@ -973,17 +1100,17 @@ class c_base_session extends c_base_return {
    */
   public function do_pull() {
     if (is_null($this->host)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->session_id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->session_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->session_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -996,7 +1123,7 @@ class c_base_session extends c_base_return {
     if (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1056,32 +1183,32 @@ class c_base_session extends c_base_return {
    */
   public function do_push($interval_expire = NULL, $interval_max = NULL) {
     if (is_null($this->name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->host)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->password)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->password', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($interval_expire) && (!is_int($interval_expire) || $interval_expire < 1)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'interval_expires', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'interval_expires', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($interval_max) && (!is_int($interval_max) || $interval_max < 1)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'interval_max', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'interval_max', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1097,7 +1224,7 @@ class c_base_session extends c_base_return {
 
     $response = c_base_return_array::s_value_exact($response);
     if (isset($response['error']) && isset($response['error']['message']) && is_string($response['error']['message'])) {
-      $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       unset($response);
 
       return c_base_return_error::s_false($error);
@@ -1105,7 +1232,7 @@ class c_base_session extends c_base_return {
     elseif (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1145,17 +1272,17 @@ class c_base_session extends c_base_return {
    */
   public function do_terminate() {
     if (is_null($this->host)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->host', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->session_id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->session_id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->session_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1168,7 +1295,7 @@ class c_base_session extends c_base_return {
     if (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1186,23 +1313,15 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Closes (terminates) a session from an open socket.
-   *
-   * Unlike self::do_disconnect(), this does not close the connection to the socket, it closes the session itself.
-   *
-   * This is used to terminate a session before the expiration date and time is reached.
-   * Use this on logout operations.
+   * Send a flush command to the connected session.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE on failure.
    *   FALSE with the error bit set is returned on error.
-   *
-   * @see: self::do_connect()
-   * @see: self::p_transfer()
    */
   public function do_flush() {
     if (!is_resource($this->socket)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->socket', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->socket', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1215,7 +1334,7 @@ class c_base_session extends c_base_return {
     if (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'this->p_transfer', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1248,13 +1367,13 @@ class c_base_session extends c_base_return {
       $this->socket_error = @socket_last_error($this->socket);
       @socket_clear_error($this->socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_write', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
     elseif ($written == 0) {
       unset($written);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_write', ':socket_error' => NULL, ':socket_error_message' => 'No bytes written.', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_write', ':{socket_error}' => NULL, ':{socket_error_message}' => 'No bytes written.', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
     unset($written);
@@ -1266,7 +1385,7 @@ class c_base_session extends c_base_return {
       $this->socket_error = @socket_last_error($this->socket);
       @socket_clear_error($this->socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'socket_read', ':socket_error' => $this->socket_error, ':socket_error_message' => @socket_strerror($this->socket_error), ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_read', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1274,7 +1393,7 @@ class c_base_session extends c_base_return {
     unset($json);
 
     if ($response === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':operation_name' => 'json_decode', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_decode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 

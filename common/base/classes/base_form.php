@@ -3,11 +3,8 @@
  * @file
  * Provides a class for managing forms.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-
 
 /**
  * A class for form problems.
@@ -18,8 +15,8 @@ require_once('common/base/classes/base_return.php');
  * @todo: come up with a list of problem codes and add a problem id variable.
  */
 class c_base_form_problem extends c_base_return_string {
-  private $fields;
-  private $arguments;
+  protected $fields;
+  protected $arguments;
 
 
   /**
@@ -121,7 +118,7 @@ class c_base_form_problem extends c_base_return_string {
     }
 
     if (!is_string($field_name) || empty($field_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'field_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -148,7 +145,7 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function unset_field($field_name) {
     if (!is_string($field_name) && !empty($field_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'field_name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -191,12 +188,12 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function set_argument($index, $value) {
     if (!is_string($index) && !empty($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'value', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -218,7 +215,7 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function get_argument($index) {
     if (!is_string($index) && !empty($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

@@ -512,11 +512,12 @@ interface i_base_error_messages {
   const POSTGRESQL_CONNECTION_FAILURE = 14;
   const POSTGRESQL_NO_CONNECTION      = 15;
   const POSTGRESQL_NO_RESOURCE        = 16;
-  const SOCKET_FAILURE                = 17;
-  const ACCESS_DENIED                 = 18;
-  const ACCESS_DENIED_UNAVAILABLE     = 19;
-  const ACCESS_DENIED_USER            = 20;
-  const ACCESS_DENIED_ADMINISTRATION  = 21;
+  const POSTGRESQL_ERROR              = 17;
+  const SOCKET_FAILURE                = 18;
+  const ACCESS_DENIED                 = 19;
+  const ACCESS_DENIED_UNAVAILABLE     = 20;
+  const ACCESS_DENIED_USER            = 21;
+  const ACCESS_DENIED_ADMINISTRATION  = 22;
 
 
   /**
@@ -527,7 +528,7 @@ interface i_base_error_messages {
    * @param bool $arguments
    *   (optional) When TRUE, argument placeholders are added.
    *   When FALSE, no placeholders are provided.
-   *   All placeholders should begin with a single colon ':'.
+   *   All placeholders should begin with a single colon ':' and be wrapped within '{}', such that 'example' placeholder is ':{example}'.
    * @param bool $function_name
    *   (optional) When TRUE, the function name is included with the message.
    *   When FALSE, no funciton name is provided.

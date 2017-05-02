@@ -3,13 +3,10 @@
  * @file
  * Provides a class for html markup.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_mime.php');
 require_once('common/base/classes/base_charset.php');
-require_once('common/base/classes/base_languages.php');
 require_once('common/base/classes/base_rfc_string.php');
 
 /**
@@ -89,7 +86,7 @@ class c_base_markup_attributes {
   const ATTRIBUTE_HIDDEN                 = 64; // TRUE/FALSE
   const ATTRIBUTE_HIGH                   = 65; // number
   const ATTRIBUTE_HREF                   = 66; // text
-  const ATTRIBUTE_HREF_LANGUAGE          = 67; // i_base_language
+  const ATTRIBUTE_HREF_LANGUAGE          = 67; // i_base_languages
   const ATTRIBUTE_HREF_NO                = 68; // text
   const ATTRIBUTE_HTTP_EQUIV             = 69; // text
   const ATTRIBUTE_ICON                   = 70; // text
@@ -101,7 +98,7 @@ class c_base_markup_attributes {
   const ATTRIBUTE_KEY_TYPE               = 76; // text: rsa, dsa, ec
   const ATTRIBUTE_KIND                   = 77; // text
   const ATTRIBUTE_LABEL                  = 78; // text
-  const ATTRIBUTE_LANGUAGE               = 79; // i_base_language, int
+  const ATTRIBUTE_LANGUAGE               = 79; // i_base_languages, int
   const ATTRIBUTE_LENGTH_ADJUST          = 80; // text
   const ATTRIBUTE_LIST                   = 81; // text, datalist_id
   const ATTRIBUTE_LOCAL                  = 82; // text
@@ -256,7 +253,7 @@ class c_base_markup_attributes {
   const ATTRIBUTE_SORTED                 = 231; // text
   const ATTRIBUTE_SOURCE                 = 232; // text: url
   const ATTRIBUTE_SOURCE_DOCUMENT        = 233; // text
-  const ATTRIBUTE_SOURCE_LANGUAGE        = 234; // i_base_language
+  const ATTRIBUTE_SOURCE_LANGUAGE        = 234; // i_base_languages
   const ATTRIBUTE_SOURCE_SET             = 235; // text
   const ATTRIBUTE_SPAN                   = 236; // text
   const ATTRIBUTE_SPELLCHECK             = 237; // TRUE/FALSE
@@ -607,7 +604,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function set_attribute($attribute, $value) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1026,7 +1023,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function get_attribute($attribute) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1038,7 +1035,7 @@ class c_base_markup_tag extends c_base_rfc_string {
       switch ($attribute) {
         case c_base_markup_attributes::ATTRIBUTE_NONE:
           // should not be possible, so consider this an error (when attribute is set to NONE, the entire attributes array is unset).
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'name', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
           return c_base_return_error::s_false($error);
 
         case c_base_markup_attributes::ATTRIBUTE_ABBR:
@@ -1420,27 +1417,27 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function check_attribute($attribute, $sanitize = FALSE, $type = NULL, $sub_type = NULL, $options = array()) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($sanitize)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'sanitize', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'sanitize', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($sub_type) && !is_int($sub_type) && !is_string($sub_type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'sub_type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'sub_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'options', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1573,12 +1570,12 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function set_tag($tag, $index = NULL) {
     if (!($tag instanceof c_base_markup_tag)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'tag', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($index) && (!is_int($index) && $index < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1611,7 +1608,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function unset_tag($index) {
     if (!is_null($index) && (!is_int($index) && $index < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1653,7 +1650,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function get_tag($index) {
     if (!is_int($index) && $index < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'index', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1693,7 +1690,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function set_text($text) {
     if (!is_string($text)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1730,7 +1727,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function set_type($type) {
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'type', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2071,7 +2068,7 @@ class c_base_markup_tag extends c_base_rfc_string {
       $value = (string) $this->attributes[$attribute];
     }
     else {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'value attribute', ':{expected_format}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2082,7 +2079,7 @@ class c_base_markup_tag extends c_base_rfc_string {
 
       $this->attributes[$attribute] = NULL;
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'value attribute', ':{expected_format}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
 
       if ($sanitize) {
         return c_base_return_error::s_true($error);
@@ -2129,7 +2126,7 @@ class c_base_markup_tag extends c_base_rfc_string {
     if ($invalid) {
       unset($invalid);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'value attribute', ':{expected_format}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       if ($changed) {
         unset($changed);
         return c_base_return_error::s_true($error);
@@ -2168,7 +2165,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   protected function pr_check_attribute_as_numeric($attribute, $sanitize = TRUE) {
     if (!is_numeric($this->attributes[$attribute])) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':format_name' => 'value attribute', ':expected_format' => 'number', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'value attribute', ':{expected_format}' => 'number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
 

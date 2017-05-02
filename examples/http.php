@@ -79,7 +79,7 @@
     ini_set('output_buffering', FALSE);
 
     // default supported languages.
-    c_base_defaults_global::s_set_languages(new c_base_language_limited());
+    c_base_defaults_global::s_set_languages(new c_base_languages_limited());
   }
 
   function program_load_session(&$data_program) {
@@ -418,7 +418,7 @@
       $database->set_session($session);
     }
 
-    $connection_string = new c_base_connection_string();
+    $connection_string = new c_base_database_connection_string();
     $connection_string->set_host('127.0.0.1');
     $connection_string->set_port(5432);
     $connection_string->set_database('example');

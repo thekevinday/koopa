@@ -7,8 +7,6 @@
  *
  * @see: https://www.w3.org/TR/html5/
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_markup.php');
@@ -21,13 +19,13 @@ require_once('common/base/classes/base_markup.php');
  * @todo: add support for non-standard tag attributes, which will just be a string or NULL.
  */
 class c_base_html extends c_base_return {
-  private $id;
-  private $attributes;
-  private $attributes_body;
-  private $type;
-  private $method;
-  private $headers;
-  private $body;
+  protected $id;
+  protected $attributes;
+  protected $attributes_body;
+  protected $type;
+  protected $method;
+  protected $headers;
+  protected $body;
 
   /**
    * Class constructor.
@@ -95,12 +93,12 @@ class c_base_html extends c_base_return {
    */
   public static function sanitize_css($text, $partial = FALSE) {
     if (!is_string($text)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'text', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_bool($partial)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'partial', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'partial', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -118,7 +116,7 @@ class c_base_html extends c_base_return {
     }
     unset($sanitized);
 
-    $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':operation_name' => 'preg_replace', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(' ' . $response['error']['message'], array('arguments' => array(':{operation_name}' => 'preg_replace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_value('', 'c_base_return_string', $error);
   }
 
@@ -134,7 +132,7 @@ class c_base_html extends c_base_return {
    */
   public function set_id($id) {
     if (!is_int($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'id', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -173,7 +171,7 @@ class c_base_html extends c_base_return {
    */
   public function set_attribute($attribute, $value) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -195,7 +193,7 @@ class c_base_html extends c_base_return {
    */
   public function set_attribute_body($attribute, $value) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -230,7 +228,7 @@ class c_base_html extends c_base_return {
    */
   public function get_attribute($attribute) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -252,7 +250,7 @@ class c_base_html extends c_base_return {
    */
   public function get_attribute_body($attribute) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'attribute', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -274,12 +272,12 @@ class c_base_html extends c_base_return {
    */
   public function set_tag($tag, $delta = NULL) {
     if (!($tag instanceof c_base_markup_tag)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'tag', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'tag', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($delta) && !is_int($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -309,7 +307,7 @@ class c_base_html extends c_base_return {
    */
   public function get_tag($delta) {
     if (!is_int($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -344,18 +342,18 @@ class c_base_html extends c_base_return {
    *   (optional) A position in the page to assign the header.
    *   If NULL, then the header is appended.
    *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
+   * @return c_base_return_int|c_base_return_status
+   *   An integer representing the delta of where the header was added.
    *   FALSE with error bit set is returned on error.
    */
   public function set_header($header, $delta = NULL) {
     if (!($header instanceof c_base_markup_tag)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'header', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'header', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($delta) && !is_int($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -379,12 +377,15 @@ class c_base_html extends c_base_return {
     }
 
     if (is_null($delta)) {
+      $at = count($this->headers);
       $this->headers[] = $header;
     }
     else {
+      $at = $delta;
       $this->headers[$delta] = $header;
     }
-    return new c_base_return_true();
+
+    return c_base_return_int::s_new($at);
   }
 
   /**
@@ -400,7 +401,7 @@ class c_base_html extends c_base_return {
    */
   public function get_header($delta) {
     if (!is_int($delta)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'delta', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

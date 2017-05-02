@@ -3,8 +3,6 @@
  * @file
  * Provides a class for performing debugging.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
@@ -12,17 +10,17 @@ require_once('common/base/classes/base_return.php');
  * A generic class for performing debugging.
  */
 class c_base_debug extends c_base_return {
-  private static $s_debugging = FALSE;
+  protected static $s_debugging = FALSE;
 
-  private $time_start;
-  private $time_stop;
+  protected $time_start;
+  protected $time_stop;
 
-  private $memory_usage_start;
-  private $memory_usage_stop;
-  private $memory_usage_peak;
-  private $memory_allocated_start;
-  private $memory_allocated_stop;
-  private $memory_allocated_peak;
+  protected $memory_usage_start;
+  protected $memory_usage_stop;
+  protected $memory_usage_peak;
+  protected $memory_allocated_start;
+  protected $memory_allocated_stop;
+  protected $memory_allocated_peak;
 
 
   /**
@@ -91,7 +89,7 @@ class c_base_debug extends c_base_return {
    */
   public static function s_set_debugging($debug) {
     if (!is_bool($debug)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'debug', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'debug', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -188,12 +186,12 @@ class c_base_debug extends c_base_return {
     }
 
     if (!is_bool($milliseconds)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'milliseconds', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'milliseconds', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->time_start) || is_null($this->time_stop)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->time_stop', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -228,18 +226,18 @@ class c_base_debug extends c_base_return {
     }
 
     if (!is_int($option) || $option < 1 || $option > 3) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'option', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($megabytes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_name' => 'megabytes', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'megabytes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if ($option == 1) {
       if (is_null($this->memory_usage_peak)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->memory_usage_peak', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->memory_usage_peak', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
       }
 
@@ -251,7 +249,7 @@ class c_base_debug extends c_base_return {
     }
     elseif ($option == 2) {
       if (is_null($this->time_stop)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->time_stop', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
         return c_base_return_error::s_false($error);
       }
 
@@ -263,12 +261,12 @@ class c_base_debug extends c_base_return {
     }
     else {
       if (is_null($this->time_start)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_start', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->time_start', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
         return c_base_return_error::s_false($error);
       }
 
       if (is_null($this->time_stop)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':variable_name' => 'this->time_stop', ':function_name' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->time_stop', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
         return c_base_return_error::s_false($error);
       }
 

@@ -41,7 +41,7 @@ grant usage on s_tables.se_log_groups_id to r_reservation, r_reservation_system;
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_groups_self with (security_barrier=true) as
-  with this_user as (select id from s_users.v_users_locked_not_self)
+  with this_user as (select id from public.v_users_self_locked_not)
   select id, id_user, id_group, log_type, log_details, log_date from s_tables.t_log_groups
     where id_user in (select * from this_user);
 
@@ -49,7 +49,7 @@ grant select on s_users.v_log_groups_self to r_reservation, r_reservation_system
 
 create view s_users.v_log_groups_self_insert with (security_barrier=true) as
   select id_group, log_type, log_details from s_tables.t_log_groups
-    where id_user in (select id from s_users.v_users_locked_not_self) and id_group in (select id from s_users.v_groups_self where not is_locked)
+    where id_user in (select id from public.v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
 
 grant insert on s_users.v_log_groups_self_insert to r_reservation, r_reservation_system;
@@ -94,7 +94,7 @@ grant usage on s_tables.se_log_group_users_id to r_reservation, r_reservation_sy
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_group_users_self with (security_barrier=true) as
-  with this_user as (select id from s_users.v_users_locked_not_self),
+  with this_user as (select id from public.v_users_self_locked_not),
     allowed_groups as (select id from s_users.v_groups_self where not is_locked)
   select id, id_user, id_group, log_type, log_date from s_tables.t_log_group_users
     where id_user in (select * from this_user) or id_group in (select * from allowed_groups);
@@ -103,7 +103,7 @@ grant select on s_users.v_log_group_users_self to r_reservation, r_reservation_s
 
 create view s_users.v_log_group_users_self_insert with (security_barrier=true) as
   select id_group, log_type from s_tables.t_log_group_users
-    where id_user in (select id from s_users.v_users_locked_not_self) and id_group in (select id from s_users.v_groups_self where not is_locked)
+    where id_user in (select id from public.v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
 
 grant insert on s_users.v_log_group_users_self_insert to r_reservation, r_reservation_system;

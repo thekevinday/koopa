@@ -3,8 +3,6 @@
  * @file
  * Provides a class for managing PHP warnings.
  */
-
-// include required files.
 require_once('common/base/classes/base_return.php');
 
 /**

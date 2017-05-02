@@ -17,8 +17,6 @@
  * Functions defined in this class will return the normal TRUE/FALSE and not the class-based TRUE/FALSE as an exception to this rule.
  * - This is done because this class defines those objects.
  */
-
-// include required files.
 require_once('common/base/classes/base_error.php');
 
 /**
@@ -272,6 +270,31 @@ class c_base_return {
    */
   public static function s_has_error($return) {
     return is_object($return) && $return instanceof c_base_return && $return->has_error();
+  }
+
+  /**
+   * Copy errors from one return type to another.
+   *
+   * Invalid parameters are silently ignored and no actions are performed.
+   *
+   * @param c_base_return $source
+   *   The return value to copy errors from.
+   * @param c_base_return &$destination
+   *   The return value to copy errors to.
+   */
+  public static function s_copy_errors($source, &$destination) {
+    if (!($source instanceof c_base_return) || !($destination instanceof c_base_return)) {
+      return;
+    }
+
+    $errors = $source->get_error()->get_value_exact();
+    if (is_array($errors)) {
+      foreach ($errors as $error) {
+        $destination->set_error($error);
+      }
+      unset($error);
+    }
+    unset($errors);
   }
 
   /**

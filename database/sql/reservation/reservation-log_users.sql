@@ -117,7 +117,7 @@ create index i_log_users_response_code_notable on s_tables.t_log_users (id)
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_users_self with (security_barrier=true) as
-  with this_user as (select id from s_users.v_users_locked_not_self)
+  with this_user as (select id from public.v_users_self_locked_not)
   select id, id_user, log_title, log_type, log_severity, log_details, log_date, request_client, response_code from s_tables.t_log_users
     where id_user in (select * from this_user);
 
@@ -125,7 +125,7 @@ grant select on s_users.v_log_users_self to r_reservation, r_reservation_system;
 
 create view s_users.v_log_users_self_insert with (security_barrier=true) as
   select log_title, log_type, log_severity, log_details, request_client, response_code from s_tables.t_log_users
-    where id_user in (select id from s_users.v_users_locked_not_self)
+    where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
 grant insert on s_users.v_log_users_self_insert to r_reservation, r_reservation_system;
@@ -205,7 +205,7 @@ create index i_log_user_activity_response_code_notable on s_tables.t_log_user_ac
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_user_activity_self with (security_barrier=true) as
-  with this_user as (select id from s_users.v_users_locked_not_self)
+  with this_user as (select id from public.v_users_self_locked_not)
   select id, id_user, request_path, request_arguments, request_date, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
     where id_user in (select * from this_user);
 
@@ -213,7 +213,7 @@ grant select on s_users.v_log_user_activity_self to r_reservation, r_reservation
 
 create view s_users.v_log_user_activity_self_insert with (security_barrier=true) as
   select request_path, request_arguments, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
-    where id_user in (select id from s_users.v_users_locked_not_self)
+    where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
 grant insert on s_users.v_log_user_activity_self_insert to r_reservation, r_reservation_system;
@@ -222,7 +222,7 @@ grant insert on s_users.v_log_user_activity_self_insert to r_reservation, r_rese
 /** public users should be able to insert, but should never be able to view the logs that they insert. **/
 create view public.v_log_user_activity_self_insert with (security_barrier=true) as
   select request_path, request_arguments, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
-    where id_user in (select id from public.v_users_locked_not_self)
+    where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
 grant insert on public.v_log_user_activity_self_insert to r_reservation_public;
