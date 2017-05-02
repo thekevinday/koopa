@@ -25,6 +25,9 @@ class c_reservation_index extends c_standard_index {
     $this->settings['session_system'] = 'reservation';
 
     $this->settings['cookie_name'] = 'reservation-session';
+
+    $this->settings['system_name'] = $this->settings['session_system'];
+    $this->settings['base_css'] = 'reservation-';
   }
 }
 

@@ -130,6 +130,12 @@ create view public.v_users_self_locked_not with (security_barrier=true) as
 
 grant select on public.v_users_self_locked_not to r_reservation, r_reservation_system, r_reservation_public;
 
+create view public.v_users_self_exists with (security_barrier=true) as
+  select id, name_machine, is_system, is_public, is_locked, is_deleted from s_tables.t_users
+    where (name_machine)::text = (current_user)::text;
+
+grant select on public.v_users_self_exists to r_reservation, r_reservation_system, r_reservation_public;
+
 create view s_users.v_users_self_insert with (security_barrier=true) as
   select id_external, name_human, address_email, is_private, settings from s_tables.t_users
     where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
@@ -138,7 +144,7 @@ create view s_users.v_users_self_insert with (security_barrier=true) as
 grant insert on s_users.v_users_self_insert to r_reservation, r_reservation_system;
 
 create view s_users.v_users_self_update with (security_barrier=true) as
-  select address_email, is_private, settings from s_tables.t_users
+  select id_external, name_human, address_email, is_private, settings from s_tables.t_users
     where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
     with check option;
 

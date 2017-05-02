@@ -9,6 +9,7 @@ require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_path.php');
 require_once('common/base/classes/base_http_status.php');
 require_once('common/base/classes/base_cookie.php');
+require_once('common/base/classes/base_log.php');
 
 require_once('common/standard/classes/standard_path.php');
 require_once('common/standard/classes/standard_database.php');
@@ -40,7 +41,7 @@ class c_standard_path_user_logout extends c_standard_path {
 
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html();
     $html->set_tag($wrapper);
     unset($wrapper);
 

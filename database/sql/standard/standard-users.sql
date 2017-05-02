@@ -130,6 +130,12 @@ create view public.v_users_self_locked_not with (security_barrier=true) as
 
 grant select on public.v_users_self_locked_not to r_standard, r_standard_system, r_standard_public;
 
+create view public.v_users_self_exists with (security_barrier=true) as
+  select id, name_machine, is_system, is_public, is_locked, is_deleted from s_tables.t_users
+    where (name_machine)::text = (current_user)::text;
+
+grant select on public.v_users_self_exists to r_standard, r_standard_system, r_standard_public;
+
 create view s_users.v_users_self_insert with (security_barrier=true) as
   select id_external, name_human, address_email, is_private, settings from s_tables.t_users
     where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text

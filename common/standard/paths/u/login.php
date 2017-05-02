@@ -40,10 +40,10 @@ class c_standard_path_user_login extends c_standard_path {
       return $executed;
     }
 
-    $this->pr_assign_defaults($settings);
+    $this->pr_assign_defaults($http, $database, $session, $settings);
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html();
     $wrapper = $this->pr_create_tag_wrapper();
 
     $logged_in = $session->is_logged_in()->get_value_exact();
@@ -79,7 +79,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         $href = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A);
         $href->set_text($this->pr_get_text(6));
-        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->base_path . self::PATH_LOGOUT);
+        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $settings['base_path'] . self::PATH_LOGOUT);
         $block->set_tag($href);
         unset($href);
 
@@ -440,6 +440,16 @@ class c_standard_path_user_login extends c_standard_path {
     else {
       c_standard_index::s_do_initialize_database($database);
 
+      // if LDAP is available, make sure the account information exists.
+      $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-username']);
+      if ($ldap['status']) {
+        $this->pr_update_user_data($database, $ldap);
+      }
+      else {
+        $this->pr_update_user_data($database);
+      }
+      unset($ldap);
+
       if ($database instanceof c_standard_database) {
         $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
       }
@@ -682,16 +692,6 @@ class c_standard_path_user_login extends c_standard_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_do_ensure_user_account($settings, $user_name) {
-    if (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!is_string($user_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'user_name', ':{function_name}' => __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     if (!is_resource($socket)) {
       unset($socket);
@@ -811,6 +811,60 @@ class c_standard_path_user_login extends c_standard_path {
     //   10 = the connection is being forced closed.
     //   11 = the connection is closing because the service is quitting.
     return c_base_return_int::s_new($response_value);
+  }
+
+  /**
+   * Ensure that the user data exists and is up to date.
+   *
+   * @param c_base_database &$database
+   *   The database object.
+   * @param array|null $ldap
+   *   (optional) When NULL, the user data is only ensure to exist.
+   *   When an array, the given ldap information is used to update the account.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   */
+  protected function pr_update_user_data(&$database, $ldap = NULL) {
+    $query_result = $database->do_query('select id from v_users_self_exists');
+    if ($query_result instanceof c_base_database_result) {
+      if (is_array($ldap)) {
+        $query_arguments = array();
+
+        $email = explode('@', $ldap['data']['mail']);
+        if (count($email) != 2) {
+          $email[0] = NULL;
+          $email[1] = NULL;
+        }
+
+        $query_arguments[] = isset($ldap['data']['employeenumber']) && is_numeric($ldap['data']['employeenumber']) ? (int) $ldap['data']['employeenumber'] : NULL;;
+        $query_arguments[] = isset($ldap['data']['givenname']) && is_string($ldap['data']['givenname']) ? $ldap['data']['givenname'] : NULL;
+        $query_arguments[] = isset($ldap['data']['sn']) && is_string($ldap['data']['sn']) ? $ldap['data']['sn'] : NULL;
+        $query_arguments[] = isset($ldap['data']['gecos']) && is_string($ldap['data']['gecos']) ? $ldap['data']['gecos'] : NULL;
+        $query_arguments[] = $email[0];
+        $query_arguments[] = $email[1];
+        unset($email);
+
+        // if the user account does not exist, then create it.
+        if ($query_result->fetch_row()->get_value() === FALSE) {
+          $query_string = 'insert into v_users_self_insert (id_external, name_human.first, name_human.last, name_human.complete, address_email.name, address_email.domain, address_email.private) values ($1, $2, $3, $4, $5, $6, $7)';
+          $query_arguments[] = 't';
+        }
+        else {
+          $query_string = 'update v_users_self_update set id_external = $1, name_human.first = $2, name_human.last = $3, name_human.complete = $4, address_email.name = $5, address_email.domain = $6';
+        }
+
+        $database->do_query($query_string, $query_arguments);
+        unset($query_string);
+        unset($query_arguments);
+      }
+      else {
+        if ($query_result->fetch_row()->get_value() === FALSE) {
+          $database->do_query('insert into v_users_self_insert (id_external, name_human.first, name_human.last, name_human.complete, address_email.name, address_email.domain, address_email.private) values (null, null, null, null, null, null, true)');
+        }
+      }
+    }
+    unset($query_result);
   }
 
   /**

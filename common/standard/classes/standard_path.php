@@ -12,7 +12,6 @@ require_once('common/base/classes/base_markup.php');
  * Provides standard extensions to base paths.
  */
 class c_standard_path extends c_base_path {
-  protected const CSS_BASE = 'standard-';
   protected const CSS_NAME = 'content-wrapper';
 
   protected const CSS_AS_TITLE            = 'as-title';
@@ -36,8 +35,10 @@ class c_standard_path extends c_base_path {
   protected const CSS_PATH_PART = 'path-part-';
   protected const CSS_PATH_FULL = 'path-full-';
 
-  protected $use_p_tags = NULL;
-  protected $base_path  = NULL;
+  protected $http;
+  protected $database;
+  protected $session;
+  protected $settings;
 
 
   /**
@@ -46,16 +47,20 @@ class c_standard_path extends c_base_path {
   public function __construct() {
     parent::__construct();
 
-    $this->use_p_tags = FALSE;
-    $this->base_path  = '';
+    $this->http     = NULL;
+    $this->database = NULL;
+    $this->session  = NULL;
+    $this->settings = array();
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->use_p_tags);
-    unset($this->base_path);
+    unset($this->http);
+    unset($this->database);
+    unset($this->session);
+    unset($this->settings);
 
     parent::__destruct();
   }
@@ -63,17 +68,20 @@ class c_standard_path extends c_base_path {
   /**
    * Load any default settings.
    *
+   * @param c_base_http $http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database $database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
    * @param array $settings
-   *   The array containing all of the settings to parse.
+   *   (optional) An array of additional settings that are usually site-specific.
    */
-  protected function pr_assign_defaults($settings) {
-    if (isset($settings['standards_issue-use_p_tags']) && is_bool($settings['standards_issue-use_p_tags'])) {
-      $this->use_p_tags = $settings['standards_issue-use_p_tags'];
-    }
-
-    if (isset($settings['base_path']) && is_string($settings['base_path'])) {
-      $this->base_path = $settings['base_path'];
-    }
+  protected function pr_assign_defaults(&$http, &$database, &$session, &$settings) {
+    $this->http = $http;
+    $this->database = $database;
+    $this->session = $session;
+    $this->settings = $settings;
   }
 
   /**
@@ -83,7 +91,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_wrapper() {
-    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, self::CSS_BASE . self::CSS_NAME, array(self::CSS_BASE . self::CSS_NAME,  self::CSS_NAME));
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, $this->settings['base_css'] . self::CSS_NAME, array($this->settings['base_css'] . self::CSS_NAME,  self::CSS_NAME));
   }
 
   /**
@@ -128,7 +136,7 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_create_tag_text($text, $arguments = array()) {
     $type = c_base_markup_tag::TYPE_SPAN;
-    if ($this->use_p_tags) {
+    if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
       $type = c_base_markup_tag::TYPE_PARAGRAPH;
     }
 
@@ -152,7 +160,7 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_create_tag_paragraph($text, $arguments = array()) {
     $type = c_base_markup_tag::TYPE_SPAN;
-    if ($this->use_p_tags) {
+    if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
       $type = c_base_markup_tag::TYPE_PARAGRAPH;
     }
 
@@ -180,7 +188,7 @@ class c_standard_path extends c_base_path {
 
     if (!is_null($text)) {
       $type = c_base_markup_tag::TYPE_SPAN;
-      if ($this->use_p_tags) {
+      if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
         $type = c_base_markup_tag::TYPE_PARAGRAPH;
       }
 
@@ -216,7 +224,7 @@ class c_standard_path extends c_base_path {
 
     if (!is_null($text)) {
       $type = c_base_markup_tag::TYPE_SPAN;
-      if ($this->use_p_tags) {
+      if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
         $type = c_base_markup_tag::TYPE_PARAGRAPH;
       }
 
@@ -266,37 +274,28 @@ class c_standard_path extends c_base_path {
   /**
    * Create a new HTML markup class with default settings populated.
    *
-   * @param c_base_http $http
-   *   The entire HTTP information to allow for the execution to access anything that is necessary.
-   * @param c_base_database $database
-   *   The database object, which is usually used by form and ajax paths.
-   * @param c_base_session &$session
-   *   The current session.
-   * @param array $settings
-   *   An array of additional settings that are usually site-specific.
-   *
    * @return c_base_html
    *   The generated html is returned on success.
    *   The generated html with error bit set is returned on error.
    */
-  protected function pr_create_html(&$http, &$database, &$session, $settings) {
+  protected function pr_create_html() {
     $title = $this->pr_get_title();
 
     $html = new c_base_html();
 
-    $request_uri = $http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+    $request_uri = $this->http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
     if (isset($request_uri['data']) && is_string($request_uri['data'])) {
       $request_uri = $request_uri['data'];
       unset($request_uri['current']);
       unset($request_uri['invalid']);
 
-      $request_path = $http->get_request_uri_relative($settings['base_path'])->get_value_exact();
+      $request_path = $this->http->get_request_uri_relative($this->settings['base_path'])->get_value_exact();
     }
     else {
       $request_uri = array(
-        'scheme' => $settings['base_scheme'],
-        'authority' => $settings['base_host'],
-        'path' => $settings['base_path'],
+        'scheme' => $this->settings['base_scheme'],
+        'authority' => $this->settings['base_host'],
+        'path' => $this->settings['base_path'],
         'query' => NULL,
         'fragment' => NULL,
         'url' => TRUE,
@@ -317,7 +316,7 @@ class c_standard_path extends c_base_path {
     unset($instance);
 
     // add path classes
-    $path = $http->get_request_uri_relative($request_uri['path'])->get_value_exact();
+    $path = $this->http->get_request_uri_relative($request_uri['path'])->get_value_exact();
     $path_parts = explode('/', $path);
 
     if (is_array($path_parts)) {
@@ -338,18 +337,23 @@ class c_standard_path extends c_base_path {
     }
     unset($path_parts);
 
+    $class[] = self::CSS_IS_CONTENT_TYPE;
+    $class[] = self::CSS_IS_JAVASCRIPT_DISABLED;
+
     $html->set_attribute_body(c_base_markup_attributes::ATTRIBUTE_CLASS, $class);
     unset($class);
 
 
     // assign id attribute
-    #$html->set_attribute(c_base_markup_attributes::ATTRIBUTE_ID, 'example-system');
-    #$html->set_attribute_body(c_base_markup_attributes::ATTRIBUTE_ID, 'example-system-body');
+    $id = $html->sanitize_css('system-' . $this->settings['session_system'])->get_value_exact();
+    #$html->set_attribute(c_base_markup_attributes::ATTRIBUTE_ID, $id);
+    $html->set_attribute_body(c_base_markup_attributes::ATTRIBUTE_ID, $id);
+    unset($id);
 
 
     // assign language attribute.
     $language = i_base_languages::ENGLISH_US;
-    $languages = $http->get_response_content_language()->get_value_exact();
+    $languages = $this->http->get_response_content_language()->get_value_exact();
     if (is_array($languages) && !empty($languages)) {
       $language = reset($languages);
     }

@@ -85,6 +85,10 @@ class c_standard_index extends c_base_return {
       $this->settings['base_scheme'] = 'http';
     }
 
+    // theme information
+    $this->settings['system_name'] = $this->settings['session_system'];
+    $this->settings['base_css'] = 'standard-';
+
     // The HTML tag <p>, represents a paragraph.
     // However, many sites, services, and developers incorrectly use it to represent text.
     // The definition of the word 'paragraph' contradicts this current usage of the HTML tag <p>.

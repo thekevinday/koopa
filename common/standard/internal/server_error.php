@@ -23,7 +23,7 @@ class c_standard_path_server_error extends c_standard_path {
       return $executed;
     }
 
-    $this->pr_assign_defaults($settings);
+    $this->pr_assign_defaults($http, $database, $session, $settings);
 
     $wrapper = $this->pr_create_tag_wrapper();
     $wrapper->set_tag($this->pr_create_tag_title(0));
@@ -31,7 +31,7 @@ class c_standard_path_server_error extends c_standard_path {
 
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html();
     $html->set_tag($wrapper);
     unset($wrapper);
 

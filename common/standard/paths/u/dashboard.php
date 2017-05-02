@@ -22,9 +22,9 @@ class c_standard_path_user_dashboard extends c_standard_path {
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
       return $executed;
-    }
+    };
 
-    $this->pr_assign_defaults($settings);
+    $this->pr_assign_defaults($http, $database, $session, $settings);
 
     $wrapper = $this->pr_create_tag_wrapper();
     $wrapper->set_tag($this->pr_create_tag_title(0));
@@ -36,9 +36,11 @@ class c_standard_path_user_dashboard extends c_standard_path {
 
 
     $roles = array();
-    if ($current_user instanceof c_base_users) {
-      $roles = $current_user->get_roles();
+    if ($current_user instanceof c_base_users_user) {
+      $roles = $current_user->get_roles()->get_value_exact();
     }
+    unset($current_user);
+    #unset($session_user);
 
     $wrapper->set_tag($this->pr_create_tag_text_block($this->pr_get_text(2, array('@{user}' => $session->get_name()->get_value_exact()))));
 
@@ -101,7 +103,7 @@ class c_standard_path_user_dashboard extends c_standard_path {
     unset($block);
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html($http, $database, $session, $settings);
+    $html = $this->pr_create_html();
     $html->set_tag($wrapper);
 
     $executed->set_output($html);
