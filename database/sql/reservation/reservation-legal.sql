@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -22,10 +23,10 @@ create table s_tables.t_legal_types (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   constraint cu_legal_types_id unique (id),
   constraint cu_legal_types_name_machine unique (name_machine),
@@ -71,8 +72,8 @@ create table s_tables.t_signatures (
 
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_deleted timestamp with time zone,
 
   /* @todo: PGP/GPG based signatures are planned but not currently implemented, the columns (fingerprint and signature) are created but are subject to major change. */
   field_fingerprint varchar(64),

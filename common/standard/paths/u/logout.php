@@ -76,7 +76,7 @@ class c_standard_path_user_logout extends c_standard_path {
     // disconnect from the database.
     if ($database->is_connected() instanceof c_base_return_true) {
       if ($database instanceof c_standard_database) {
-        $database->do_log_user(c_standard_database::LOG_TYPE_LOGOUT, $http_status);
+        $database->do_log_user(c_base_log::TYPE_DISCONNECT, $http_status);
       }
 
       $database->do_disconnect();

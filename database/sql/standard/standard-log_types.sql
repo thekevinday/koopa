@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs - Types */
-/** This depends on: reservation-users.sql **/
+/** This depends on: standard-users.sql **/
 start transaction;
 
 
@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -21,9 +22,9 @@ create table s_tables.t_log_types (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_deleted timestamp with time zone,
 
   constraint cp_log_types primary key (id),
 
@@ -59,7 +60,7 @@ create trigger tr_log_types_date_changed_deleted_or_locked
 
 
 /*** provide log severity level id and names ***/
-create table s_tables.t_log_type_severity_levels (
+create table s_tables.t_log_type_severitys (
   id bigint not null,
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
@@ -67,34 +68,75 @@ create table s_tables.t_log_type_severity_levels (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
-  constraint cp_log_type_severity_levels primary key (id),
+  constraint cp_log_type_severitys primary key (id),
 
-  constraint cu_log_type_severity_levels_user unique (name_machine),
+  constraint cu_log_type_severitys_user unique (name_machine),
 
-  constraint cc_log_type_severity_levels_id check (id >= 0)
+  constraint cc_log_type_severitys_id check (id >= 0)
 );
 
-create sequence s_tables.se_log_type_severity_levels_id owned by s_tables.t_log_type_severity_levels.id;
-alter table s_tables.t_log_type_severity_levels alter column id set default nextval('s_tables.se_log_type_severity_levels_id'::regclass);
+create sequence s_tables.se_log_type_severitys_id owned by s_tables.t_log_type_severitys.id;
+alter table s_tables.t_log_type_severitys alter column id set default nextval('s_tables.se_log_type_severitys_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_type_severity_levels to r_standard_administer;
-grant select on s_tables.t_log_type_severity_levels to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_type_severity_levels_id to r_standard_administer;
+grant select,insert,update on s_tables.t_log_type_severitys to r_standard_administer;
+grant select on s_tables.t_log_type_severitys to r_standard_manager, r_standard_auditor;
+grant select,usage on s_tables.se_log_type_severitys_id to r_standard_administer;
 
-create view s_users.v_log_type_severity_levels with (security_barrier=true) as
-  select id, name_machine, name_human from s_tables.t_log_type_severity_levels
+create view s_users.v_log_type_severitys with (security_barrier=true) as
+  select id, name_machine, name_human from s_tables.t_log_type_severitys
   where not is_deleted;
 
-grant select on s_users.v_log_type_severity_levels to r_standard, r_standard_public, r_standard_system;
+grant select on s_users.v_log_type_severitys to r_standard, r_standard_public, r_standard_system;
 
 
-create trigger tr_log_type_severity_levels_date_changed_deleted_or_locked
-  before update on s_tables.t_log_type_severity_levels
+create trigger tr_log_type_severitys_date_changed_deleted_or_locked
+  before update on s_tables.t_log_type_severitys
+    for each row execute procedure s_administers.f_common_update_date_changed_deleted_or_locked();
+
+
+
+/*** provide log facility level id and names ***/
+create table s_tables.t_log_type_facilitys (
+  id bigint not null,
+  name_machine varchar(128) not null,
+  name_human varchar(256) not null,
+
+  is_locked boolean default false not null,
+  is_deleted boolean default false not null,
+
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
+
+  constraint cp_log_type_facilitys primary key (id),
+
+  constraint cu_log_type_facilitys_user unique (name_machine),
+
+  constraint cc_log_type_facilitys_id check (id >= 0)
+);
+
+create sequence s_tables.se_log_type_facilitys_id owned by s_tables.t_log_type_facilitys.id;
+alter table s_tables.t_log_type_facilitys alter column id set default nextval('s_tables.se_log_type_facilitys_id'::regclass);
+
+grant select,insert,update on s_tables.t_log_type_facilitys to r_standard_administer;
+grant select on s_tables.t_log_type_facilitys to r_standard_manager, r_standard_auditor;
+grant select,usage on s_tables.se_log_type_facilitys_id to r_standard_administer;
+
+create view s_users.v_log_type_facilitys with (security_barrier=true) as
+  select id, name_machine, name_human from s_tables.t_log_type_facilitys
+  where not is_deleted;
+
+grant select on s_users.v_log_type_facilitys to r_standard, r_standard_public, r_standard_system;
+
+
+create trigger tr_log_type_facilitys_date_changed_deleted_or_locked
+  before update on s_tables.t_log_type_facilitys
     for each row execute procedure s_administers.f_common_update_date_changed_deleted_or_locked();
 
 

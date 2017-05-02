@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -42,11 +43,11 @@ create table s_tables.t_users (
 
   can_manage_roles boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_synced timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_synced timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   settings json,
 

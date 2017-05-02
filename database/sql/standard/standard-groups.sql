@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Groups */
-/** This depends on: reservation-users.sql **/
+/** This depends on: standard-users.sql **/
 start transaction;
 
 
@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 /* Note about composite groups (is_composite)
@@ -37,11 +38,11 @@ create table s_tables.t_groups (
 
   can_manage_paths boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_synced timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_synced timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   settings json,
 
@@ -159,10 +160,10 @@ create table s_tables.t_group_users (
   id_user bigint not null,
   id_group bigint not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
@@ -221,10 +222,10 @@ create table s_tables.t_group_composites (
   id_composite bigint not null,
   id_group bigint not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   is_locked boolean default false not null,
   is_deleted boolean default false not null,

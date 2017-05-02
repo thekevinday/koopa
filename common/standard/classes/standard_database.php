@@ -11,12 +11,6 @@ require_once('common/base/classes/base_database.php');
  * Standard implementation of c_base_database().
  */
 class c_standard_database extends c_base_database {
-  const LOG_TYPE_NONE          = 0;
-  const LOG_TYPE_LOGIN         = 1;
-  const LOG_TYPE_LOGOUT        = 2;
-  const LOG_TYPE_CREATE_USER   = 3;
-  const LOG_TYPE_LOGIN_FAILIRE = 4;
-
   /**
    * Write a log to the database, associated with the current user.
    */
@@ -31,50 +25,58 @@ class c_standard_database extends c_base_database {
       return c_base_return_error::s_false($error);
     }
 
-    $query_string = 'insert into v_log_users_self_insert (log_title, log_type, log_severity, request_client, response_code, log_details)';
-    $query_string .= ' values ($1, $2, $3, ($4, $5, $6), $7, $8); ';
+    $query_string = 'insert into v_log_users_self_insert (log_title, log_type, log_type_sub, log_severity, log_facility, request_client, response_code, log_details)';
+    $query_string .= ' values ($1, $2, $3, $4, $5, ($6, $7, $8), $9, $10)';
 
     $query_parameters = array();
-    $query_parameters[3] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-    $query_parameters[4] = isset($_SERVER['REMOTE_PORT']) ? $_SERVER['REMOTE_PORT'] : 0;
-    $query_parameters[5] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
-    $query_parameters[6] = $response_code;
+    $query_parameters[5] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+    $query_parameters[6] = isset($_SERVER['REMOTE_PORT']) && is_numeric($_SERVER['REMOTE_PORT']) ? (int) $_SERVER['REMOTE_PORT'] : 0;
+    $query_parameters[7] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
+    $query_parameters[8] = $response_code;
 
-    if ($log_type === self::LOG_TYPE_LOGIN) {
+    if ($log_type === c_base_log::TYPE_CONNECT) {
       $expires = NULL;
       if (isset($data['expires']) && is_int($data['expires'])) {
         $expires = $data['expires'];
       }
 
       $query_parameters[0] = "Logging in to the system.";
-      $query_parameters[1] = 17;
-      $query_parameters[2] = 1;
-      $query_parameters[7] = json_encode(array('expires' => $expires));
+      $query_parameters[1] = c_base_log::TYPE_SESSION;
+      $query_parameters[2] = c_base_log::TYPE_CONNECT;
+      $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
+      $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
+      $query_parameters[9] = json_encode(array('expires' => $expires));
 
       unset($expires);
     }
-    elseif ($log_type === self::LOG_TYPE_LOGOUT) {
+    elseif ($log_type === c_base_log::TYPE_DISCONNECT) {
       $query_parameters[0] = "Logging out of the system.";
-      $query_parameters[1] = 18;
-      $query_parameters[2] = 1;
-      $query_parameters[7] = NULL;
+      $query_parameters[1] = c_base_log::TYPE_SESSION;
+      $query_parameters[2] = c_base_log::TYPE_DISCONNECT;
+      $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
+      $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
+      $query_parameters[9] = NULL;
     }
-    elseif ($log_type === self::LOG_TYPE_CREATE) {
+    elseif ($log_type === c_base_log::TYPE_CREATE) {
       $query_parameters[0] = "Created the user account.";
-      $query_parameters[1] = 27;
-      $query_parameters[2] = 1;
-      $query_parameters[7] = NULL;
+      $query_parameters[1] = c_base_log::TYPE_CREATE;
+      $query_parameters[2] = c_base_log::TYPE_NONE;
+      $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
+      $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
+      $query_parameters[9] = NULL;
     }
-    elseif ($log_type === self::LOG_TYPE_LOGIN_FAILURE) {
+    elseif ($log_type === c_base_log::TYPE_FAILURE) {
       $user_name = NULL;
       if (isset($data['user_name']) && is_string($data['user_name'])) {
         $user_name = $data['user_name'];
       }
 
-      $query_parameters[0] = "Failed to login as the user '" . $user_name . "'.";
-      $query_parameters[1] = 17;
-      $query_parameters[2] = 2;
-      $query_parameters[7] = json_encode(array('user_name' => $user_name));
+      $query_parameters[0] = "Failed to login as the user ':{user_name}'.";
+      $query_parameters[1] = c_base_log::TYPE_CONNECT;
+      $query_parameters[2] = c_base_log::TYPE_FAILURE;
+      $query_parameters[3] = c_base_error::SEVERITY_NOTICE;
+      $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
+      $query_parameters[9] = json_encode(array('user_name' => $user_name));
 
       unset($user_name);
     }
@@ -85,8 +87,15 @@ class c_standard_database extends c_base_database {
     ksort($query_parameters);
 
     $query_result = $this->do_query($query_string, $query_parameters);
+    var_dump($query_string);
+    print("<br>");
+    var_dump($query_parameters);
+    print("<br><br>");
+    var_dump($query_result->get_value());
+    print("<br>");
     unset($query_string);
     unset($query_parameters);
+    exit();
 
     if (c_base_return::s_has_error($query_result)) {
       $last_error = $this->get_last_error()->get_value_exact();

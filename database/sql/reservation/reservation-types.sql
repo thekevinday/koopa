@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -21,10 +22,10 @@ create table s_tables.t_type_http_status_codes (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   constraint cp_log_type_http_status_codes primary key (id),
 
@@ -62,10 +63,10 @@ create table s_tables.t_type_mime_categorys (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   field_category varchar(64),
 
@@ -112,10 +113,10 @@ create table s_tables.t_type_mime_types (
   is_locked boolean default false not null,
   is_deleted boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   field_extension varchar(64),
   field_mime varchar(128),

@@ -1,9 +1,15 @@
 /** Standardized SQL Structure - Last */
 /** This depends on: everything (run this absolutely last) **/
-
 /** The purpose of this is to add all initial data after all appropriate triggers are defined. ***/
 start transaction;
 
+
+
+/** Custom database specific settings (do this on every connection made) **/
+set bytea_output to hex;
+set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
+set datestyle to us;
+set timezone to UTC;
 
 
 insert into s_tables.t_date_contexts (id, name_machine, name_human) values (0, 'none', 'None');
@@ -22,55 +28,59 @@ alter sequence s_tables.se_log_types_id start 1000;
 alter sequence s_tables.se_log_types_id restart;
 
 
-/** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
 insert into s_tables.t_log_types (id, name_machine, name_human) values (0, 'none', 'None');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (1, 'php', 'PHP');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (2, 'theme', 'Theme');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (3, 'cache', 'Cache');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (4, 'javascript', 'Javascript');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (5, 'ajax', 'AJAX');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (6, 'sql', 'SQL');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (7, 'form', 'Form');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (8, 'form_validate', 'Form Validation');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (9, 'form_submit', 'Form Submit');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (10, 'load', 'Load');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (11, 'save', 'Save');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (12, 'render', 'Render');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (13, 'client', 'Client');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (14, 'add', 'Add');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (15, 'create', 'Create');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (16, 'change', 'Change');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (17, 'delete', 'Delete');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (18, 'redirect', 'Redirect');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (19, 'login', 'Login');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (20, 'logout', 'Logout');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (21, 'session', 'Session');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (22, 'database', 'Database');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (23, 'not_found', 'Not Found');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (24, 'access_denied', 'Access Denied');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (25, 'removed', 'Removed');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (26, 'locked', 'Locked');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (27, 'timeout', 'Timeout');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (28, 'expire', 'Expiration');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (29, 'user', 'User');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (30, 'error', 'Error');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (31, 'content', 'Content');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (32, 'workflow', 'Workflow');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (33, 'draft', 'Draft');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (34, 'clone', 'Clone');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (35, 'publish', 'Publish');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (36, 'revert', 'Revert');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (37, 'validate', 'Validate');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (38, 'approve', 'Approve');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (39, 'password', 'Password');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (40, 'revision', 'Revision');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (41, 'search', 'Search');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (42, 'access', 'Access');
-insert into s_tables.t_log_types (id, name_machine, name_human) values (43, 'unknown', 'Unknown');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (1, 'access', 'Access');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (2, 'accept', 'Accept');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (3, 'amend', 'Amend');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (4, 'approve', 'Approve');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (5, 'audit', 'Audit');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (6, 'base', 'Base');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (7, 'cache', 'Cache');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (8, 'cancel', 'Cancel');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (9, 'create', 'Create');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (10, 'client', 'Client');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (11, 'connect', 'Connect');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (12, 'content', 'Content');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (13, 'comment', 'Comment');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (14, 'databae', 'Database');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (15, 'delete', 'Delete');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (16, 'deny', 'Deny');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (17, 'draft', 'Draft');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (18, 'disprove', 'Disprove');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (19, 'downgrade', 'Downgrade');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (20, 'edit', 'Edit');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (21, 'event', 'Event');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (22, 'file', 'File');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (23, 'interpretor', 'Interpretor');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (24, 'legal', 'Legal');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (25, 'lock', 'Lock');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (26, 'mail', 'Mail');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (27, 'proxy', 'Proxy');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (28, 'publish', 'Publish');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (29, 'response', 'Response');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (30, 'restore', 'Restore');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (31, 'request', 'Request');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (32, 'revert', 'Revert');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (33, 'review', 'Review');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (34, 'schedule', 'Schedule');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (35, 'search', 'Search');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (36, 'session', 'Session');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (37, 'sign', 'Sign');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (38, 'synchronize', 'Synchronize');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (39, 'system', 'Systen');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (40, 'theme', 'Theme');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (41, 'time', 'Time');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (42, 'transition', 'Transition');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (43, 'uncancel', 'Uncancel');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (44, 'undo', 'Undo');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (45, 'unpublish', 'Unpublish');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (46, 'update', 'Update');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (47, 'upgrade', 'upgrade');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (48, 'user', 'User');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (49, 'void', 'Void');
+insert into s_tables.t_log_types (id, name_machine, name_human) values (50, 'workflow', 'Workflow');
 
 
-
-/** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
 insert into s_tables.t_type_http_status_codes (id, name_machine, name_human) values (0, '0', 'Undefined');
 insert into s_tables.t_type_http_status_codes (id, name_machine, name_human) values (1, '1', 'Invalid');
 insert into s_tables.t_type_http_status_codes (id, name_machine, name_human) values (2, '2', 'Unknown');
@@ -141,21 +151,47 @@ insert into s_tables.t_type_http_status_codes (id, name_machine, name_human) val
 
 
 /*** start the sequence count at 1000 to allow for < 1000 to be reserved for special uses ***/
-alter sequence s_tables.se_log_type_severity_levels_id start 1000;
-alter sequence s_tables.se_log_type_severity_levels_id restart;
+alter sequence s_tables.se_log_type_severitys_id start 1000;
+alter sequence s_tables.se_log_type_severitys_id restart;
 
 
-/** create well known types that can then be user for indexes (all new types added should be considered for custom indexing). **/
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (0, 'none', 'None');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (1, 'information', 'Information');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (2, 'notice', 'Notice');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (3, 'debug', 'Debug');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (4, 'warning', 'Warning');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (5, 'error', 'Error');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (6, 'alert', 'Alert');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (7, 'critical', 'Critical');
-insert into s_tables.t_log_type_severity_levels (id, name_machine, name_human) values (8, 'emergency', 'Emergency');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (0, 'none', 'None');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (1, 'emergency', 'Emergency');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (2, 'alert', 'Alert');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (3, 'critical', 'Critical');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (4, 'error', 'Error');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (5, 'warning', 'Warning');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (6, 'notice', 'Notice');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (7, 'information', 'Information');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (8, 'debug', 'Debug');
+insert into s_tables.t_log_type_severitys (id, name_machine, name_human) values (9, 'unknown', 'Unknown');
 
+
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (0, 'none', 'None');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (1, 'kernel', 'Kernel');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (2, 'user', 'User');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (3, 'mail', 'Mail');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (4, 'daemin', 'Daemon');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (5, 'security', 'Security');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (6, 'messages', 'Messages');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (7, 'printer', 'Printer');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (8, 'network', 'Network');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (9, 'uucp', 'UUCP');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (10, 'clock', 'Clock');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (11, 'authorization', 'Authorization');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (12, 'ftp', 'FTP');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (13, 'ntp', 'NTP');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (14, 'audit', 'Audit');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (15, 'alert', 'Alert');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (16, 'cron', 'Cron');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (17, 'local_0', 'Local 0');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (18, 'local_1', 'Local 1');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (19, 'local_2', 'Local 2');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (20, 'local_3', 'Local 3');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (21, 'local_4', 'Local 4');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (22, 'local_5', 'Local 5');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (23, 'local_6', 'Local 6');
+insert into s_tables.t_log_type_facilitys (id, name_machine, name_human) values (24, 'local_7', 'Local 7');
 
 
 insert into s_tables.t_type_mime_categorys (id, name_machine, name_human) values (0, 'none', 'None');

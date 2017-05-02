@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs */
-/** This depends on: reservation-users.sql, reservation-types.sql **/
+/** This depends on: standard-users.sql, standard-types.sql **/
 start transaction;
 
 
@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -19,9 +20,11 @@ create table s_tables.t_log_users (
 
   log_title varchar(512) not null,
   log_type bigint not null,
+  log_type_sub bigint not null,
   log_severity bigint not null,
+  log_facility bigint not null,
   log_details json,
-  log_date timestamp default localtimestamp not null,
+  log_date timestamp with time zone default current_timestamp not null,
 
   request_client public.ct_client not null,
   response_code smallint not null default 0,
@@ -34,7 +37,9 @@ create table s_tables.t_log_users (
   constraint cf_log_users_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_users_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_users_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade,
-  constraint cf_log_users_log_severity foreign key (log_severity) references s_tables.t_log_type_severity_levels (id) on delete restrict on update cascade,
+  constraint cf_log_users_log_type_sub foreign key (log_type_sub) references s_tables.t_log_types (id) on delete restrict on update cascade,
+  constraint cf_log_users_log_severity foreign key (log_severity) references s_tables.t_log_type_severitys (id) on delete restrict on update cascade,
+  constraint cf_log_users_log_facility foreign key (log_facility) references s_tables.t_log_type_facilitys (id) on delete restrict on update cascade,
   constraint cf_log_users_response_code foreign key (response_code) references s_tables.t_type_http_status_codes (id) on delete restrict on update cascade
 );
 
@@ -45,50 +50,12 @@ grant select on s_tables.t_log_users to r_standard_manager, r_standard_auditor;
 grant select,usage on s_tables.se_log_users_id to r_standard_administer;
 grant usage on s_tables.se_log_users_id to r_standard, r_standard_public, r_standard_system;
 
-create index i_log_users_type_php on s_tables.t_log_users (id)
-  where log_type = 1;
-
-create index i_log_users_type_theme on s_tables.t_log_users (id)
-  where log_type = 2;
-
-create index i_log_users_type_cache on s_tables.t_log_users (id)
-  where log_type = 3;
-
-create index i_log_users_type_javascript on s_tables.t_log_users (id)
-  where log_type = 4;
-
-create index i_log_users_type_ajax on s_tables.t_log_users (id)
-  where log_type = 5;
-
-create index i_log_users_type_sql on s_tables.t_log_users (id)
-  where log_type = 6;
-
-create index i_log_users_type_redirect on s_tables.t_log_users (id)
-  where log_type = 16;
-
-create index i_log_users_type_login on s_tables.t_log_users (id)
-  where log_type = 17;
-
-create index i_log_users_type_logout on s_tables.t_log_users (id)
-  where log_type = 18;
-
-create index i_log_users_type_user on s_tables.t_log_users (id)
-  where log_type = 27;
-
-create index i_log_users_type_error on s_tables.t_log_users (id)
-  where log_type = 28;
-
-create index i_log_users_type_content on s_tables.t_log_users (id)
-  where log_type = 29;
-
-create index i_log_users_type_workflow on s_tables.t_log_users (id)
-  where log_type = 30;
-
-create index i_log_users_type_search on s_tables.t_log_users (id)
-  where log_type = 39;
 
 create index i_log_users_response_code_200 on s_tables.t_log_users (id)
   where response_code = 200;
+
+create index i_log_users_response_code_400 on s_tables.t_log_users (id)
+  where response_code = 400;
 
 create index i_log_users_response_code_403 on s_tables.t_log_users (id)
   where response_code = 403;
@@ -98,6 +65,9 @@ create index i_log_users_response_code_404 on s_tables.t_log_users (id)
 
 create index i_log_users_response_code_410 on s_tables.t_log_users (id)
   where response_code = 410;
+
+create index i_log_users_response_code_451 on s_tables.t_log_users (id)
+  where response_code = 451;
 
 create index i_log_users_response_code_500 on s_tables.t_log_users (id)
   where response_code = 500;
@@ -112,19 +82,19 @@ create index i_log_users_response_code_redirects on s_tables.t_log_users (id)
   where response_code in (301, 302, 303, 307, 308);
 
 create index i_log_users_response_code_notable on s_tables.t_log_users (id)
-  where response_code in (400, 403, 404, 410, 500, 503);
+  where response_code in (400, 403, 404, 410, 451, 500, 503);
 
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_users_self with (security_barrier=true) as
   with this_user as (select id from public.v_users_self_locked_not)
-  select id, id_user, log_title, log_type, log_severity, log_details, log_date, request_client, response_code from s_tables.t_log_users
+  select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from s_tables.t_log_users
     where id_user in (select * from this_user);
 
 grant select on s_users.v_log_users_self to r_standard, r_standard_system;
 
 create view s_users.v_log_users_self_insert with (security_barrier=true) as
-  select log_title, log_type, log_severity, log_details, request_client, response_code from s_tables.t_log_users
+  select log_title, log_type, log_type_sub, log_severity, log_facility, log_details, request_client, response_code from s_tables.t_log_users
     where id_user in (select id from public.v_users_self_locked_not)
     with check option;
 
@@ -133,7 +103,7 @@ grant insert on s_users.v_log_users_self_insert to r_standard, r_standard_system
 
 /** public users should be able to insert, but should never be able to view the logs that they insert. **/
 create view public.v_log_users_self_insert with (security_barrier=true) as
-  select log_title, log_type, log_severity, log_details, request_client, response_code from s_tables.t_log_users
+  select log_title, log_type, log_type_sub, log_severity, log_facility, log_details, request_client, response_code from s_tables.t_log_users
     where 'r_standard_public' in (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_standard_public')
     with check option;
 
@@ -154,7 +124,7 @@ create table s_tables.t_log_user_activity (
 
   request_path varchar(512) not null,
   request_arguments varchar(512) not null,
-  request_date timestamp default localtimestamp not null,
+  request_date timestamp with time zone default current_timestamp not null,
   request_client public.ct_client not null,
   request_headers json,
 
@@ -189,6 +159,9 @@ create index i_log_user_activity_response_code_404 on s_tables.t_log_user_activi
 create index i_log_user_activity_response_code_410 on s_tables.t_log_user_activity (id)
   where response_code = 410;
 
+create index i_log_user_activity_response_code_451 on s_tables.t_log_user_activity (id)
+  where response_code = 451;
+
 create index i_log_user_activity_response_code_5xx on s_tables.t_log_user_activity (id)
   where response_code >= 500 and response_code < 600;
 
@@ -199,7 +172,7 @@ create index i_log_user_activity_response_code_503 on s_tables.t_log_user_activi
   where response_code = 503;
 
 create index i_log_user_activity_response_code_notable on s_tables.t_log_user_activity (id)
-  where response_code in (403, 404, 410, 500, 503);
+  where response_code in (403, 404, 410, 451, 500, 503);
 
 
 

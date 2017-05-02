@@ -1,7 +1,7 @@
 /** First time or one time execution stuff **/
 /** Things here must be run first and cannot be run a second time due to their nature. **/
 /** For example, tablespaces need only be created 1x and then any database on the system can use them **/
-/** Be sure to replace reservation_ and reservation- with the prefix that is specific to your database. **/
+/** Be sure to replace standard_ and standard- with the prefix that is specific to your database. **/
 /** This script creates the database (at or near the end of the script). **/
 
 
@@ -77,6 +77,7 @@ create database standard;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 /* Make sure public is never allowed to create tables! */

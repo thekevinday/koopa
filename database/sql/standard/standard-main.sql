@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Main */
-/** This depends on: reservation-first.sql **/
+/** This depends on: standard-first.sql **/
 /* @todo: add restrictions to even managers and administers so that ALL users access via views to allow for disabling any account (even an admin).
           only the postgresql/root account may access tables directly.
           This requires changing permissions and adding the appropriate s_administers and s_managers tables.
@@ -12,6 +12,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -77,15 +78,15 @@ create type public.ct_location as (
 );
 
 create type public.ct_date as (
-  date timestamp,
-  time_start timestamp,
-  time_stop timestamp
+  date timestamp with time zone,
+  time_start timestamp with time zone,
+  time_stop timestamp with time zone
 );
 
 create type public.ct_date_context as (
-  date timestamp,
-  time_start timestamp,
-  time_stop timestamp,
+  date timestamp with time zone,
+  time_start timestamp with time zone,
+  time_stop timestamp with time zone,
   context bigint
 );
 

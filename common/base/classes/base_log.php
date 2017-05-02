@@ -9,68 +9,66 @@ require_once('common/base/classes/base_return.php');
 /**
  * A generic class for managing the logs.
  */
-class c_base_log extends c_base_return {
-  const TYPE_NONE       = 0;
-  const TYPE_BASE       = 1; // for low-level entries.
-  const TYPE_REQUEST    = 2; // accessing the site (generally page requests).
-  const TYPE_INTERPET   = 3; // interpretting (such as a PHP-related).
-  const TYPE_DATABASE   = 4; // the database.
-  const TYPE_USER       = 5; // related to users.
-  const TYPE_PROXY      = 6; // proxying as some other user.
-  const TYPE_ACCESS     = 7; // access control.
-  const TYPE_CONTENT    = 8; // content itself.
-  const TYPE_THEME      = 9; // theme (such as renderring a theme).
-  const TYPE_RESPONSE   = 10; // response to requests.
-  const TYPE_CONNECT    = 11; // relating connecting and disconnecting from the site.
-  const TYPE_CLIENT     = 12; // client information.
-  const TYPE_SERVER     = 13; // server information.
-  const TYPE_LEGAL      = 14; // legal or law-based information.
-  const TYPE_AUDIT      = 15; // legal or law-based information.
-  const TYPE_CACHE      = 16; // caching.
-  const TYPE_SYSTEM     = 17; // system.
-  const TYPE_FILE       = 18; // files.
-  const TYPE_TIME       = 19; // time-related matters (such as cron jobs).
-  const TYPE_EVENT      = 20; // time and place related matters.
-  const TYPE_SESSION    = 21; // sessions.
-  const TYPE_MAIL       = 22; // e-mails.
-  const TYPE_SIGN       = 23; // signatures, such as PGP/GPG.
-  const TYPE_SYNC       = 24; // synchronization of information.
-  const TYPE_WORKFLOW   = 25; // workflow.
-  const TYPE_REQUEST    = 26; // workflow: requesting.
-  const TYPE_COMMENT    = 27; // workflow: commenting.
-  const TYPE_DRAFT      = 28; // workflow: drafting.
-  const TYPE_REVIEW     = 29; // workflow: reviewing.
-  const TYPE_EDIT       = 30; // workflow: editting.
-  const TYPE_AMEND      = 31; // workflow: ammending.
-  const TYPE_UNDO       = 32; // workflow: undoing an edit.
-  const TYPE_APPROVE    = 33; // workflow: approving.
-  const TYPE_DISPROVE   = 34; // workflow: disproving.
-  const TYPE_PUBLISH    = 35; // workflow: publushing.
-  const TYPE_UNPUBLISH  = 36; // workflow: publushing.
-  const TYPE_ACCEPT     = 37; // workflow: accepting.
-  const TYPE_DENY       = 38; // workflow: denying.
-  const TYPE_CANCEL     = 39; // workflow: cancelling.
-  const TYPE_UNCANCEL   = 40; // workflow: cancelling.
-  const TYPE_AUDIT      = 41; // workflow: auditing.
-  const TYPE_TRANSITION = 42; // workflow: transitioning.
-  const TYPE_REVERT     = 43; // workflow: revert.
-  const TYPE_DELETE     = 44; // workflow: delete.
-  const TYPE_RESTORE    = 45; // workflow: restore (undelete).
-  const TYPE_UPGRADE    = 46; // upgrade.
-  const TYPE_DOWNGRADE  = 47; // downgrade.
-
-  // severity defines how important or the context of the log entry.
-  const SEVERITY_NONE        = 0;
-  const SEVERITY_DEBUG       = 1;
-  const SEVERITY_INFORMATION = 2; // regular logging information.
-  const SEVERITY_NOTICE      = 3; // information worth noting.
-  const SEVERITY_WARNING     = 4; // this could be a problem.
-  const SEVERITY_ERROR       = 5; // this is a problem.
-  const SEVERITY_CRITICAL    = 6; // this is a big problem.
-  const SEVERITY_EMERGENCY   = 7; // this is the most serious type of problem.
+class c_base_log extends c_base_return_array {
+  const TYPE_NONE        = 0;
+  const TYPE_ACCESS      = 1;  // access control.
+  const TYPE_ACCEPT      = 2;  // accept something, workflow: accepting.
+  const TYPE_AMEND       = 3;  // amend something, workflow: ammending.
+  const TYPE_APPROVE     = 4;  // approve something, workflow: approving.
+  const TYPE_AUDIT       = 5;  // audit something, legal or law-based information, workflow: auditing.
+  const TYPE_BASE        = 6;  // for low-level entries.
+  const TYPE_CACHE       = 7;  // caching.
+  const TYPE_CANCEL      = 8;  // cancel something, workflow: cancelling.
+  const TYPE_CREATE      = 9;  // create something.
+  const TYPE_CLIENT      = 10; // client information.
+  const TYPE_CONNECT     = 11; // connect to something.
+  const TYPE_CONTENT     = 12; // content.
+  const TYPE_COMMENT     = 13; // workflow: commenting.
+  const TYPE_DATABASE    = 14; // the database, sql.
+  const TYPE_DELETE      = 15; // delete something, workflow: delete.
+  const TYPE_DENY        = 16; // deny something, workflow: denying.
+  const TYPE_DRAFT       = 17; // draft of something, workflow: drafting.
+  const TYPE_DISPROVE    = 18; // disapprove something, workflow: disproving.
+  const TYPE_DISCONNECT  = 19; // disconnect something.
+  const TYPE_DOWNGRADE   = 20; // downgrade.
+  const TYPE_EDIT        = 21; // edit something, workflow: editting.
+  const TYPE_EVENT       = 22; // time and place related matters.
+  const TYPE_FAILURE     = 23; // failure.
+  const TYPE_FILE        = 24; // files.
+  const TYPE_INTERPETOR  = 25; // interpretting (such as a PHP-related).
+  const TYPE_LEGAL       = 26; // legal or law-based information.
+  const TYPE_LOCK        = 27; // lock something.
+  const TYPE_MAIL        = 28; // e-mails.
+  const TYPE_PROXY       = 29; // proxying as some other user.
+  const TYPE_PUBLISH     = 30; // publish something, workflow: publushing.
+  const TYPE_RESPONSE    = 31; // response to requests.
+  const TYPE_RESTORE     = 32; // restore something, workflow: restore (undelete).
+  const TYPE_REQUEST     = 33; // accessing the site (generally page requests), workflow: requesting..
+  const TYPE_REVERT      = 34; // revert something, workflow: revert.
+  const TYPE_REVIEW      = 35; // review something, workflow: reviewing.
+  const TYPE_SCHEDULE    = 36; // schedule something.
+  const TYPE_SEARCH      = 37; // search.
+  const TYPE_SESSION     = 38; // sessions.
+  const TYPE_SIGN        = 39; // signatures, such as PGP/GPG.
+  const TYPE_SYNCHRONIZE = 40; // synchronization of information.
+  const TYPE_SYSTEM      = 41; // system/server.
+  const TYPE_THEME       = 42; // theme (such as renderring a theme).
+  const TYPE_TIME        = 43; // time-related matters (such as cron jobs).
+  const TYPE_TRANSITION  = 44; // transition, workflow: transitioning.
+  const TYPE_UNCANCEL    = 45; // uncancel something, workflow: cancelling.
+  const TYPE_UNDO        = 46; // undo somethingm workflow: undoing an edit.
+  const TYPE_UNPUBLISH   = 47; // unpublish something, workflow: publushing.
+  const TYPE_UPDATE      = 48; // update something.
+  const TYPE_UPGRADE     = 49; // upgrade something.
+  const TYPE_USER        = 50; // related to users.
+  const TYPE_VOID        = 51; // void something, such as a signature.
+  const TYPE_WORKFLOW    = 52; // workflow.
 
   protected $type;
-  protected $data;
+  protected $type_sub;
+
+  protected $severity;
+  protected $facility;
 
 
   /**
@@ -79,8 +77,11 @@ class c_base_log extends c_base_return {
   public function __construct() {
     parent::__construct();
 
-    $this->type = self::TYPE_NONE;
-    $this->data = array();
+    $this->type     = self::TYPE_NONE;
+    $this->type_sub = self::TYPE_NONE;
+
+    $this->severity = c_base_error::SEVERITY_NONE;
+    $this->facility = c_base_error::FACILITY_NONE;
   }
 
   /**
@@ -88,7 +89,10 @@ class c_base_log extends c_base_return {
    */
   public function __destruct() {
     unset($this->type);
-    unset($this->data);
+    unset($this->type_sub);
+
+    unset($this->severity);
+    unset($this->facility);
 
     parent::__destruct();
   }
@@ -117,7 +121,7 @@ class c_base_log extends c_base_return {
   /**
    * Assigns the type code for this log entry.
    *
-   * @param int $tyoe
+   * @param int $type
    *   The type code.
    *
    * @return c_base_return_status
@@ -135,6 +139,68 @@ class c_base_log extends c_base_return {
   }
 
   /**
+   * Assigns the sub-type code for this log entry.
+   *
+   * @param int $type_sub
+   *   The sub-type code.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_type_sub($type_sub) {
+    if (!is_int($type_sub) || $type_sub < 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type_sub', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->type_sub = $type_sub;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assigns the severity code for this log entry.
+   *
+   * @param int $type
+   *   The severity code.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_severity($severity) {
+    if (!is_int($severity) || $severity < 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'severity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->severity = $severity;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assigns the facility code for this log entry.
+   *
+   * This is generally used for syslog compatibility.
+   *
+   * @param int $facility
+   *   The facility code.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_facility($facility) {
+    if (!is_int($facility) || $facility < 0) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'facility', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->facility = $facility;
+    return new c_base_return_true();
+  }
+
+  /**
    * Returns the type code for this log entry.
    *
    * @return c_base_return_status|c_base_return_int
@@ -142,120 +208,57 @@ class c_base_log extends c_base_return {
    *   FALSE with error bit set on error.
    */
   public function get_type() {
+    if (!is_int($this->type)) {
+      $this->type = self::TYPE_NONE;
+    }
+
     return c_base_return_int::s_new($this->type);
   }
 
   /**
-   * Returns the data as a serialized array string.
+   * Returns the sub-type code for this log entry.
    *
-   * @return c_base_return_status|c_base_return_array
-   *   An array representing the data array on success.
-   *   FALSE with error bit set is returned on error.
+   * @return c_base_return_status|c_base_return_int
+   *   The type integer on success.
+   *   FALSE with error bit set on error.
    */
-  public function get_data_serialized() {
-    return c_base_return_array::s_new($this->data);
+  public function get_type_sub() {
+    if (!is_int($this->type_sub)) {
+      $this->type_sub = self::TYPE_NONE;
+    }
+
+    return c_base_return_int::s_new($this->type_sub);
   }
 
   /**
-   * Returns the data as a serialized array string.
+   * Returns the severity code for this log entry.
    *
-   * @return c_base_return_status|c_base_return_string
-   *   A serialized string representing the data array on success.
-   *   FALSE with error bit set is returned on error.
+   * @return c_base_return_status|c_base_return_int
+   *   The severity integer on success.
+   *   FALSE with error bit set on error.
    */
-  public function get_data_serialized() {
-    return c_base_return_string::s_new(serialize($this->data));
+  public function get_severity() {
+    if (!is_int($this->severity)) {
+      $this->severity = c_base_error::SEVERITY_NONE;
+    }
+
+    return c_base_return_int::s_new($this->severity);
   }
 
   /**
-   * Returns the data as a json-serialized array string.
+   * Returns the facility code for this log entry.
    *
-   * @return c_base_return_status|c_base_return_string
-   *   A json-serialized string representing the data array on success.
-   *   FALSE with error bit set is returned on error.
+   * This is generally used for syslog compatibility.
+   *
+   * @return c_base_return_status|c_base_return_int
+   *   The facility integer on success.
+   *   FALSE with error bit set on error.
    */
-  public function get_data_jsonized($options = 0, $depth = 512) {
-    if (!is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+  public function get_facility() {
+    if (!is_int($this->facility)) {
+      $this->facility = c_base_error::FACILITY_NONE;
     }
 
-    if (!is_int($depth) || $depth < 1) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $encoded = json_encode($this->data, $options, $depth)
-    if ($encoded === FALSE) {
-      unset($encoded);
-
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
-      return c_base_return_error::s_false($error);
-    }
-
-    return c_base_return_string::s_new($encoded);
-  }
-
-  /**
-   * Assigns data to a specific key in the data array.
-   *
-   * @param string|int $key
-   *   The key name string or integer.
-   * @param $value
-   *   The value to assign.
-   *   There is no enforcement on the data type.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   */
-  protected function pr_set_data($key, $value) {
-    if (is_int($key)) {
-      if ($key < 0) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-      }
-    }
-    elseif (!is_string($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->data[$key] = $value;
-    return new c_base_return_true();
-  }
-
-  /**
-   * Returns the data assigned at the specified key.
-   *
-   * @param string|int $key
-   *   The key name string or integer.
-   *
-   * @return c_base_return_status|c_base_return_value
-   *   The array value is returned on success.
-   *   FALSE with error bit set is returned on invalid key.
-   *   FALSE with error bit set is returned on error.
-   */
-  protected function pr_get_data($key) {
-    if (is_int($key)) {
-      if ($key < 0) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-        return c_base_return_error::s_false($error);
-      }
-    }
-    elseif (!is_string($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!array_key_exists($key, $this->data)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $key, ':{array_name}' => 'this->data', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
-      return c_base_return_error::s_false($error);
-    }
-
-    if ($this->data[$key] instanceof c_base_return) {
-      return $this->data[$key];
-    }
-
-    return c_base_return_value::s_new($this->data[$key]);
+    return c_base_return_int::s_new($this->facility);
   }
 }

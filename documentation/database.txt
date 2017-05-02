@@ -63,3 +63,10 @@ For database names, the following naming scheme is used:
   - r_: This represents a role.
   - u_: This represents a user (except for ldap users, whose names are exactly as defined in ldap, and the root postgresql user, usually postgres).
   - se_: This represents a sequence.
+
+
+Timezones.
+The database should have its timezones always set to UTC, for consistency and integrity reasons.
+If at any point in time, a specific timezone is needed, then "at time zone" should be added.
+Example of selecting the created date with timezone set to America/Chicago.:
+  select id, created_date at time zone 'America/Chicago' from s_tables.t_some_table;

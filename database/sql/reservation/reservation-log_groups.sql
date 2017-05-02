@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -19,8 +20,11 @@ create table s_tables.t_log_groups (
   id_group bigint not null,
 
   log_type bigint not null,
+  log_type_sub bigint not null,
+  log_severity bigint not null,
+  log_facility bigint not null,
   log_details json,
-  log_date timestamp default localtimestamp not null,
+  log_date timestamp with time zone default current_timestamp not null,
 
   constraint cp_log_groups primary key (id),
 
@@ -29,7 +33,10 @@ create table s_tables.t_log_groups (
   constraint cf_log_groups_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_groups_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_groups_id_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade,
-  constraint cf_log_groups_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade
+  constraint cf_log_groups_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade,
+  constraint cf_log_groups_log_type_sub foreign key (log_type_sub) references s_tables.t_log_types (id) on delete restrict on update cascade,
+  constraint cf_log_groups_log_severity foreign key (log_severity) references s_tables.t_log_type_severitys (id) on delete restrict on update cascade,
+  constraint cf_log_groups_log_facility foreign key (log_facility) references s_tables.t_log_type_facilitys (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_groups_id owned by s_tables.t_log_groups.id;
@@ -42,13 +49,13 @@ grant usage on s_tables.se_log_groups_id to r_reservation, r_reservation_system;
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_groups_self with (security_barrier=true) as
   with this_user as (select id from public.v_users_self_locked_not)
-  select id, id_user, id_group, log_type, log_details, log_date from s_tables.t_log_groups
+  select id, id_user, id_group, log_type, log_type_sub, log_severity, log_facility, log_details, log_date from s_tables.t_log_groups
     where id_user in (select * from this_user);
 
 grant select on s_users.v_log_groups_self to r_reservation, r_reservation_system;
 
 create view s_users.v_log_groups_self_insert with (security_barrier=true) as
-  select id_group, log_type, log_details from s_tables.t_log_groups
+  select id_group, log_type, log_type_sub, log_severity, log_facility, log_details from s_tables.t_log_groups
     where id_user in (select id from public.v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
 
@@ -73,7 +80,10 @@ create table s_tables.t_log_group_users (
   id_group bigint not null,
 
   log_type bigint not null,
-  log_date timestamp default localtimestamp not null,
+  log_type_sub bigint not null,
+  log_severity bigint not null,
+  log_facility bigint not null,
+  log_date timestamp with time zone default current_timestamp not null,
 
   constraint cp_log_group_users primary key (id),
 
@@ -82,7 +92,10 @@ create table s_tables.t_log_group_users (
   constraint cf_log_group_users_id_user foreign key (id_user) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_group_users_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade,
   constraint cf_log_group_users_id_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade,
-  constraint cf_log_group_users_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade
+  constraint cf_log_group_users_log_type foreign key (log_type) references s_tables.t_log_types (id) on delete restrict on update cascade,
+  constraint cf_log_group_users_log_type_sub foreign key (log_type_sub) references s_tables.t_log_types (id) on delete restrict on update cascade,
+  constraint cf_log_group_users_log_severity foreign key (log_severity) references s_tables.t_log_type_severitys (id) on delete restrict on update cascade,
+  constraint cf_log_group_users_log_facility foreign key (log_facility) references s_tables.t_log_type_facilitys (id) on delete restrict on update cascade
 );
 
 create sequence s_tables.se_log_group_users_id owned by s_tables.t_log_group_users.id;
@@ -96,13 +109,13 @@ grant usage on s_tables.se_log_group_users_id to r_reservation, r_reservation_sy
 create view s_users.v_log_group_users_self with (security_barrier=true) as
   with this_user as (select id from public.v_users_self_locked_not),
     allowed_groups as (select id from s_users.v_groups_self where not is_locked)
-  select id, id_user, id_group, log_type, log_date from s_tables.t_log_group_users
+  select id, id_user, id_group, log_type, log_type_sub, log_severity, log_facility, log_date from s_tables.t_log_group_users
     where id_user in (select * from this_user) or id_group in (select * from allowed_groups);
 
 grant select on s_users.v_log_group_users_self to r_reservation, r_reservation_system;
 
 create view s_users.v_log_group_users_self_insert with (security_barrier=true) as
-  select id_group, log_type from s_tables.t_log_group_users
+  select id_group, log_type, log_type_sub, log_severity, log_facility from s_tables.t_log_group_users
     where id_user in (select id from public.v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
 

@@ -39,6 +39,9 @@ class c_base_defaults_global {
   // reserved path groups: array(97, 99, 100, 102, 109, 115, 116, 120, 121).
   const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
 
+  // default log facility (17 = c_base_error::FACILITY_LOCAL_0).
+  const LOG_FACILITY = 17;
+
 
   // Represents the current timestamp of this PHP process/session, see: self::s_get_timestamp_session().
   private static $s_timestamp_session = NULL;

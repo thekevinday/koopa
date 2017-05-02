@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Logs - Problems */
-/** This depends on: reservation-users.sql **/
+/** This depends on: standard-users.sql **/
 /* The problem logs are intended for temporary reporting of problems and are meant to allow permanent deletion. */
 start transaction;
 
@@ -9,6 +9,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -19,8 +20,8 @@ create table s_tables.t_log_problems (
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
 
   constraint cp_log_problems primary key (id),
 
@@ -45,8 +46,8 @@ create table s_tables.t_log_problems_users (
   id_user bigint not null,
   id_user_session bigint not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
 
   log_details json,
 

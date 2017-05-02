@@ -10,6 +10,7 @@ require_once('common/base/classes/base_path.php');
 require_once('common/base/classes/base_http_status.php');
 require_once('common/base/classes/base_cookie.php');
 require_once('common/base/classes/base_ldap.php');
+require_once('common/base/classes/base_log.php');
 
 require_once('common/standard/classes/standard_index.php');
 require_once('common/standard/classes/standard_path.php');
@@ -394,8 +395,8 @@ class c_standard_path_user_login extends c_standard_path {
               c_standard_index::s_do_initialize_database($database);
 
               if ($database instanceof c_standard_database) {
-                $database->do_log_user(c_standard_database::LOG_TYPE_CREATE_USER, c_base_http_status::OK, array('user_name' => $_POST['login_form-username']));
-                $database->do_log_user(c_standard_database::LOG_TYPE_LOGIN, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
+                $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, array('user_name' => $_POST['login_form-username']));
+                $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
               }
             }
           }
@@ -440,7 +441,7 @@ class c_standard_path_user_login extends c_standard_path {
       c_standard_index::s_do_initialize_database($database);
 
       if ($database instanceof c_standard_database) {
-        $database->do_log_user(c_standard_database::LOG_TYPE_LOGIN, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
+        $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
       }
     }
 

@@ -1,5 +1,5 @@
 /** Standardized SQL Structure - Users */
-/** This depends on: reservation-main.sql **/
+/** This depends on: standard-main.sql **/
 start transaction;
 
 
@@ -8,6 +8,7 @@ start transaction;
 set bytea_output to hex;
 set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;
 set datestyle to us;
+set timezone to UTC;
 
 
 
@@ -42,11 +43,11 @@ create table s_tables.t_users (
 
   can_manage_roles boolean default false not null,
 
-  date_created timestamp default localtimestamp not null,
-  date_changed timestamp default localtimestamp not null,
-  date_synced timestamp default localtimestamp not null,
-  date_locked timestamp,
-  date_deleted timestamp,
+  date_created timestamp with time zone default current_timestamp not null,
+  date_changed timestamp with time zone default current_timestamp not null,
+  date_synced timestamp with time zone default current_timestamp not null,
+  date_locked timestamp with time zone,
+  date_deleted timestamp with time zone,
 
   settings json,
 
@@ -284,7 +285,7 @@ create function s_administers.f_users_update_actions() returns trigger as $$
 $$ language plpgsql;
 
 
-/* attempt to auto-manage postgresql reservation roles with the reservation database user roles. */
+/* attempt to auto-manage postgresql standard roles with the standard database user roles. */
 /* user ids 1 and 2 are explicitly reserved for anonymous/public and the database postgresql accounts. */
 /* postgresql does not seem to support variables for the user with grant and revoke, therefore the execute statement is used to perform the query. */
 /* @fixme: the name_machine must be forcibly sanitized to be alphanumeric, -, or _ in all cases. */

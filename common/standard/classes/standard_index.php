@@ -170,9 +170,10 @@ class c_standard_index extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    $database->do_query('set bytea_output to hex;');
-    $database->do_query('set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public;');
-    $database->do_query('set datestyle to us;');
+    $database->do_query('set bytea_output to hex');
+    $database->do_query('set search_path to s_administers,s_managers,s_auditors,s_publishers,s_insurers,s_financers,s_reviewers,s_editors,s_drafters,s_requesters,s_users,public');
+    $database->do_query('set datestyle to us');
+    $database->do_query('set timezone to UTC');
 
     return new c_base_return_true();
   }

@@ -1148,6 +1148,84 @@ class c_base_return_array extends c_base_return_value {
   }
 
   /**
+   * Returns the data as a serialized array string.
+   *
+   * @param string
+   *  A serialized string to convert to an array.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   *   if converted string does not produce an array, FALSE is returned and value is set to an empty array.
+   *
+   * @see: unserialize()
+   */
+  public function set_value_serialized($string) {
+    if (!is_string($string)) {
+      return FALSE;
+    }
+
+    $unserialized = unserialize($this->value);
+    if (is_array($unserialized)) {
+      $this->value = $unserialized;
+      unset($unserialized);
+
+      return TRUE;
+    }
+    unset($unserialized);
+
+    $this->value = array();
+    return FALSE;
+  }
+
+  /**
+   * Returns the data as a json-serialized array string.
+   *
+   * @param string
+   *  A serialized string to convert to an array.
+   * @param bool $associative
+   *   (optional) When TRUE array is return as an associative array.
+   * @param int $options
+   *   (optional) bitmask of json constants.
+   * @param int $depth
+   *   (optional) Maximum array depth.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   *   if converted string does not produce an array, FALSE is returned and value is set to an empty array.
+   *
+   * @see: json_decode()
+   */
+  public function set_value_jsonized($string, $associative = TRUE, $options = 0, $depth = 512) {
+    if (!is_string($string)) {
+      return FALSE;
+    }
+
+    if (!is_bool($associative)) {
+      $associative = TRUE;
+    }
+
+    if (!is_int($options)) {
+      $options = 0;
+    }
+
+    if (!is_int($depth) || $depth < 1) {
+      $depth = 512;
+    }
+
+    $decoded = json_decode($this->data, $associative, $options, $depth);
+    if (is_array($decoded)) {
+      $this->value = $decoded;
+      unset($decoded);
+
+      return TRUE;
+    }
+    unset($decoded);
+
+    $this->value = array();
+    return FALSE;
+  }
+
+  /**
    * Return the value.
    *
    * @return array|null $value
@@ -1316,6 +1394,45 @@ class c_base_return_array extends c_base_return_value {
     }
 
     return array_keys($this->value);
+  }
+
+  /**
+   * Returns the data as a serialized array string.
+   *
+   * @return string|bool
+   *   A serialized string representing the value array on success.
+   *   FALSE on failure.
+   *
+   * @see: serialize()
+   */
+  public function get_value_serialized() {
+    return serialize($this->value);
+  }
+
+  /**
+   * Returns the data as a json-serialized array string.
+   *
+   * @param int $options
+   *   (optional) bitmask of json constants.
+   * @param int $depth
+   *   (optional) Maximum array depth.
+   *
+   * @return string|bool
+   *   A json-serialized string representing the value array on success.
+   *   FALSE on failure.
+   *
+   * @see: json_encode()
+   */
+  public function get_value_jsonized($options = 0, $depth = 512) {
+    if (!is_int($options)) {
+      $options = 0;
+    }
+
+    if (!is_int($depth) || $depth < 1) {
+      $depth = 512;
+    }
+
+    return json_encode($this->data, $options, $depth);
   }
 }
 

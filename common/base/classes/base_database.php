@@ -1504,7 +1504,6 @@ class c_base_database extends c_base_return {
 
       return $result;
     }
-
     if ($this->asynchronous) {
       if (empty($parameters)) {
         $result = pg_send_query($this->database, $query);
@@ -2266,6 +2265,15 @@ class c_base_database extends c_base_return {
  * It is recommended that only the c_base_return_value::get_value() call be used when accessing the result value.
  */
 class c_base_database_result extends c_base_return_resource {
+  // postgresql pg_result_status() codes.
+  const STATUS_EMPTY_QUERY     = 0;
+  const STATUS_COMMAND_OK      = 1;
+  const STATUS_TUPLES_OK       = 2;
+  const STATUS_COPY_TO         = 3;
+  const STATUS_COPY_FROM       = 4;
+  const STATUS_BAD_RESPONSE    = 5;
+  const STATUS_NON_FATAL_ERROR = 6;
+  const STATUS_FATAL_ERROR     = 7;
 
   /**
    * Class constructor.
