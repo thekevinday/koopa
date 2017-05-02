@@ -87,16 +87,6 @@ class c_standard_database extends c_base_database {
     ksort($query_parameters);
 
     $query_result = $this->do_query($query_string, $query_parameters);
-    var_dump($query_string);
-    print("<br>");
-    var_dump($query_parameters);
-    print("<br><br>");
-    var_dump($query_result->get_value());
-    print("<br>");
-    unset($query_string);
-    unset($query_parameters);
-    exit();
-
     if (c_base_return::s_has_error($query_result)) {
       $last_error = $this->get_last_error()->get_value_exact();
 
