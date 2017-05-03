@@ -61,10 +61,6 @@ create table s_tables.t_paths (
 create sequence s_tables.se_paths_id owned by s_tables.t_paths.id;
 alter table s_tables.t_paths alter column id set default nextval('s_tables.se_paths_id'::regclass);
 
-grant select,insert,update on s_tables.t_paths to r_standard_administer;
-grant select on s_tables.t_paths to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_paths_id to r_standard_administer;
-grant usage on s_tables.se_paths_id to r_standard, r_standard_system;
 
 create index i_paths_deleted_not on s_tables.t_paths (id)
   where not is_deleted;
@@ -134,13 +130,9 @@ create view s_users.v_paths with (security_barrier=true) as
   select id, id_group, name_machine, name_human, is_content, is_alias, is_redirect, is_coded, is_dynamic, is_locked, is_private, field_path, field_destination, field_response_code, date_created, date_changed, date_locked from s_tables.t_paths
   where not is_deleted and (not is_locked or not is_private or id_group in (select * from allowed_groups));
 
-grant select on s_users.v_paths to r_standard, r_standard_system;
-
 create view public.v_paths with (security_barrier=true) as
   select id, NULL::bigint as id_group, name_machine, name_human, is_content, is_alias, is_redirect, is_coded, is_dynamic, FALSE as is_locked, FALSE as is_private, field_path, field_destination, field_response_code, NULL::bool as date_created, NULL::bool as date_changed, NULL::bool as date_locked from s_tables.t_paths
   where not is_deleted and not is_locked and not is_private;
-
-grant select on public.v_paths to r_standard_public;
 
 
 create trigger tr_paths_date_changed_deleted_or_locked

@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Legal */
+/** Reservation SQL Structure - Legal */
 /** This depends on: reservation-users.sql **/
 start transaction;
 
@@ -38,9 +38,6 @@ create table s_tables.t_legal_types (
 create sequence s_tables.se_legal_types_id owned by s_tables.t_legal_types.id;
 alter table s_tables.t_legal_types alter column id set default nextval('s_tables.se_legal_types_id'::regclass);
 
-grant select,insert,update on s_tables.t_legal_types to r_reservation_manager;
-grant select on s_tables.t_legal_types to r_reservation_auditor;
-grant select,usage on s_tables.se_legal_types_id to r_reservation_manager;
 
 create index i_legal_types_deleted_not on s_tables.t_legal_types (id)
   where not is_deleted;
@@ -52,8 +49,6 @@ create index i_legal_type_locked_not on s_tables.t_legal_types (id)
 create view s_users.v_legal_types with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_legal_types
   where not is_deleted and not is_locked;
-
-grant select on s_users.v_legal_types to r_reservation_auditor, r_reservation_requester;
 
 
 create trigger tr_legal_types_date_changed_deleted_or_locked
@@ -92,10 +87,6 @@ create table s_tables.t_signatures (
 create sequence s_tables.se_signatures_id owned by s_tables.t_signatures.id;
 alter table s_tables.t_signatures alter column id set default nextval('s_tables.se_signatures_id'::regclass);
 
-grant select,insert,update on s_tables.t_signatures to r_reservation_manager;
-grant select on s_tables.t_signatures to r_reservation_auditor;
-grant select,usage on s_tables.se_signatures_id to r_reservation_manager;
-grant usage on s_tables.se_signatures_id to r_reservation, r_reservation_system;
 
 create index i_signatures_deleted_not on s_tables.t_signatures (id)
   where not is_deleted;
@@ -107,16 +98,12 @@ create view s_users.v_signatures_self with (security_barrier=true) as
   select id, id_type, id_request, date_created, field_fingerprint, field_signature from s_tables.t_signatures
     where not is_deleted and id_creator in (select * from this_user);
 
-grant select on s_users.v_signatures_self to r_reservation, r_reservation_system;
-
 
 /** provide current user access to insert their own associations **/
 create view s_users.v_signatures_self_insert with (security_barrier=true) as
   select id, id_type, id_creator, id_request, field_fingerprint, field_signature from s_tables.t_signatures
     where not is_deleted and id_creator in (select id from v_users_self_locked_not)
     with check option;
-
-grant insert on s_users.v_signatures_self_insert to r_reservation, r_reservation_system;
 
 
 create trigger tr_signatures_date_deleted

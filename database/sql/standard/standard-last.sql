@@ -373,6 +373,13 @@ alter sequence s_tables.se_users_id restart;
 
 
 /*** create hard-coded/internal user ids ***/
+
+/** Special Cases: manually add the postgresql and public users first before with all triggers disabled (because some of the triggers depend on this table, recursively). **/
+alter table s_tables.t_users disable trigger all;
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_public) values (1, 'u_standard_public', (null, 'Unknown', null, null, null, 'Unknown'), false, true);
+insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (2, 'postgres', (null, 'Database', null, 'Administer', null, 'Database (Administer)'), true, true);
+alter table s_tables.t_users enable trigger all;
+
 insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_administer) values (3, 'u_standard_system_administer', (null, 'System', null, 'Administer', null, 'System (Administer)'), false, true, true);
 insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_manager) values (4, 'u_standard_system_manager', (null, 'System', null, 'Manager', null, 'System (Manager)'), false, true, true);
 insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system, is_auditor) values (5, 'u_standard_system_auditor', (null, 'System', null, 'Auditor', null, 'System (Auditor)'), false, true, true);

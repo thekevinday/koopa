@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Fields **/
+/** Reservation SQL Structure - Fields **/
 /** This depends on: reservation-users.sql **/
 start transaction;
 
@@ -38,9 +38,6 @@ create table s_tables.t_field_affiliations (
 create sequence s_tables.se_field_affiliations_id owned by s_tables.t_field_affiliations.id;
 alter table s_tables.t_field_affiliations alter column id set default nextval('s_tables.se_field_affiliations_id'::regclass);
 
-grant select,insert,update on s_tables.t_field_affiliations to r_reservation_manager;
-grant select on s_tables.t_field_affiliations to r_reservation_auditor;
-grant select,usage on s_tables.se_field_affiliations_id to r_reservation_manager;
 
 create index i_field_affiliations_deleted_not on s_tables.t_field_affiliations (id)
   where not is_deleted;
@@ -48,11 +45,10 @@ create index i_field_affiliations_deleted_not on s_tables.t_field_affiliations (
 create index i_field_affiliations_locked_not on s_tables.t_field_affiliations (id)
   where not is_deleted and not is_locked;
 
+
 create view s_users.v_field_affiliations with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_field_affiliations
   where not is_deleted;
-
-grant select on s_users.v_field_affiliations to r_reservation, r_reservation_system;
 
 
 create trigger tr_field_affiliations_update_date_changed_deleted_or_locked
@@ -86,9 +82,6 @@ create table s_tables.t_field_classifications (
 create sequence s_tables.se_field_classifications_id owned by s_tables.t_field_classifications.id;
 alter table s_tables.t_field_classifications alter column id set default nextval('s_tables.se_field_classifications_id'::regclass);
 
-grant select,insert,update on s_tables.t_field_classifications to r_reservation_manager;
-grant select on s_tables.t_field_classifications to r_reservation_auditor;
-grant select,usage on s_tables.se_field_classifications_id to r_reservation_manager;
 
 create index i_field_classifications_deleted_not on s_tables.t_field_classifications (id)
   where not is_deleted;
@@ -101,13 +94,13 @@ create view s_users.v_field_classifications with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_field_classifications
   where not is_deleted;
 
-grant select on s_users.v_field_classifications to r_reservation, r_reservation_system;
-
 
 create trigger tr_field_classifications_update_date_changed_deleted_or_locked
   before update on s_tables.t_field_classifications
     for each row execute procedure s_administers.f_common_update_date_changed_deleted_or_locked();
 
 /** @todo: create all field types needed for f_requests fields **/
+
+
 
 commit transaction;

@@ -42,9 +42,6 @@ create table s_tables.t_log_groups (
 create sequence s_tables.se_log_groups_id owned by s_tables.t_log_groups.id;
 alter table s_tables.t_log_groups alter column id set default nextval('s_tables.se_log_groups_id'::regclass);
 
-grant select,usage on s_tables.se_log_groups_id to r_standard_manager, r_standard_auditor;
-grant usage on s_tables.se_log_groups_id to r_standard, r_standard_system;
-
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_groups_self with (security_barrier=true) as
@@ -52,14 +49,10 @@ create view s_users.v_log_groups_self with (security_barrier=true) as
   select id, id_user, id_group, log_type, log_type_sub, log_severity, log_facility, log_details, log_date from s_tables.t_log_groups
     where id_user in (select * from this_user);
 
-grant select on s_users.v_log_groups_self to r_standard, r_standard_system;
-
 create view s_users.v_log_groups_self_insert with (security_barrier=true) as
   select id_group, log_type, log_type_sub, log_severity, log_facility, log_details from s_tables.t_log_groups
     where id_user in (select id from v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
-
-grant insert on s_users.v_log_groups_self_insert to r_standard, r_standard_system;
 
 
 create trigger tr_log_groups_date_changed_deleted_or_locked
@@ -101,9 +94,6 @@ create table s_tables.t_log_group_users (
 create sequence s_tables.se_log_group_users_id owned by s_tables.t_log_group_users.id;
 alter table s_tables.t_log_group_users alter column id set default nextval('s_tables.se_log_group_users_id'::regclass);
 
-grant select,usage on s_tables.se_log_group_users_id to r_standard_manager, r_standard_auditor;
-grant usage on s_tables.se_log_group_users_id to r_standard, r_standard_system;
-
 
 /** only allow select and insert for users when user id is current user **/
 create view s_users.v_log_group_users_self with (security_barrier=true) as
@@ -112,14 +102,10 @@ create view s_users.v_log_group_users_self with (security_barrier=true) as
   select id, id_user, id_group, log_type, log_type_sub, log_severity, log_facility, log_date from s_tables.t_log_group_users
     where id_user in (select * from this_user) or id_group in (select * from allowed_groups);
 
-grant select on s_users.v_log_group_users_self to r_standard, r_standard_system;
-
 create view s_users.v_log_group_users_self_insert with (security_barrier=true) as
   select id_group, log_type, log_type_sub, log_severity, log_facility from s_tables.t_log_group_users
     where id_user in (select id from v_users_self_locked_not) and id_group in (select id from s_users.v_groups_self where not is_locked)
     with check option;
-
-grant insert on s_users.v_log_group_users_self_insert to r_standard, r_standard_system;
 
 
 create trigger tr_log_group_users_date_changed_deleted_or_locked

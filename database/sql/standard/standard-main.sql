@@ -30,19 +30,6 @@ create schema s_requesters authorization postgres;
 create schema s_users authorization postgres;
 create schema s_tables authorization postgres;
 
-grant usage on schema s_administers to r_standard_administer;
-grant usage on schema s_managers to r_standard_manager;
-grant usage on schema s_auditors to r_standard_auditor;
-grant usage on schema s_publishers to r_standard_publisher;
-grant usage on schema s_insurers to r_standard_insurer;
-grant usage on schema s_financers to r_standard_financer;
-grant usage on schema s_reviewers to r_standard_reviewer;
-grant usage on schema s_editors to r_standard_editor;
-grant usage on schema s_drafters to r_standard_drafter;
-grant usage on schema s_requesters to r_standard_requester;
-grant usage on schema s_users to r_standard;
-
-grant usage on schema s_tables to u_standard_revision_requests, u_standard_statistics_update, u_standard_logger, u_standard_groups_handler;
 
 
 /** Composite Types **/

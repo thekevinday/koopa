@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Dates **/
+/** Reservation SQL Structure - Dates **/
 /** This depends on: reservation-main.sql **/
 start transaction;
 
@@ -38,9 +38,6 @@ create table s_tables.t_date_contexts (
 create sequence s_tables.se_date_contexts_id owned by s_tables.t_date_contexts.id;
 alter table s_tables.t_date_contexts alter column id set default nextval('s_tables.se_date_contexts_id'::regclass);
 
-grant select,insert,update on s_tables.t_date_contexts to r_reservation_manager;
-grant select on s_tables.t_date_contexts to r_reservation_auditor;
-grant select,usage on s_tables.se_date_contexts_id to r_reservation_manager;
 
 create index i_date_contexts_deleted_not on s_tables.t_date_contexts (id)
   where not is_deleted;
@@ -52,8 +49,6 @@ create index i_date_contexts_locked_not on s_tables.t_date_contexts (id)
 create view s_requesters.v_date_contexts with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked from s_tables.t_date_contexts
   where not is_deleted;
-
-grant select on s_requesters.v_date_contexts to r_reservation_requester, r_reservation_reviewer;
 
 
 create trigger tr_date_contexts_update_date_changed_deleted_or_locked

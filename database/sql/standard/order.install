@@ -3,10 +3,12 @@ standard-main
 standard-users
 standard-groups
 standard-types
+standard-files
 standard-paths
 standard-log_types
 standard-log_groups
 standard-log_problems
 standard-log_users
 standard-statistics
+standard-permissions
 standard-last

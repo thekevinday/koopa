@@ -33,11 +33,6 @@ create table s_tables.t_log_problems (
 create sequence s_tables.se_log_problems_id owned by s_tables.t_log_problems.id;
 alter table s_tables.t_log_problems alter column id set default nextval('s_tables.se_log_problems_id'::regclass);
 
-grant select,insert,update,delete on s_tables.t_log_problems to r_standard_manager;
-grant select on s_tables.t_log_problems to r_standard_auditor;
-grant select,usage on s_tables.se_log_problems_id to r_standard_manager;
-grant usage on s_tables.se_log_problems_id to r_standard, r_standard_system;
-
 
 
 /** Provide a log of problems, associated with a given user. **/
@@ -58,9 +53,6 @@ create table s_tables.t_log_problems_users (
   constraint cf_log_problems_users_id_user_session foreign key (id_user_session) references s_tables.t_users (id) on delete restrict on update cascade
 );
 
-grant select,insert,update,delete on s_tables.t_log_problems_users to r_standard_manager;
-grant select on s_tables.t_log_problems_users to r_standard_auditor;
-
 
 /** only allow select, insert, and delete for users when user id is current user **/
 create view s_users.v_log_problems_users_self with (security_barrier=true) as
@@ -68,23 +60,15 @@ create view s_users.v_log_problems_users_self with (security_barrier=true) as
   select id_problem, date_created, date_changed, log_details from s_tables.t_log_problems_users
     where id_user in (select * from this_user);
 
-grant select on s_users.v_log_problems_users_self to r_standard, r_standard_system;
-
-
 create view s_users.v_log_problems_users_self_insert with (security_barrier=true) as
   select id_problem, date_changed, log_details from s_tables.t_log_problems_users
     where id_user in (select id from v_users_self_locked_not)
     with check option;
 
-grant insert on s_users.v_log_problems_users_self_insert to r_standard, r_standard_system;
-
-
 create view s_users.v_log_problems_users_self_delete with (security_barrier=true) as
   select id_problem from s_tables.t_log_problems_users
     where id_user in (select id from v_users_self_locked_not)
     with check option;
-
-grant delete on s_users.v_log_problems_users_self_delete to r_standard, r_standard_system;
 
 
 /** automatically delete problems deleted from the table s_tables.t_log_problems_users **/
@@ -99,7 +83,6 @@ create function s_tables.f_log_problems_users_delete() returns trigger security 
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_log_problems_users_delete () owner to u_standard_logger;
 
 create trigger tr_log_problems_users_delete
   after delete on s_tables.t_log_problems_users

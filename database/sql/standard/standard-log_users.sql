@@ -46,10 +46,6 @@ create table s_tables.t_log_users (
 create sequence s_tables.se_log_users_id owned by s_tables.t_log_users.id;
 alter table s_tables.t_log_users alter column id set default nextval('s_tables.se_log_users_id'::regclass);
 
-grant select on s_tables.t_log_users to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_users_id to r_standard_administer;
-grant usage on s_tables.se_log_users_id to r_standard, r_standard_public, r_standard_system;
-
 
 create index i_log_users_response_code_200 on s_tables.t_log_users (id)
   where response_code = 200;
@@ -91,14 +87,10 @@ create view s_users.v_log_users_self with (security_barrier=true) as
   select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from s_tables.t_log_users
     where id_user in (select * from this_user);
 
-grant select on s_users.v_log_users_self to r_standard, r_standard_system;
-
 create view s_users.v_log_users_self_insert with (security_barrier=true) as
   select log_title, log_type, log_type_sub, log_severity, log_facility, log_details, request_client, response_code from s_tables.t_log_users
     where id_user in (select id from v_users_self_locked_not)
     with check option;
-
-grant insert on s_users.v_log_users_self_insert to r_standard, r_standard_system;
 
 
 /** public users should be able to insert, but should never be able to view the logs that they insert. **/
@@ -106,8 +98,6 @@ create view public.v_log_users_self_insert with (security_barrier=true) as
   select log_title, log_type, log_type_sub, log_severity, log_facility, log_details, request_client, response_code from s_tables.t_log_users
     where 'r_standard_public' in (select pr.rolname from pg_auth_members pam inner join pg_roles pr on (pam.roleid = pr.oid) inner join pg_roles pr_u on (pam.member = pr_u.oid) where pr_u.rolname = current_user and pr.rolname = 'r_standard_public')
     with check option;
-
-grant insert on public.v_log_users_self_insert to r_standard_public;
 
 
 create trigger tr_log_users_enforce_user_and_session_ids
@@ -143,9 +133,6 @@ create table s_tables.t_log_user_activity (
 create sequence s_tables.se_log_user_activity_id owned by s_tables.t_log_user_activity.id;
 alter table s_tables.t_log_user_activity alter column id set default nextval('s_tables.se_log_user_activity_id'::regclass);
 
-grant select on s_tables.t_log_user_activity to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_user_activity_id to r_standard_administer;
-grant usage on s_tables.se_log_user_activity_id to r_standard, r_standard_public, r_standard_system;
 
 create index i_log_user_activity_response_code_4xx on s_tables.t_log_user_activity (id)
   where response_code >= 400 and response_code < 500;
@@ -182,14 +169,10 @@ create view s_users.v_log_user_activity_self with (security_barrier=true) as
   select id, id_user, request_path, request_arguments, request_date, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
     where id_user in (select * from this_user);
 
-grant select on s_users.v_log_user_activity_self to r_standard, r_standard_system;
-
 create view s_users.v_log_user_activity_self_insert with (security_barrier=true) as
   select request_path, request_arguments, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
     where id_user in (select id from v_users_self_locked_not)
     with check option;
-
-grant insert on s_users.v_log_user_activity_self_insert to r_standard, r_standard_system;
 
 
 /** public users should be able to insert, but should never be able to view the logs that they insert. **/
@@ -197,8 +180,6 @@ create view public.v_log_user_activity_self_insert with (security_barrier=true) 
   select request_path, request_arguments, request_client, request_headers, response_headers, response_code from s_tables.t_log_user_activity
     where id_user in (select id from v_users_self_locked_not)
     with check option;
-
-grant insert on public.v_log_user_activity_self_insert to r_standard_public;
 
 
 create trigger tr_log_user_activity_enforce_user_and_session_ids

@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Workflow **/
+/** Reservation SQL Structure - Workflow **/
 /** This depends on: reservation-users.sql **/
 start transaction;
 

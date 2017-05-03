@@ -36,9 +36,6 @@ create table s_tables.t_log_types (
 create sequence s_tables.se_log_types_id owned by s_tables.t_log_types.id;
 alter table s_tables.t_log_types alter column id set default nextval('s_tables.se_log_types_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_types to r_standard_administer;
-grant select on s_tables.t_log_types to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_types_id to r_standard_administer;
 
 create index i_log_types_deleted_not on s_tables.t_log_types (id)
   where not is_deleted;
@@ -46,11 +43,10 @@ create index i_log_types_deleted_not on s_tables.t_log_types (id)
 create index i_log_types_public on s_tables.t_log_types (id)
   where not is_deleted and not is_locked;
 
+
 create view public.v_log_types with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_types
   where not is_deleted and not is_locked;
-
-grant select on public.v_log_types to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_log_types_date_changed_deleted_or_locked
@@ -83,15 +79,10 @@ create table s_tables.t_log_type_severitys (
 create sequence s_tables.se_log_type_severitys_id owned by s_tables.t_log_type_severitys.id;
 alter table s_tables.t_log_type_severitys alter column id set default nextval('s_tables.se_log_type_severitys_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_type_severitys to r_standard_administer;
-grant select on s_tables.t_log_type_severitys to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_type_severitys_id to r_standard_administer;
 
 create view s_users.v_log_type_severitys with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_type_severitys
   where not is_deleted;
-
-grant select on s_users.v_log_type_severitys to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_log_type_severitys_date_changed_deleted_or_locked
@@ -124,15 +115,10 @@ create table s_tables.t_log_type_facilitys (
 create sequence s_tables.se_log_type_facilitys_id owned by s_tables.t_log_type_facilitys.id;
 alter table s_tables.t_log_type_facilitys alter column id set default nextval('s_tables.se_log_type_facilitys_id'::regclass);
 
-grant select,insert,update on s_tables.t_log_type_facilitys to r_standard_administer;
-grant select on s_tables.t_log_type_facilitys to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_type_facilitys_id to r_standard_administer;
 
 create view s_users.v_log_type_facilitys with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_log_type_facilitys
   where not is_deleted;
-
-grant select on s_users.v_log_type_facilitys to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_log_type_facilitys_date_changed_deleted_or_locked

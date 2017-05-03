@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Requests **/
+/** Reservation SQL Structure - Requests **/
 /** This depends on: reservation-fields.sql, base-workflow.sql **/
 start transaction;
 
@@ -38,9 +38,6 @@ create table s_tables.t_request_types (
 create sequence s_tables.se_request_types_id owned by s_tables.t_request_types.id;
 alter table s_tables.t_request_types alter column id set default nextval('s_tables.se_request_types_id'::regclass);
 
-grant select,insert,update on s_tables.t_request_types to r_reservation_manager;
-grant select on s_tables.t_request_types to r_reservation_auditor;
-grant select,usage on s_tables.se_request_types_id to r_reservation_manager;
 
 create index i_request_types_deleted_not on s_tables.t_request_types (id)
   where not is_deleted;
@@ -52,8 +49,6 @@ create index i_request_types_public on s_tables.t_request_types (id)
 create view s_requesters.v_request_types with (security_barrier=true) as
   select id, id_external, name_machine, name_human from s_tables.t_request_types
   where not is_deleted and not is_locked;
-
-grant select on s_requesters.v_request_types to r_reservation_auditor, r_reservation_requester;
 
 
 create trigger tr_request_types_update_date_changed_deleted_or_locked
@@ -161,10 +156,6 @@ create table s_tables.t_requests (
 create sequence s_tables.se_requests_id owned by s_tables.t_requests.id;
 alter table s_tables.t_requests alter column id set default nextval('s_tables.se_requests_id'::regclass);
 
-grant select,insert,update on s_tables.t_requests to r_reservation_manager;
-grant select on s_tables.t_requests to r_reservation_auditor;
-grant select,usage on s_tables.se_requests_id to r_reservation_manager;
-grant usage on s_tables.se_requests_id to r_reservation, r_reservation_system;
 
 create index i_requests_deleted_not on s_tables.t_requests (id)
   where not is_deleted;
@@ -202,8 +193,6 @@ create view s_users.v_requests_approved with (security_barrier=true) as
   from s_tables.t_requests
     where not is_deleted and not is_cancelled and is_approved;
 
-grant select on s_users.v_requests_approved to r_reservation, r_reservation_system;
-
 
 /*** approved requests (only cancelled) ***/
 create view s_users.v_requests_approved_cancelled with (security_barrier=true) as
@@ -215,8 +204,6 @@ create view s_users.v_requests_approved_cancelled with (security_barrier=true) a
   in_state, in_step
   from s_tables.t_requests
     where not is_deleted and is_cancelled and is_approved;
-
-grant select on s_users.v_requests_approved_cancelled to r_reservation, r_reservation_system;
 
 
 /*** denied requests (but not cancelled) ***/
@@ -230,8 +217,6 @@ create view s_users.v_requests_denied with (security_barrier=true) as
   from s_tables.t_requests
     where not is_deleted and not is_cancelled and is_denied;
 
-grant select on s_users.v_requests_denied to r_reservation, r_reservation_system;
-
 
 /*** troubled requests (but not cancelled) ***/
 create view s_users.v_requests_troubled with (security_barrier=true) as
@@ -244,8 +229,6 @@ create view s_users.v_requests_troubled with (security_barrier=true) as
   from s_tables.t_requests
     where not is_deleted and not is_cancelled and is_troubled;
 
-grant select on s_users.v_requests_troubled to r_reservation, r_reservation_system;
-
 
 /*** cancelled requests ***/
 create view s_users.v_requests_cancelled with (security_barrier=true) as
@@ -257,8 +240,6 @@ create view s_users.v_requests_cancelled with (security_barrier=true) as
   in_state, in_step
   from s_tables.t_requests
     where not is_deleted and is_cancelled;
-
-grant select on s_users.v_requests_cancelled to r_reservation, r_reservation_system;
 
 
 /*** requests the current user belongs to or can manage. ***/
@@ -273,8 +254,6 @@ create view s_users.v_requests_self with (security_barrier=true) as
   from s_tables.t_requests
     where not is_deleted and id_association in (select id from associations);
 
-grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
-
 
 /*** requests the current user belongs to or can manage. ***/
 create view s_users.v_requests_manage with (security_barrier=true) as
@@ -288,8 +267,6 @@ create view s_users.v_requests_manage with (security_barrier=true) as
   from s_tables.t_requests
     where not is_deleted and id_association in (select id from associations);
 
-grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
-
 
 /*** requests the current user belongs to or can coordinate. ***/
 create view s_users.v_requests_coordinate with (security_barrier=true) as
@@ -302,8 +279,6 @@ create view s_users.v_requests_coordinate with (security_barrier=true) as
   in_state, in_step
   from s_tables.t_requests
     where not is_deleted and id_association in (select id from associations);
-
-grant select on s_users.v_requests_self to r_reservation, r_reservation_system;
 
 
 create trigger tr_requests_update_date_changed_deleted_or_locked
@@ -394,9 +369,6 @@ create table s_tables.t_request_revisions_original (
   constraint cf_request_revisions_original_association foreign key (id_association) references s_tables.t_associations (id) on delete restrict on update cascade
 );
 
-grant select,insert on s_tables.t_request_revisions_original to r_reservation_administer, u_reservation_revision_requests;
-grant select on s_tables.t_request_revisions_original to r_reservation_manager, r_reservation_auditor;
-
 
 /** automatically insert the original request into the original requests table. **/
 create function s_tables.f_request_revisions_original_record_revision() returns trigger security definer as $$
@@ -422,7 +394,6 @@ create function s_tables.f_request_revisions_original_record_revision() returns 
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_request_revisions_original_record_revision () owner to u_reservation_revision_requests;
 
 create trigger tr_requests_save_original_revision
   after insert on s_tables.t_requests
@@ -510,9 +481,6 @@ create table s_tables.t_request_revisions (
   constraint cf_request_revisions_request_type foreign key (id_type) references s_tables.t_request_types (id) on delete restrict on update cascade,
   constraint cf_request_revisions_association foreign key (id_association) references s_tables.t_associations (id) on delete restrict on update cascade
 );
-
-grant select,insert on s_tables.t_request_revisions to r_reservation_administer, u_reservation_revision_requests;
-grant select on s_tables.t_request_revisions to r_reservation_manager, r_reservation_auditor;
 
 
 /** automatically update the request revision table. **/
@@ -854,7 +822,6 @@ create function s_tables.f_request_revisions_record_revision() returns trigger s
   end;
 $$ language plpgsql;
 
-alter function s_tables.f_request_revisions_record_revision () owner to u_reservation_revision_requests;
 
 create trigger tr_requests_save_revision
   after insert on s_tables.t_request_revisions

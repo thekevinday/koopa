@@ -51,10 +51,6 @@ create table s_tables.t_files (
 create sequence s_tables.se_files_id owned by s_tables.t_files.id;
 alter table s_tables.t_files alter column id set default nextval('s_tables.se_files_id'::regclass);
 
-grant select,insert,update on s_tables.t_files to r_standard_administer;
-grant select on s_tables.t_files to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_files_id to r_standard_administer;
-grant usage on s_tables.se_files_id to r_standard, r_standard_system;
 
 create index i_files_deleted_not on s_tables.t_files (id)
   where not is_deleted;
@@ -74,13 +70,9 @@ create view s_users.v_files with (security_barrier=true) as
   select id, id_type, id_group, name_machine, name_human, is_private, date_created, date_changed from s_tables.t_files
   where not is_deleted and (not is_locked or id_group in (select * from allowed_groups)) and (not is_private or (is_private and id_group in (select * from allowed_groups)));
 
-grant select on s_users.v_files to r_standard, r_standard_system;
-
 create view public.v_files with (security_barrier=true) as
   select id, id_type, NULL::bigint as id_group, name_machine, name_human, NULL::bool as is_private, NULL::bool as date_created, NULL::bool as date_changed from s_tables.t_files
   where not is_deleted and not is_locked and not is_private;
-
-grant select on public.v_path_types to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_files_date_changed_deleted_or_locked

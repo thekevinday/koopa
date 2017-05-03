@@ -61,10 +61,6 @@ create table s_tables.t_groups (
 create sequence s_tables.se_groups_id owned by s_tables.t_groups.id;
 alter table s_tables.t_groups alter column id set default nextval('s_tables.se_groups_id'::regclass);
 
-grant select,insert,update on s_tables.t_groups to r_standard_manager, u_standard_groups_handler;
-grant select on s_tables.t_groups to r_standard_auditor;
-grant select,usage on s_tables.se_groups_id to r_standard_manager;
-grant usage on s_tables.se_groups_id to r_standard, r_standard_system, u_standard_groups_handler;
 
 /* Note: id_sort is not needed when directly validating against id or name_machine because both of those are already an index. */
 create index i_groups_id_sort_a on s_tables.t_groups (id_sort) with (fillfactor = 100) where id_sort = 97;
@@ -104,14 +100,10 @@ create view s_users.v_groups_manage_self with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked, is_composite, is_user, can_manage_paths, settings from s_tables.t_groups
     where not is_deleted and id_manager in (select * from this_user);
 
-grant select on s_users.v_groups_manage_self to r_standard, r_standard_system;
-
 create view s_users.v_groups_manage_update with (security_barrier=true) as
   select id, id_external, name_machine, name_human, is_locked, is_composite, is_user, can_manage_paths, settings from s_tables.t_groups
     where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
-
-grant update on s_users.v_groups_manage_update to r_standard, r_standard_system;
 
 
 /** each user shall have their own group.
@@ -127,8 +119,6 @@ create function s_administers.f_groups_group_user_insert() returns trigger secur
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_groups_group_user_insert () owner to u_standard_groups_handler;
-
 create function s_administers.f_groups_group_user_update() returns trigger security definer as $$
   begin
     if (old.name_machine <> new.name_machine) then
@@ -143,8 +133,6 @@ create function s_administers.f_groups_group_user_update() returns trigger secur
   end;
 $$ language plpgsql;
 
-alter function s_administers.f_groups_group_user_update () owner to u_standard_groups_handler;
-
 
 create trigger tr_groups_group_user_insert
   after insert on s_tables.t_users
@@ -153,6 +141,7 @@ create trigger tr_groups_group_user_insert
 create trigger tr_groups_group_user_update
   after update on s_tables.t_users
     for each row execute procedure s_administers.f_groups_group_user_update();
+
 
 
 /** Groups to Users Association **/
@@ -175,17 +164,12 @@ create table s_tables.t_group_users (
   constraint cf_group_users_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade
 );
 
-grant select,insert,update on s_tables.t_groups to r_standard_manager;
-grant select on s_tables.t_groups to r_standard_auditor;
-
 
 /*** provide current user access to their own information ***/
 create view s_users.v_groups_self with (security_barrier=true) as
   with allowed_groups as (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not))
   select id, id_external, id_manager, name_machine, name_human, is_locked, is_composite, date_created, date_changed, date_synced, can_manage_paths, settings from s_tables.t_groups
     where not is_deleted and id in (select * from allowed_groups);
-
-grant select on s_users.v_groups_self to r_standard, r_standard_system;
 
 /*** provide group managers access to manage users assigned to their groups (any user id less than 1000 is reserved/special case, prohibit those). ***/
 create view s_users.v_group_users_manage with (security_barrier=true) as
@@ -194,21 +178,15 @@ create view s_users.v_group_users_manage with (security_barrier=true) as
   select id_user, id_group, is_locked from s_tables.t_group_users
     where not is_deleted and id_group in (select * from managed_groups) and id_user in (select * from available_users);
 
-grant select on s_users.v_group_users_manage to r_standard, r_standard_system;
-
 create view s_users.v_group_users_manage_insert with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
     where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
     with check option;
 
-grant insert on s_users.v_group_users_manage_insert to r_standard, r_standard_system;
-
 create view s_users.v_group_users_manage_update with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
     where not is_deleted and id_group in (select id from s_users.v_groups_manage_self) and id_group in (select id_group from s_tables.t_group_users where not is_deleted and not is_locked and id_user in (select id from v_users_self_locked_not)) and id_user in (select id from s_tables.t_users where not is_deleted and not is_locked and not is_system and not is_public)
     with check option;
-
-grant update on s_users.v_group_users_manage_update to r_standard, r_standard_system;
 
 
 create trigger tr_groups_users_date_changed_deleted_or_locked
@@ -236,9 +214,6 @@ create table s_tables.t_group_composites (
   constraint cf_group_composites_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade
 );
 
-grant select,insert,update,delete on s_tables.t_groups to r_standard_manager;
-grant select on s_tables.t_groups to r_standard_auditor;
-
 
 /*** provide group managers access to manage composite groups. ***/
 create view s_users.v_group_composites with (security_barrier=true) as
@@ -247,21 +222,15 @@ create view s_users.v_group_composites with (security_barrier=true) as
   select id_composite, id_group, is_locked from s_tables.t_group_composites
     where not is_deleted and id_group in (select * from managed_groups) or id_group in (select * from allowed_groups);
 
-grant select on s_users.v_group_composites to r_standard, r_standard_system;
-
 create view s_users.v_group_composites_manage_insert with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
     where not is_deleted and id_group in (select id_group from s_users.v_group_users_manage where not is_locked)
     with check option;
 
-grant insert on s_users.v_group_composites_manage_insert to r_standard, r_standard_system;
-
 create view s_users.v_group_composites_manage_update with (security_barrier=true) as
   select id_user, id_group from s_tables.t_group_users
     where not is_deleted and id_group in (select id_group from s_users.v_group_users_manage where not is_locked)
     with check option;
-
-grant update on s_users.v_group_composites_manage_update to r_standard, r_standard_system;
 
 
 create trigger tr_groups_date_changed_deleted_or_locked

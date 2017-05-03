@@ -1,4 +1,4 @@
-/** Standardized SQL Structure - Associations **/
+/** Reservation SQL Structure - Associations **/
 /** This depends on: reservation-fields.sql **/
 start transaction;
 
@@ -63,11 +63,6 @@ create table s_tables.t_associations (
 create sequence s_tables.se_associations_id owned by s_tables.t_associations.id;
 alter table s_tables.t_associations alter column id set default nextval('s_tables.se_associations_id'::regclass);
 
-grant select,insert,update on s_tables.t_associations to r_reservation_manager;
-grant select on s_tables.t_associations to r_reservation_auditor;
-grant select,usage on s_tables.se_associations_id to r_reservation_manager;
-grant usage on s_tables.se_associations_id to r_reservation_requester, r_reservation_reviewer;
-
 /* @todo: should associations allow names that begin with numbers? */
 /* Note: id_sort is not needed when directly validating against id or name_machine because both of those are already an index. */
 create index i_associations_id_sort_a on s_tables.t_associations (id_sort) with (fillfactor = 100) where id_sort = 97;
@@ -105,16 +100,12 @@ create view s_users.v_associations_self with (security_barrier=true) as
   select id, id_manager, id_coordinator, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and (id_manager in (select * from this_user) or id_group in (select * from allowed_groups));
 
-grant select on s_users.v_associations_self to r_reservation_requester, r_reservation_reviewer;
-
 
 /*** provide current user access to associations who they are assigned as the manager of ***/
 create view s_users.v_associations_manage with (security_barrier=true) as
   with this_user as (select id from v_users_self_locked_not)
   select id, id_creator, id_coordinator, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and id_manager in (select * from this_user);
-
-grant select on s_users.v_associations_manage to r_reservation_requester, r_reservation_reviewer;
 
 
 /*** provide current user access to associations who they are assigned as the coordinator of ***/
@@ -123,8 +114,6 @@ create view s_users.v_associations_coordinate with (security_barrier=true) as
   select id, id_creator, id_manager, id_group, id_sort, name_machine, name_human, is_approved, is_cancelled, is_denied, is_troubled, is_locked, date_created, date_changed, date_synced, date_approved, date_cancelled, date_denied, date_troubled, date_locked, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and id_coordinator in (select * from this_user);
 
-grant select on s_users.v_associations_coordinate to r_reservation_requester, r_reservation_reviewer;
-
 
 /** provide current user access to insert their own associations (with them as the manager) **/
 create view s_users.v_associations_self_insert with (security_barrier=true) as
@@ -132,16 +121,12 @@ create view s_users.v_associations_self_insert with (security_barrier=true) as
     where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
 
-grant insert on s_users.v_associations_self_insert to r_reservation_requester, r_reservation_reviewer;
-
 
 /** provide current user access to update associations they manager **/
 create view s_users.v_associations_self_update with (security_barrier=true) as
   select id_manager, id_group, id_coordinator, name_machine, name_human, date_changed, field_affiliation, field_classification from s_tables.t_associations
     where not is_deleted and id_manager in (select id from v_users_self_locked_not)
     with check option;
-
-grant update on s_users.v_associations_self_update to r_reservation_requester, r_reservation_reviewer;
 
 
 create trigger tr_associations_update_date_changed_deleted_or_locked

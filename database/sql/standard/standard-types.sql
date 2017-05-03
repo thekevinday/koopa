@@ -37,14 +37,9 @@ create table s_tables.t_type_http_status_codes (
 create sequence s_tables.se_log_type_http_status_codes_id owned by s_tables.t_type_http_status_codes.id;
 alter table s_tables.t_type_http_status_codes alter column id set default nextval('s_tables.se_log_type_http_status_codes_id'::regclass);
 
-grant select,insert,update on s_tables.t_type_http_status_codes to r_standard_administer;
-grant select on s_tables.t_type_http_status_codes to r_standard_manager, r_standard_auditor;
-grant select,usage on s_tables.se_log_type_http_status_codes_id to r_standard_administer;
 
 create view public.v_log_type_http_status_codes with (security_barrier=true) as
   select id, name_machine, name_human from s_tables.t_type_http_status_codes;
-
-grant select on public.v_log_type_http_status_codes to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_log_type_http_status_codes_date_changed_deleted_or_locked
@@ -78,22 +73,14 @@ create table s_tables.t_type_mime_categorys (
   constraint cc_types_mime_categorys_name_machine check (name_machine ~ '[A-Za-z]\w*')
 );
 
-grant select,insert,update on s_tables.t_type_mime_categorys to r_standard_administer;
 
 create view public.v_types_mime_categorys with (security_barrier=true) as
   select id, name_machine, name_human, is_locked from s_tables.t_type_mime_categorys
   where not is_deleted;
 
-grant select on public.v_types_mime_categorys to r_standard, r_standard_public, r_standard_system;
-
-grant select,insert,update on s_tables.t_type_mime_categorys to r_standard_administer;
-
-
 create view public.v_types_mime_categorys_locked_not with (security_barrier=true) as
   select id, name_machine, name_human, field_category from s_tables.t_type_mime_categorys
   where not is_deleted and not is_locked;
-
-grant select on public.v_types_mime_categorys_locked_not to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_types_mime_categorys_date_changed_deleted_or_locked
@@ -128,19 +115,14 @@ create table s_tables.t_type_mime_types (
   constraint cf_types_mime_types_id foreign key (id_category) references s_tables.t_type_mime_categorys (id) on delete restrict on update cascade
 );
 
-grant select,insert,update on s_tables.t_type_mime_types to r_standard_administer;
 
 create view public.v_types_mime_types with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_type_mime_types
   where not is_deleted;
 
-grant select on public.v_types_mime_types to r_standard, r_standard_public, r_standard_system;
-
 create view public.v_types_mime_types_locked_not with (security_barrier=true) as
   select id, id_category, name_machine, name_human, field_extension, field_mime, is_locked from s_tables.t_type_mime_types
   where not is_deleted and not is_locked;
-
-grant select on public.v_types_mime_types to r_standard, r_standard_public, r_standard_system;
 
 
 create trigger tr_types_mime_types_date_changed_deleted_or_locked
