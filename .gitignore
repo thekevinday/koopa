@@ -1,2 +1,4 @@
-# ignore 3rd-part, aka: external, javascript files.
+# ignore 3rd-party, aka: external, javascript, stylesheet, and images files.
 javascript/external/
+stylesheet/external/
+image/external/
