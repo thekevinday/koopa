@@ -362,7 +362,7 @@ class c_standard_paths extends c_base_return {
         return $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
       }
       elseif (is_string($this->alias)) {
-        @include_once($handler_settings['include_directory'] . $this->alias . '/' . $handler_settings['include_name']);
+        @include_once($handler_settings['include_directory'] . $this->alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
 
         $handler_class = $handler_settings['handler'] . '_' . $this->alias;
         if (class_exists($handler_class)) {
@@ -448,21 +448,8 @@ class c_standard_paths extends c_base_return {
     }
 
 
-    if (class_exists('c_standard_path_user_login') && $this->handler instanceof c_standard_path_user_login) {
-      unset($id_group);
-      return $this->handler->do_execute($this->http, $this->database, $this->session, $this->settings);
-    }
-    elseif (class_exists('c_standard_path_user_logout') && $this->handler instanceof c_standard_path_user_logout) {
-      // if the user is not logged in. then provide a page not found for logout path.
-      if (!$this->session->is_logged_in()->get_value_exact()) {
-        unset($id_group);
-        return $this->get_handler_not_found()->do_execute($this->http, $this->database, $this->session, $this->settings);
-      }
-    }
-
-
     // if the request is private, make sure the user is logged in.
-    if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_M || $id_group === c_base_ascii::LOWER_U || $this->handler->is_private()->get_value_exact()) {
+    if ($this->handler->is_private()->get_value_exact()) {
       if ($this->session->is_logged_in()->get_value_exact()) {
         unset($id_group);
         return $this->handler->do_execute($this->http, $this->database, $this->session, $this->settings);
@@ -476,8 +463,26 @@ class c_standard_paths extends c_base_return {
         return $login_path->do_execute($this->http, $this->database, $this->session, $this->settings);
       }
       else {
+        if ($id_group === c_base_ascii::LOWER_U) {
+          unset($id_group);
+
+          // PHP's instanceof does not support strings, so is_subclass_of() and is_a() must instead be used.
+          if (class_exists(self::HANDLER_LOGOUT) && (is_subclass_of($this->handler, self::HANDLER_LOGOUT) || is_a($this->handler, self::HANDLER_LOGOUT, TRUE))) {
+            // if the user is not logged in. then provide a page not found for logout path.
+            if (!$this->session->is_logged_in()->get_value_exact()) {
+
+              return $this->get_handler_not_found()->do_execute($this->http, $this->database, $this->session, $this->settings);
+            }
+          }
+
+          $this->http->set_response_status(c_base_http_status::FORBIDDEN);
+
+          $login_path = $this->get_handler_login();
+          return $login_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+        }
+
         // some special case paths always provide login prompt along with access denied.
-        if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_M || $id_group === c_base_ascii::LOWER_U) {
+        if ($id_group === c_base_ascii::LOWER_A || $id_group === c_base_ascii::LOWER_M) {
           unset($id_group);
 
           $this->http->set_response_status(c_base_http_status::FORBIDDEN);

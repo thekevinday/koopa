@@ -1503,6 +1503,7 @@ class c_theme_html extends c_base_return {
       $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_LANGUAGE)->get_value_exact();
     }
 
+    $ltr = TRUE;
     if (!empty($attribute)) {
       $language_array = c_base_defaults_global::s_get_languages()->s_get_aliases_by_id($attribute)->get_value_exact();
 
@@ -1526,8 +1527,20 @@ class c_theme_html extends c_base_return {
       $attribute = $tag->get_attribute(c_base_markup_attributes::ATTRIBUTE_DIRECTION)->get_value_exact();
     }
 
-    if (!empty($attribute)) {
-      $markup .= ' dir="' . $attribute . '"';
+    if (is_int($attribute)) {
+      $is_ltr = c_base_defaults_global::s_get_languages()->s_get_ltr_by_id($attribute)->get_value_exact();
+
+      if ($is_ltr) {
+        $markup .= ' dir="ltr"';
+      }
+      else {
+        $markup .= ' dir="rtl"';
+      }
+
+      unset($is_ltr);
+    }
+    elseif (is_null($attribute)) {
+      $markup .= ' dir="auto"';
     }
     unset($attribute);
 
@@ -1873,10 +1886,23 @@ class c_theme_html extends c_base_return {
     unset($attribute);
 
 
-    // attribute: dir
+    // attribute: direction
     $attribute = $this->html->get_attribute_body(c_base_markup_attributes::ATTRIBUTE_DIRECTION)->get_value_exact();
-    if (!empty($attribute)) {
-      $markup .= ' dir="' . $attribute . '"';
+
+    if (is_int($attribute)) {
+      $is_ltr = c_base_defaults_global::s_get_languages()->s_get_ltr_by_id($attribute)->get_value_exact();
+
+      if ($is_ltr) {
+        $markup .= ' dir="ltr"';
+      }
+      else {
+        $markup .= ' dir="rtl"';
+      }
+
+      unset($is_ltr);
+    }
+    elseif (is_null($attribute)) {
+      $markup .= ' dir="auto"';
     }
     unset($attribute);
 
@@ -5596,6 +5622,7 @@ class c_theme_html extends c_base_return {
       $markup .= ' name="' . $attribute . '"';
     }
     unset($attribute);
+
 
     return $markup;
   }

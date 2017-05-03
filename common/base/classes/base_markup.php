@@ -56,7 +56,7 @@ class c_base_markup_attributes {
   const ATTRIBUTE_DATE_TIME              = 34; // text
   const ATTRIBUTE_DEFAULT                = 35; // default, use TRUE/FALSE
   const ATTRIBUTE_DEFER                  = 36; // defer, use TRUE/FALSE
-  const ATTRIBUTE_DIRECTION              = 37; // ltr, rtl, auto
+  const ATTRIBUTE_DIRECTION              = 37; // number representing id of language, may use NULL for 'auto'.
   const ATTRIBUTE_DIRECTION_NAME         = 38; // text, inputname.dir
   const ATTRIBUTE_DISABLED               = 39; // disabled, use TRUE/FALSE
   const ATTRIBUTE_DOWNLOAD               = 40; // text
@@ -637,7 +637,6 @@ class c_base_markup_tag extends c_base_rfc_string {
       case c_base_markup_attributes::ATTRIBUTE_D:
       case c_base_markup_attributes::ATTRIBUTE_DATA:
       case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
-      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
       case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
       case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
       case c_base_markup_attributes::ATTRIBUTE_DURATION:
@@ -931,6 +930,12 @@ class c_base_markup_tag extends c_base_rfc_string {
         }
         break;
 
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+        if (!is_null($value) && !is_int($value)) {
+          return new c_base_return_false();
+        }
+        break;
+
       case c_base_markup_attributes::ATTRIBUTE_CENTER_X:
       case c_base_markup_attributes::ATTRIBUTE_CENTER_Y:
       case c_base_markup_attributes::ATTRIBUTE_COLUMNS:
@@ -1055,7 +1060,6 @@ class c_base_markup_tag extends c_base_rfc_string {
         case c_base_markup_attributes::ATTRIBUTE_D:
         case c_base_markup_attributes::ATTRIBUTE_DATA:
         case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
-        case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
         case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
         case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
         case c_base_markup_attributes::ATTRIBUTE_DURATION:
@@ -1330,6 +1334,15 @@ class c_base_markup_tag extends c_base_rfc_string {
         case c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET:
         case c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET:
           return c_base_return_int::s_new($this->attributes[$attribute]);
+
+        case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+          if (is_int($this->attributes[$attribute])) {
+            return c_base_return_int::s_new($this->attributes[$attribute]);
+          }
+          elseif (is_null($this->attributes[$attribute])) {
+            return new c_base_return_null();
+          }
+          break;
 
         case c_base_markup_attributes::ATTRIBUTE_CENTER_X:
         case c_base_markup_attributes::ATTRIBUTE_CENTER_Y:

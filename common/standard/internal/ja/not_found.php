@@ -10,13 +10,6 @@
 final class c_standard_path_not_found_ja extends c_standard_path_not_found {
 
   /**
-   * Implements pr_get_title().
-   */
-  protected function pr_get_title($arguments = array()) {
-    return '予約システム';
-  }
-
-  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {

@@ -49,6 +49,12 @@ class c_standard_path_user_login_ja extends c_standard_path_user_login {
       case 10:
         $string = 'ログインできません。間違ったユーザー名またはパスワードが指定されています。';
         break;
+      case 11:
+        $string = 'フォームをリセット';
+        break;
+      case 12:
+        $string = 'ログイン';
+        break;
     }
 
     if (!empty($arguments)) {

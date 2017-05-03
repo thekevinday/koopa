@@ -13,6 +13,7 @@ require_once('common/standard/classes/standard_path.php');
 require_once('common/theme/classes/theme_html.php');
 
 class c_standard_path_user_dashboard extends c_standard_path {
+  protected const PATH_DASHBOARD_USER = 'u/dashboard';
 
   /**
    * Implements do_execute().
@@ -26,8 +27,7 @@ class c_standard_path_user_dashboard extends c_standard_path {
 
     $this->pr_assign_defaults($http, $database, $session, $settings);
 
-    $wrapper = $this->pr_create_tag_wrapper();
-    $wrapper->set_tag($this->pr_create_tag_title(0));
+    $wrapper = $this->pr_create_tag_section(array(1 => 0));
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
     $roles = array();
@@ -103,13 +103,32 @@ class c_standard_path_user_dashboard extends c_standard_path {
     unset($block);
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html();
-    $html->set_tag($wrapper);
+    $this->pr_create_html();
+    $this->html->set_tag($wrapper);
 
-    $executed->set_output($html);
-    unset($html);
+    $executed->set_output($this->html);
+    unset($this->html);
 
     return $executed;
+  }
+
+  /**
+   * Implementation of pr_create_html_add_header_link_canonical().
+   */
+  protected function pr_create_html_add_header_link_canonical() {
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_DASHBOARD_USER);
+    $this->html->set_header($tag);
+
+    unset($tag);
+  }
+
+  /**
+   * Implements pr_get_title().
+   */
+  protected function pr_get_title($arguments = array()) {
+    return $this->pr_get_text(0, $arguments);
   }
 
   /**

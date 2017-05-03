@@ -84,12 +84,6 @@ alter function s_administers.f_users_insert_as_administer() owner to u_reservati
 alter function s_administers.f_users_update_as_administer() owner to u_reservation_grant_roles;
 alter function s_administers.f_users_update_materialized_views() owner to r_reservation_administer;
 
-/** Special Cases: manually add the postgresql and public users first before with all triggers disabled (because some of the triggers depend on this table, recursively). **/
-alter table s_tables.t_users disable trigger all;
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_public) values (1, 'u_reservation_public', (null, 'Unknown', null, null, null, 'Unknown'), false, true);
-insert into s_tables.t_users (id, name_machine, name_human, is_private, is_system) values (2, 'postgres', (null, 'Database', null, 'Administer', null, 'Database (Administer)'), true, true);
-alter table s_tables.t_users enable trigger all;
-
 
 /* attempt to auto-manage postgresql standard roles with the standard database user roles. */
 /* user ids 1 and 2 are explicitly reserved for anonymous/public and the database postgresql accounts. */

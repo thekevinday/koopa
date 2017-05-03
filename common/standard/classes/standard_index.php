@@ -79,6 +79,7 @@ class c_standard_index extends c_base_return {
     // base settings
     $this->settings['base_scheme'] = 'https';
     $this->settings['base_host']   = 'localhost';
+    $this->settings['base_port']   = ''; // @todo: implement support for thus such that base_port is something like: ':8080' (as opposed to '8080').
     $this->settings['base_path']   = $this->settings['cookie_path']; // must end in a trailing slash.
 
     if (!isset($_SERVER["HTTPS"])) {

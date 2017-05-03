@@ -612,7 +612,6 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_D:
       case c_base_markup_attributes::ATTRIBUTE_DATA:
       case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
-      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
       case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
       case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
       case c_base_markup_attributes::ATTRIBUTE_DURATION:
@@ -918,6 +917,25 @@ class c_base_html extends c_base_return {
           return c_base_return_int::s_new($this->attributes[$attribute]);
         }
 
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+        if ($body) {
+          if (is_int($this->attributes_body[$attribute])) {
+            return c_base_return_int::s_new($this->attributes_body[$attribute]);
+          }
+          elseif (is_null($this->attributes_body[$attribute])) {
+            return new c_base_return_null();
+          }
+        }
+        else {
+          if (is_int($this->attributes[$attribute])) {
+            return c_base_return_int::s_new($this->attributes[$attribute]);
+          }
+          elseif (is_null($this->attributes[$attribute])) {
+            return new c_base_return_null();
+          }
+        }
+        break;
+
       case c_base_markup_attributes::ATTRIBUTE_CENTER_X:
       case c_base_markup_attributes::ATTRIBUTE_CENTER_Y:
       case c_base_markup_attributes::ATTRIBUTE_COLUMNS:
@@ -1026,7 +1044,6 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_D:
       case c_base_markup_attributes::ATTRIBUTE_DATA:
       case c_base_markup_attributes::ATTRIBUTE_DATE_TIME:
-      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
       case c_base_markup_attributes::ATTRIBUTE_DIRECTION_NAME:
       case c_base_markup_attributes::ATTRIBUTE_DOWNLOAD:
       case c_base_markup_attributes::ATTRIBUTE_DURATION:
@@ -1316,6 +1333,12 @@ class c_base_html extends c_base_return {
       case c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET:
       case c_base_markup_attributes::ATTRIBUTE_CHARACTER_SET:
         if (!$this->pr_validate_value_character_set($value)) {
+          return new c_base_return_false();
+        }
+        break;
+
+      case c_base_markup_attributes::ATTRIBUTE_DIRECTION:
+        if (!is_null($value) && !is_int($value)) {
           return new c_base_return_false();
         }
         break;

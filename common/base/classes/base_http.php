@@ -7829,7 +7829,7 @@ class c_base_http extends c_base_rfc_string {
           unset($lower_piece_2);
         }
         elseif ($total_pieces == 1) {
-          $lower_piece = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0]))->get_value_exact();
+          $lower_piece = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0])->get_value_exact());
 
           if ($lower_piece == 'links') {
             $result['engine_name_machine'] = 'links';

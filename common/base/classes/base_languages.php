@@ -622,6 +622,18 @@ interface i_base_languages {
    *   An empty array with error bit set is returned on error.
    */
   public static function s_get_names();
+
+  /**
+   * Get the language direction using the id.
+   *
+   * @param int $id
+   *   The id of the language to process.
+   *
+   * @return c_base_return_status
+   *   TRUE if LTR, FALSE if RTL.
+   *   Error bit is set on error.
+   */
+  public static function s_get_ltr_by_id($id);
 }
 
 /**
@@ -651,6 +663,9 @@ final class c_base_languages_us_only implements i_base_languages {
     'en'    => self::ENGLISH,
     'und'   => self::UNDETERMINED,
     'zxx'   => self::NOT_APPLICABLE,
+  );
+
+  private static $s_rtl_ids = array(
   );
 
 
@@ -790,6 +805,17 @@ final class c_base_languages_us_only implements i_base_languages {
    */
   public static function s_get_names() {
     return c_base_return_array::s_new(self::$s_names);
+  }
+
+  /**
+   * Implementation of s_get_ltr_by_id().
+   */
+  public static function s_get_ltr_by_id($id) {
+    if (array_key_exists($id, self::$s_rtl_ids)) {
+      return new c_base_return_false();
+    }
+
+    return new c_base_return_true();
   }
 }
 
@@ -856,6 +882,10 @@ final class c_base_languages_limited implements i_base_languages {
     'zxx'   => self::NOT_APPLICABLE,
   );
 
+  private static $s_rtl_ids = array(
+    // @todo: populate this with $id => $id.
+  );
+
 
   /**
    * Implementation of s_get_names_by_id().
@@ -993,6 +1023,17 @@ final class c_base_languages_limited implements i_base_languages {
    */
   public static function s_get_names() {
     return c_base_return_array::s_new(self::$s_names);
+  }
+
+  /**
+   * Implementation of s_get_ltr_by_id().
+   */
+  public static function s_get_ltr_by_id($id) {
+    if (array_key_exists($id, self::$s_rtl_ids)) {
+      return new c_base_return_false();
+    }
+
+    return new c_base_return_true();
   }
 }
 
@@ -2675,6 +2716,10 @@ final class c_base_languages_all implements i_base_languages {
     'zza'   => self::ZAZA,
   );
 
+  private static $s_rtl_ids = array(
+    // @todo: populate this with $id => $id.
+  );
+
 
   /**
    * Implementation of s_get_names_by_id().
@@ -2812,5 +2857,16 @@ final class c_base_languages_all implements i_base_languages {
    */
   public static function s_get_names() {
     return c_base_return_array::s_new(self::$s_names);
+  }
+
+  /**
+   * Implementation of s_get_ltr_by_id().
+   */
+  public static function s_get_ltr_by_id($id) {
+    if (array_key_exists($id, self::$s_rtl_ids)) {
+      return new c_base_return_false();
+    }
+
+    return new c_base_return_true();
   }
 }

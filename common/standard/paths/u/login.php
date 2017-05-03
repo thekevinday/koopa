@@ -27,8 +27,8 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_path_user_login extends c_standard_path {
   protected const USER_PUBLIC = 'u_standard_public';
 
-  protected const PATH_LOGOUT    = 'u/logout';
-  protected const PATH_DASHBOARD = 'u/dashboard';
+  protected const PATH_LOGIN  = 'u/login';
+  protected const PATH_LOGOUT = 'u/logout';
 
   /**
    * Implements do_execute().
@@ -43,8 +43,7 @@ class c_standard_path_user_login extends c_standard_path {
     $this->pr_assign_defaults($http, $database, $session, $settings);
 
     // initialize the content as HTML.
-    $html = $this->pr_create_html();
-    $wrapper = $this->pr_create_tag_wrapper();
+    $this->pr_create_html();
 
     $logged_in = $session->is_logged_in()->get_value_exact();
     if ($logged_in) {
@@ -59,7 +58,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
         // Content
-        $wrapper->set_tag($this->pr_create_tag_title(8));
+        $wrapper = $this->pr_create_tag_section(array(1 => 8));
         $wrapper->set_tag($this->pr_create_tag_text_block(9));
       }
       else {
@@ -67,7 +66,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
         // Content
-        $wrapper->set_tag($this->pr_create_tag_title(3));
+        $wrapper = $this->pr_create_tag_section(array(1 => 3));
         $wrapper->set_tag($this->pr_create_tag_text_block(4, array('@{user}' => $session->get_name()->get_value_exact())));
 
         $wrapper->set_tag($this->pr_create_tag_break());
@@ -88,13 +87,16 @@ class c_standard_path_user_login extends c_standard_path {
         unset($block);
       }
 
-      $html->set_tag($wrapper);
+      $this->html->set_tag($wrapper);
       unset($wrapper);
 
-      $executed->set_output($html);
-      unset($html);
+      $executed->set_output($this->html);
+      unset($this->html);
 
       return $executed;
+    }
+    else {
+      $wrapper = $this->pr_create_tag_section(array(1 => 0));
     }
 
 
@@ -169,7 +171,7 @@ class c_standard_path_user_login extends c_standard_path {
         unset($problem_message);
         unset($problem_delta);
 
-        $html->set_tag($messages);
+        $this->html->set_tag($messages);
         unset($messages);
       }
       unset($problem_messages);
@@ -184,8 +186,6 @@ class c_standard_path_user_login extends c_standard_path {
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_METHOD, 'post');
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ROLE, 'form');
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET, c_base_charset::UTF_8);
-
-    $form->set_tag($this->pr_create_tag_title(0));
 
 
     // form id: represents the form.
@@ -261,14 +261,14 @@ class c_standard_path_user_login extends c_standard_path {
 
     // button: reset
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'));
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Reset');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(11));
     $form->set_tag($tag);
     unset($tag);
 
 
     // button: submit
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'Login');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(12));
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACTION, $settings['base_path'] . 's/u/login'); // custom submit destination, but would require /s/u/login to redirect back to here.
     $form->set_tag($tag);
     unset($tag);
@@ -281,11 +281,11 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // assing the content.
-    $html->set_tag($wrapper);
+    $this->html->set_tag($wrapper);
     unset($wrapper);
 
-    $executed->set_output($html);
-    unset($html);
+    $executed->set_output($this->html);
+    unset($this->html);
 
     return $executed;
   }
@@ -868,6 +868,25 @@ class c_standard_path_user_login extends c_standard_path {
   }
 
   /**
+   * Implementation of pr_create_html_add_header_link_canonical().
+   */
+  protected function pr_create_html_add_header_link_canonical() {
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF,  $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_LOGIN);
+    $this->html->set_header($tag);
+
+    unset($tag);
+  }
+
+  /**
+   * Implements pr_get_title().
+   */
+  protected function pr_get_title($arguments = array()) {
+    return $this->pr_get_text(0, $arguments);
+  }
+
+  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {
@@ -905,6 +924,12 @@ class c_standard_path_user_login extends c_standard_path {
         break;
       case 10:
         $string = 'Unable to login, an incorrect user name or password has been specified.';
+        break;
+      case 11:
+        $string = 'Reset';
+        break;
+      case 12:
+        $string = 'Login';
         break;
     }
 
