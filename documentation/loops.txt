@@ -1,0 +1,166 @@
+The practice of avoiding loops.
+
+Operating on an arbitrary set of data should always be considered (or assumed to be) arbitrarily large.
+That is to say, consider each loop as if it were infinite (specifically, 1*infinite).
+
+Any set of a known size can be considered arbitrarily small, aka finite or 0*infinite.
+
+The goal here is to avoid operating on any infinite set as much as possible and to frown upon operating on any finite set.
+Keep in mind that this is a goal and it is not expected to be achieved.
+
+By following this goal, as closely as possible, reasonably good performance and response times can be achieved.
+
+To help understand what all this means, say that you have the following class:
+  <?php
+    class arbitrary_strings (
+      private $array = array();
+
+      public function set_value($value, $key) {
+        if (is_string($value)) {
+          $this->array[$key] = $value;
+        }
+      }
+
+      publuc function set_array($array) {
+        if (is_array($array)) {
+          foreach ($array as $key => $value) {
+            if (is_string($value)) {
+              $this->array[$key] = $value;
+            }
+          }
+        }
+      }
+
+      public function get_value($key) {
+        if (array_key_exists($key, $this->array)) {
+          return $this->array[$key];
+        }
+
+        return NULL;
+      }
+
+      public function get_array() {
+        $valid = array();
+        foreach ($this->array as $key => $value) {
+          if (is_string($value)) {
+            $valid[$key] = $value;
+          }
+        }
+
+        return $valid;
+      }
+    );
+  ?>
+
+  Ignoring the loops, this class follows some reasonably good practice:
+  - The assigned values are ensured to be an array of strings.
+  - If the class is converted by some sub-class that may introduce nin-string values, the class still ensures that only an array of strings are returned.
+
+  Looking at the loops, however, there are problems.
+  - In set_value(), a possible loop is performed ($this->array[$key]), giving it a possible cost of 1*infinite.
+  - In set_array(), a loop is performed, giving it a cost of 1*infinite.
+  - In get_value(), two internal loops are possibly performed (array_key_exists() and $this->array[$key]), giving it a possible cost of 2*infinite.
+  - In get_array(), one loop is performed (the foreach), giving it a cost of 1*infinite (and possibly 2*infinite if $valid[$key] results in a loop via php internals).
+
+  * Because PHP internals are less obvious, I am currently looking the other way unless it is a more obvious looping function such as array_key_exists() or in_array().
+
+  The goal should be to use loops as little as reasonably possible (but with consideration to security and integrity).
+  - In set_array(), the loop could be avoided by 'trusting' the contents of the array.
+    - The only way to 'trust' something like this is to expect the caller to sanitize the results when they process it.
+    - This suggests that when returning individual values of the array (such as via get_value()), additional checks should be performed.
+  - In get_value(), because of other security and integrity practices I am currently favoring leaving that check (If remocing this check, the PHP errors if the array key does not exist must be silenced).
+  - In get_array(), the sanity check should be removed unless it is critical for its purpose.
+
+  In all cases, whenever there is a loop (there almost always will be at least one at some point), try to process that loop only once.
+  How that is determined is subject to the specifics of the project as a whole and cannot be determined by a library, such as this.
+  This is open-source, so users are encouraged to make changes as needed or desired.
+
+  With all of that in mind, this project should provide a consistent behavior that allows the implementor to pick in chose how they handle the project while requiring as few changes as reasonably possible to the code.
+  All array processing code will (in general) provide two categories of functions for array handling inside of a class:
+  1) processing of individual items, these will be expected to perform checks against values (expect a cost of at least 1*infinite).
+  2) processing of array as a whole, these will not be performing checks (expect a cost of at least 0*finite).
+
+  The example function should therefore be written as follows:
+  <?php
+    class arbitrary_strings (
+      private $array = array();
+
+      public function set_value($value, $key) {
+        if (is_string($value)) {
+          $this->array[$key] = $value;
+        }
+      }
+
+      publuc function set_array($array) {
+        if (is_array($array)) {
+          $this->array = $array;
+        }
+      }
+
+      public function get_value($key) {
+        if (array_key_exists($key, $this->array)) {
+          return $this->array[$key];
+        }
+
+        return NULL;
+      }
+
+      public function get_array() {
+        return $this->array;
+      }
+    );
+  ?>
+
+  This maintains the security in the *value* functions, while providing a non-loop alternative.
+
+  Consider the following design:
+  <?php
+    // example 1:
+    $form_values = get_form_values_at_cost_of_1_infinite();
+    $arbitrary = new arbitrary_strings();
+
+    foreach ($form_values as $value) {
+      $arbitrary->set_value($value);
+    }
+
+    do_something_at_cost_of_1_infiite($arbitrary);
+
+    do_something_else_at_cost_of_1_infiite($arbitrary);
+
+    // example 2:
+    $form_values = get_form_values_at_cost_of_1_infinite();
+    $arbitrary = new arbitrary_strings();
+
+    $arbitrary->set_array($form_values);
+
+    do_something_and_something_else_at_cost_of_1_infiite_with_validation($arbitrary);
+
+    // example 3:
+    $arbitrary = new arbitrary_strings();
+    foreach ($form as $form_values) {
+      $value = get_form_value($form_value);
+
+      $arbitrary->set_value($value);
+
+      do_something_for_value_at_cost_of_0_infinite($value);
+      do_something_else_for_value_at_cost_of_0_infinite($value);
+    }
+  ?>
+
+  In example 1 block, there is a cost of at least 4*infinite.
+  - This is the most common case because may PHP projects that use classful designs, tend to do loops on their operations (to be fully self-contained).
+  - This self-contained approach is a highlight of objective-oriented design but has a tendency to lead to X*infinite operations (such that X > 1).
+
+  In example 2 block, there is a cost of 2*infinite.
+  - This is a better alternative than example 1, and may be the best that can be done if, for example, get_form_values_at_cost_of_1_infinite() is from a 3rd-party project.
+  - This also shows that the entire array can be loaded without validation until the loop is performed.
+  - Furthermore, by joining both operations ('somethine' and 'something_else') into a single function, an additional loop is prevented.
+    - Again, joining functions might not be possible with 3rd-party projects.
+
+  In example 3 block, there is a cost of 1*infinite.
+  - This is the ideal case and is only possible if you can modify every part of the project to control the loop.
+  - Good thing you are using open-source, because you should be able to access everything as necessary to make this happen.
+
+  By providing both a set_value()/get_value() and set_array()/get_array() function combinations, it becomes possible for both example 2 and example 3 to be used.
+  - This allows for the person developing the final project to make decisions that best suite their goals while avoiding modifying code as much as possible.
+
