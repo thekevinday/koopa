@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides path handler for the administer dashboard.
+ * Provides path handler for the manager dashboard.
  */
 
 require_once('common/base/classes/base_error.php');
@@ -12,8 +12,8 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_standard_path_administer_dashboard extends c_standard_path {
-  protected const PATH_SELF = 'a/dashboard';
+class c_standard_path_management_dashboard extends c_standard_path {
+  protected const PATH_SELF = 'm/dashboard';
 
   /**
    * Implements do_execute().
@@ -67,7 +67,7 @@ class c_standard_path_administer_dashboard extends c_standard_path {
   protected function pr_get_text($code, $arguments = array()) {
     switch ($code) {
       case 0:
-        $string = 'Administration Dashboard';
+        $string = 'Management Dashboard';
         break;
     }
 

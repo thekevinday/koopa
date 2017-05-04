@@ -775,7 +775,7 @@ class c_standard_path extends c_base_path {
         }
       }
 
-      $href .= $request_uri['path'];
+      $href .= $this->request_uri['path'];
 
       $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BASE);
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $href);

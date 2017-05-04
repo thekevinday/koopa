@@ -74,27 +74,27 @@ class c_base_path extends c_base_rfc_string {
     'encoding' => 'UTF-8',
   );
 
-  protected $id_group = NULL;
+  protected $id_group;
 
-  protected $is_content  = NULL;
-  protected $is_alias    = NULL;
-  protected $is_redirect = NULL;
-  protected $is_private  = NULL;
-  protected $is_locked   = NULL;
-  protected $is_root     = NULL;
+  protected $is_content;
+  protected $is_alias;
+  protected $is_redirect;
+  protected $is_private;
+  protected $is_locked;
+  protected $is_root;
 
-  protected $field_destination   = NULL;
-  protected $field_response_code = NULL;
+  protected $field_destination;
+  protected $field_response_code;
 
-  protected $date_created = NULL;
-  protected $date_changed = NULL;
-  protected $date_locked  = NULL;
+  protected $date_created;
+  protected $date_changed;
+  protected $date_locked;
 
-  protected $include_directory = NULL;
-  protected $include_name      = NULL;
+  protected $include_directory;
+  protected $include_name;
 
-  protected $allowed_methods = NULL;
-  protected $sanitize_html   = NULL;
+  protected $allowed_methods;
+  protected $sanitize_html;
 
 
   /**
@@ -111,7 +111,6 @@ class c_base_path extends c_base_rfc_string {
     $this->is_private  = TRUE;
     $this->is_locked   = FALSE;
     $this->is_root     = FALSE;
-
 
     $this->field_destination   = NULL;
     $this->field_response_code = NULL;
@@ -175,91 +174,6 @@ class c_base_path extends c_base_rfc_string {
    */
   public static function s_value_exact($return) {
     return self::p_s_value_exact($return, __CLASS__, array());
-  }
-
-  /**
-   * Assign the value.
-   *
-   * The string must be a valid URL path.
-   *
-   * This removes multiple consecutive '/'.
-   * This removes any '/' prefix.
-   * This removes any '/' suffix.
-   * This limits the string size to 256 characters.
-   *
-   * @param string $value
-   *   Any value so long as it is a string.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_value($value) {
-    if (!is_string($value)) {
-      return FALSE;
-    }
-
-    $sanitized = self::pr_sanitize_path($value);
-
-    // the path wildcard is intentionally non-standard.
-    // remove it so that it does not cause the validator to fail.
-    $without_wildcard = preg_replace('@(^%/|^%$|/%/|/%$)@', '', $sanitized);
-    if (!is_string($without_wildcard)) {
-      return FALSE;
-    }
-
-    // check to see if sanitized value is allowed.
-    $without_wilcard_parts = $this->pr_rfc_string_prepare($without_wildcard);
-    unset($without_wildcard);
-
-    if ($without_wilcard_parts['invalid']) {
-      unset($without_wilcard_parts);
-      unset($sanitized);
-      return FALSE;
-    }
-
-    $validated = $this->pr_rfc_string_is_path($without_wilcard_parts['ordinals'], $without_wilcard_parts['characters']);
-    if ($validated['invalid']) {
-      unset($without_wilcard_parts);
-      unset($validated);
-      unset($sanitized);
-      return FALSE;
-    }
-    unset($without_wilcard_parts);
-    unset($validated);
-
-    $this->value = $sanitized;
-    unset($sanitized);
-
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return string|null $value
-   *   The value array stored within this class.
-   */
-  public function get_value() {
-    if (!is_string($this->value)) {
-      return NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return DOMNode $value
-   *   The value DOMNode stored within this class.
-   */
-  public function get_value_exact() {
-    if (!is_string($this->value)) {
-      return '';
-    }
-
-    return $this->value;
   }
 
   /**
@@ -411,6 +325,63 @@ class c_base_path extends c_base_rfc_string {
     unset($timestamp_session);
 
     return $path;
+  }
+
+  /**
+   * Assign the value.
+   *
+   * The string must be a valid URL path.
+   *
+   * This removes multiple consecutive '/'.
+   * This removes any '/' prefix.
+   * This removes any '/' suffix.
+   * This limits the string size to 256 characters.
+   *
+   * @param string $value
+   *   Any value so long as it is a string.
+   *   NULL is not allowed.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_value($value) {
+    if (!is_string($value)) {
+      return FALSE;
+    }
+
+    $sanitized = self::pr_sanitize_path($value);
+
+    // the path wildcard is intentionally non-standard.
+    // remove it so that it does not cause the validator to fail.
+    $without_wildcard = preg_replace('@(^%/|^%$|/%/|/%$)@', '', $sanitized);
+    if (!is_string($without_wildcard)) {
+      return FALSE;
+    }
+
+    // check to see if sanitized value is allowed.
+    $without_wilcard_parts = $this->pr_rfc_string_prepare($without_wildcard);
+    unset($without_wildcard);
+
+    if ($without_wilcard_parts['invalid']) {
+      unset($without_wilcard_parts);
+      unset($sanitized);
+      return FALSE;
+    }
+
+    $validated = $this->pr_rfc_string_is_path($without_wilcard_parts['ordinals'], $without_wilcard_parts['characters']);
+    if ($validated['invalid']) {
+      unset($without_wilcard_parts);
+      unset($validated);
+      unset($sanitized);
+      return FALSE;
+    }
+    unset($without_wilcard_parts);
+    unset($validated);
+
+    $this->value = $sanitized;
+    unset($sanitized);
+
+    return TRUE;
   }
 
   /**
@@ -679,6 +650,34 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Return the value.
+   *
+   * @return string|null
+   *   The value array stored within this class.
+   */
+  public function get_value() {
+    if (!is_string($this->value)) {
+      return NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return DOMNode
+   *   The value DOMNode stored within this class.
+   */
+  public function get_value_exact() {
+    if (!is_string($this->value)) {
+      return '';
+    }
+
+    return $this->value;
+  }
+
+  /**
    * Gets the ID sort setting.
    *
    * @return c_base_return_int
@@ -692,6 +691,160 @@ class c_base_path extends c_base_rfc_string {
     }
 
     return c_base_return_int::s_new($this->id_group);
+  }
+
+  /**
+   * Gets the destination field setting.
+   *
+   * @return c_base_return_string|c_base_return_array
+   *   Destination field on success.
+   *   An empty string is returned if not defined.
+   *   Error bit is set on error.
+   */
+  public function get_field_destination() {
+    if (!is_string($this->field_destination) && !is_array($this->field_destination)) {
+      return c_base_return_string::s_new('');
+    }
+
+    if (is_string($this->field_destination)) {
+      return c_base_return_string::s_new($this->field_destination);
+    }
+
+    return c_base_return_array::s_new($this->field_destination);
+  }
+
+  /**
+   * Gets the response code field setting.
+   *
+   * @return c_base_return_int
+   *   Response code on success.
+   *   An empty string is returned if not defined.
+   *   Error bit is set on error.
+   */
+  public function get_field_response_code() {
+    if (!is_int($this->field_response_code)) {
+      return c_base_return_int::s_new('');
+    }
+
+    return c_base_return_int::s_new($this->field_response_code);
+  }
+
+  /**
+   * Gets the date created setting.
+   *
+   * @return c_base_return_float|c_base_return_null
+   *   Date created on success.
+   *   FALSE is returned if the date is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_date_created() {
+    if (!is_float($this->date_created)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_float::s_new($this->date_created);
+  }
+
+  /**
+   * Gets the date changed setting.
+   *
+   * @return c_base_return_float|c_base_return_null
+   *   Date changed on success.
+   *   FALSE is returned if the date is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_date_changed() {
+    if (!is_float($this->date_changed)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_float::s_new($this->date_changed);
+  }
+
+  /**
+   * Gets the date locked setting.
+   *
+   * @return c_base_return_float|c_base_return_null
+   *   Date locked on success.
+   *   NULL is returned if the date is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_date_locked() {
+    if (!is_float($this->date_locked)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_float::s_new($this->date_locked);
+  }
+
+  /**
+   * Get the assigned include path directory.
+   *
+   * This is the prefix part of the path.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   Include path string on success.
+   *   NULL is returned if the include path is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_include_directory() {
+    if (!is_string($this->include_directory)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->include_directory);
+  }
+
+  /**
+   * Get the assigned include path name.
+   *
+   * This is the suffix part of the path.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   Include path string on success.
+   *   NULL is returned if the include path is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_include_name() {
+    if (!is_string($this->include_name)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_string::s_new($this->include_name);
+  }
+
+  /**
+   * Get the assigned include path name.
+   *
+   * This is the suffix part of the path.
+   *
+   * @return c_base_return_array
+   *   An array of allowed methods is returned.
+   *   An empty array with the error bit set is returned on error.
+   */
+  public function get_allowed_methods() {
+    if (!is_array($this->allowed_methods)) {
+      $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
+    }
+
+    return c_base_return_array::s_new($this->allowed_methods);
+  }
+
+  /**
+   * Get the currently assigned HTML sanitization settings.
+   *
+   * @return c_base_return_array
+   *   An array of html sanitization settings.
+   *   An empty array with the error bit set is returned on error.
+   *
+   * @see: htmlspecialchars()
+   */
+  public function get_sanitize_html() {
+    if (!is_array($this->sanitize_html)) {
+      $this->sanitize_html = self::DEFAULT_SANITIZE_HTML;
+    }
+
+    return c_base_return_array::s_new($this->sanitize_html);
   }
 
   /**
@@ -890,160 +1043,6 @@ class c_base_path extends c_base_rfc_string {
 
     $this->is_root = $is_root;
     return new c_base_return_true();
-  }
-
-  /**
-   * Gets the destination field setting.
-   *
-   * @return c_base_return_string|c_base_return_array
-   *   Destination field on success.
-   *   An empty string is returned if not defined.
-   *   Error bit is set on error.
-   */
-  public function get_field_destination() {
-    if (!is_string($this->field_destination) && !is_array($this->field_destination)) {
-      return c_base_return_string::s_new('');
-    }
-
-    if (is_string($this->field_destination)) {
-      return c_base_return_string::s_new($this->field_destination);
-    }
-
-    return c_base_return_array::s_new($this->field_destination);
-  }
-
-  /**
-   * Gets the response code field setting.
-   *
-   * @return c_base_return_int
-   *   Response code on success.
-   *   An empty string is returned if not defined.
-   *   Error bit is set on error.
-   */
-  public function get_field_response_code() {
-    if (!is_int($this->field_response_code)) {
-      return c_base_return_int::s_new('');
-    }
-
-    return c_base_return_int::s_new($this->field_response_code);
-  }
-
-  /**
-   * Gets the date created setting.
-   *
-   * @return c_base_return_float|c_base_return_null
-   *   Date created on success.
-   *   FALSE is returned if the date is not assigned.
-   *   Error bit is set on error.
-   */
-  public function get_date_created() {
-    if (!is_float($this->date_created)) {
-      return new c_base_return_false();
-    }
-
-    return c_base_return_float::s_new($this->date_created);
-  }
-
-  /**
-   * Gets the date changed setting.
-   *
-   * @return c_base_return_float|c_base_return_null
-   *   Date changed on success.
-   *   FALSE is returned if the date is not assigned.
-   *   Error bit is set on error.
-   */
-  public function get_date_changed() {
-    if (!is_float($this->date_changed)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_float::s_new($this->date_changed);
-  }
-
-  /**
-   * Gets the date locked setting.
-   *
-   * @return c_base_return_float|c_base_return_null
-   *   Date locked on success.
-   *   NULL is returned if the date is not assigned.
-   *   Error bit is set on error.
-   */
-  public function get_date_locked() {
-    if (!is_float($this->date_locked)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_float::s_new($this->date_locked);
-  }
-
-  /**
-   * Get the assigned include path directory.
-   *
-   * This is the prefix part of the path.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   Include path string on success.
-   *   NULL is returned if the include path is not assigned.
-   *   Error bit is set on error.
-   */
-  public function get_include_directory() {
-    if (!is_string($this->include_directory)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->include_directory);
-  }
-
-  /**
-   * Get the assigned include path name.
-   *
-   * This is the suffix part of the path.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   Include path string on success.
-   *   NULL is returned if the include path is not assigned.
-   *   Error bit is set on error.
-   */
-  public function get_include_name() {
-    if (!is_string($this->include_name)) {
-      return new c_base_return_null();
-    }
-
-    return c_base_return_string::s_new($this->include_name);
-  }
-
-  /**
-   * Get the assigned include path name.
-   *
-   * This is the suffix part of the path.
-   *
-   * @return c_base_return_array
-   *   An array of allowed methods is returned.
-   *   An empty array with the error bit set is returned on error.
-   */
-  public function get_allowed_methods() {
-    if (!is_array($this->allowed_methods)) {
-      $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
-    }
-
-    return c_base_return_array::s_new($this->allowed_methods);
-  }
-
-  /**
-   * Get the currently assigned HTML sanitization settings.
-   *
-   * @return c_base_return_array
-   *   An array of html sanitization settings.
-   *   An empty array with the error bit set is returned on error.
-   *
-   * @see: htmlspecialchars()
-   */
-  public function get_sanitize_html() {
-    if (!is_array($this->sanitize_html)) {
-      $this->sanitize_html = self::DEFAULT_SANITIZE_HTML;
-    }
-
-    return c_base_return_array::s_new($this->sanitize_html);
   }
 
   /**

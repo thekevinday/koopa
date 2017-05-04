@@ -30,14 +30,7 @@ require_once('common/base/classes/base_error.php');
  * @require class base_error
  */
 trait t_base_return_value {
-  protected $value = NULL;
-
-  /**
-   * Class destructor.
-   */
-  public function __destruct() {
-    unset($this->value);
-  }
+  protected $value;
 
   /**
    * Assign the value.
@@ -207,14 +200,7 @@ trait t_base_return_value_exact {
  * This is added as a consideration and may be removed it ends up being unused.
  */
 trait t_base_return_message {
-  protected $message = NULL;
-
-  /**
-   * Class destructor.
-   */
-  public function __destruct() {
-    unset($this->message);
-  }
+  protected $message;
 
   /**
    * Assign the message.
@@ -548,6 +534,20 @@ class c_base_return_null extends c_base_return_status {
  */
 class c_base_return_value extends c_base_return {
   use t_base_return_value;
+
+  /**
+   * Class constructor.
+   */
+  public function __construct() {
+    $this->value = NULL;
+  }
+
+  /**
+   * Class destructor.
+   */
+  public function __destruct() {
+    unset($this->value);
+  }
 
   /**
    * @see: t_base_return_value::p_s_new()

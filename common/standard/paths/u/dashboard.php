@@ -13,7 +13,7 @@ require_once('common/standard/classes/standard_path.php');
 require_once('common/theme/classes/theme_html.php');
 
 class c_standard_path_user_dashboard extends c_standard_path {
-  protected const PATH_DASHBOARD_USER = 'u/dashboard';
+  protected const PATH_SELF = 'u/dashboard';
 
   /**
    * Implements do_execute().
@@ -118,7 +118,7 @@ class c_standard_path_user_dashboard extends c_standard_path {
   protected function pr_create_html_add_header_link_canonical() {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_DASHBOARD_USER);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_SELF);
     $this->html->set_header($tag);
 
     unset($tag);
