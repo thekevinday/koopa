@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides path handler for the site index.
+ * Provides path handler for the user dashboard.
  */
 
 require_once('common/base/classes/base_error.php');
@@ -12,21 +12,8 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_standard_path_index extends c_standard_path {
-
-  /**
-   * Build the breadcrumb.
-   */
-  protected function pr_build_breadcrumbs() {
-    $this->breadcrumbs = new c_base_menu_item();
-
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
-    $this->breadcrumbs->set_item($item);
-    unset($item);
-
-    // @todo: check the url path and attempt to get a breadcrumb for the current path.
-    //        this will require external functions because the breadcrumb language specific text must be loaded.
-  }
+class c_standard_path_user_dashboard extends c_standard_path {
+  protected const PATH_SELF = 'u/delete';
 
   /**
    * Implements do_execute().
@@ -36,25 +23,33 @@ class c_standard_path_index extends c_standard_path {
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
       return $executed;
-    }
+    };
 
     $this->pr_assign_defaults($http, $database, $session, $settings);
 
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
-    $wrapper->set_tag($this->pr_create_tag_text_block(1));
-
 
     // initialize the content as HTML.
     $this->pr_create_html();
     $this->html->set_tag($wrapper);
     unset($wrapper);
 
-    $this->pr_add_menus();
-
     $executed->set_output($this->html);
     unset($this->html);
 
     return $executed;
+  }
+
+  /**
+   * Implementation of pr_create_html_add_header_link_canonical().
+   */
+  protected function pr_create_html_add_header_link_canonical() {
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_SELF);
+    $this->html->set_header($tag);
+
+    unset($tag);
   }
 
   /**
@@ -65,34 +60,13 @@ class c_standard_path_index extends c_standard_path {
   }
 
   /**
-   * Implements pr_get_text_breadcrumbs().
-   */
-  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
-    $string = '';
-    switch ($code) {
-      case 0:
-        $string = 'Home';
-        break;
-    }
-
-    if (!empty($arguments)) {
-      $this->pr_process_replacements($string, $arguments);
-    }
-
-    return $string;
-  }
-
-  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'Standard System';
-        break;
-      case 1:
-        $string = 'This is the standard system index page.';
+        $string = 'Delete User';
         break;
     }
 

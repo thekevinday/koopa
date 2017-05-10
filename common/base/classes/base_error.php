@@ -11,9 +11,6 @@
  * Therefore, it is an exception case to the use of base_return classes as a return value and must instead return raw/native PHP values.
  *
  * This provides a custom facility for syslog/openlog calls so that a 'none' facility can be supported.
- *
- * @todo: I either need to create a global/static (aka: non-threadsafe) class for assigning error settings OR I need to add a variable to each class object to assign error settings (uses more resources).
- *        This needs to be done so that stuff like debug_backtrace() is called only once and is only called if needed.
  */
 class c_base_error {
   const SEVERITY_NONE          = 0;
@@ -59,24 +56,32 @@ class c_base_error {
   private $details;
   private $severity;
   private $limit;
+  private $recovered;
+
   private $backtrace;
-  private $code;
+  private $backtrace_perform;
   private $ignore_arguments;
-  private $backtrace_performed;
+
+  private $code;
 
 
   /**
    * Class constructor.
    */
   public function __construct() {
-    $this->message = NULL;
-    $this->details = NULL;
-    $this->severity = NULL;
-    $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
-    $this->backtrace = array();
+    $this->message   = NULL;
+    $this->details   = NULL;
+    $this->severity  = NULL;
+    $this->limit     = self::DEFAULT_BACKTRACE_LIMIT;
+    $this->recovered = FALSE;
+
+    $this->backtrace         = array();
+    $this->backtrace_perform = FALSE;
+    $this->ignore_arguments  = TRUE;
+
     $this->code = NULL;
-    $this->ignore_arguments = TRUE;
-    $this->backtrace_performed = FALSE;
+
+
   }
 
   /**
@@ -87,10 +92,13 @@ class c_base_error {
     unset($this->details);
     unset($this->severity);
     unset($this->limit);
+    unset($this->recovered);
+
     unset($this->backtrace);
-    unset($this->code);
+    unset($this->backtrace_perform);
     unset($this->ignore_arguments);
-    unset($this->backtrace_performed);
+
+    unset($this->code);
   }
 
   /**
@@ -111,12 +119,15 @@ class c_base_error {
    * @param int|bool|null $limit
    *   (optional) A number representing the backtrace limit.
    *   If set to FALSE, then no backtrace is generated.
+   * @param bool $recovered
+   *   (optional) If TRUE, then this designates that the error was recovered from.
+   *   If FALSE, then the error has not been recovered from.
    *
    * @return c_base_error
    *   Always returns a newly created c_base_error object.
    *   No error status is ever returned.
    */
-  public static function s_log($message = NULL, $details = NULL, $code = NULL, $severity = NULL, $limit = NULL) {
+  public static function s_log($message = NULL, $details = NULL, $code = NULL, $severity = NULL, $limit = NULL, $recovered = FALSE) {
     $class = __CLASS__;
     $entry = new $class();
     unset($class);
@@ -153,6 +164,10 @@ class c_base_error {
       $entry->set_limit($limit);
     }
 
+    if (is_bool($recovered)) {
+      $entry->set_recovered($recovered);
+    }
+
     // build the backtrace, but ignore this function call when generating.
     $entry->set_backtrace(1);
 
@@ -174,16 +189,7 @@ class c_base_error {
     }
 
     $this->message = $message;
-  }
-
-  /**
-   * Returns the assigned message.
-   *
-   * @return string|null
-   *   An error message string or NULL if not defined.
-   */
-  public function get_message() {
-    return $this->message;
+    return TRUE;
   }
 
   /**
@@ -207,18 +213,6 @@ class c_base_error {
   }
 
   /**
-   * Returns the details array.
-   *
-   * The details array is defined by the caller and may have any structure, so long as it is an array.
-   *
-   * @return array|null
-   *   An array of additional details or NULL if not defined.
-   */
-  public function get_details() {
-    return $this->details;
-  }
-
-  /**
    * Assigns a severity level.
    *
    * @param int $severity
@@ -232,21 +226,6 @@ class c_base_error {
 
     $this->severity = $severity;
     return TRUE;
-  }
-
-  /**
-   * Returns the currently assigned severity level.
-   *
-   * @return int
-   *   The currently assigned severity level.
-   *   This defaults to self::SEVERITY_ERROR when undefined.
-   */
-  public function get_severity() {
-    if (is_null($this->severity)) {
-      $this->severity = self::SEVERITY_ERROR;
-    }
-
-    return $this->severity;
   }
 
   /**
@@ -266,24 +245,6 @@ class c_base_error {
 
     $this->limit = $limit;
     return TRUE;
-  }
-
-  /**
-   * Returns the currently assigned limit.
-   *
-   * @return int|bool
-   *   The currently assigned limit integer.
-   *   FALSE is returned if backtracing is disabled.
-   *   This defaults to self::DEFAULT_BACKTRACE_LIMIT.
-   *
-   * @see: c_base_error::set_backtrace()
-   */
-  public function get_limit() {
-    if ($limit !== FALSE && (!is_int($limit) || $limit < 0)) {
-      $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
-    }
-
-    return $this->limit;
   }
 
   /**
@@ -321,15 +282,39 @@ class c_base_error {
   }
 
   /**
-   * Returns the backtrace object.
+   * Assign the backtrace perform boolean.
    *
-   * @return array|null
-   *   A populate backtrace array of objects or NULL if no backtrace is defined.
+   * @param bool $backtrace_perform
+   *   The backtrace perform boolean.
    *
-   * @see: c_base_error::set_limit()
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
    */
-  public function get_backtrace() {
-    return $this->backtrace;
+  public function set_backtrace_perform($backtrace_perform) {
+    if (!is_bool($backtrace_perform)) {
+      return FALSE;
+    }
+
+    $this->backtrace_perform = $backtrace_perform;
+    return TRUE;
+  }
+
+  /**
+   * Assign an error ignore arguments boolean.
+   *
+   * @param bool $ignore_arguments
+   *   The ignore arguments boolean.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_ignore_arguments($ignore_arguments) {
+    if (!is_bool($ignore_arguments)) {
+      return FALSE;
+    }
+
+    $this->ignore_arguments = $ignore_arguments;
+    return TRUE;
   }
 
   /**
@@ -349,19 +334,7 @@ class c_base_error {
     }
 
     $this->code = $code;
-  }
-
-  /**
-   * Returns the assigned code.
-   *
-   * A code is used to categorize the error in some manner.
-   *
-   * @return int|null
-   *   A code to associate with the error.
-   *   NULL is returned if not defined.
-   */
-  public function get_code() {
-    return $this->code;
+    return TRUE;
   }
 
   /**
@@ -384,6 +357,126 @@ class c_base_error {
   }
 
   /**
+   * Assign an error recovered boolean.
+   *
+   * @param bool $recovered
+   *   The recovered boolean.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  public function set_recovered($recovered) {
+    if (!is_bool($recovered)) {
+      return FALSE;
+    }
+
+    $this->recovered = $recovered;
+    return TRUE;
+  }
+
+  /**
+   * Returns the assigned message.
+   *
+   * @return string|null
+   *   An error message string or NULL if not defined.
+   */
+  public function get_message() {
+    return $this->message;
+  }
+
+  /**
+   * Returns the details array.
+   *
+   * The details array is defined by the caller and may have any structure, so long as it is an array.
+   *
+   * @return array|null
+   *   An array of additional details or NULL if not defined.
+   */
+  public function get_details() {
+    return $this->details;
+  }
+
+  /**
+   * Returns the currently assigned severity level.
+   *
+   * @return int
+   *   The currently assigned severity level.
+   *   This defaults to self::SEVERITY_ERROR when undefined.
+   */
+  public function get_severity() {
+    if (is_null($this->severity)) {
+      $this->severity = self::SEVERITY_ERROR;
+    }
+
+    return $this->severity;
+  }
+
+  /**
+   * Returns the currently assigned limit.
+   *
+   * @return int|bool
+   *   The currently assigned limit integer.
+   *   FALSE is returned if backtracing is disabled.
+   *   This defaults to self::DEFAULT_BACKTRACE_LIMIT.
+   *
+   * @see: c_base_error::set_backtrace()
+   */
+  public function get_limit() {
+    if ($limit !== FALSE && (!is_int($limit) || $limit < 0)) {
+      $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
+    }
+
+    return $this->limit;
+  }
+
+  /**
+   * Returns the backtrace object.
+   *
+   * @return array|null
+   *   A populate backtrace array of objects or NULL if no backtrace is defined.
+   *
+   * @see: c_base_error::set_limit()
+   */
+  public function get_backtrace() {
+    return $this->backtrace;
+  }
+
+  /**
+   * Returns the assigned backtrace perform boolean.
+   *
+   * @return bool|null
+   *   A boolean representing whether or not to the backtrace should be performed.
+   *   NULL is returned if not defined.
+   */
+  public function get_backtrace_perform() {
+    return $this->backtrace_perform;
+  }
+
+  /**
+   * Returns the assigned ignore arguments boolean.
+   *
+   * @return bool|null
+   *   A boolean representing whether or not to get the arguments when building the backtrace.
+   *   NULL is returned if not defined.
+   */
+  public function get_ignore_arguments() {
+    return $this->ignore_arguments;
+  }
+
+  /**
+   * Returns the assigned code.
+   *
+   * A code is used to categorize the error in some manner.
+   *
+   * @return int|null
+   *   A code to associate with the error.
+   *   NULL is returned if not defined.
+   */
+  public function get_code() {
+    return $this->code;
+  }
+
+  /**
    * Returns the reported object.
    *
    * Use this to determine the results of the last report status.
@@ -398,31 +491,13 @@ class c_base_error {
   }
 
   /**
-   * Assign an error ignore arguments boolean.
-   *
-   * @param bool $ignore_arguments
-   *   The ignore arguments boolean.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_ignore_arguments($ignore_arguments) {
-    if (!is_bool($ignore_arguments)) {
-      return FALSE;
-    }
-
-    $this->ignore_arguments = $ignore_arguments;
-  }
-
-  /**
-   * Returns the assigned ignore arguments boolean.
+   * Returns the recovered setting.
    *
    * @return bool|null
-   *   A boolean representing whether or not to get the arguments when building the backtrace.
-   *   NULL is returned if not defined.
+   *   The recovered boolean or NULL if not assigned.
    */
-  public function get_ignore_arguments() {
-    return $this->ignore_arguments;
+  public function get_recovered() {
+    return $this->recovered;
   }
 
   /**
@@ -440,6 +515,10 @@ class c_base_error {
    * @see: debug_backtrace()
    */
   private function p_backtrace($count = 0) {
+    if (!c_base_defaults_global::BACKTRACE_PERFORM || !$this->backtrace_perform) {
+      return;
+    }
+
     $this->backtrace = array();
 
     // when limit is set to FALSE, backtrace is disabled.
@@ -479,7 +558,8 @@ class c_base_error {
     }
     unset($backtrace);
 
-    $this->backtrace_performed = TRUE;
+    // do not perform this backtrace multiple times.
+    $this->backtrace_perform = TRUE;
   }
 }
 

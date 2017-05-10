@@ -204,6 +204,7 @@ class c_base_session extends c_base_return {
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
+   *   This does perform clone().
    */
   public function set_cookie($cookie) {
     if (!is_null($cookie) && !($cookie instanceof c_base_cookie)) {
@@ -212,7 +213,6 @@ class c_base_session extends c_base_return {
     }
 
     $this->cookie = clone($cookie);
-
     return new c_base_return_true();
   }
 
@@ -594,6 +594,7 @@ class c_base_session extends c_base_return {
    * @param c_base_users_user|null $user
    *   The current user object (generally populated from the database).
    *   If NULL, then the user object is removed.
+   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -621,6 +622,7 @@ class c_base_session extends c_base_return {
    * @param c_base_users_user|null $user
    *   The current user object (generally populated from the database).
    *   If NULL, then the user object is removed.
+   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -678,6 +680,7 @@ class c_base_session extends c_base_return {
    * @return c_base_cookie|c_base_return_null
    *   The session cookie or NULL if undefined.
    *   FALSE with the error bit set is returned on error.
+   *   This does perform clone().
    */
   public function get_cookie() {
     if (is_null($this->cookie)) {
@@ -768,7 +771,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!array_key_exists($delta, $this->settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -898,9 +901,10 @@ class c_base_session extends c_base_return {
    *   The user object is returned on success.
    *   NULL is returned if there is no user object assigned.
    *   The error bit set is returned on error.
+   *   This does perform clone().
    */
   public function get_user_current() {
-    if (is_object($this->user_current)) {
+    if ($this->user_current instanceof c_base_users_user) {
       return clone($this->user_current);
     }
 
@@ -914,9 +918,10 @@ class c_base_session extends c_base_return {
    *   The user object is returned on success.
    *   NULL is returned if there is no user object assigned.
    *   The error bit set is returned on error.
+   *   This does perform clone().
    */
   public function get_user_session() {
-    if (is_object($this->user_session)) {
+    if ($this->user_session instanceof c_base_users_user) {
       return clone($this->user_session);
     }
 

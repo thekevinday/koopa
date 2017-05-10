@@ -685,6 +685,7 @@ class c_base_database extends c_base_return {
    *
    * @param c_base_database_connection_string $connection_string
    *   An already processed and configured connection string object.
+   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -708,6 +709,7 @@ class c_base_database extends c_base_return {
    * @return c_base_database_connection_string
    *   A connection string object on success.
    *   The error bit set is on error.
+   *   This does perform clone().
    */
   public function get_connection_string() {
     if (!is_object($this->connection_string) || !($this->connection_string instanceof c_base_database_connection_string)) {

@@ -14,6 +14,20 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_path_server_error extends c_standard_path {
 
   /**
+   * Build the breadcrumb.
+   */
+  protected function pr_build_breadcrumbs() {
+    $this->breadcrumbs = new c_base_menu_item();
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    // @todo: check the url path and attempt to get a breadcrumb for the current path.
+    //        this will require external functions because the breadcrumb language specific text must be loaded.
+  }
+
+  /**
    * Implements do_execute().
    */
   public function do_execute(&$http, &$database, &$session, $settings = array()) {
@@ -34,6 +48,8 @@ class c_standard_path_server_error extends c_standard_path {
     $this->html->set_tag($wrapper);
     unset($wrapper);
 
+    $this->pr_add_menus();
+
     $executed->set_output($this->html);
     unset($this->html);
 
@@ -46,10 +62,28 @@ class c_standard_path_server_error extends c_standard_path {
   }
 
   /**
-   * Implements pr_get_title().
+   * Implements pr_get_text_title().
    */
-  protected function pr_get_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = array()) {
     return $this->pr_get_text(0, $arguments);
+  }
+
+  /**
+   * Implements pr_get_text_breadcrumbs().
+   */
+  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
+    $string = '';
+    switch ($code) {
+      case 0:
+        $string = '';
+        break;
+    }
+
+    if (!empty($arguments)) {
+      $this->pr_process_replacements($string, $arguments);
+    }
+
+    return $string;
   }
 
   /**

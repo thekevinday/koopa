@@ -118,9 +118,9 @@ class c_standard_path_user_logout extends c_standard_path {
   }
 
   /**
-   * Implements pr_get_title().
+   * Implements pr_get_text_title().
    */
-  protected function pr_get_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = array()) {
     return $this->pr_get_text(0, $arguments);
   }
 

@@ -259,6 +259,38 @@ class c_base_return {
   }
 
   /**
+   * Provide a simple way to check for (unrecovered) error in a single step.
+   *
+   * This is intended to help clean up code and make code more readable.
+   *
+   * @return bool
+   *   return TRUE if the passed argument is an object class of type __CLASS__ and has an error flag set.
+   */
+  public static function s_has_error_unrecovered($return) {
+    if (!is_object($return) && $return instanceof c_base_return && $return->has_error()) {
+      return FALSE;
+    }
+
+    return $return->has_error_unrecovered();
+  }
+
+  /**
+   * Provide a simple way to check for (recovered) error in a single step.
+   *
+   * This is intended to help clean up code and make code more readable.
+   *
+   * @return bool
+   *   return TRUE if the passed argument is an object class of type __CLASS__ and has an error flag set.
+   */
+  public static function s_has_error_recovered($return) {
+    if (!is_object($return) && $return instanceof c_base_return && $return->has_error()) {
+      return FALSE;
+    }
+
+    return $return->has_error_recovered();
+  }
+
+  /**
    * Copy errors from one return type to another.
    *
    * Invalid parameters are silently ignored and no actions are performed.
@@ -368,12 +400,100 @@ class c_base_return {
    * @see: get_error()
    */
   public function has_error($delta = NULL) {
-    if (is_int($delta) && array_key_exists($delta, $this->errors)) {
-      return ($this->errors[$delta]) instanceof c_base_error;
+    if (is_int($delta)) {
+      if (array_key_exists($delta, $this->errors)) {
+        return ($this->errors[$delta]) instanceof c_base_error;
+      }
+
+      return FALSE;
     }
 
     // when there is no error flag assigned, its value should be NULL so a simple existence check should be all that is needed.
     return !empty($this->errors);
+  }
+
+  /**
+   * Return the error state in a simple TRUE/FALSE manner, but only if the error is designated as recovered.
+   *
+   * This is similar to get_error(), but should instead be used to to check to see if there is an error and not check what the error is set to.
+   *
+   * @param null|int $delta
+   *   (optional) When an integer, the error assigned at the specified position in the errors array is checked.
+   *   When NULL, the entire errors array is checked for any error.
+   *
+   * @return bool
+   *   TRUE if any error is assigned and is has recovered set to TRUE, otherwise FALSE is returned.
+   *
+   * @see: has_error()
+   * @see: get_error()
+   */
+  public function has_error_recovered($delta = NULL) {
+    if (is_int($delta)) {
+      if (array_key_exists($delta, $this->errors)) {
+        if ($this->errors[$delta] instanceof c_base_error) {
+          return $this->errors[$delta]->get_recovered();
+        }
+      }
+
+      return FALSE;
+    }
+
+    // when there is no error flag assigned, its value should be NULL so a simple existence check should be all that is needed.
+    if (empty($this->errors)) {
+      return FALSE;
+    }
+
+    foreach ($this->errors as $error) {
+      if ($error->get_recovered()) {
+        unset($error);
+        return TRUE;
+      }
+    }
+    unset($error);
+
+    return FALSE;
+  }
+
+  /**
+   * Return the error state in a simple TRUE/FALSE manner, but only if the error is designated as unrecovered.
+   *
+   * This is similar to get_error(), but should instead be used to to check to see if there is an error and not check what the error is set to.
+   *
+   * @param null|int $delta
+   *   (optional) When an integer, the error assigned at the specified position in the errors array is checked.
+   *   When NULL, the entire errors array is checked for any error.
+   *
+   * @return bool
+   *   TRUE if any error is assigned and is has recovered set to TRUE, otherwise FALSE is returned.
+   *
+   * @see: has_error()
+   * @see: get_error()
+   */
+  public function has_error_unrecovered($delta = NULL) {
+    if (is_int($delta)) {
+      if (array_key_exists($delta, $this->errors)) {
+        if ($this->errors[$delta] instanceof c_base_error) {
+          return !$this->errors[$delta]->get_recovered();
+        }
+      }
+
+      return FALSE;
+    }
+
+    // when there is no error flag assigned, its value should be NULL so a simple existence check should be all that is needed.
+    if (empty($this->errors)) {
+      return FALSE;
+    }
+
+    foreach ($this->errors as $error) {
+      if (!$error->get_recovered()) {
+        unset($error);
+        return TRUE;
+      }
+    }
+    unset($error);
+
+    return FALSE;
   }
 
   /**
@@ -982,10 +1102,9 @@ class c_base_return_array extends c_base_return_value {
   /**
    * Assign the value at a specific index in the array.
    *
-   * @param array $value
-   *   Any value so long as it is an array.
-   *   NULL is not allowed.
-   * @param string $key
+   * @param $value
+   *   Any value to be assigned at the specified position in the array.
+   * @param int|string $key
    *   A key to assign a specific value to.
    * @param string $type
    *   (optional) When key is not NULL, a specific known type to assign.
@@ -1009,7 +1128,7 @@ class c_base_return_array extends c_base_return_value {
    *   TRUE on success, FALSE otherwise.
    */
   public function set_value_at($value, $key, $type = NULL) {
-    if (!is_string($key) || empty($key)) {
+    if (!is_int($key) && !is_string($key)) {
       return FALSE;
     }
 
@@ -1069,9 +1188,8 @@ class c_base_return_array extends c_base_return_value {
   /**
    * Append the value at the end of the array.
    *
-   * @param array $value
-   *   Any value so long as it is an array.
-   *   NULL is not allowed.
+   * @param $value
+   *   Any value to be appended in the array.
    * @param string $type
    *   (optional) When key is not NULL, a specific known type to assign.
    *   This does nothing if $key is not provided.
@@ -1148,9 +1266,9 @@ class c_base_return_array extends c_base_return_value {
   }
 
   /**
-   * Returns the data as a serialized array string.
+   * Assigns the array from a serialized array string.
    *
-   * @param string
+   * @param string $serialized
    *  A serialized string to convert to an array.
    *
    * @return bool
@@ -1159,12 +1277,12 @@ class c_base_return_array extends c_base_return_value {
    *
    * @see: unserialize()
    */
-  public function set_value_serialized($string) {
-    if (!is_string($string)) {
+  public function set_value_serialized($serialized) {
+    if (!is_string($serialized)) {
       return FALSE;
     }
 
-    $unserialized = unserialize($this->value);
+    $unserialized = unserialize($serialized);
     if (is_array($unserialized)) {
       $this->value = $unserialized;
       unset($unserialized);
@@ -1180,8 +1298,8 @@ class c_base_return_array extends c_base_return_value {
   /**
    * Returns the data as a json-serialized array string.
    *
-   * @param string
-   *  A serialized string to convert to an array.
+   * @param string $jsonized
+   *  A jsonized string to convert to an array.
    * @param bool $associative
    *   (optional) When TRUE array is return as an associative array.
    * @param int $options
@@ -1195,8 +1313,8 @@ class c_base_return_array extends c_base_return_value {
    *
    * @see: json_decode()
    */
-  public function set_value_jsonized($string, $associative = TRUE, $options = 0, $depth = 512) {
-    if (!is_string($string)) {
+  public function set_value_jsonized($jsonized, $associative = TRUE, $options = 0, $depth = 512) {
+    if (!is_string($jsonized)) {
       return FALSE;
     }
 
@@ -1212,7 +1330,7 @@ class c_base_return_array extends c_base_return_value {
       $depth = 512;
     }
 
-    $decoded = json_decode($this->data, $associative, $options, $depth);
+    $decoded = json_decode($jsonized, $associative, $options, $depth);
     if (is_array($decoded)) {
       $this->value = $decoded;
       unset($decoded);
@@ -1262,7 +1380,7 @@ class c_base_return_array extends c_base_return_value {
    *   No c_base_return_* type should use another c_base_return_* as their return values for their non-static functions.
    *   @todo: This design might be reviewed and changed before this project is finalized.
    *
-   * @param string $key
+   * @param int|string $key
    *   A key to assign a specific value to.
    * @param string $type
    *   (optional) When key is not NULL, a specific known type to assign.
@@ -1287,7 +1405,7 @@ class c_base_return_array extends c_base_return_value {
    *   Warning: There is no way to distinguish a return value of FALSE for an error to a valid FALSE when $type is set to 'bool'.
    */
   public function get_value_at($key, $type = NULL) {
-    if (!is_string($key) || empty($key)) {
+    if (!is_int($key) && !is_string($key)) {
       return FALSE;
     }
 
@@ -1432,7 +1550,7 @@ class c_base_return_array extends c_base_return_value {
       $depth = 512;
     }
 
-    return json_encode($this->data, $options, $depth);
+    return json_encode($this->value, $options, $depth);
   }
 }
 
@@ -1460,11 +1578,10 @@ class c_base_return_object extends c_base_return_value {
   /**
    * Assign the value.
    *
-   * This calls PHP's clone() function to prevent potential security/integrirty issues.
-   *
    * @param object $value
    *   Any value so long as it is an object.
    *   NULL is not allowed.
+   *   This does perform clone().
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.

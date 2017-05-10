@@ -435,104 +435,105 @@ class c_base_markup_tag extends c_base_rfc_string {
   const TYPE_H4                         = 59;
   const TYPE_H5                         = 60;
   const TYPE_H6                         = 61;
-  const TYPE_HEADER                     = 62;
-  const TYPE_HIDDEN                     = 63;
-  const TYPE_HORIZONTAL_RULER           = 64;
-  const TYPE_ITALICS                    = 65;
-  const TYPE_INLINE_FRAME               = 66;
-  const TYPE_IMAGE                      = 67;
-  const TYPE_IMAGE_SVG                  = 68;
-  const TYPE_INPUT                      = 69;
-  const TYPE_INS                        = 70;
-  const TYPE_KEYBOARD                   = 71;
-  const TYPE_KEY_GEN                    = 72;
-  const TYPE_LABEL                      = 73;
-  const TYPE_LEGEND                     = 74;
-  const TYPE_LIST_ITEM                  = 75;
-  const TYPE_LINE                       = 76;
-  const TYPE_LINEAR_GRADIENT            = 77;
-  const TYPE_LINK                       = 78;
-  const TYPE_MAIN                       = 79;
-  const TYPE_MAP                        = 80;
-  const TYPE_MARK                       = 81;
-  const TYPE_MARKER                     = 82;
-  const TYPE_MASK                       = 83;
-  const TYPE_MENU                       = 84;
-  const TYPE_MENU_ITEM                  = 85;
-  const TYPE_MATH                       = 86;
-  const TYPE_META                       = 87;
-  const TYPE_METER                      = 88;
-  const TYPE_MONTH                      = 89;
-  const TYPE_NAVIGATION                 = 90;
-  const TYPE_NO_SCRIPT                  = 91;
-  const TYPE_NUMBER                     = 92;
-  const TYPE_OBJECT                     = 93;
-  const TYPE_ORDERED_LIST               = 94;
-  const TYPE_OPTIONS_GROUP              = 95;
-  const TYPE_OPTION                     = 96;
-  const TYPE_OUTPUT                     = 97;
-  const TYPE_PARAGRAPH                  = 98;
-  const TYPE_PARAM                      = 99;
-  const TYPE_PASSWORD                   = 100;
-  const TYPE_PATH                       = 101;
-  const TYPE_PATTERN                    = 102;
-  const TYPE_PICTURE                    = 103;
-  const TYPE_POLYGON                    = 104;
-  const TYPE_POLYLINE                   = 105;
-  const TYPE_PREFORMATTED               = 106;
-  const TYPE_PROGRESS                   = 107;
-  const TYPE_Q                          = 108;
-  const TYPE_RADIAL_GRADIENT            = 109;
-  const TYPE_RADIO                      = 110;
-  const TYPE_RANGE                      = 111;
-  const TYPE_RECTANGLE                  = 112;
-  const TYPE_RESET                      = 113;
-  const TYPE_RUBY                       = 114;
-  const TYPE_RUBY_PARENTHESIS           = 115;
-  const TYPE_RUBY_PRONUNCIATION         = 116;
-  const TYPE_STRIKE_THROUGH             = 117;
-  const TYPE_SAMPLE                     = 118;
-  const TYPE_SCRIPT                     = 119;
-  const TYPE_SEARCH                     = 120;
-  const TYPE_SECTION                    = 121;
-  const TYPE_SELECT                     = 122;
-  const TYPE_SMALL                      = 123;
-  const TYPE_SOURCE                     = 124;
-  const TYPE_SPAN                       = 125;
-  const TYPE_STOP                       = 126;
-  const TYPE_STRONG                     = 127;
-  const TYPE_STYLE                      = 128;
-  const TYPE_SUB_SCRIPT                 = 129;
-  const TYPE_SUBMIT                     = 130;
-  const TYPE_SUPER_SCRIPT               = 131;
-  const TYPE_SVG                        = 132;
-  const TYPE_TABLE                      = 133;
-  const TYPE_TABLE_BODY                 = 134;
-  const TYPE_TABLE_CELL                 = 135;
-  const TYPE_TABLE_FOOTER               = 136;
-  const TYPE_TABLE_HEADER               = 137;
-  const TYPE_TABLE_HEADER_CELL          = 138;
-  const TYPE_TABLE_ROW                  = 139;
-  const TYPE_TELEPHONE                  = 140;
-  const TYPE_TEMPLATE                   = 141;
-  const TYPE_TERM_DESCRIPTION           = 142;
-  const TYPE_TERM_NAME                  = 143;
-  const TYPE_TEXT                       = 144;
-  const TYPE_TEXT_AREA                  = 145;
-  const TYPE_TEXT_REFERENCE             = 146;
-  const TYPE_TEXT_SPAN                  = 147;
-  const TYPE_TEXT_SVG                   = 148;
-  const TYPE_TIME                       = 149;
-  const TYPE_TITLE                      = 150;
-  const TYPE_TRACK                      = 151;
-  const TYPE_UNDERLINE                  = 152;
-  const TYPE_UNORDERED_LIST             = 153;
-  const TYPE_URL                        = 154;
-  const TYPE_USE                        = 155;
-  const TYPE_VARIABLE                   = 156;
-  const TYPE_VIDEO                      = 157;
-  const TYPE_WEEK                       = 158;
-  const TYPE_WIDE_BREAK                 = 159;
+  const TYPE_HX                         = 62;
+  const TYPE_HEADER                     = 63;
+  const TYPE_HIDDEN                     = 64;
+  const TYPE_HORIZONTAL_RULER           = 65;
+  const TYPE_ITALICS                    = 66;
+  const TYPE_INLINE_FRAME               = 67;
+  const TYPE_IMAGE                      = 68;
+  const TYPE_IMAGE_SVG                  = 69;
+  const TYPE_INPUT                      = 70;
+  const TYPE_INS                        = 71;
+  const TYPE_KEYBOARD                   = 72;
+  const TYPE_KEY_GEN                    = 73;
+  const TYPE_LABEL                      = 74;
+  const TYPE_LEGEND                     = 75;
+  const TYPE_LIST_ITEM                  = 76;
+  const TYPE_LINE                       = 77;
+  const TYPE_LINEAR_GRADIENT            = 78;
+  const TYPE_LINK                       = 79;
+  const TYPE_MAIN                       = 80;
+  const TYPE_MAP                        = 81;
+  const TYPE_MARK                       = 82;
+  const TYPE_MARKER                     = 83;
+  const TYPE_MASK                       = 84;
+  const TYPE_MENU                       = 85;
+  const TYPE_MENU_ITEM                  = 86;
+  const TYPE_MATH                       = 87;
+  const TYPE_META                       = 88;
+  const TYPE_METER                      = 89;
+  const TYPE_MONTH                      = 90;
+  const TYPE_NAVIGATION                 = 91;
+  const TYPE_NO_SCRIPT                  = 92;
+  const TYPE_NUMBER                     = 93;
+  const TYPE_OBJECT                     = 94;
+  const TYPE_ORDERED_LIST               = 95;
+  const TYPE_OPTIONS_GROUP              = 96;
+  const TYPE_OPTION                     = 97;
+  const TYPE_OUTPUT                     = 98;
+  const TYPE_PARAGRAPH                  = 99;
+  const TYPE_PARAM                      = 100;
+  const TYPE_PASSWORD                   = 101;
+  const TYPE_PATH                       = 102;
+  const TYPE_PATTERN                    = 103;
+  const TYPE_PICTURE                    = 104;
+  const TYPE_POLYGON                    = 105;
+  const TYPE_POLYLINE                   = 106;
+  const TYPE_PREFORMATTED               = 107;
+  const TYPE_PROGRESS                   = 108;
+  const TYPE_Q                          = 109;
+  const TYPE_RADIAL_GRADIENT            = 110;
+  const TYPE_RADIO                      = 111;
+  const TYPE_RANGE                      = 112;
+  const TYPE_RECTANGLE                  = 113;
+  const TYPE_RESET                      = 114;
+  const TYPE_RUBY                       = 115;
+  const TYPE_RUBY_PARENTHESIS           = 116;
+  const TYPE_RUBY_PRONUNCIATION         = 117;
+  const TYPE_STRIKE_THROUGH             = 118;
+  const TYPE_SAMPLE                     = 119;
+  const TYPE_SCRIPT                     = 120;
+  const TYPE_SEARCH                     = 121;
+  const TYPE_SECTION                    = 122;
+  const TYPE_SELECT                     = 123;
+  const TYPE_SMALL                      = 124;
+  const TYPE_SOURCE                     = 125;
+  const TYPE_SPAN                       = 126;
+  const TYPE_STOP                       = 127;
+  const TYPE_STRONG                     = 128;
+  const TYPE_STYLE                      = 129;
+  const TYPE_SUB_SCRIPT                 = 130;
+  const TYPE_SUBMIT                     = 131;
+  const TYPE_SUPER_SCRIPT               = 132;
+  const TYPE_SVG                        = 133;
+  const TYPE_TABLE                      = 134;
+  const TYPE_TABLE_BODY                 = 135;
+  const TYPE_TABLE_CELL                 = 136;
+  const TYPE_TABLE_FOOTER               = 137;
+  const TYPE_TABLE_HEADER               = 138;
+  const TYPE_TABLE_HEADER_CELL          = 139;
+  const TYPE_TABLE_ROW                  = 140;
+  const TYPE_TELEPHONE                  = 141;
+  const TYPE_TEMPLATE                   = 142;
+  const TYPE_TERM_DESCRIPTION           = 143;
+  const TYPE_TERM_NAME                  = 144;
+  const TYPE_TEXT                       = 145;
+  const TYPE_TEXT_AREA                  = 146;
+  const TYPE_TEXT_REFERENCE             = 147;
+  const TYPE_TEXT_SPAN                  = 148;
+  const TYPE_TEXT_SVG                   = 149;
+  const TYPE_TIME                       = 150;
+  const TYPE_TITLE                      = 151;
+  const TYPE_TRACK                      = 152;
+  const TYPE_UNDERLINE                  = 153;
+  const TYPE_UNORDERED_LIST             = 154;
+  const TYPE_URL                        = 155;
+  const TYPE_USE                        = 156;
+  const TYPE_VARIABLE                   = 157;
+  const TYPE_VIDEO                      = 158;
+  const TYPE_WEEK                       = 159;
+  const TYPE_WIDE_BREAK                 = 160;
 
   protected $attributes;
   protected $tags;
@@ -982,6 +983,15 @@ class c_base_markup_tag extends c_base_rfc_string {
 
       case c_base_markup_attributes::ATTRIBUTE_CLASS:
         if (!is_array($value)) {
+          if (is_string($value)) {
+            if (!isset($this->attributes[$attribute])) {
+              $this->attributes[$attribute] = array();
+            }
+
+            $this->attributes[$attribute][] = $value;
+            return new c_base_return_true();
+          }
+
           return new c_base_return_false();
         }
         break;
@@ -1019,10 +1029,10 @@ class c_base_markup_tag extends c_base_rfc_string {
    * Get the value of a single attribute assigned to this object.
    *
    * @param int $attribute
-   *   The attribute to assign.
+   *   The attribute to get.
    *
    * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
-   *   The value assigned to the attribte (the data type is different per attribute).
+   *   The value assigned to the attribute (the data type is different per attribute).
    *   FALSE is returned if the element does not exist.
    *   FALSE with error bit set is returned on error.
    */
@@ -1744,170 +1754,8 @@ class c_base_markup_tag extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-    switch ($type) {
-      case self::TYPE_NONE:
-      case self::TYPE_A:
-      case self::TYPE_ABBR:
-      case self::TYPE_ADDRESS:
-      case self::TYPE_ALTERNATE_GLYPH:
-      case self::TYPE_ALTERNATE_GLYPH_DEFINITION:
-      case self::TYPE_ALTERNATE_GLYPH_ITEM:
-      case self::TYPE_ANIMATE:
-      case self::TYPE_ANIMATE_MOTION:
-      case self::TYPE_ANIMATE_TRANSFORM:
-      case self::TYPE_AREA:
-      case self::TYPE_ARTICLE:
-      case self::TYPE_ASIDE:
-      case self::TYPE_AUDIO:
-      case self::TYPE_BOLD:
-      case self::TYPE_BASE:
-      case self::TYPE_BDI:
-      case self::TYPE_BDO:
-      case self::TYPE_BLOCKQUOTE:
-      case self::TYPE_BREAK:
-      case self::TYPE_BUTTON:
-      case self::TYPE_CANVAS:
-      case self::TYPE_CHECKBOX:
-      case self::TYPE_CIRCLE:
-      case self::TYPE_CITE:
-      case self::TYPE_CLIP_PATH:
-      case self::TYPE_CODE:
-      case self::TYPE_COL:
-      case self::TYPE_COL_GROUP:
-      case self::TYPE_COLOR:
-      case self::TYPE_COLOR_PROFILE:
-      case self::TYPE_CURSOR:
-      case self::TYPE_DATA:
-      case self::TYPE_DATA_LIST:
-      case self::TYPE_DATE:
-      case self::TYPE_DATE_TIME_LOCAL:
-      case self::TYPE_DEFS:
-      case self::TYPE_DEL:
-      case self::TYPE_DESCRIPTION:
-      case self::TYPE_DETAILS:
-      case self::TYPE_DFN:
-      case self::TYPE_DIALOG:
-      case self::TYPE_DIVIDER:
-      case self::TYPE_DEFINITION_LIST:
-      case self::TYPE_TERM_NAME:
-      case self::TYPE_ELLIPSE:
-      case self::TYPE_EM:
-      case self::TYPE_EMAIL:
-      case self::TYPE_EMBED:
-      case self::TYPE_FE_BLEND:
-      case self::TYPE_FIELD_SET:
-      case self::TYPE_FIGURE:
-      case self::TYPE_FIGURE_CAPTION:
-      case self::TYPE_FILE:
-      case self::TYPE_FOOTER:
-      case self::TYPE_FORM:
-      case self::TYPE_GROUP:
-      case self::TYPE_H1:
-      case self::TYPE_H2:
-      case self::TYPE_H3:
-      case self::TYPE_H4:
-      case self::TYPE_H5:
-      case self::TYPE_H6:
-      case self::TYPE_HEADER:
-      case self::TYPE_HIDDEN:
-      case self::TYPE_HORIZONTAL_RULER:
-      case self::TYPE_ITALICS:
-      case self::TYPE_INLINE_FRAME:
-      case self::TYPE_IMAGE:
-      case self::TYPE_IMAGE_SVG:
-      case self::TYPE_INPUT:
-      case self::TYPE_INS:
-      case self::TYPE_KEYBOARD:
-      case self::TYPE_KEY_GEN:
-      case self::TYPE_LABEL:
-      case self::TYPE_LEGEND:
-      case self::TYPE_LIST_ITEM:
-      case self::TYPE_LINE:
-      case self::TYPE_LINEAR_GRADIENT:
-      case self::TYPE_LINK:
-      case self::TYPE_MAIN:
-      case self::TYPE_MAP:
-      case self::TYPE_MARK:
-      case self::TYPE_MARKER:
-      case self::TYPE_MASK:
-      case self::TYPE_MENU:
-      case self::TYPE_MENU_ITEM:
-      case self::TYPE_MATH:
-      case self::TYPE_META:
-      case self::TYPE_METER:
-      case self::TYPE_MONTH:
-      case self::TYPE_NAVIGATION:
-      case self::TYPE_NO_SCRIPT:
-      case self::TYPE_NUMBER:
-      case self::TYPE_OBJECT:
-      case self::TYPE_ORDERED_LIST:
-      case self::TYPE_OPTIONS_GROUP:
-      case self::TYPE_OPTION:
-      case self::TYPE_OUTPUT:
-      case self::TYPE_PARAGRAPH:
-      case self::TYPE_PARAM:
-      case self::TYPE_PASSWORD:
-      case self::TYPE_PATH:
-      case self::TYPE_PATTERN:
-      case self::TYPE_PICTURE:
-      case self::TYPE_POLYGON:
-      case self::TYPE_POLYLINE:
-      case self::TYPE_PREFORMATTED:
-      case self::TYPE_PROGRESS:
-      case self::TYPE_Q:
-      case self::TYPE_RADIAL_GRADIENT:
-      case self::TYPE_RADIO:
-      case self::TYPE_RANGE:
-      case self::TYPE_RECTANGLE:
-      case self::TYPE_RESET:
-      case self::TYPE_RUBY:
-      case self::TYPE_RUBY_PARENTHESIS:
-      case self::TYPE_RUBY_PRONUNCIATION:
-      case self::TYPE_STRIKE_THROUGH:
-      case self::TYPE_SAMPLE:
-      case self::TYPE_SCRIPT:
-      case self::TYPE_SEARCH:
-      case self::TYPE_SECTION:
-      case self::TYPE_SELECT:
-      case self::TYPE_SMALL:
-      case self::TYPE_SOURCE:
-      case self::TYPE_SPAN:
-      case self::TYPE_STOP:
-      case self::TYPE_STRONG:
-      case self::TYPE_STYLE:
-      case self::TYPE_SUB_SCRIPT:
-      case self::TYPE_SUBMIT:
-      case self::TYPE_SUPER_SCRIPT:
-      case self::TYPE_SVG:
-      case self::TYPE_TABLE:
-      case self::TYPE_TABLE_BODY:
-      case self::TYPE_TABLE_CELL:
-      case self::TYPE_TABLE_FOOTER:
-      case self::TYPE_TABLE_HEADER:
-      case self::TYPE_TABLE_HEADER_CELL:
-      case self::TYPE_TABLE_ROW:
-      case self::TYPE_TELEPHONE:
-      case self::TYPE_TEMPLATE:
-      case self::TYPE_TERM_DESCRIPTION:
-      case self::TYPE_TEXT:
-      case self::TYPE_TEXT_AREA:
-      case self::TYPE_TEXT_REFERENCE:
-      case self::TYPE_TEXT_SPAN:
-      case self::TYPE_TEXT_SVG:
-      case self::TYPE_TIME:
-      case self::TYPE_TITLE:
-      case self::TYPE_TRACK:
-      case self::TYPE_UNDERLINE:
-      case self::TYPE_UNORDERED_LIST:
-      case self::TYPE_URL:
-      case self::TYPE_USE:
-      case self::TYPE_VARIABLE:
-      case self::TYPE_VIDEO:
-      case self::TYPE_WEEK:
-      case self::TYPE_WIDE_BREAK:
-        break;
-      default:
-        return new c_base_return_false();
+    if ($type < 0) {
+      return new c_base_return_false();
     }
 
     $this->type = $type;

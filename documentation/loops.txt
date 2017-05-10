@@ -163,4 +163,3 @@ To help understand what all this means, say that you have the following class:
 
   By providing both a set_value()/get_value() and set_array()/get_array() function combinations, it becomes possible for both example 2 and example 3 to be used.
   - This allows for the person developing the final project to make decisions that best suite their goals while avoiding modifying code as much as possible.
-

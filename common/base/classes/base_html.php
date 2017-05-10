@@ -222,7 +222,7 @@ class c_base_html extends c_base_return {
    *   The attribute to assign.
    *
    * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
-   *   The value assigned to the attribte (the data type is different per attribute).
+   *   The value assigned to the attribute (the data type is different per attribute).
    *   FALSE is returned if the element does not exist.
    *   FALSE with error bit set is returned on error.
    */
@@ -244,7 +244,7 @@ class c_base_html extends c_base_return {
    *   The attribute to assign.
    *
    * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
-   *   The value assigned to the attribte (the data type is different per attribute).
+   *   The value assigned to the attribute (the data type is different per attribute).
    *   FALSE is returned if the element does not exist.
    *   FALSE with error bit set is returned on error.
    */
@@ -564,7 +564,7 @@ class c_base_html extends c_base_return {
    *   When FALSE, the normal attributes are returned.
    *
    * @return c_base_return_int|c_base_return_string|c_base_return_bool|c_base_return_status
-   *   The value assigned to the attribte (the data type is different per attribute).
+   *   The value assigned to the attribute (the data type is different per attribute).
    *   FALSE is returned if the element does not exist.
    *   FALSE with error bit set is returned on error.
    */
@@ -1389,6 +1389,25 @@ class c_base_html extends c_base_return {
 
       case c_base_markup_attributes::ATTRIBUTE_CLASS:
         if (!is_array($value)) {
+          if (is_string($value)) {
+            if ($body) {
+              if (!isset($this->attributes_body[$attribute])) {
+                $this->attributes_body[$attribute] = array();
+              }
+
+              $this->attributes_body[$attribute][] = $value;
+            }
+            else {
+              if (!isset($this->attributes[$attribute])) {
+                $this->attributes[$attribute] = array();
+              }
+
+              $this->attributes[$attribute][] = $value;
+            }
+
+            return new c_base_return_true();
+          }
+
           return new c_base_return_false();
         }
         break;

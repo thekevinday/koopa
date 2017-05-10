@@ -256,18 +256,18 @@ class c_base_http extends c_base_rfc_string {
   public function __construct() {
     parent::__construct();
 
-    $this->headers = NULL;
+    $this->headers      = NULL;
     $this->headers_sent = FALSE;
-    $this->request = array();
+    $this->request      = array();
     $this->request_time = NULL;
-    $this->response = array();
+    $this->response     = array();
 
     $this->request_uri_relative = NULL;
     $this->request_uri_query    = NULL;
 
-    $this->content = NULL;
+    $this->content         = NULL;
     $this->content_is_file = NULL;
-    $this->buffer_enabled = FALSE;
+    $this->buffer_enabled  = FALSE;
 
     $this->languages = NULL;
   }
@@ -376,7 +376,7 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (!array_key_exists($header_name, $this->request)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $header_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => $header_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -389,7 +389,7 @@ class c_base_http extends c_base_rfc_string {
         return c_base_return_value::s_new($this->request[$header_name]['data'][$delta]);
       }
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -488,7 +488,7 @@ class c_base_http extends c_base_rfc_string {
     }
 
     if (!array_key_exists($header_name, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $header_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => $header_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -505,7 +505,7 @@ class c_base_http extends c_base_rfc_string {
         return c_base_return_value::s_new($this->response[$header_name][$delta]);
       }
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => $delta, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -2871,6 +2871,7 @@ class c_base_http extends c_base_rfc_string {
    *   These header fields apply only to the immediate client.
    *   The header name format is:
    *   - 1*(tchar)
+   *   This does perform clone().
    * @param bool $append
    *   (optional) If TRUE, then append the header name.
    *   If FALSE, then assign the header name.
@@ -3682,7 +3683,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_origin() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_ALLOW_ORIGIN, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3703,7 +3704,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_credentials() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_ALLOW_CREDENTIALS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(FALSE, 'c_base_return_bool', $error);
     }
 
@@ -3723,7 +3724,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_expose_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_EXPOSE_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3743,7 +3744,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_max_age() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_MAX_AGE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_MAX_AGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_MAX_AGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
@@ -3762,7 +3763,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_methods() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_ALLOW_METHODS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3782,7 +3783,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_access_control_allow_headers() {
     if (!array_key_exists(self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCESS_CONTROL_ALLOW_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3802,7 +3803,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_accept_patch() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_PATCH, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_PATCH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCEPT_PATCH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3826,7 +3827,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_accept_ranges() {
     if (!array_key_exists(self::RESPONSE_ACCEPT_RANGES, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ACCEPT_RANGES, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ACCEPT_RANGES, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -3844,7 +3845,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_age() {
     if (!array_key_exists(self::RESPONSE_AGE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_AGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_AGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
@@ -3862,7 +3863,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_allow() {
     if (!array_key_exists(self::RESPONSE_ALLOW, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ALLOW, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ALLOW, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3896,7 +3897,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_cache_control() {
     if (!array_key_exists(self::RESPONSE_CACHE_CONTROL, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CACHE_CONTROL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CACHE_CONTROL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3917,7 +3918,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_connection() {
     if (!array_key_exists(self::RESPONSE_CONNECTION, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONNECTION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONNECTION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3935,7 +3936,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_disposition() {
     if (!array_key_exists(self::RESPONSE_CONTENT_DISPOSITION, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_DISPOSITION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_DISPOSITION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3951,7 +3952,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_encoding() {
     if (!array_key_exists(self::RESPONSE_CONTENT_ENCODING, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_ENCODING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_ENCODING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3969,7 +3970,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_language() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LANGUAGE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LANGUAGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_LANGUAGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -3987,7 +3988,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_length() {
     if (!array_key_exists(self::RESPONSE_CONTENT_LENGTH, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_LENGTH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_LENGTH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
@@ -4013,7 +4014,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_range() {
     if (!array_key_exists(self::RESPONSE_CONTENT_RANGE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_RANGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_RANGE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4033,7 +4034,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_type() {
     if (!array_key_exists(self::RESPONSE_CONTENT_TYPE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_TYPE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_TYPE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4051,7 +4052,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_date() {
     if (!array_key_exists(self::RESPONSE_DATE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_DATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -4077,7 +4078,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_date_actual() {
     if (!array_key_exists(self::RESPONSE_DATE_ACTUAL, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_DATE_ACTUAL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_DATE_ACTUAL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -4101,7 +4102,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_etag() {
     if (!array_key_exists(self::RESPONSE_ETAG, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_ETAG, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_ETAG, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4119,7 +4120,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_expires() {
     if (!array_key_exists(self::RESPONSE_EXPIRES, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_EXPIRES, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_EXPIRES, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -4141,7 +4142,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_last_modified() {
     if (!array_key_exists(self::RESPONSE_LAST_MODIFIED, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LAST_MODIFIED, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_LAST_MODIFIED, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -4166,7 +4167,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_link() {
     if (!array_key_exists(self::RESPONSE_LINK, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LINK, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_LINK, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4186,7 +4187,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_location() {
     if (!array_key_exists(self::RESPONSE_LOCATION, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_LOCATION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_LOCATION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4205,7 +4206,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_pragma() {
     if (!array_key_exists(self::RESPONSE_PRAGMA, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PRAGMA, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_PRAGMA, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4225,7 +4226,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_proxy_authenticate() {
     if (!array_key_exists(self::RESPONSE_PROXY_AUTHENTICATE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PROXY_AUTHENTICATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_PROXY_AUTHENTICATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4248,7 +4249,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_public_key_pins() {
     if (!array_key_exists(self::RESPONSE_PUBLIC_KEY_PINS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PUBLIC_KEY_PINS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_PUBLIC_KEY_PINS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4274,7 +4275,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_refresh() {
     if (!array_key_exists(self::RESPONSE_REFRESH, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_REFRESH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_REFRESH, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4298,7 +4299,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_retry_after() {
     if (!array_key_exists(self::RESPONSE_RETRY_AFTER, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_RETRY_AFTER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_RETRY_AFTER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4316,7 +4317,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_set_cookie() {
     if (!array_key_exists(self::RESPONSE_SET_COOKIE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_SET_COOKIE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_SET_COOKIE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_cookie', $error);
     }
 
@@ -4333,7 +4334,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_server() {
     if (!array_key_exists(self::RESPONSE_SERVER, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_SERVER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_SERVER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4354,7 +4355,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_status() {
     if (!array_key_exists(self::RESPONSE_STATUS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STATUS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_STATUS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
@@ -4372,7 +4373,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_strict_transport_security() {
     if (!array_key_exists(self::RESPONSE_STRICT_TRANSPORT_SECURITY, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_STRICT_TRANSPORT_SECURITY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_STRICT_TRANSPORT_SECURITY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -4398,7 +4399,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_trailer() {
     if (!array_key_exists(self::RESPONSE_TRAILER, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_TRAILER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_TRAILER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4419,7 +4420,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_transfer_encoding() {
     if (!array_key_exists(self::RESPONSE_TRANSFER_ENCODING, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_TRANSFER_ENCODING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_TRANSFER_ENCODING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4439,7 +4440,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_upgrade() {
     if (!array_key_exists(self::RESPONSE_UPGRADE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_UPGRADE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_UPGRADE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4460,7 +4461,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_vary() {
     if (!array_key_exists(self::RESPONSE_VARY, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_VARY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_VARY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4478,7 +4479,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_warning() {
     if (!array_key_exists(self::RESPONSE_WARNING, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_WARNING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_WARNING, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4499,7 +4500,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_www_authenticate() {
     if (!array_key_exists(self::RESPONSE_WWW_AUTHENTICATE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_WWW_AUTHENTICATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_WWW_AUTHENTICATE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_false($error);
     }
 
@@ -4518,7 +4519,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_protocol() {
     if (!array_key_exists(self::RESPONSE_PROTOCOL, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_PROTOCOL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_PROTOCOL, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -4538,7 +4539,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_security_policy() {
     if (!array_key_exists(self::RESPONSE_CONTENT_SECURITY_POLICY, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_SECURITY_POLICY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_SECURITY_POLICY, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4554,7 +4555,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_x_content_type_options() {
     if (!array_key_exists(self::RESPONSE_X_CONTENT_TYPE_OPTIONS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_CONTENT_TYPE_OPTIONS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_X_CONTENT_TYPE_OPTIONS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(FALSE, 'c_base_return_bool', $error);
     }
 
@@ -4570,7 +4571,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_x_ua_compatible() {
     if (!array_key_exists(self::RESPONSE_X_UA_COMPATIBLE, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_X_UA_COMPATIBLE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_X_UA_COMPATIBLE, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4592,7 +4593,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_header() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADER, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CHECKSUM_HEADER, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4608,7 +4609,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_headers() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_HEADERS, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CHECKSUM_HEADERS, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4628,7 +4629,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_checksum_content() {
     if (!array_key_exists(self::RESPONSE_CHECKSUM_CONTENT, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CHECKSUM_CONTENT, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CHECKSUM_CONTENT, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
     }
 
@@ -4644,7 +4645,7 @@ class c_base_http extends c_base_rfc_string {
    */
   public function get_response_content_revision() {
     if (!array_key_exists(self::RESPONSE_CONTENT_REVISION, $this->response)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':index_name' => self::RESPONSE_CONTENT_REVISION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{index_name}' => self::RESPONSE_CONTENT_REVISION, ':{array_name}' => 'this->response', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_ARRAY_INDEX);
       return c_base_return_error::s_value(0, 'c_base_return_int', $error);
     }
 
@@ -4888,6 +4889,22 @@ class c_base_http extends c_base_rfc_string {
     }
 
     return new c_base_return_true();
+  }
+
+  /**
+   * Returns whether or not response content is a file.
+   *
+   * @return c_base_return_bool
+   *   TRUE if content is a file.
+   *   FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function is_response_content_file() {
+    if ($this->content_is_file) {
+      return new c_base_return_true();
+    }
+
+    return new c_base_return_false();
   }
 
   /**

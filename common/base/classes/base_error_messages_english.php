@@ -183,7 +183,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
     }
     elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('The index, :index_name, was not found in the array, :{array_name}' . $function_name_string . '.');
+        return c_base_return_string::s_new('The index, :{index_name}, was not found in the array, :{array_name}' . $function_name_string . '.');
       }
       else {
         return c_base_return_string::s_new('Failed to find index within specified array.');

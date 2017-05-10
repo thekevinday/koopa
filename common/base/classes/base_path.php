@@ -20,6 +20,7 @@ require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_utf8.php');
 require_once('common/base/classes/base_http.php');
 require_once('common/base/classes/base_cookie.php');
+require_once('common/base/classes/base_array.php');
 
 /**
  * A generic class for managing paths information.
@@ -96,6 +97,8 @@ class c_base_path extends c_base_rfc_string {
   protected $allowed_methods;
   protected $sanitize_html;
 
+  protected $path_tree;
+
 
   /**
    * Class constructor.
@@ -124,6 +127,8 @@ class c_base_path extends c_base_rfc_string {
 
     $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
     $this->sanitize_html   = self::DEFAULT_SANITIZE_HTML;
+
+    $this->path_tree = NULL;
   }
 
   /**
@@ -151,6 +156,8 @@ class c_base_path extends c_base_rfc_string {
 
     unset($this->allowed_methods);
     unset($this->sanitize_html);
+
+    unset($this->path_tree);
 
     parent::__destruct();
   }
@@ -650,6 +657,36 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Assign an path tree associated with the path.
+   *
+   * This should include the current path.
+   * This can be used to generate the breadcrumb.
+   *
+   * @param c_base_path_tree|null $path_tree
+   *   A path tree to the current path that this object represents.
+   *   Set to NULL to remove the currently assigned path tree value.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_path_tree($path_tree) {
+    if (!is_null($path_tree) && !($path_tree instanceof c_base_path_tree)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'path_tree', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_null($path_tree)) {
+      $this->path_tree = NULL;
+    }
+    else {
+      $this->path_tree = clone($path_tree);
+    }
+
+    return new c_base_return_true();
+  }
+
+  /**
    * Return the value.
    *
    * @return string|null
@@ -845,6 +882,25 @@ class c_base_path extends c_base_rfc_string {
     }
 
     return c_base_return_array::s_new($this->sanitize_html);
+  }
+
+  /**
+   * Get the assigned path tree.
+   *
+   * This should include the current path.
+   * This can be used to generate the breadcrumb.
+   *
+   * @return c_base_path_tree|c_base_return_null
+   *   An array of path strings
+   *   NULL is returned if the path tree is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_path_tree() {
+    if (!($this->path_tree instanceof c_base_path_tree)) {
+      return new c_base_return_null();
+    }
+
+    return clone($this->path_tree);
   }
 
   /**
@@ -1048,9 +1104,9 @@ class c_base_path extends c_base_rfc_string {
   /**
    * Execute using the specified path, rendering the page.
    *
-   * @param c_base_http $http
+   * @param c_base_http &$http
    *   The entire HTTP information to allow for the execution to access anything that is necessary.
-   * @param c_base_database $database
+   * @param c_base_database &$database
    *   The database object, which is usually used by form and ajax paths.
    * @param c_base_session &$session
    *   The current session.
@@ -1242,7 +1298,7 @@ class c_base_path extends c_base_rfc_string {
  *
  * @see: c_base_path()
  */
-class c_base_path_executed extends c_base_return_array {
+class c_base_path_executed extends c_base_array {
   private $cookies = NULL;
   private $output  = NULL;
   private $form    = NUll;
@@ -1294,7 +1350,7 @@ class c_base_path_executed extends c_base_return_array {
   /**
    * Assign cookies.
    *
-   * @param c_base_cookie
+   * @param c_base_cookie $cookie
    *   The cookie to assign.
    * @param bool $append
    *   (optional) When TRUE the $cookie is appended.
@@ -1326,7 +1382,7 @@ class c_base_path_executed extends c_base_return_array {
   /**
    * Assign output.
    *
-   * @param c_base_return|null
+   * @param c_base_return|null $output
    *   The output to assign.
    *   NULL may be specified to remove any output.
    *
@@ -1357,5 +1413,89 @@ class c_base_path_executed extends c_base_return_array {
     }
 
     return $this->output;
+  }
+}
+
+/**
+ * A generic class for providing path trees (like a breadcrumb).
+ *
+ * @see: c_base_path()
+ */
+class c_base_path_tree extends c_base_array {
+  private $id_group = NULL;
+
+
+  /**
+   * Class constructor.
+   */
+  public function __construct() {
+    parent::__construct();
+
+    $this->id_group = NULL;
+  }
+
+  /**
+   * Class destructor.
+   */
+  public function __destruct() {
+    unset($this->id_group);
+
+    parent::__destruct();
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_new()
+   */
+  public static function s_new($value) {
+    return self::p_s_new($value, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value::p_s_value()
+   */
+  public static function s_value($return) {
+    return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * @see: t_base_return_value_exact::p_s_value_exact()
+   */
+  public static function s_value_exact($return) {
+    return self::p_s_value_exact($return, __CLASS__, array());
+  }
+
+  /**
+   * Assign group id.
+   *
+   * @param int $id_group
+   *   The group id to assign.
+   *
+   * @return c_base_return_status
+   *   TRUE is returned on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_id_group($id_group) {
+    if (!is_int($id_group)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_group', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->id_group = $id_group;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Gets the assigned output
+   *
+   * @return c_base_return|c_base_return_null
+   *   The assigned output is returned.
+   *   If there is no assigned output (generally when execution is not performed) NULL is returned.
+   */
+  public function get_id_group() {
+    if (!is_int($this->id_group)) {
+      return c_base_return_int::s_new(0);
+    }
+
+    return c_base_return_int::s_new($this->id_group);
   }
 }

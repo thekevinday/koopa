@@ -188,7 +188,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('配列 :index_name に索引 :{array_name} が見つかりませんでした。' . $function_name_string . '。');
+        return c_base_return_string::s_new('配列 :{index_name} に索引 :{array_name} が見つかりませんでした。' . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('指定された配列内のインデックスの検索に失敗しました。');

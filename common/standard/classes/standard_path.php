@@ -5,7 +5,7 @@
  */
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-require_once('common/base/classes/base_paths.php');
+require_once('common/base/classes/base_menu.php');
 require_once('common/base/classes/base_markup.php');
 
 /**
@@ -29,7 +29,6 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
   protected const CSS_AS_HEADER                 = 'as-header';
   protected const CSS_AS_HEADERS                = 'as-headers';
-
   protected const CSS_IS_JAVASCRIPT_ENABLED     = 'javascript-enabled';
   protected const CSS_IS_JAVASCRIPT_DISABLED    = 'javascript-disabled';
   protected const CSS_IS_CONTENT_TYPE           = 'is-html_5';
@@ -47,6 +46,28 @@ class c_standard_path extends c_base_path {
   protected const CSS_PATH_PART = 'path-part-';
   protected const CSS_PATH_FULL = 'path-full-';
 
+  protected const PATH_SELF = '';
+
+  protected const PATH_MENU_HEADER      = 'common/standard/menus/';
+  protected const PATH_MENU_UTILITY     = 'common/standard/menus/';
+  protected const PATH_MENU_BREADCRUMBS = 'common/standard/menus/';
+  protected const PATH_MENU_CONTENT     = 'common/standard/menus/';
+  protected const PATH_MENU_FOOTER      = 'common/standard/menus/';
+
+  protected const NAME_MENU_HEADER      = 'menu_header';
+  protected const NAME_MENU_UTILITY     = 'menu_utility';
+  protected const NAME_MENU_BREADCRUMBS = 'menu_breadcrumbs';
+  protected const NAME_MENU_CONTENT     = 'menu_content';
+  protected const NAME_MENU_FOOTER      = 'menu_footer';
+
+  protected const HANDLER_MENU_HEADER      = 'c_standard_menu_header';
+  protected const HANDLER_MENU_UTILITY     = 'c_standard_menu_utility';
+  protected const HANDLER_MENU_BREADCRUMBS = 'c_standard_menu_breadcrumbs';
+  protected const HANDLER_MENU_CONTENT     = 'c_standard_menu_content';
+  protected const HANDLER_MENU_FOOTER      = 'c_standard_menu_footer';
+
+  protected const SCRIPT_EXTENSION = '.php';
+
   protected $html;
   protected $http;
   protected $database;
@@ -54,8 +75,11 @@ class c_standard_path extends c_base_path {
   protected $settings;
 
   protected $languages;
+  protected $language_alias;
+
   protected $text_type;
   protected $request_uri;
+  protected $breadcrumbs;
 
 
   /**
@@ -70,9 +94,12 @@ class c_standard_path extends c_base_path {
     $this->session  = NULL;
     $this->settings = array();
 
-    $this->languages   = array();
+    $this->languages      = array();
+    $this->language_alias = NULL;
+
     $this->text_type   = NULL;
     $this->request_uri = NULL;
+    $this->breadcrumbs = NULL;
   }
 
   /**
@@ -86,18 +113,43 @@ class c_standard_path extends c_base_path {
     unset($this->settings);
 
     unset($this->languages);
+    unset($this->language_alias);
+
     unset($this->text_type);
     unset($this->request_uri);
+    unset($this->breadcrumbs);
 
     parent::__destruct();
   }
 
   /**
+   * Get the breadcrumb for this path.
+   *
+   * The breadcrumb will be built by this function if it is not already built.
+   *
+   * @return c_base_menu_item|c_base_return_null
+   *   The breadcrumb menu is returned on success.
+   *   If not defined, then NULL is returned.
+   *   NULL with the error bit set is returned on error.
+   */
+  protected function get_breadcrumbs() {
+    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
+      $this->pr_build_breadcrumbs();
+    }
+
+    if ($this->breadcrumbs instanceof c_base_menu_item) {
+      return clone($this->breadcrumbs);
+    }
+
+    return new c_base_return_null();
+  }
+
+  /**
    * Load any default settings.
    *
-   * @param c_base_http $http
+   * @param c_base_http &$http
    *   The entire HTTP information to allow for the execution to access anything that is necessary.
-   * @param c_base_database $database
+   * @param c_base_database &$database
    *   The database object, which is usually used by form and ajax paths.
    * @param c_base_session &$session
    *   The current session.
@@ -139,6 +191,36 @@ class c_standard_path extends c_base_path {
     if (!is_array($this->languages)) {
       $this->languages = array();
     }
+
+    $this->pr_get_language_alias();
+
+    $this->pr_build_breadcrumbs();
+  }
+
+  /**
+   * Build the breadcrumb.
+   */
+  protected function pr_build_breadcrumbs() {
+    $this->breadcrumbs = new c_base_menu_item();
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    // @todo: implement a standard breadcrumb handler, that loads parents paths and any language-specific text.
+    //        this may also need to use and load langauge-specific global path text.
+
+    // build breadcrumbs based on current uri path.
+    #if ($this->path_tree instanceof c_base_path_tree) {
+    #  $id_group = $this->path_tree->get_id_group()->get_value_exact();
+    #  $items = $this->path_tree->get_items()->get_value_exact();
+    #}
+    #else {
+    #  $id_group = 0;
+    #  $items = array();
+    #}
+
+    #$this->get_breadcrumbs();
   }
 
   /**
@@ -277,7 +359,6 @@ class c_standard_path extends c_base_path {
       $classes[] = $extra_class;
     }
 
-    $type = c_base_markup_tag::TYPE_DIVIDER;
     if ($header == 1) {
       $type = c_base_markup_tag::TYPE_H1;
     }
@@ -296,12 +377,22 @@ class c_standard_path extends c_base_path {
     elseif ($header == 6) {
       $type = c_base_markup_tag::TYPE_H6;
     }
-
-    if (is_int($text)) {
-      return c_theme_html::s_create_tag($type, $id, $classes, $this->pr_get_text($text, $arguments));
+    else {
+      $type = c_base_markup_tag::TYPE_HX;
     }
 
-    return c_theme_html::s_create_tag($type, $id, $classes, $text);
+    if (is_int($text)) {
+      $tag = c_theme_html::s_create_tag($type, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+    else {
+      $tag = c_theme_html::s_create_tag($type, $id, $classes, $text);
+    }
+
+    if ($header > 6) {
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'text-text-heading_' . ((int) $header));
+    }
+
+    return $tag;
   }
 
   /**
@@ -572,7 +663,6 @@ class c_standard_path extends c_base_path {
       else {
         $header_classes = array($this->settings['base_css'] . self::CSS_AS_HEADER,  self::CSS_AS_HEADER,  self::CSS_AS_HEADER . '-' . $header, self::CSS_AS_LINK_BLOCK_NAME);
 
-        $type = c_base_markup_tag::TYPE_DIVIDER;
         if ($header == 1) {
           $type = c_base_markup_tag::TYPE_H1;
         }
@@ -591,10 +681,17 @@ class c_standard_path extends c_base_path {
         elseif ($header == 6) {
           $type = c_base_markup_tag::TYPE_H6;
         }
+        else {
+          $type = c_base_markup_tag::TYPE_HX;
+        }
 
-        $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, $header_classes);
+        $wrapper = c_theme_html::s_create_tag($type, NULL, $header_classes);
         unset($header_classes);
         unset($type);
+
+        if ($header > 6) {
+          $wrapper->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'text-text-heading_' . ((int) $header));
+        }
       }
 
       if (!is_null($text)) {
@@ -666,7 +763,7 @@ class c_standard_path extends c_base_path {
    * @see: self::pr_create_html()
    */
   protected function pr_create_html_add_primary_ids() {
-    $id = $this->html->sanitize_css(self::CSS_SYSTEM_PREFIX . $this->settings['session_system'])->get_value_exact();
+    $id = $this->html->sanitize_css(self::CSS_SYSTEM_PREFIX . $this->settings['system_name'])->get_value_exact();
     #$this->html->set_attribute(c_base_markup_attributes::ATTRIBUTE_ID, $id);
     $this->html->set_attribute_body(c_base_markup_attributes::ATTRIBUTE_ID, $id);
 
@@ -748,11 +845,10 @@ class c_standard_path extends c_base_path {
    * @see: self::pr_create_html()
    */
   protected function pr_create_html_add_title() {
-    $title = $this->pr_get_title();
+    $title = $this->pr_get_text_title();
 
     if (is_string($title)) {
-      $tag = new c_base_markup_tag();
-      $tag->set_type(c_base_markup_tag::TYPE_TITLE);
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TITLE);
       $tag->set_text($title);
       $this->html->set_header($tag, 0);
       unset($tag);
@@ -903,7 +999,7 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_create_html_add_header_script() {
     // provide a custom javascript for detecting if javascript is enabled and storing in a css class name.
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SCRIPT);
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SCRIPT, 'f_standard_paths_hmtl_javascript_detection');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_TYPE, c_base_mime::TYPE_TEXT_JS);
 
     $javascript = 'function f_standard_paths_hmtl_javascript_detection() {';
@@ -919,6 +1015,171 @@ class c_standard_path extends c_base_path {
   }
 
   /**
+   * Add all menus to the page.
+   */
+  protected function pr_add_menus() {
+    $menu = $this->pr_build_menu_header($this->http, $this->database, $this->session, $this->settings);
+    if ($menu instanceof c_base_markup_tag) {
+      $this->html->set_tag($menu);
+    }
+    unset($menu);
+
+    $menu = $this->pr_build_menu_utility($this->http, $this->database, $this->session, $this->settings);
+    if ($menu instanceof c_base_markup_tag) {
+      $this->html->set_tag($menu);
+    }
+    unset($menu);
+
+    $menu = $this->pr_build_menu_breadcrumbs($this->http, $this->database, $this->session, $this->settings);
+    if ($menu instanceof c_base_markup_tag) {
+      $this->html->set_tag($menu);
+    }
+    unset($menu);
+
+    $menu = $this->pr_build_menu_content($this->http, $this->database, $this->session, $this->settings);
+    if ($menu instanceof c_base_markup_tag) {
+      $this->html->set_tag($menu);
+    }
+    unset($menu);
+
+    $menu = $this->pr_build_menu_footer($this->http, $this->database, $this->session, $this->settings);
+    if ($menu instanceof c_base_markup_tag) {
+      $this->html->set_tag($menu);
+    }
+    unset($menu);
+  }
+
+  /**
+   * Load and return the header menu handler.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A built menu markup tag.
+   *   FALSE without error bit set is returned if no menu was built.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_build_menu_header() {
+    $menu = $this->pr_include_menu(self::PATH_MENU_HEADER, self::NAME_MENU_HEADER, self::HANDLER_MENU_HEADER);
+    return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
+  }
+
+  /**
+   * Load and return the utility menu handler.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A built menu markup tag.
+   *   FALSE without error bit set is returned if no menu was built.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_build_menu_utility(&$http, &$database, &$session, $settings) {
+    $menu = $this->pr_include_menu(self::PATH_MENU_UTILITY, self::NAME_MENU_UTILITY, self::HANDLER_MENU_UTILITY);
+    return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
+  }
+
+  /**
+   * Load and return the breadcrumbs menu handler.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A built menu markup tag.
+   *   FALSE without error bit set is returned if no menu was built.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_build_menu_breadcrumbs(&$http, &$database, &$session, $settings) {
+    $menu = $this->pr_include_menu(self::PATH_MENU_BREADCRUMBS, self::NAME_MENU_BREADCRUMBS, self::HANDLER_MENU_BREADCRUMBS);
+    return $menu->do_build($http, $database, $session, $settings, $this->breadcrumbs);
+  }
+
+  /**
+   * Load and return the content menu handler.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A built menu markup tag.
+   *   FALSE without error bit set is returned if no menu was built.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_build_menu_content(&$http, &$database, &$session, $settings) {
+    $menu = $this->pr_include_menu(self::PATH_MENU_CONTENT, self::NAME_MENU_CONTENT, self::HANDLER_MENU_CONTENT);
+    return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
+  }
+
+  /**
+   * Load and return the footer menu handler.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_markup_tag|c_base_return_status
+   *   A built menu markup tag.
+   *   FALSE without error bit set is returned if no menu was built.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_build_menu_footer(&$http, &$database, &$session, $settings) {
+    $menu = $this->pr_include_menu(self::PATH_MENU_FOOTER, self::NAME_MENU_FOOTER, self::HANDLER_MENU_FOOTER);
+    return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
+  }
+
+  /**
+   * Create a single breadcrumbs item.
+   *
+   * @param string $text
+   *   The text assigned to the breadcrumbs item.
+   * @param string|array|null $uri
+   *   (optional) The URI string or array the breadcrumb points to.
+   *   If NULL, then the uri is not assigned.
+   */
+  protected function pr_create_breadcrumbs_item($text, $uri = NULL) {
+    $item = new c_base_menu_item();
+    $item->set_text($text);
+
+    if (!is_null($uri)) {
+      $item->set_uri($uri);
+    }
+
+    return $item;
+  }
+
+  /**
    * Load the title text associated with this page.
    *
    * This is provided here as a means for a language class to override with a custom language for the title.
@@ -930,8 +1191,20 @@ class c_standard_path extends c_base_path {
    *   A string is returned as the custom title.
    *   NULL is returned to enforce default title.
    */
-  protected function pr_get_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = array()) {
     return NULL;
+  }
+
+  /**
+   * Load breadcrumbs text for a supported language.
+   *
+   * @param int $index
+   *   A number representing which block of text to return.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   */
+  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
+    return '';
   }
 
   /**
@@ -944,5 +1217,80 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_get_text($code, $arguments = array()) {
     return '';
+  }
+
+  /**
+   * Load and save the current preferred language alias.
+   */
+  protected function pr_get_language_alias() {
+    $aliases = array();
+    if (is_array($this->languages) && !empty($this->languages)) {
+      $language = reset($this->languages);
+
+      // us-english is the default, so do not attempt to include any external files.
+      if ($language === i_base_languages::ENGLISH_US || $language === i_base_languages::ENGLISH) {
+        unset($language);
+        unset($aliases);
+
+        $this->language_alias = NULL;
+        return;
+      }
+
+      $aliases = c_base_defaults_global::s_get_languages()::s_get_aliases_by_id($language)->get_value_exact();
+    }
+    unset($language);
+
+    // use default if no aliases are found.
+    if (empty($aliases)) {
+      unset($aliases);
+
+      $this->language_alias = NULL;
+      return;
+    }
+
+    $this->language_alias = end($aliases);
+  }
+
+  /**
+   * Will include a custom language path if one exists.
+   *
+   * The default language files ends in "${path}${name}.php".
+   * All other language files end in "${path}${language_alias}/${name}.php".
+   *
+   * The default class is the provided class name.
+   * All other languages use the provided class name with '_${language_alias}' appended.
+   *
+   * For example (using path='my_file'), us english is the default, so that would load the file 'my_file.php'.
+   *                                     japanese language load the file 'my_file-ja.php'.
+   *
+   * @param string $path
+   *   The path to the include file, without the file name.
+   * @param string $name
+   *   The file name of the PHP file, without the '.php' extension.
+   * @param string $class
+   *   The name of the class, that is an instance of c_base_menu, to execute.
+   *
+   * @return c_base_meni
+   *   The created c_base_meni object.
+   */
+  protected function pr_include_menu($path, $name, $class) {
+    require_once($path . $name . self::SCRIPT_EXTENSION);
+
+    // use default if no aliases are found.
+    if (is_null($this->language_alias)) {
+      return new $class();
+    }
+
+    // use include_once instead of require_require to allow for failsafe behavior.
+    @include_once($path . $this->language_alias . '/' . $name . self::SCRIPT_EXTENSION);
+
+    $language_class = $class . '_' . $this->language_alias;
+    if (class_exists($language_class)) {
+      return new $language_class();
+    }
+    unset($language_class);
+
+    // if unable to find, fallback to original class
+    return new $class();
   }
 }

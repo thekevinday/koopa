@@ -218,7 +218,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::SLASH_BACKWARD) {
+      if ($code === c_base_ascii::SLASH_BACKWARD) {
         if ($quote_closed) {
           // only comments and FWS are allowed after $closing_quote is reached.
           $result['invalid'] = TRUE;
@@ -233,19 +233,19 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         // check for and handle delimiters.
         $result['current']++;
 
-        if ($ordinals[$result['current']] == c_base_ascii::QUOTE_DOUBLE) {
+        if ($ordinals[$result['current']] === c_base_ascii::QUOTE_DOUBLE) {
           $result['text'] .= $characters[$result['current']];
           continue;
         }
 
-        if ($ordinals[$result['current']] == c_base_ascii::SLASH_BACKWARD) {
+        if ($ordinals[$result['current']] === c_base_ascii::SLASH_BACKWARD) {
           $result['text'] .= $characters[$result['current']];
           continue;
         }
 
         $result['current']--;
       }
-      elseif ($code == c_base_ascii::QUOTE_DOUBLE) {
+      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
         if ($quote_closed) {
           // double quote may be supplied only once.
           $result['invalid'] = TRUE;
@@ -259,7 +259,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $quote_closed = TRUE;
         continue;
       }
-      elseif ($code == c_base_ascii::PARENTHESIS_OPEN) {
+      elseif ($code === c_base_ascii::PARENTHESIS_OPEN) {
         if ($comment_first || $comment_last) {
           // there may be only 1 comment at the start and only 1 comment at the end.
           $result['invalid'] = TRUE;
@@ -285,7 +285,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         }
         unset($parsed);
       }
-      elseif ($code == c_base_ascii::PARENTHESIS_CLOSE) {
+      elseif ($code === c_base_ascii::PARENTHESIS_CLOSE) {
         // an isolated parenthesis is invald.
         $result['invalid'] = TRUE;
         break;
@@ -373,7 +373,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::QUOTE_DOUBLE) {
+      if ($code === c_base_ascii::QUOTE_DOUBLE) {
         break;
       }
       elseif (!$this->pr_rfc_char_is_vchar($code)) {
@@ -434,17 +434,17 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::SLASH_BACKWARD) {
+      if ($code === c_base_ascii::SLASH_BACKWARD) {
         // check for and handle delimiters.
         $result['current']++;
 
-        if ($ordinals[$result['current']] == c_base_ascii::QUOTE_DOUBLE) {
+        if ($ordinals[$result['current']] === c_base_ascii::QUOTE_DOUBLE) {
           $result['comment'] .= $characters[$result['current']];
 
           continue;
         }
 
-        if ($ordinals[$result['current']] == c_base_ascii::SLASH_BACKWARD) {
+        if ($ordinals[$result['current']] === c_base_ascii::SLASH_BACKWARD) {
           $result['comment'] .= $characters[$result['current']];
 
           continue;
@@ -452,11 +452,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         $result['current']--;
       }
-      elseif ($code == c_base_ascii::PARENTHESIS_OPEN) {
+      elseif ($code === c_base_ascii::PARENTHESIS_OPEN) {
         // look for open-parenthesis to handle comments within a comment.
         $comment_depth++;
       }
-      elseif ($code == c_base_ascii::PARENTHESIS_CLOSE) {
+      elseif ($code === c_base_ascii::PARENTHESIS_CLOSE) {
         // handle end of comment.
         if ($comment_depth == 0) {
           // the current position will remain on the closing ')'.
@@ -721,7 +721,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::QUOTE_DOUBLE) {
+      if ($code === c_base_ascii::QUOTE_DOUBLE) {
         if ($not_quoted) {
           // if the first, non-whitespace, character is not a quote, then a quote anywhere else is invalid.
           $result['invalid'] = TRUE;
@@ -900,7 +900,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // load the parameter value.
-      if ($ordinals[$result['current']] == c_base_ascii::QUOTE_DOUBLE) {
+      if ($ordinals[$result['current']] === c_base_ascii::QUOTE_DOUBLE) {
         $result['current']++;
         if ($result['current'] >= $stop) {
           $result['invalid'] = TRUE;
@@ -947,7 +947,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
 
       // A comma designates a new entry
-      if ($ordinals[$result['current']] == c_base_ascii::COMMA) {
+      if ($ordinals[$result['current']] === c_base_ascii::COMMA) {
         $result['current']++;
         if ($result['current'] >= $stop) {
           $result['invalid'] = TRUE;
@@ -1401,7 +1401,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::COLON_SEMI) {
+      if ($code === c_base_ascii::COLON_SEMI) {
         $result['current']++;
         if ($result['current'] >= $stop) {
           $result['invalid'] = TRUE;
@@ -1412,12 +1412,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         // search for the "q" character.
         for (; $result['current'] < $stop; $result['current']++) {
           // allow uppercase "Q" but force it to become lowercase "q".
-          if ($ordinals[$result['current']] == c_base_ascii::UPPER_Q) {
+          if ($ordinals[$result['current']] === c_base_ascii::UPPER_Q) {
             $ordinals[$result['current']] = c_base_ascii::LOWER_Q;
             $characters[$result['current']] = c_base_ascii::LOWER_Q;
           }
 
-          if ($ordinals[$result['current']] == c_base_ascii::LOWER_Q) {
+          if ($ordinals[$result['current']] === c_base_ascii::LOWER_Q) {
             break;
           }
 
@@ -1444,7 +1444,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         // search for the "=" character.
         for (; $result['current'] < $stop; $result['current']++) {
-          if ($ordinals[$result['current']] == c_base_ascii::EQUAL) {
+          if ($ordinals[$result['current']] === c_base_ascii::EQUAL) {
             break;
           }
 
@@ -1503,7 +1503,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $period = FALSE;
         $base = 1;
         for (; $result['current'] < $stop; $result['current']++) {
-          if ($ordinals[$result['current']] == c_base_ascii::PERIOD) {
+          if ($ordinals[$result['current']] === c_base_ascii::PERIOD) {
             if ($period) {
               $result['invalid'] = TRUE;
               break;
@@ -1519,7 +1519,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           }
 
           if (!$this->pr_rfc_char_is_digit($ordinals[$result['current']])) {
-            if ($ordinals[$result['current']] == c_base_ascii::COMMA) {
+            if ($ordinals[$result['current']] === c_base_ascii::COMMA) {
               break;
             }
 
@@ -1585,14 +1585,14 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
 
         // look for comma, which will designate that another pass is allowed, otherwise the string is invalid.
-        if ($ordinals[$result['current']] == c_base_ascii::COMMA) {
+        if ($ordinals[$result['current']] === c_base_ascii::COMMA) {
           continue;
         }
 
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code == c_base_ascii::COMMA) {
+      elseif ($code === c_base_ascii::COMMA) {
         // this is an unweighted choice.
         $choice['weight'] = NULL;
         if (!isset($result['choices'][NULL])) {
@@ -1696,7 +1696,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::SLASH_FORWARD) {
+      if ($code === c_base_ascii::SLASH_FORWARD) {
         if (!$process_parameters) {
           if ($found_slash) {
             $result['invalid'] = TRUE;
@@ -1708,13 +1708,13 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           continue;
         }
       }
-      elseif ($code == c_base_ascii::COLON_SEMI || $found_slash && $this->pr_rfc_char_is_wsp($code)) {
+      elseif ($code === c_base_ascii::COLON_SEMI || $found_slash && $this->pr_rfc_char_is_wsp($code)) {
         if ($found_slash && $this->pr_rfc_char_is_wsp($code)) {
           // in this case, the semi-colon has yet to be found, so seek until a semi-colon is found.
           // any and all non-semi-colon and non-whitespace means that the string is invalid.
           for (; $result['current'] < $stop; $result['current']++) {
             if (!$this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
-              if ($ordinals[$result['current']] == c_base_ascii::COLON_SEMI) {
+              if ($ordinals[$result['current']] === c_base_ascii::COLON_SEMI) {
                 break;
               }
 
@@ -1752,7 +1752,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
             $processed_token = TRUE;
             continue;
           }
-          elseif ($subcode == c_base_ascii::EQUAL) {
+          elseif ($subcode === c_base_ascii::EQUAL) {
             if ($found_equal || $process_whitespace) {
               // it cannot start with an equal sign, so if $process_whitespace is TRUE, then this is an invalid equal sign.
               $result['invalid'] = TRUE;
@@ -1778,7 +1778,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
             }
 
             // check for quoted_string, which must begin with a double quote.
-            if ($subcode == c_base_ascii::QUOTE_DOUBLE) {
+            if ($subcode === c_base_ascii::QUOTE_DOUBLE) {
               // skip past the initial double quote.
               $result['current']++;
               if ($result['current'] >= $stop) {
@@ -1849,7 +1849,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           }
           elseif (!$this->pr_rfc_char_is_tchar($subcode)) {
             if ($found_equal) {
-              if ($subcode == c_base_ascii::COLON_SEMI) {
+              if ($subcode === c_base_ascii::COLON_SEMI) {
                 // save parameter and value and continue.
                 $result['parameters'][$parameter_name] = $parameter_value;
 
@@ -1993,7 +1993,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        if ($ordinals[$result['current']] == c_base_ascii::COLON_SEMI) {
+        if ($ordinals[$result['current']] === c_base_ascii::COLON_SEMI) {
           $result['tokens'][$token_name] = $token_value;
 
           $token_name = NULL;
@@ -2014,7 +2014,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
           continue;
         }
-        elseif ($ordinals[$result['current']] == c_base_ascii::EQUAL && !$processed_name) {
+        elseif ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
           $processed_name = TRUE;
 
           // skip past all whitespace following the equal.
@@ -2035,7 +2035,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code == c_base_ascii::COLON_SEMI) {
+      elseif ($code === c_base_ascii::COLON_SEMI) {
         $result['tokens'][$token_name] = $token_value;
         $token_name = NULL;
         $token_value = NULL;
@@ -2055,7 +2055,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         continue;
       }
-      elseif ($code == c_base_ascii::QUOTE_DOUBLE) {
+      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
         if (!$processed_name) {
           // the token name is not allowed to be a quoted string.
           $result['invalid'] = TRUE;
@@ -2193,7 +2193,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        if ($ordinals[$result['current']] == c_base_ascii::COLON_SEMI) {
+        if ($ordinals[$result['current']] === c_base_ascii::COLON_SEMI) {
           $result['tokens'][$token_name] = $token_value;
 
           $token_name = NULL;
@@ -2214,7 +2214,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
           continue;
         }
-        elseif ($ordinals[$result['current']] == c_base_ascii::EQUAL && !$processed_name) {
+        elseif ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
           $processed_name = TRUE;
 
           // skip past all whitespace following the equal.
@@ -2235,7 +2235,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code == c_base_ascii::COMMA) {
+      elseif ($code === c_base_ascii::COMMA) {
         $result['tokens'][$token_name] = $token_value;
         $token_name = NULL;
         $token_value = NULL;
@@ -2255,7 +2255,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         continue;
       }
-      elseif ($code == c_base_ascii::QUOTE_DOUBLE) {
+      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
         if (!$processed_name) {
           // the token name is not allowed to be a quoted string.
           $result['invalid'] = TRUE;
@@ -2386,7 +2386,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           }
         }
 
-        if ($ordinals[$result['current']] == c_base_ascii::COMMA) {
+        if ($ordinals[$result['current']] === c_base_ascii::COMMA) {
           if (is_null($token_value)) {
             // empty values separated by commas are to be ignored.
             continue;
@@ -2400,7 +2400,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code == c_base_ascii::COMMA) {
+      elseif ($code === c_base_ascii::COMMA) {
         if (is_null($token_value)) {
           // empty values separated by commas are to be ignored.
           continue;
@@ -2470,7 +2470,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::PERCENT) {
+      if ($code === c_base_ascii::PERCENT) {
         // valid only if two hex digits immediately follow.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -2501,7 +2501,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       elseif (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code == c_base_ascii::SLASH_FORWARD) {
+      elseif ($code === c_base_ascii::SLASH_FORWARD) {
         // do nothing, valid.
       }
       else {
@@ -2560,7 +2560,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::PERCENT) {
+      if ($code === c_base_ascii::PERCENT) {
         // valid only if two hex digits immediately follow.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -2591,7 +2591,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       elseif (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code == c_base_ascii::SLASH_FORWARD || $code == c_base_ascii::QUESTION_MARK) {
+      elseif ($code === c_base_ascii::SLASH_FORWARD || $code === c_base_ascii::QUESTION_MARK) {
         // do nothing, valid.
       }
       else {
@@ -2654,7 +2654,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     // this first character must be either a "v" or a hex digit.
-    if ($ordinals[$result['current']] == c_base_ascii::LOWER_V || $ordinals[$result['current']] == c_base_ascii::UPPER_V) {
+    if ($ordinals[$result['current']] === c_base_ascii::LOWER_V || $ordinals[$result['current']] === c_base_ascii::UPPER_V) {
       $result['is_future'] = TRUE;
     }
     elseif (!self::pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
@@ -2712,10 +2712,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         elseif (self::pr_rfc_char_is_sub_delims($code)) {
           // do nothing, valid.
         }
-        elseif ($code == c_base_ascii::COLON) {
+        elseif ($code === c_base_ascii::COLON) {
           // do nothing, valid.
         }
-        elseif ($code == c_base_ascii::BRACKET_CLOSE) {
+        elseif ($code === c_base_ascii::BRACKET_CLOSE) {
           break;
         }
         else {
@@ -2734,10 +2734,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         if (self::pr_rfc_char_is_hexdigit($code)) {
           $result['address'] .= $characters[$result['current']];
         }
-        elseif ($code == c_base_ascii::COLON) {
+        elseif ($code === c_base_ascii::COLON) {
           $result['address'] .= $characters[$result['current']];
         }
-        elseif ($code == c_base_ascii::BRACKET_CLOSE) {
+        elseif ($code === c_base_ascii::BRACKET_CLOSE) {
           break;
         }
         else {
@@ -3245,16 +3245,42 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
 
-    // handle path cases that begin with a forward slash because they are easy to identify.
-    if ($ordinals[$result['current']] == c_base_ascii::SLASH_FORWARD) {
-      $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
-      if ($result['invalid'] || $result['current'] >= $stop) {
-        return $result;
+    // handle path and authority cases that begin with a forward slash because they are easy to identify.
+    if ($ordinals[$result['current']] === c_base_ascii::SLASH_FORWARD) {
+      if ($result['current'] + 1 < $stop && $ordinals[$result['current'] + 1] === c_base_ascii::SLASH_FORWARD) {
+        // process authority
+        // first two slashes are not recorded, so skip them.
+        $result['current'] += 2;
+        if ($result['current'] >= $stop) {
+          $result['invalid'] = TRUE;
+          return $result;
+        }
+
+        $this->p_rfc_string_is_uri_authority($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
+
+
+        // process path
+        if ($ordinals[$result['current']] !== c_base_ascii::QUESTION_MARK && $ordinals[$result['current']] !== c_base_ascii::HASH) {
+          $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+          if ($result['invalid'] || $result['current'] >= $stop) {
+            return $result;
+          }
+        }
+      }
+      else {
+        // process path
+        $this->p_rfc_string_is_uri_path($ordinals, $characters, $stop, $result);
+        if ($result['invalid'] || $result['current'] >= $stop) {
+          return $result;
+        }
       }
 
 
       // check for query.
-      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+      if ($ordinals[$result['current']] === c_base_ascii::QUESTION_MARK) {
         // the first question mark is not recorded so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3269,7 +3295,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
 
       // check for fragment.
-      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+      if ($ordinals[$result['current']] === c_base_ascii::HASH) {
         // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3287,7 +3313,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
 
     // handle fragment cases first because they are easy to identify.
-    if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+    if ($ordinals[$result['current']] === c_base_ascii::HASH) {
       for (; $result['current'] < $stop; $result['current']++) {
         if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
           // @fixme: should error be reported? do some debugging with this.
@@ -3330,7 +3356,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       elseif ($this->pr_rfc_char_is_digit($code)) {
         // allowed in: scheme, authority, path
       }
-      elseif ($code == c_base_ascii::COLON) {
+      elseif ($code === c_base_ascii::COLON) {
         $not_path = TRUE;
 
         if ($not_scheme) {
@@ -3350,20 +3376,29 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           $not_authority = TRUE;
         }
       }
-      elseif ($code == c_base_ascii::PLUS || $code == c_base_ascii::MINUS || $code == c_base_ascii::PERIOD) {
+      elseif ($code === c_base_ascii::PLUS || $code === c_base_ascii::MINUS || $code === c_base_ascii::PERIOD) {
         // allowed in: scheme, authority, path
       }
-      elseif ($code == c_base_ascii::AT || $code == c_base_ascii::SLASH_FORWARD) {
+      elseif ($code === c_base_ascii::AT) {
         // allowed in: authority, path
 
         $not_scheme = TRUE;
+      }
+      elseif ($code === c_base_ascii::SLASH_FORWARD) {
+        // allowed in: path
+
+        $not_scheme = TRUE;
+        $not_authority = TRUE; // because the areas where // is used is handled earlier in this function.
+
+        // the slash is part of the path.
+        $processed_string .= $characters[$result['current']];
       }
       elseif ($this->pr_rfc_char_is_unreserved($code)) {
         // allowed in: authority, path
 
         $not_scheme = TRUE;
       }
-      elseif ($code == c_base_ascii::BRACKET_OPEN) {
+      elseif ($code === c_base_ascii::BRACKET_OPEN) {
         // allowed in: authority
 
         $not_scheme = TRUE;
@@ -3396,6 +3431,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       return $result;
     }
 
+    // if unable to determine if is path or not, assume path.
+    if (!$not_authority && !$not_path) {
+      // @todo: a warning of some sort should be performed here.
+      $not_authority = TRUE;
+    }
+
     if ($not_authority && $not_path) {
       unset($not_scheme);
       unset($not_authority);
@@ -3411,7 +3452,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       // check to see if '/' immediately follows, if not then this is a urn.
       $code = $ordinals[$result['current']];
-      if ($code == c_base_ascii::SLASH_FORWARD) {
+      if ($code === c_base_ascii::SLASH_FORWARD) {
         unset($code);
 
         // A second '/' should immediately follow the first to designate the authority.
@@ -3419,7 +3460,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           $result['current']++;
           $code = $ordinals[$result['current']];
 
-          if ($code == c_base_ascii::SLASH_FORWARD) {
+          if ($code === c_base_ascii::SLASH_FORWARD) {
             // begin processing authority.
             $result['current']++;
 
@@ -3440,7 +3481,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         }
 
         // check for query.
-        if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+        if ($ordinals[$result['current']] === c_base_ascii::QUESTION_MARK) {
           // the first question mark is not recorded so skip past it before validating the fragment.
           $result['current']++;
           if ($result['current'] >= $stop) {
@@ -3454,7 +3495,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         }
 
         // check for fragment.
-        if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+        if ($ordinals[$result['current']] === c_base_ascii::HASH) {
         // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3483,12 +3524,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         $code = $ordinals[$result['current']];
 
-        if ($code == c_base_ascii::HASH || $code == c_base_ascii::QUESTION_MARK) {
+        if ($code === c_base_ascii::HASH || $code === c_base_ascii::QUESTION_MARK) {
           // found possible query or fragment.
           $result['url'] = TRUE;
           break;
         }
-        elseif ($code == c_base_ascii::COLON) {
+        elseif ($code === c_base_ascii::COLON) {
           $result['url'] = FALSE;
         }
         elseif (!$this->pr_rfc_char_is_pchar($code)) {
@@ -3507,7 +3548,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for query.
-      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+      if ($ordinals[$result['current']] === c_base_ascii::QUESTION_MARK) {
         // the first question mark is not recorded so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3521,7 +3562,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for fragment.
-      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+      if ($ordinals[$result['current']] === c_base_ascii::HASH) {
         // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3562,7 +3603,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for query.
-      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+      if ($ordinals[$result['current']] === c_base_ascii::QUESTION_MARK) {
         // the first question mark is not recorded so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3576,7 +3617,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for fragment.
-      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+      if ($ordinals[$result['current']] === c_base_ascii::HASH) {
         // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3609,7 +3650,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for query.
-      if ($ordinals[$result['current']] == c_base_ascii::QUESTION_MARK) {
+      if ($ordinals[$result['current']] === c_base_ascii::QUESTION_MARK) {
         // the first question mark is not recorded so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3623,7 +3664,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       }
 
       // check for fragment.
-      if ($ordinals[$result['current']] == c_base_ascii::HASH) {
+      if ($ordinals[$result['current']] === c_base_ascii::HASH) {
         // only the first hash is supported in the fragment (and it is not recorded) so skip past it before validating the fragment.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3774,11 +3815,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::SLASH_FORWARD) {
+      if ($code === c_base_ascii::SLASH_FORWARD) {
         // the slash designates the end of the authority.
         break;
       }
-      elseif ($code == c_base_ascii::PERCENT) {
+      elseif ($code === c_base_ascii::PERCENT) {
         // valid only if two hex digits immediately follow.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3806,10 +3847,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
       }
-      elseif ($code == c_base_ascii::AT || $code == c_base_ascii::COLON) {
+      elseif ($code === c_base_ascii::AT || $code === c_base_ascii::COLON) {
         // this is valid.
       }
-      elseif ($code == c_base_ascii::BRACKET_OPEN || $code == c_base_ascii::BRACKET_CLOSE) {
+      elseif ($code === c_base_ascii::BRACKET_OPEN || $code === c_base_ascii::BRACKET_CLOSE) {
         // this is valid.
       }
       elseif ($this->pr_rfc_char_is_unreserved($code)) {
@@ -3856,11 +3897,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::HASH || $code == c_base_ascii::QUESTION_MARK) {
+      if ($code === c_base_ascii::HASH || $code === c_base_ascii::QUESTION_MARK) {
         // found possible query or fragment.
         break;
       }
-      elseif ($code == c_base_ascii::SLASH_FORWARD) {
+      elseif ($code === c_base_ascii::SLASH_FORWARD) {
         // this is valid.
       }
       elseif (!$this->pr_rfc_char_is_pchar($code)) {
@@ -3909,11 +3950,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
       $code = $ordinals[$result['current']];
 
-      if ($code == c_base_ascii::HASH) {
+      if ($code === c_base_ascii::HASH) {
         // hash is not part of the query but does mark the end of the query as it is the start of the fragment.
         break;
       }
-      elseif ($code == c_base_ascii::AMPERSAND) {
+      elseif ($code === c_base_ascii::AMPERSAND) {
         // The '&' designates a new name and value, separate each individual value inside the array.
         $result['query'][$query_name] = $query_value;
 
@@ -3923,7 +3964,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         continue;
       }
-      elseif ($code == c_base_ascii::EQUAL) {
+      elseif ($code === c_base_ascii::EQUAL) {
         // The '=' designates a value for the current name.
         if ($no_value || is_null($query_name)) {
           $query_name .= $characters[$result['current']];

@@ -18,6 +18,8 @@ require_once('common/base/classes/base_path.php');
  * Third, the paths are exploded and searched based on all their sub-parts.
  */
 class c_base_paths extends c_base_return {
+  protected const SCRIPT_EXTENSION = '.php';
+
   private $paths = NULL;
   private $root  = NULL;
 
@@ -124,7 +126,6 @@ class c_base_paths extends c_base_return {
       $methods = $allowed_methods;
     }
 
-
     if (mb_strlen($path) == 0) {
       unset($path_object);
       $this->root = array('handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE, 'methods' => $methods);
@@ -137,7 +138,7 @@ class c_base_paths extends c_base_return {
       return c_base_return_error::s_false($error);
     }
 
-    $valid_path = $path_object->set_value($path);
+    $valid_path = $path_object->set_value('/' . $path);
     if (!$valid_path) {
       unset($path_object);
       unset($valid_path);
@@ -242,11 +243,17 @@ class c_base_paths extends c_base_return {
    *   An array containing:
    *   - 'include_directory': the prefix path of the file to include that contains the handler class implementation.
    *   - 'include_name': the suffix path of the file to include that contains the handler class implementation.
-   *   - 'handler': the name of the handler class.
+   *   - 'handler': the name of the handler class (set to the boolean TRUE, when redirects are used).
+   *   - 'methods': An array of HTTP request codes that are allowed at this path.
+   *   - 'path_tree': An array of the path tree.
+   *   - 'id_group': The group id code for the specified path.
    *   - 'redirect': if specified, then a redirect path (instead of include/handler).
+   *   - 'redirect_partial': boolean designating if the redirect url is only a partial url.
    *   - 'code': if redirect is specified, then the http response code associated with the redirect.
+   *   - 'extra_slashes': boolean designating that there are multiple extra slashes found (a reason for a url redirect).
+   *
    *   Wildcards are matched after all non-wildcards.
-   *   NULL is returned if not found.
+   *   If not found, the 'handler' in the array will be set to NULL.
    *   FALSE with error bit set is returned on error.
    *
    * @see: self::set_login()
@@ -260,10 +267,21 @@ class c_base_paths extends c_base_return {
 
     if (is_null($path_string) || mb_strlen($path_string) == 0) {
       if (is_array($this->root)) {
-        return c_base_return_array::s_new($this->root);
+        $root_array = $this->root;
+        $root_array['id_group'] = 0;
+        $root_array['path_tree'] = array();
+
+        return c_base_return_array::s_new($root_array);
       }
 
-      return new c_base_return_null();
+      return c_base_return_array::s_new(array(
+        'include_directory' => NULL,
+        'include_name' => NULL,
+        'handler' => NULL,
+        'methods' => NULL,
+        'id_group' => 0,
+        'path_tree' => array(),
+      ));
     }
 
 
@@ -281,7 +299,13 @@ class c_base_paths extends c_base_return {
 
     // if the sanitized path is different from the original, then send a url redirect.
     if (strcmp($path_string, $sanitized) != 0 && $path_string != '/' . $sanitized) {
-      return c_base_return_array::s_new(array('redirect' => $sanitized, 'code' => c_base_http_status::MOVED_PERMANENTLY));
+      return c_base_return_array::s_new(array(
+        'handler' => TRUE,
+        'redirect' => $sanitized,
+        'code' => c_base_http_status::MOVED_PERMANENTLY,
+        'redirect_partial' => TRUE,
+        'extra_slashes' => TRUE,
+      ));
     }
 
     $path_parts = explode('/', $sanitized);
@@ -304,6 +328,7 @@ class c_base_paths extends c_base_return {
     $depth_total = count($path_parts);
     $found = NULL;
     $path_tree = &$this->paths[$id_group];
+    $path_tree_history = array();
 
     // @fixme: the current design needs to handle multiple possible wildcard paths when searching (such as '/a/b/c/%', '/a/%/c', where '/a/b/c/%' would prevent '/a/%/c' from ever matching).
     $path_part = array_shift($path_parts);
@@ -315,6 +340,14 @@ class c_base_paths extends c_base_return {
         $path_tree = &$path_tree['%'];
       }
 
+      $path_tree_history[] = array(
+        'path' => $path_part,
+        'include_directory' => isset($path_tree['include_directory']) ? $path_tree['include_directory'] : NULL,
+        'include_name' => isset($path_tree['include_name']) ? $path_tree['include_name'] : NULL,
+        'handler' => isset($path_tree['handler']) ? $path_tree['handler'] : NULL,
+        'methods' => isset($path_tree['methods']) ? $path_tree['methods'] : NULL,
+      );
+
       if ($depth_current == $depth_total)  {
         $found = array(
           'include_directory' => $path_tree['include_directory'],
@@ -322,6 +355,7 @@ class c_base_paths extends c_base_return {
           'handler' => $path_tree['handler'],
           'methods' => $path_tree['methods'],
           'id_group' => $id_group,
+          'path_tree' => $path_tree_history,
         );
       }
       else {
@@ -338,6 +372,14 @@ class c_base_paths extends c_base_return {
             break;
           }
 
+          $path_tree_history[] = array(
+            'path' => $path_part,
+            'include_directory' => isset($path_tree['include_directory']) ? $path_tree['include_directory'] : NULL,
+            'include_name' => isset($path_tree['include_name']) ? $path_tree['include_name'] : NULL,
+            'handler' => isset($path_tree['handler']) ? $path_tree['handler'] : NULL,
+            'methods' => isset($path_tree['methods']) ? $path_tree['methods'] : NULL,
+          );
+
           if ($depth_current == $depth_total) {
             $found = array(
               'include_directory' => $path_tree['include_directory'],
@@ -345,6 +387,7 @@ class c_base_paths extends c_base_return {
               'handler' => $path_tree['handler'],
               'methods' => $path_tree['methods'],
               'id_group' => $id_group,
+              'path_tree' => $path_tree_history,
             );
             break;
           }
@@ -358,10 +401,19 @@ class c_base_paths extends c_base_return {
     unset($path_tree);
 
     if (is_array($found) && !is_null($found['handler'])) {
+      unset($id_group);
+      unset($path_tree_history);
       return c_base_return_array::s_new($found);
     }
     unset($found);
 
-    return new c_base_return_null();
+    return c_base_return_array::s_new(array(
+      'include_directory' => NULL,
+      'include_name' => NULL,
+      'handler' => NULL,
+      'methods' => NULL,
+      'id_group' => $id_group,
+      'path_tree' => $path_tree_history,
+    ));
   }
 }

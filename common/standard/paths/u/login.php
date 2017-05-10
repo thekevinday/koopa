@@ -27,9 +27,6 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_path_user_login extends c_standard_path {
   protected const USER_PUBLIC = 'u_standard_public';
 
-  protected const PATH_LOGIN  = 'u/login';
-  protected const PATH_LOGOUT = 'u/logout';
-
   /**
    * Implements do_execute().
    */
@@ -78,7 +75,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         $href = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A);
         $href->set_text($this->pr_get_text(6));
-        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $settings['base_path'] . self::PATH_LOGOUT);
+        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $settings['base_path'] . c_standard_paths::URI_LOGOUT);
         $block->set_tag($href);
         unset($href);
 
@@ -210,8 +207,9 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // label: username
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-username'));
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-username');
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-user_name'));
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-user_name');
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-label-user_name');
     $tag->set_text($this->pr_get_text(1));
     $form->set_tag($tag);
     unset($tag);
@@ -219,17 +217,18 @@ class c_standard_path_user_login extends c_standard_path {
 
     // field: username
     $class = array(
-      'login_form-input-username',
+      'login_form-input-user_name',
     );
-    if (array_key_exists('login_form-username', $problem_fields)) {
+    if (array_key_exists('login_form-user_name', $problem_fields)) {
       $class[] = 'field_has_problem';
     }
 
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TEXT, 'login_form-username', $class);
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TEXT, 'login_form-user_name', $class);
     unset($class);
 
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_sanitize('login_form-username', 0)->get_value());
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_sanitize('login_form-user_name', 0)->get_value());
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-input-user_name');
     $form->set_tag($tag);
     unset($tag);
 
@@ -238,6 +237,7 @@ class c_standard_path_user_login extends c_standard_path {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-password');
     $tag->set_text($this->pr_get_text(2));
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-label-password');
     $form->set_tag($tag);
     unset($tag);
 
@@ -255,6 +255,7 @@ class c_standard_path_user_login extends c_standard_path {
 
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REQUIRED, TRUE);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_sanitize('login_form-password', 0)->get_value());
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-input-password');
     $form->set_tag($tag);
     unset($tag);
 
@@ -262,6 +263,7 @@ class c_standard_path_user_login extends c_standard_path {
     // button: reset
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(11));
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-button-reset');
     $form->set_tag($tag);
     unset($tag);
 
@@ -270,6 +272,7 @@ class c_standard_path_user_login extends c_standard_path {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(12));
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACTION, $settings['base_path'] . 's/u/login'); // custom submit destination, but would require /s/u/login to redirect back to here.
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-button-submit');
     $form->set_tag($tag);
     unset($tag);
     unset($problem_fields);
@@ -308,15 +311,14 @@ class c_standard_path_user_login extends c_standard_path {
    */
   protected function pr_do_login(&$http, &$database, &$session, $settings) {
     $problems = array();
-    if (empty($_POST['login_form-username']) || !is_string($_POST['login_form-username'])) {
-      $problems[] = c_base_form_problem::s_create_error('login_form-username', self::pr_get_text(10));
+    if (empty($_POST['login_form-user_name']) || !is_string($_POST['login_form-user_name'])) {
+      $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
-    elseif ($_POST['login_form-username'] == self::USER_PUBLIC) {
+    elseif ($_POST['login_form-user_name'] == self::USER_PUBLIC) {
       // explicitly deny access to internal user accounts
-      $problems[] = c_base_form_problem::s_create_error('login_form-username', self::pr_get_text(10));
+      $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
-
-    if (empty($_POST['login_form-password']) || !is_string($_POST['login_form-username'])) {
+    elseif (empty($_POST['login_form-password']) || !is_string($_POST['login_form-user_name'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-password', self::pr_get_text(10));
     }
 
@@ -331,7 +333,7 @@ class c_standard_path_user_login extends c_standard_path {
     }
 
     $connection_string = $database->get_connection_string();
-    $connection_string->set_user($_POST['login_form-username']);
+    $connection_string->set_user($_POST['login_form-user_name']);
     $connection_string->set_password($_POST['login_form-password']);
 
     $database->set_connection_string($connection_string);
@@ -383,7 +385,7 @@ class c_standard_path_user_login extends c_standard_path {
 
       if ($access_denied) {
         // it is possible the user name might not exist, so try to auto-create the username if the username does not exist.
-        $ensure_result = $this->pr_do_ensure_user_account($settings, $_POST['login_form-username']);
+        $ensure_result = $this->pr_do_ensure_user_account($settings, $_POST['login_form-user_name']);
         if ($ensure_result instanceof c_base_return_int) {
           $ensure_result = $ensure_result->get_value_exact();
 
@@ -395,7 +397,7 @@ class c_standard_path_user_login extends c_standard_path {
               c_standard_index::s_do_initialize_database($database);
 
               if ($database instanceof c_standard_database) {
-                $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, array('user_name' => $_POST['login_form-username']));
+                $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, array('user_name' => $_POST['login_form-user_name']));
                 $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
               }
             }
@@ -441,7 +443,7 @@ class c_standard_path_user_login extends c_standard_path {
       c_standard_index::s_do_initialize_database($database);
 
       // if LDAP is available, make sure the account information exists.
-      $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-username']);
+      $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-user_name']);
       if ($ldap['status']) {
         $this->pr_update_user_data($database, $ldap);
       }
@@ -458,7 +460,7 @@ class c_standard_path_user_login extends c_standard_path {
     if (c_base_return::s_has_error($connected) || $connected instanceof c_base_return_false) {
       // @todo: rewrite this to handle multiple errors.
       if ($access_denied) {
-        $problems[] = c_base_form_problem::s_create_error('login_form-username', self::pr_get_text(10));
+        $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
       }
       else {
         $errors = $connected->get_error();
@@ -495,7 +497,7 @@ class c_standard_path_user_login extends c_standard_path {
     // @todo: load and store custom settings (loaded from the database and/or ldap).
     #$session->set_settings($user_data);
 
-    $session->set_name($_POST['login_form-username']);
+    $session->set_name($_POST['login_form-user_name']);
     $session->set_password($_POST['login_form-password']);
 
     // the session needs to be opened and the data needs to be saved on successful login.
@@ -511,9 +513,9 @@ class c_standard_path_user_login extends c_standard_path {
       unset($socket_error);
     }
     else {
-      $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-username']);
+      $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-user_name']);
       if (!$ldap['status']) {
-        $problems[] = c_base_form_problem::s_create_error('login_form-username', 'Failed to retrieve ldap information for specified user.');
+        $problems[] = c_base_form_problem::s_create_error('login_form-user_name', 'Failed to retrieve ldap information for specified user.');
       }
 
       $pushed = $session->do_push($settings['session_expire'], $settings['session_max']);
@@ -873,16 +875,16 @@ class c_standard_path_user_login extends c_standard_path {
   protected function pr_create_html_add_header_link_canonical() {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF,  $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_LOGIN);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF,  $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . c_standard_paths::URI_LOGIN);
     $this->html->set_header($tag);
 
     unset($tag);
   }
 
   /**
-   * Implements pr_get_title().
+   * Implements pr_get_text_title().
    */
-  protected function pr_get_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = array()) {
     return $this->pr_get_text(0, $arguments);
   }
 

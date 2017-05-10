@@ -42,6 +42,9 @@ class c_base_defaults_global {
   // default log facility (17 = c_base_error::FACILITY_LOCAL_0).
   const LOG_FACILITY = 17;
 
+  // default backtrace setting (TRUE = perform backtrace on error, FALSE do not perform backtrace on error).
+  const BACKTRACE_PERFORM = TRUE;
+
 
   // Represents the current timestamp of this PHP process/session, see: self::s_get_timestamp_session().
   private static $s_timestamp_session = NULL;

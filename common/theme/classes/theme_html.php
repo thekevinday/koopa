@@ -128,21 +128,11 @@ class c_theme_html extends c_base_return {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_NAME, $id);
     }
 
-    // populate default class names based on tag type.
-    $class = array();
-    self::s_p_populate_default_class_names($type, $id, $class);
-
     if (is_array($classes)) {
-      foreach ($classes as $class_string) {
-        if (is_string($class_string)) {
-          $class[] = $class_string;
-        }
-      }
-      unset($class_string);
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $classes);
     }
 
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class);
-    unset($class);
+    self::s_p_populate_tag_class_names($tag, $type, $id);
 
     if (is_string($text)) {
       $tag->set_text($text);
@@ -178,6 +168,7 @@ class c_theme_html extends c_base_return {
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
+   *   This does perform clone().
    */
   public function set_html($html) {
     if (!($html instanceof c_base_html)) {
@@ -196,6 +187,7 @@ class c_theme_html extends c_base_return {
    *   The markup html object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
+   *   This does perform clone().
    */
   public function get_html() {
     if (!($this->html instanceof c_base_html)) {
@@ -269,6 +261,7 @@ class c_theme_html extends c_base_return {
    *   The markup tags object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
+   *   This does perform clone().
    */
   public function get_http() {
     if (!($this->http instanceof c_base_http)) {
@@ -317,1152 +310,557 @@ class c_theme_html extends c_base_return {
   /**
    * Generate a common list of class names for a given tag type.
    *
+   * @param c_base_markup_tag &$tag
+   *   The tag to operate on.
    * @param int $type
    *   A c_base_markup_tag type id.
    * @param string|null $id
    *   A unique ID field associated with the tag.
    *   If null, then this is ignored.
-   * @param array &$classes
-   *   An array of class names.
    */
-  private static function s_p_populate_default_class_names($type, $id, &$class) {
-    if ($type === c_base_markup_tag::TYPE_A) {
-      $class[] = 'text';
-      $class[] = 'text-link';
+  private static function s_p_populate_tag_class_names(&$tag, $type, $id) {
+    $class_1 = NULL;
+    $class_2 = NULL;
+    $class_3 = NULL;
 
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-link';
-      }
+    if ($type === c_base_markup_tag::TYPE_A) {
+      $class_1 = 'text';
+      $class_2 = 'text-link';
     }
     elseif ($type === c_base_markup_tag::TYPE_ABBR) {
-      $class[] = 'text';
-      $class[] = 'text-abbreviation';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-abbreviation';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-abbreviation';
     }
     elseif ($type === c_base_markup_tag::TYPE_ADDRESS) {
-      $class[] = 'structure';
-      $class[] = 'structure-address';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-address';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-address';
     }
     elseif ($type === c_base_markup_tag::TYPE_AREA) {
-      $class[] = 'datum';
-      $class[] = 'datum-area';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-area';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-area';
     }
     elseif ($type === c_base_markup_tag::TYPE_ARTICLE) {
-      $class[] = 'structure';
-      $class[] = 'structure-article';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-article';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-article';
     }
     elseif ($type === c_base_markup_tag::TYPE_ASIDE) {
-      $class[] = 'structure';
-      $class[] = 'structure-aside';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-aside';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-aside';
     }
     elseif ($type === c_base_markup_tag::TYPE_AUDIO) {
-      $class[] = 'media';
-      $class[] = 'media-audio';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-audio';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-audio';
     }
     elseif ($type === c_base_markup_tag::TYPE_BOLD) {
-      $class[] = 'format';
-      $class[] = 'format-strong';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-strong';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-strong';
     }
     elseif ($type === c_base_markup_tag::TYPE_BDI) {
-      $class[] = 'text';
-      $class[] = 'text-bdi';
-      $class[] = 'text-direction';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-bdi';
-        $class[] = $id . '-text-direction';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-bdi';
+      $class_3 = 'text-direction';
     }
     elseif ($type === c_base_markup_tag::TYPE_BDO) {
-      $class[] = 'text';
-      $class[] = 'text-bdo';
-      $class[] = 'text-direction';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-bdo';
-        $class[] = $id . '-text-direction';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-bdo';
+      $class_3 = 'text-direction';
     }
     elseif ($type === c_base_markup_tag::TYPE_BLOCKQUOTE) {
-      $class[] = 'text';
-      $class[] = 'text-blockquote';
-      $class[] = 'text-quote';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-blockquote';
-        $class[] = $id . '-text-quote';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-blockquote';
+      $class_3 = 'text-quote';
     }
     elseif ($type === c_base_markup_tag::TYPE_BREAK) {
-      $class[] = 'structure';
-      $class[] = 'structure-break';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-break';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-break';
     }
     elseif ($type === c_base_markup_tag::TYPE_BUTTON) {
-      $class[] = 'field';
-      $class[] = 'field-button';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-button';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-button';
     }
     elseif ($type === c_base_markup_tag::TYPE_CANVAS) {
-      $class[] = 'structure';
-      $class[] = 'structure-canvas';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-canvas';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-canvas';
     }
     elseif ($type === c_base_markup_tag::TYPE_CHECKBOX) {
-      $class[] = 'field';
-      $class[] = 'field-checkbox';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-checkbox';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-checkbox';
     }
     elseif ($type === c_base_markup_tag::TYPE_CITE) {
-      $class[] = 'text';
-      $class[] = 'text-cite';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-cite';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-cite';
     }
     elseif ($type === c_base_markup_tag::TYPE_CODE) {
-      $class[] = 'text';
-      $class[] = 'text-code';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-code';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-code';
     }
     elseif ($type === c_base_markup_tag::TYPE_COL) {
-      $class[] = 'structure';
-      $class[] = 'structure-column';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-column';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-column';
     }
     elseif ($type === c_base_markup_tag::TYPE_COLOR) {
-      $class[] = 'field';
-      $class[] = 'field-color';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-color';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-color';
     }
     elseif ($type === c_base_markup_tag::TYPE_COL_GROUP) {
-      $class[] = 'structure';
-      $class[] = 'structure-column_group';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-column_group';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-column_group';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATA) {
-      $class[] = 'datum';
-      $class[] = 'datum-data';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-data';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-data';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATA) {
-      $class[] = 'datum';
-      $class[] = 'datum-data_list';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-data_list';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-data_list';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATE) {
-      $class[] = 'field';
-      $class[] = 'field-date';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-date';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-date';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATE_TIME_LOCAL) {
-      $class[] = 'field';
-      $class[] = 'field-date_local_time';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-date_local_time';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-date_local_time';
     }
     elseif ($type === c_base_markup_tag::TYPE_TERM_DESCRIPTION) {
-      $class[] = 'text';
-      $class[] = 'text-term_description';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-term_description';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-term_description';
     }
     elseif ($type === c_base_markup_tag::TYPE_DEL) {
-      $class[] = 'format';
-      $class[] = 'format-delete';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-format';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-delete';
     }
     elseif ($type === c_base_markup_tag::TYPE_DETAILS) {
-      $class[] = 'structure';
-      $class[] = 'structure-details';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-details';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-details';
     }
     elseif ($type === c_base_markup_tag::TYPE_DFN) {
-      $class[] = 'text';
-      $class[] = 'text-definition';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-definition';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-definition';
     }
     elseif ($type === c_base_markup_tag::TYPE_DIALOG) {
-      $class[] = 'structure';
-      $class[] = 'structure-dialog';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-dialog';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-dialog';
     }
     elseif ($type === c_base_markup_tag::TYPE_DIVIDER) {
-      $class[] = 'structure';
-      $class[] = 'structure-divider';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-divider';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-divider';
     }
     elseif ($type === c_base_markup_tag::TYPE_DIVIDER) {
-      $class[] = 'structure';
-      $class[] = 'structure-divider';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-divider';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-divider';
     }
     elseif ($type === c_base_markup_tag::TYPE_DEFINITION_LIST) {
-      $class[] = 'structure';
-      $class[] = 'structure-definition_list';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-definition_list';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-definition_list';
     }
     elseif ($type === c_base_markup_tag::TYPE_TERM_NAME) {
-      $class[] = 'text';
-      $class[] = 'text-term_name';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-term_name';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-term_name';
     }
     elseif ($type === c_base_markup_tag::TYPE_EM) {
-      $class[] = 'format';
-      $class[] = 'format-emphasis';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-emphasis';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-emphasis';
     }
     elseif ($type === c_base_markup_tag::TYPE_EMAIL) {
-      $class[] = 'field';
-      $class[] = 'field-email';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-email';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-email';
     }
     elseif ($type === c_base_markup_tag::TYPE_EMBED) {
-      $class[] = 'media';
-      $class[] = 'media-embed';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-embed';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-embed';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIELD_SET) {
-      $class[] = 'structure';
-      $class[] = 'structure-field_set';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-field_set';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-field_set';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIGURE) {
-      $class[] = 'structure';
-      $class[] = 'structure-figure';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-figure';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-figure';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIGURE_CAPTION) {
-      $class[] = 'text';
-      $class[] = 'text-figure_caption';
-      $class[] = 'text-caption';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-figure_caption';
-        $class[] = $id . '-text-caption';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-figure_caption';
+      $class_3 = 'text-caption';
     }
     elseif ($type === c_base_markup_tag::TYPE_FILE) {
-      $class[] = 'field';
-      $class[] = 'field-file';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-file';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-file';
     }
     elseif ($type === c_base_markup_tag::TYPE_FOOTER) {
-      $class[] = 'structure';
-      $class[] = 'structure-footer';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-footer';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-footer';
     }
     elseif ($type === c_base_markup_tag::TYPE_FORM) {
-      $class[] = 'structure';
-      $class[] = 'structure-form';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-form';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-form';
     }
     elseif ($type === c_base_markup_tag::TYPE_H1) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_1';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_1';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_1';
     }
     elseif ($type === c_base_markup_tag::TYPE_H2) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_2';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_2';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_2';
     }
     elseif ($type === c_base_markup_tag::TYPE_H3) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_3';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_3';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_3';
     }
     elseif ($type === c_base_markup_tag::TYPE_H4) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_4';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_4';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_4';
     }
     elseif ($type === c_base_markup_tag::TYPE_H5) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_5';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_5';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_5';
     }
     elseif ($type === c_base_markup_tag::TYPE_H6) {
-      $class[] = 'text';
-      $class[] = 'text-heading';
-      $class[] = 'text-heading_6';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-heading';
-        $class[] = $id . '-text-heading_6';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
+      $class_3 = 'text-heading_6';
+    }
+    elseif ($type === c_base_markup_tag::TYPE_HX) {
+      $class_1 = 'text';
+      $class_2 = 'text-heading';
     }
     elseif ($type === c_base_markup_tag::TYPE_HEADER) {
-      $class[] = 'structure';
-      $class[] = 'structure-header';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-header';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-header';
     }
     elseif ($type === c_base_markup_tag::TYPE_HIDDEN) {
-      $class[] = 'field';
-      $class[] = 'field-hidden';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-hidden';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-hidden';
     }
     elseif ($type === c_base_markup_tag::TYPE_HORIZONTAL_RULER) {
-      $class[] = 'structure';
-      $class[] = 'structure-horizontal_ruler';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-horizontal_ruler';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-horizontal_ruler';
     }
     elseif ($type === c_base_markup_tag::TYPE_ITALICS) {
-      $class[] = 'format';
-      $class[] = 'format-emphasis';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-emphasis';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-emphasis';
     }
     elseif ($type === c_base_markup_tag::TYPE_HORIZONTAL_RULER) {
-      $class[] = 'structure';
-      $class[] = 'structure-horizontal_ruler';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-horizontal_ruler';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-horizontal_ruler';
     }
     elseif ($type === c_base_markup_tag::TYPE_INLINE_FRAME) {
-      $class[] = 'structure';
-      $class[] = 'structure-inline_frame';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-inline_frame';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-inline_frame';
     }
     elseif ($type === c_base_markup_tag::TYPE_IMAGE) {
-      $class[] = 'media';
-      $class[] = 'media-image';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-image';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-image';
     }
     elseif ($type === c_base_markup_tag::TYPE_INPUT) {
-      $class[] = 'field';
-      $class[] = 'field-input';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-input';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-input';
     }
     elseif ($type === c_base_markup_tag::TYPE_INS) {
-      $class[] = 'text';
-      $class[] = 'text-insert';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-insert';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-insert';
     }
     elseif ($type === c_base_markup_tag::TYPE_KEYBOARD) {
-      $class[] = 'text';
-      $class[] = 'text-keyboard';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-keyboard';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-keyboard';
     }
     elseif ($type === c_base_markup_tag::TYPE_KEY_GEN) {
-      $class[] = 'field';
-      $class[] = 'field-key_generator';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-key_generator';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-key_generator';
     }
     elseif ($type === c_base_markup_tag::TYPE_LABEL) {
-      $class[] = 'field';
-      $class[] = 'field-label';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-label';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-label';
     }
     elseif ($type === c_base_markup_tag::TYPE_LEGEND) {
-      $class[] = 'text';
-      $class[] = 'text-legend';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-legend';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-legend';
     }
     elseif ($type === c_base_markup_tag::TYPE_LIST_ITEM) {
-      $class[] = 'text';
-      $class[] = 'text-list_item';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-list_item';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-list_item';
     }
     elseif ($type === c_base_markup_tag::TYPE_MAIN) {
-      $class[] = 'structure';
-      $class[] = 'structure-main';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-main';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-main';
     }
     elseif ($type === c_base_markup_tag::TYPE_MAP) {
-      $class[] = 'structure';
-      $class[] = 'structure-image_map';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-image_map';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-image_map';
     }
     elseif ($type === c_base_markup_tag::TYPE_MARK) {
-      $class[] = 'format';
-      $class[] = 'format-mark';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-mark';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-mark';
     }
     elseif ($type === c_base_markup_tag::TYPE_MENU) {
-      $class[] = 'structure';
-      $class[] = 'structure-menu';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-menu';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-menu';
     }
     elseif ($type === c_base_markup_tag::TYPE_MENU_ITEM) {
-      $class[] = 'structure';
-      $class[] = 'structure-menu_item';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-menu_item';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-menu_item';
     }
     elseif ($type === c_base_markup_tag::TYPE_METER) {
-      $class[] = 'field';
-      $class[] = 'field-meter';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-meter';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-meter';
     }
     elseif ($type === c_base_markup_tag::TYPE_MONTH) {
-      $class[] = 'field';
-      $class[] = 'field-month';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-month';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-month';
     }
     elseif ($type === c_base_markup_tag::TYPE_NAVIGATION) {
-      $class[] = 'structure';
-      $class[] = 'structure-navigation';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-navigation';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-navigation';
     }
     elseif ($type === c_base_markup_tag::TYPE_NO_SCRIPT) {
-      $class[] = 'structure';
-      $class[] = 'structure-no_script';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-no_script';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-no_script';
     }
     elseif ($type === c_base_markup_tag::TYPE_NUMBER) {
-      $class[] = 'field';
-      $class[] = 'field-number';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-number';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-number';
     }
     elseif ($type === c_base_markup_tag::TYPE_OBJECT) {
-      $class[] = 'media';
-      $class[] = 'media-object';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-object';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-object';
     }
     elseif ($type === c_base_markup_tag::TYPE_ORDERED_LIST) {
-      $class[] = 'structure';
-      $class[] = 'structure-ordered_list';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-ordered_list';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-ordered_list';
     }
     elseif ($type === c_base_markup_tag::TYPE_OPTIONS_GROUP) {
-      $class[] = 'structure';
-      $class[] = 'structure-options_group';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-options_group';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-options_group';
     }
     elseif ($type === c_base_markup_tag::TYPE_OPTION) {
-      $class[] = 'datum';
-      $class[] = 'datum-option';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-option';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-option';
     }
     elseif ($type === c_base_markup_tag::TYPE_OUTPUT) {
-      $class[] = 'datum';
-      $class[] = 'datum-output';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-output';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-output';
     }
     elseif ($type === c_base_markup_tag::TYPE_PARAGRAPH) {
-      $class[] = 'text';
-      $class[] = 'text-paragraph';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-paragraph';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-paragraph';
     }
     elseif ($type === c_base_markup_tag::TYPE_PARAM) {
-      $class[] = 'datum';
-      $class[] = 'datum-parameter';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-parameter';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-parameter';
     }
     elseif ($type === c_base_markup_tag::TYPE_PASSWORD) {
-      $class[] = 'field';
-      $class[] = 'field-password';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-password';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-password';
     }
     elseif ($type === c_base_markup_tag::TYPE_PICTURE) {
-      $class[] = 'structure';
-      $class[] = 'structure-picture';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-picture';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-picture';
     }
     elseif ($type === c_base_markup_tag::TYPE_PREFORMATTED) {
-      $class[] = 'format';
-      $class[] = 'format-preformatted';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-preformatted';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-preformatted';
     }
     elseif ($type === c_base_markup_tag::TYPE_PROGRESS) {
       // note: 'media' is the closest thing I can think of for this tag (as in, it is like an image).
-      $class[] = 'media';
-      $class[] = 'media-progress';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-progress';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-progress';
     }
     elseif ($type === c_base_markup_tag::TYPE_PREFORMATTED) {
-      $class[] = 'format';
-      $class[] = 'format-preformatted';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-preformatted';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-preformatted';
     }
     elseif ($type === c_base_markup_tag::TYPE_Q) {
-      $class[] = 'text';
-      $class[] = 'text-quote';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-quote';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-quote';
     }
     elseif ($type === c_base_markup_tag::TYPE_RADIO) {
-      $class[] = 'field';
-      $class[] = 'field-radio';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-radio';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-radio';
     }
     elseif ($type === c_base_markup_tag::TYPE_RANGE) {
-      $class[] = 'field';
-      $class[] = 'field-range';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-range';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-range';
     }
     elseif ($type === c_base_markup_tag::TYPE_RESET) {
-      $class[] = 'field';
-      $class[] = 'field-reset';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-reset';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-reset';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY_PARENTHESIS) {
-      $class[] = 'format';
-      $class[] = 'format-ruby_parenthesis';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-ruby_parenthesis';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-ruby_parenthesis';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY_PRONUNCIATION) {
-      $class[] = 'format';
-      $class[] = 'format-ruby_pronunciation';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-ruby_pronunciation';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-ruby_pronunciation';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY) {
-      $class[] = 'format';
-      $class[] = 'format-ruby';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-ruby';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-ruby';
     }
     elseif ($type === c_base_markup_tag::TYPE_STRIKE_THROUGH) {
-      $class[] = 'format';
-      $class[] = 'format-strike_through';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-strike_through';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-strike_through';
     }
     elseif ($type === c_base_markup_tag::TYPE_SAMPLE) {
-      $class[] = 'text';
-      $class[] = 'text-sample';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-sample';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-sample';
     }
     elseif ($type === c_base_markup_tag::TYPE_SEARCH) {
-      $class[] = 'field';
-      $class[] = 'field-search';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-search';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-search';
     }
     elseif ($type === c_base_markup_tag::TYPE_SECTION) {
-      $class[] = 'structure';
-      $class[] = 'structure-section';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-section';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-section';
     }
     elseif ($type === c_base_markup_tag::TYPE_SELECT) {
-      $class[] = 'field';
-      $class[] = 'field-select';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-select';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-select';
     }
     elseif ($type === c_base_markup_tag::TYPE_SMALL) {
-      $class[] = 'format';
-      $class[] = 'format-small';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-small';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-small';
     }
     elseif ($type === c_base_markup_tag::TYPE_SOURCE) {
-      $class[] = 'datum';
-      $class[] = 'datum-source';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-source';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-source';
     }
     elseif ($type === c_base_markup_tag::TYPE_SPAN) {
-      $class[] = 'structure';
-      $class[] = 'structure-span';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-span';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-span';
     }
     elseif ($type === c_base_markup_tag::TYPE_STRONG) {
-      $class[] = 'format';
-      $class[] = 'format-strong';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-strong';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-strong';
     }
     elseif ($type === c_base_markup_tag::TYPE_SUB_SCRIPT) {
-      $class[] = 'format';
-      $class[] = 'format-sub_script';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-sub_script';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-sub_script';
     }
     elseif ($type === c_base_markup_tag::TYPE_SUBMIT) {
-      $class[] = 'field';
-      $class[] = 'field-submit';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-submit';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-submit';
     }
     elseif ($type === c_base_markup_tag::TYPE_SUPER_SCRIPT) {
-      $class[] = 'format';
-      $class[] = 'format-super_script';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-super_script';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-super_script';
     }
     elseif ($type === c_base_markup_tag::TYPE_SVG) {
-      $class[] = 'media';
-      $class[] = 'media-svg';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-svg';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-svg';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE) {
-      $class[] = 'structure';
-      $class[] = 'structure-table';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_BODY) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_body';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_body';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_body';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_CELL) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_cell';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_cell';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_cell';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_FOOTER) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_footer';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_footer';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_footer';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_HEADER) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_header';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_header';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_header';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_HEADER_CELL) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_header_cell';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_header_cell';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_header_cell';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_ROW) {
-      $class[] = 'structure';
-      $class[] = 'structure-table_row';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-table_row';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-table_row';
     }
     elseif ($type === c_base_markup_tag::TYPE_TELEPHONE) {
-      $class[] = 'field';
-      $class[] = 'field-telephone';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-telephone';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-telephone';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEMPLATE) {
-      $class[] = 'datum';
-      $class[] = 'datum-template';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-template';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-template';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT) {
-      $class[] = 'field';
-      $class[] = 'field-text';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-text';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-text';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT_AREA) {
-      $class[] = 'field';
-      $class[] = 'field-text_area';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-text_area';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-text_area';
     }
     elseif ($type === c_base_markup_tag::TYPE_TIME) {
-      $class[] = 'field';
-      $class[] = 'field-time';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-time';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-time';
     }
     elseif ($type === c_base_markup_tag::TYPE_TRACK) {
-      $class[] = 'datum';
-      $class[] = 'datum-track';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-datum';
-        $class[] = $id . '-datum-track';
-      }
+      $class_1 = 'datum';
+      $class_2 = 'datum-track';
     }
     elseif ($type === c_base_markup_tag::TYPE_UNDERLINE) {
-      $class[] = 'format';
-      $class[] = 'format-underline';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-format';
-        $class[] = $id . '-format-underline';
-      }
+      $class_1 = 'format';
+      $class_2 = 'format-underline';
     }
     elseif ($type === c_base_markup_tag::TYPE_UNORDERED_LIST) {
-      $class[] = 'structure';
-      $class[] = 'structure-unordered_list';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-unordered_list';
-      }
+      $class_1 = 'structure';
+      $class_2 = 'structure-unordered_list';
     }
     elseif ($type === c_base_markup_tag::TYPE_URL) {
-      $class[] = 'text';
-      $class[] = 'text-url';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-url';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-url';
     }
     elseif ($type === c_base_markup_tag::TYPE_VARIABLE) {
-      $class[] = 'text';
-      $class[] = 'text-variable';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-text';
-        $class[] = $id . '-text-variable';
-      }
+      $class_1 = 'text';
+      $class_2 = 'text-variable';
     }
     elseif ($type === c_base_markup_tag::TYPE_VIDEO) {
-      $class[] = 'media';
-      $class[] = 'media-video';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-media';
-        $class[] = $id . '-media-video';
-      }
+      $class_1 = 'media';
+      $class_2 = 'media-video';
     }
     elseif ($type === c_base_markup_tag::TYPE_WEEK) {
-      $class[] = 'field';
-      $class[] = 'field-week';
-
-      if (!is_null($id)) {
-        $class[] = $id . '-field';
-        $class[] = $id . '-field-week';
-      }
+      $class_1 = 'field';
+      $class_2 = 'field-week';
     }
     elseif ($type === c_base_markup_tag::TYPE_WIDE_BREAK) {
-      $class[] = 'structure';
-      $class[] = 'structure-wide_break';
+      $class_1 = 'structure';
+      $class_2 = 'structure-wide_break';
+    }
+
+    if (!is_null($class_1)) {
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class_1);
 
       if (!is_null($id)) {
-        $class[] = $id . '-structure';
-        $class[] = $id . '-structure-wide_break';
+        $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $id . '-' . $class_1);
       }
     }
+    unset($class_1);
+
+    if (!is_null($class_2)) {
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class_2);
+
+      if (!is_null($id)) {
+        $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $id . '-' . $class_2);
+      }
+    }
+    unset($class_2);
+
+    if (!is_null($class_3)) {
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $class_3);
+
+      if (!is_null($id)) {
+        $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, $id . '-' . $class_3);
+      }
+    }
+    unset($class_3);
   }
 
   /**
@@ -2561,6 +1959,12 @@ class c_theme_html extends c_base_return {
       $markup .= $tag->get_text()->get_value_exact();
       $markup .= $child_markup;
       $markup .= '</h6>';
+    }
+    elseif ($type === c_base_markup_tag::TYPE_HX) {
+      $markup .= '<div' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
+      $markup .= $tag->get_text()->get_value_exact();
+      $markup .= $child_markup;
+      $markup .= '</div>';
     }
     elseif ($type === c_base_markup_tag::TYPE_HEADER) {
       $markup .= '<header' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';

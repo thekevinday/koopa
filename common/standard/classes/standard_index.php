@@ -17,6 +17,8 @@ require_once('common/standard/classes/standard_paths.php');
 require_once('common/standard/classes/standard_users.php');
 require_once('common/standard/classes/standard_database.php');
 
+require_once('common/theme/classes/theme_html.php');
+
 /**
  * The standard class for use in index.php or equivalent.
  */
@@ -262,9 +264,11 @@ class c_standard_index extends c_base_return {
     ini_set('opcache.enable', FALSE);
     ini_set('opcache.enable_cli', FALSE);
 
-    // disable output buffering.
+    // enable output buffering to catch any unexpected output.
     $this->original_output_buffering = ini_get('output_buffering');
-    ini_set('output_buffering', FALSE);
+    ini_set('output_buffering', TRUE);
+
+    ob_start();
 
     $this->do_initialize_globals();
 
@@ -657,7 +661,16 @@ class c_standard_index extends c_base_return {
       $method = c_base_http::HTTP_METHOD_NONE;
     }
 
-    // add headers
+    // process any unexpected, but captured, output (if the content is a file, silently ignore output).
+    if (ob_get_length() > 0 && $this->http->is_response_content_file() instanceof c_base_return_false) {
+      $response_content = $this->http->get_response_content()->get_value_exact();
+      $this->http->set_response_content(ob_get_contents(), FALSE);
+      $this->http->set_response_content($response_content);
+      unset($response_content);
+    }
+
+    ob_end_clean();
+
     $this->http->set_response_date();
     $this->http->set_response_content_type('text/html');
     #$this->http->set_response_etag();
@@ -669,7 +682,6 @@ class c_standard_index extends c_base_return {
     $this->http->set_response_vary('Accept');
     $this->http->set_response_vary('Accept-Language');
     #$this->http->set_response_warning('1234 This site is under active development.');
-
 
     // finalize the content prior to sending headers to ensure header accuracy.
     $this->http->encode_response_content();

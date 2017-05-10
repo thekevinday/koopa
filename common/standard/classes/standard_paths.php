@@ -13,17 +13,23 @@ require_once('common/standard/classes/standard_path.php');
  * The standard class for use in index.php or equivalent.
  */
 class c_standard_paths extends c_base_return {
-  protected const PATH_LOGIN                = 'common/standard/paths/u/';
-  protected const PATH_LOGOUT               = 'common/standard/paths/u/';
-  protected const PATH_ACCESS_DENIED        = 'common/standard/internal/';
-  protected const PATH_NOT_FOUND            = 'common/standard/internal/';
-  protected const PATH_BAD_METHOD           = 'common/standard/internal/';
-  protected const PATH_SERVER_ERROR         = 'common/standard/internal/';
-  protected const PATH_OPTIONS_METHOD       = 'common/standard/internal/';
-  protected const PATH_DASHBOARD_USER       = 'common/standard/paths/u/';
-  protected const PATH_DASHBOARD_MANAGEMENT = 'common/standard/paths/m/';
-  protected const PATH_DASHBOARD_ADMINISTER = 'common/standard/paths/a/';
-  protected const PATH_INDEX                = 'common/standard/internal/';
+  const URI_HOME                 = '';
+  const URI_LOGIN                = 'u/login';
+  const URI_LOGOUT               = 'u/logout';
+  const URI_DASHBOARD_USER       = 'u/dashboard';
+  const URI_DASHBOARD_MANAGEMENT = 'm/dashboard';
+  const URI_DASHBOARD_ADMINISTER = 'a/dashboard';
+  const URI_USER_CREATE          = 'u/create';
+  const URI_USER_VIEW            = 'u/view';
+  const URI_USER_SETTINGS        = 'u/settings';
+  const URI_USER_LOCK            = 'u/lock';
+  const URI_USER_UNLOCK          = 'u/unlock';
+  const URI_USER_DELETE          = 'u/create';
+
+  protected const PATH_INTERNAL   = 'common/standard/internal/';
+  protected const PATH_USER       = 'common/standard/paths/u/';
+  protected const PATH_MANAGEMENT = 'common/standard/paths/m/';
+  protected const PATH_ADMINISTER = 'common/standard/paths/a/';
 
   protected const NAME_LOGIN                = 'login';
   protected const NAME_LOGOUT               = 'logout';
@@ -36,6 +42,12 @@ class c_standard_paths extends c_base_return {
   protected const NAME_DASHBOARD_MANAGEMENT = 'dashboard';
   protected const NAME_DASHBOARD_ADMINISTER = 'dashboard';
   protected const NAME_INDEX                = 'index';
+  protected const NAME_USER_CREATE          = 'user_create';
+  protected const NAME_USER_VIEW            = 'user_view';
+  protected const NAME_USER_SETTINGS        = 'user_settings';
+  protected const NAME_USER_LOCK            = 'user_lock';
+  protected const NAME_USER_UNLOCK          = 'user_unlock';
+  protected const NAME_USER_DELETE          = 'user_delete';
 
   protected const HANDLER_LOGIN                = 'c_standard_path_user_login';
   protected const HANDLER_LOGOUT               = 'c_standard_path_user_logout';
@@ -48,17 +60,15 @@ class c_standard_paths extends c_base_return {
   protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_path_management_dashboard';
   protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_path_administer_dashboard';
   protected const HANDLER_INDEX                = 'c_standard_path_index';
-
-  protected const URI_LOGIN                = '/u/login';
-  protected const URI_LOGOUT               = '/u/logout';
-  protected const URI_DASHBOARD_USER       = '/u/dashboard';
-  protected const URI_DASHBOARD_MANAGEMENT = '/m/dashboard';
-  protected const URI_DASHBOARD_ADMINISTER = '/a/dashboard';
+  protected const HANDLER_USER_CREATE          = 'c_standard_path_user_create';
+  protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
+  protected const HANDLER_USER_SETTINGS        = 'c_standard_path_user_settings';
+  protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
+  protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
+  protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
 
   protected const SCRIPT_EXTENSION = '.php';
-
-  // a class name to prepend to css classes or id attributes.
-  protected const CSS_BASE = 'standard-';
+  protected const WILDCARD_PATH    = '/%';
 
   protected $handler;
   protected $paths;
@@ -68,7 +78,7 @@ class c_standard_paths extends c_base_return {
   protected $session;
   protected $settings;
 
-  protected $alias;
+  protected $language_alias;
 
   protected $output;
 
@@ -86,7 +96,7 @@ class c_standard_paths extends c_base_return {
     $this->session  = NULL;
     $this->settings = NULL;
 
-    $this->alias = NULL;
+    $this->language_alias = NULL;
 
     $this->output = NULL;
   }
@@ -103,7 +113,7 @@ class c_standard_paths extends c_base_return {
     unset($this->session);
     unset($this->settings);
 
-    unset($this->alias);
+    unset($this->language_alias);
 
     unset($this->output);
 
@@ -138,7 +148,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_login() {
-    return $this->pr_include_path(self::PATH_LOGIN, self::NAME_LOGIN, self::HANDLER_LOGIN);
+    return $this->pr_include_path(self::PATH_USER, self::NAME_LOGIN, self::HANDLER_LOGIN);
   }
 
   /**
@@ -148,7 +158,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_logout() {
-    return $this->pr_include_path(self::PATH_LOGOUT, self::NAME_LOGOUT, self::HANDLER_LOGOUT);
+    return $this->pr_include_path(self::PATH_USER, self::NAME_LOGOUT, self::HANDLER_LOGOUT);
   }
 
   /**
@@ -158,7 +168,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_not_found() {
-    return $this->pr_include_path(self::PATH_NOT_FOUND, self::NAME_NOT_FOUND, self::HANDLER_NOT_FOUND);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_NOT_FOUND, self::HANDLER_NOT_FOUND);
   }
 
   /**
@@ -168,7 +178,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_access_denied() {
-    return $this->pr_include_path(self::PATH_ACCESS_DENIED, self::NAME_ACCESS_DENIED, self::HANDLER_ACCESS_DENIED);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_ACCESS_DENIED, self::HANDLER_ACCESS_DENIED);
   }
 
   /**
@@ -178,7 +188,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_bad_method() {
-    return $this->pr_include_path(self::PATH_BAD_METHOD, self::NAME_BAD_METHOD, self::HANDLER_BAD_METHOD);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_BAD_METHOD, self::HANDLER_BAD_METHOD);
   }
 
   /**
@@ -188,7 +198,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_server_error() {
-    return $this->pr_include_path(self::PATH_SERVER_ERROR, self::NAME_SERVER_ERROR, self::HANDLER_SERVER_ERROR);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_SERVER_ERROR, self::HANDLER_SERVER_ERROR);
   }
 
   /**
@@ -198,7 +208,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_options_method() {
-    return $this->pr_include_path(self::PATH_OPTIONS_METHOD, self::NAME_OPTIONS_METHOD, self::HANDLER_OPTIONS_METHOD);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_OPTIONS_METHOD, self::HANDLER_OPTIONS_METHOD);
   }
 
   /**
@@ -208,7 +218,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_index() {
-    return $this->pr_include_path(self::PATH_INDEX, self::NAME_INDEX, self::HANDLER_INDEX);
+    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_INDEX, self::HANDLER_INDEX);
   }
 
   /**
@@ -233,27 +243,27 @@ class c_standard_paths extends c_base_return {
     // @todo: these parameter errors might need a custom service unavailable and system log support.
     if (!($http instanceof c_base_http)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($database instanceof c_base_database)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($session instanceof c_base_session)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!is_array($settings)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($session instanceof c_base_session)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_path_executed', $error);
+      return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     $this->http = &$http;
@@ -268,9 +278,16 @@ class c_standard_paths extends c_base_return {
     // require HTTPS for access to any part of this website.
     if (!isset($_SERVER["HTTPS"])) {
       // @todo: redirect to https version of requested uri.
-      $failure_path = $this->get_handler_not_found();
+      $path_not_found = $this->get_handler_not_found();
 
-      return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+      $path_tree = new c_base_path_tree();
+      $path_tree->set_id_group(0);
+      $path_tree->set_items(array());
+
+      $path_not_found->set_path_tree($path_tree);
+      unset($path_tree);
+
+      return $path_not_found->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
 
 
@@ -280,7 +297,7 @@ class c_standard_paths extends c_base_return {
 
     // load the http method.
     $method = $this->http->get_request(c_base_http::REQUEST_METHOD)->get_value_exact();
-      if (isset($method['data']) && is_int($method['data'])) {
+    if (isset($method['data']) && is_int($method['data'])) {
       $method = $method['data'];
     }
     else {
@@ -293,29 +310,62 @@ class c_standard_paths extends c_base_return {
     $handler_settings = $this->paths->find_path($path)->get_value();
     unset($path);
 
-    if (!is_array($handler_settings)) {
-      // for all invalid pages, report bad method if not HTTP GET or HTTP POST.
+    if (!isset($handler_settings['handler'])) {
       if ($method !== c_base_http::HTTP_METHOD_GET && $method !== c_base_http::HTTP_METHOD_POST) {
-        unset($method);
-
-        $failure_path = $this->get_handler_bad_method();
-
-        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+        // for all invalid pages, report bad method if not HTTP GET or HTTP POST.
+        $path_failsafe = $this->get_handler_bad_method();
+      }
+      else {
+        $path_failsafe = $this->get_handler_not_found();
       }
       unset($method);
 
-      $not_found = $this->get_handler_not_found();
-      return $not_found->do_execute($this->http, $this->database, $this->session, $this->settings);
+      $path_tree = new c_base_path_tree();
+      $path_tree->set_id_group(0);
+      if (isset($handler_settings['path_tree'])) {
+        $path_tree->set_items($handler_settings['path_tree']);
+
+        if (isset($handler_settings['id_group'])) {
+          $path_tree->set_id_group($handler_settings['id_group']);
+        }
+      }
+      else {
+        $path_tree->set_items(array());
+      }
+
+      $path_failsafe->set_path_tree($path_tree);
+      unset($path_tree);
+
+      return $path_failsafe->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
+
+
+    // prepare the path tree object.
+    $path_tree = new c_base_path_tree();
+    if (isset($handler_settings['path_tree'])) {
+      $path_tree->set_items($handler_settings['path_tree']);
+    }
+    else {
+      $path_tree->set_items(array());
+    }
+
+    if (isset($handler_settings['id_group'])) {
+      $path_tree->set_id_group($handler_settings['id_group']);
+    }
+    else {
+      $path_tree->set_id_group(0);
+    }
+
 
     // validate allowed methods.
     if (isset($handler_settings['methods']) && is_array($handler_settings['methods'])) {
       if (!array_key_exists($method, $handler_settings['methods'])) {
         unset($method);
 
-        $failure_path = $this->get_handler_bad_method();
+        $path_bad_method = $this->get_handler_bad_method();
+        $path_bad_method->set_path_tree($path_tree);
 
-        return $failure_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+        return $path_bad_method->do_execute($this->http, $this->database, $this->session, $this->settings);
       }
     }
 
@@ -333,6 +383,11 @@ class c_standard_paths extends c_base_return {
         $options_method_path->set_allowed_methods(array());
       }
 
+      $options_method_path->set_path_tree($path_tree);
+
+      unset($handler_settings);
+      unset($path_tree);
+
       return $options_method_path->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
 
@@ -349,7 +404,28 @@ class c_standard_paths extends c_base_return {
         $handler_settings['code'] = c_base_http_status::MOVED_PERMANENTLY;
       }
 
-      $redirect = c_standard_path::s_create_redirect($handler_settings['redirect'], $handler_settings['code'], FALSE);
+
+      $redirect_path = $handler_settings['redirect'];
+      if (isset($handler_settings['redirect_partial']) && $handler_settings['redirect_partial']) {
+        if (isset($handler_settings['extra_slashes']) && $handler_settings['extra_slashes']) {
+          $path_original = $this->http->get_request_uri_relative('')->get_value_exact();
+          $path_modified = $this->http->get_request_uri_relative($settings['base_path'])->get_value_exact();
+
+          // if path orignal and modified are the same, then the provided base url has extra '/' in it.
+          if ($path_original == $path_modified) {
+            $redirect_path = preg_replace('@^' . preg_quote($this->settings['base_path'], '@') . '@i', '', '/' . $redirect_path);
+            $redirect_path = preg_replace('@/$@', '', $redirect_path);
+          }
+          unset($path_original);
+          unset($path_modified);
+        }
+
+        $redirect_path = $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . $redirect_path;
+      }
+
+      $redirect = c_standard_path::s_create_redirect($redirect_path, $handler_settings['code'], FALSE);
+      unset($redirect_path);
+
       return $redirect->do_execute($this->http, $this->database, $this->session, $this->settings);
     }
     else {
@@ -359,12 +435,18 @@ class c_standard_paths extends c_base_return {
 
       // execute path handler, using custom-language if defined.
       if (empty($handler_settings['handler'])) {
-        return $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
-      }
-      elseif (is_string($this->alias)) {
-        @include_once($handler_settings['include_directory'] . $this->alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+        $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
+        $path_server_error->set_path_tree($path_tree);
 
-        $handler_class = $handler_settings['handler'] . '_' . $this->alias;
+        unset($handler_settings);
+        unset($path_tree);
+
+        return $path_server_error;
+      }
+      elseif (is_string($this->language_alias)) {
+        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+
+        $handler_class = $handler_settings['handler'] . '_' . $this->language_alias;
         if (class_exists($handler_class)) {
           $this->handler = new $handler_class();
 
@@ -375,19 +457,33 @@ class c_standard_paths extends c_base_return {
 
           // attempt to fallback to default handler if the language-specific handler class is not found.
           if (!class_exists($handler_settings['handler'])) {
-            return $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
+            $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
+            $path_server_error->set_path_tree($path_tree);
+
+            unset($handler_settings);
+            unset($path_tree);
+
+            return $path_server_error;
           }
           else {
             $this->handler = new $handler_settings['handler']();
+            $this->handler->set_path_tree($path_tree);
           }
         }
       }
       else {
         if (class_exists($handler_settings['handler'])) {
           $this->handler = new $handler_settings['handler']();
+          $this->handler->set_path_tree($path_tree);
         }
         else {
-          return $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
+          $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
+          $path_server_error->set_path_tree($path_tree);
+
+          unset($handler_settings);
+          unset($path_tree);
+
+          return $path_server_error;
         }
       }
 
@@ -400,6 +496,7 @@ class c_standard_paths extends c_base_return {
       }
     }
     unset($handler_settings);
+    unset($path_tree);
 
 
     return $this->pr_paths_normal($method);
@@ -416,17 +513,31 @@ class c_standard_paths extends c_base_return {
   protected function pr_paths_create() {
     $this->paths = new c_base_paths();
 
-    // set root path to be the user dashboard.
-    $this->paths->add_path('', self::HANDLER_INDEX, self::PATH_INDEX, self::NAME_INDEX);
+    // set root path.
+    $this->paths->add_path(self::URI_HOME, self::HANDLER_INDEX, self::PATH_INTERNAL, self::NAME_INDEX);
 
     // create login/logout paths
-    $this->paths->add_path(self::URI_LOGIN, self::HANDLER_LOGIN, self::PATH_LOGIN, self::NAME_LOGIN);
-    $this->paths->add_path(self::URI_LOGOUT, self::HANDLER_LOGOUT, self::PATH_LOGOUT, self::NAME_LOGOUT);
+    $this->paths->add_path(self::URI_LOGIN, self::HANDLER_LOGIN, self::PATH_USER, self::NAME_LOGIN);
+    $this->paths->add_path(self::URI_LOGOUT, self::HANDLER_LOGOUT, self::PATH_USER, self::NAME_LOGOUT);
 
     // dashboards
-    $this->paths->add_path(self::URI_DASHBOARD_USER, self::HANDLER_USER_DASHBOARD, self::PATH_DASHBOARD_USER, self::NAME_DASHBOARD_USER);
-    $this->paths->add_path(self::URI_DASHBOARD_MANAGEMENT, self::HANDLER_MANAGEMENT_DASHBOARD, self::PATH_DASHBOARD_MANAGEMENT, self::NAME_DASHBOARD_MANAGEMENT);
-    $this->paths->add_path(self::URI_DASHBOARD_ADMINISTER, self::HANDLER_ADMINISTER_DASHBOARD, self::PATH_DASHBOARD_ADMINISTER, self::NAME_DASHBOARD_ADMINISTER);
+    $this->paths->add_path(self::URI_DASHBOARD_USER, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_DASHBOARD_USER);
+    $this->paths->add_path(self::URI_DASHBOARD_MANAGEMENT, self::HANDLER_MANAGEMENT_DASHBOARD, self::PATH_MANAGEMENT, self::NAME_DASHBOARD_MANAGEMENT);
+    $this->paths->add_path(self::URI_DASHBOARD_ADMINISTER, self::HANDLER_ADMINISTER_DASHBOARD, self::PATH_ADMINISTER, self::NAME_DASHBOARD_ADMINISTER);
+
+    // user paths
+    $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
+    $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_CREATE);
+    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
+    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_VIEW);
+    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
+    $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_LOCK);
+    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
+    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_UNLOCK);
+    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
+    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_DELETE);
   }
 
   /**
@@ -459,8 +570,12 @@ class c_standard_paths extends c_base_return {
 
         $this->http->set_response_status(c_base_http_status::FORBIDDEN);
 
-        $login_path = $this->get_handler_login();
-        return $login_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+        $path_login = $this->get_handler_login();
+        if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+          $path_login->set_path_tree($this->handler->get_path_tree());
+        }
+
+        return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
       }
       else {
         if ($id_group === c_base_ascii::LOWER_U) {
@@ -470,15 +585,23 @@ class c_standard_paths extends c_base_return {
           if (class_exists(self::HANDLER_LOGOUT) && (is_subclass_of($this->handler, self::HANDLER_LOGOUT) || is_a($this->handler, self::HANDLER_LOGOUT, TRUE))) {
             // if the user is not logged in. then provide a page not found for logout path.
             if (!$this->session->is_logged_in()->get_value_exact()) {
+              $path_not_found = $this->get_handler_not_found();
+              if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+                $path_not_found->set_path_tree($this->handler->get_path_tree());
+              }
 
-              return $this->get_handler_not_found()->do_execute($this->http, $this->database, $this->session, $this->settings);
+              return $path_not_found->do_execute($this->http, $this->database, $this->session, $this->settings);;
             }
           }
 
           $this->http->set_response_status(c_base_http_status::FORBIDDEN);
 
-          $login_path = $this->get_handler_login();
-          return $login_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+          $path_login = $this->get_handler_login();
+          if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+            $path_login->set_path_tree($this->handler->get_path_tree());
+          }
+
+          return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
         }
 
         // some special case paths always provide login prompt along with access denied.
@@ -487,8 +610,12 @@ class c_standard_paths extends c_base_return {
 
           $this->http->set_response_status(c_base_http_status::FORBIDDEN);
 
-          $login_path = $this->get_handler_login();
-          return $login_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+          $path_login = $this->get_handler_login();
+          if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+            $path_login->set_path_tree($this->handler->get_path_tree());
+          }
+
+          return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
         }
       }
     }
@@ -500,19 +627,23 @@ class c_standard_paths extends c_base_return {
     // return access denied or page not found depending on path and privacy settings.
     if ($id_group === c_base_ascii::LOWER_C || $id_group === c_base_ascii::LOWER_D || $id_group === c_base_ascii::LOWER_T || $id_group === c_base_ascii::LOWER_X || $id_group === c_base_ascii::LOWER_F) {
       // these always return not found for these paths.
-      $failsafe_path = $this->get_handler_not_found();
+      $path_failsafe = $this->get_handler_not_found();
     }
     elseif ($this->handler->is_private()->get_value_exact() && $id_group !== c_base_ascii::NULL) {
       // non private, and non-special case paths should return access denied as per normal behavior.
-      $failsafe_path = $this->get_handler_access_denied();
+      $path_failsafe = $this->get_handler_access_denied();
     }
     else {
       // all other case, return not found.
-      $failsafe_path = $this->get_handler_not_found();
+      $path_failsafe = $this->get_handler_not_found();
     }
     unset($id_group);
 
-    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+    if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+      $path_failsafe->set_path_tree($this->handler->get_path_tree());
+    }
+
+    return $path_failsafe->do_execute($this->http, $this->database, $this->session, $this->settings);
   }
 
   /**
@@ -526,9 +657,13 @@ class c_standard_paths extends c_base_return {
     // @todo
 
     // always return not found, do not inform user if the access is denied.
-    $failsafe_path = $this->get_handler_not_found();
+    $path_failsafe = $this->get_handler_not_found();
 
-    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+    if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+      $path_failsafe->set_path_tree($this->handler->get_path_tree());
+    }
+
+    return $path_failsafe->do_execute($this->http, $this->database, $this->session, $this->settings);
   }
 
   /**
@@ -542,15 +677,17 @@ class c_standard_paths extends c_base_return {
     // @todo
 
     // always return not found, do not inform user if the access is denied.
-    $failsafe_path = $this->get_handler_not_found();
+    $path_failsafe = $this->get_handler_not_found();
 
-    return $failsafe_path->do_execute($this->http, $this->database, $this->session, $this->settings);
+    if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+      $path_failsafe->set_path_tree($this->handler->get_path_tree());
+    }
+
+    return $path_failsafe->do_execute($this->http, $this->database, $this->session, $this->settings);
   }
 
   /**
    * Load and save the current preferred language alias.
-   *
-   * This will be stored in $this->alias.
    */
   protected function pr_get_language_alias() {
     $aliases = array();
@@ -564,7 +701,7 @@ class c_standard_paths extends c_base_return {
         unset($aliases);
         unset($languages);
 
-        $this->alias = NULL;
+        $this->language_alias = NULL;
         return;
       }
 
@@ -577,11 +714,11 @@ class c_standard_paths extends c_base_return {
       unset($aliases);
       unset($languages);
 
-      $this->alias = NULL;
+      $this->language_alias = NULL;
       return;
     }
 
-    $this->alias = end($aliases);
+    $this->language_alias = end($aliases);
   }
 
   /**
@@ -610,14 +747,14 @@ class c_standard_paths extends c_base_return {
     require_once($path . $name . self::SCRIPT_EXTENSION);
 
     // use default if no aliases are found.
-    if (is_null($this->alias)) {
+    if (is_null($this->language_alias)) {
       return new $class();
     }
 
     // use include_once instead of require_require to allow for failsafe behavior.
-    @include_once($path . $this->alias . '/' . $name . self::SCRIPT_EXTENSION);
+    @include_once($path . $this->language_alias . '/' . $name . self::SCRIPT_EXTENSION);
 
-    $language_class = $class . '_' . $this->alias;
+    $language_class = $class . '_' . $this->language_alias;
     if (class_exists($language_class)) {
       return new $language_class();
     }
