@@ -212,6 +212,102 @@ class c_base_array extends c_base_rfc_string {
   }
 
   /**
+   * Return the first item in the array after calling reset().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_reset() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(reset($this->items));
+  }
+
+  /**
+   * Return the first item in the array after calling current().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_current() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(current($this->items));
+  }
+
+  /**
+   * Return the first item in the array after calling each().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_each() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(each($this->items));
+  }
+
+  /**
+   * Return the first item in the array after calling next().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_next() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(next($this->items));
+  }
+
+  /**
+   * Return the first item in the array after calling prev().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_previous() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(prev($this->items));
+  }
+
+  /**
+   * Return the first item in the array after calling end().
+   *
+   * @return c_base_return_status|c_base_return_value
+   *   Value on success, FALSE otherwise.
+   *   FALSE without error bit set is returned if no items are defined.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function get_item_end() {
+    if (!is_array($this->items) || empty($this->items)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_value::s_new(end($this->items));
+  }
+
+  /**
    * Return the item at a specific index in the array.
    *
    * @param string $key

@@ -23,9 +23,6 @@ class c_standard_path_index extends c_standard_path {
     $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
     $this->breadcrumbs->set_item($item);
     unset($item);
-
-    // @todo: check the url path and attempt to get a breadcrumb for the current path.
-    //        this will require external functions because the breadcrumb language specific text must be loaded.
   }
 
   /**

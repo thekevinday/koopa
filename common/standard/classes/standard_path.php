@@ -132,7 +132,7 @@ class c_standard_path extends c_base_path {
    *   If not defined, then NULL is returned.
    *   NULL with the error bit set is returned on error.
    */
-  protected function get_breadcrumbs() {
+  public function get_breadcrumbs() {
     if (!($this->breadcrumbs instanceof c_base_menu_item)) {
       $this->pr_build_breadcrumbs();
     }
@@ -1067,7 +1067,7 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_menu_header() {
-    $menu = $this->pr_include_menu(self::PATH_MENU_HEADER, self::NAME_MENU_HEADER, self::HANDLER_MENU_HEADER);
+    $menu = $this->pr_include_path(self::PATH_MENU_HEADER, self::NAME_MENU_HEADER, self::HANDLER_MENU_HEADER);
     return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
   }
 
@@ -1089,7 +1089,7 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_menu_utility(&$http, &$database, &$session, $settings) {
-    $menu = $this->pr_include_menu(self::PATH_MENU_UTILITY, self::NAME_MENU_UTILITY, self::HANDLER_MENU_UTILITY);
+    $menu = $this->pr_include_path(self::PATH_MENU_UTILITY, self::NAME_MENU_UTILITY, self::HANDLER_MENU_UTILITY);
     return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
   }
 
@@ -1111,7 +1111,7 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_menu_breadcrumbs(&$http, &$database, &$session, $settings) {
-    $menu = $this->pr_include_menu(self::PATH_MENU_BREADCRUMBS, self::NAME_MENU_BREADCRUMBS, self::HANDLER_MENU_BREADCRUMBS);
+    $menu = $this->pr_include_path(self::PATH_MENU_BREADCRUMBS, self::NAME_MENU_BREADCRUMBS, self::HANDLER_MENU_BREADCRUMBS);
     return $menu->do_build($http, $database, $session, $settings, $this->breadcrumbs);
   }
 
@@ -1133,7 +1133,7 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_menu_content(&$http, &$database, &$session, $settings) {
-    $menu = $this->pr_include_menu(self::PATH_MENU_CONTENT, self::NAME_MENU_CONTENT, self::HANDLER_MENU_CONTENT);
+    $menu = $this->pr_include_path(self::PATH_MENU_CONTENT, self::NAME_MENU_CONTENT, self::HANDLER_MENU_CONTENT);
     return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
   }
 
@@ -1155,7 +1155,7 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_menu_footer(&$http, &$database, &$session, $settings) {
-    $menu = $this->pr_include_menu(self::PATH_MENU_FOOTER, self::NAME_MENU_FOOTER, self::HANDLER_MENU_FOOTER);
+    $menu = $this->pr_include_path(self::PATH_MENU_FOOTER, self::NAME_MENU_FOOTER, self::HANDLER_MENU_FOOTER);
     return $menu->do_build($this->http, $this->database, $this->session, $this->settings);
   }
 
@@ -1273,7 +1273,7 @@ class c_standard_path extends c_base_path {
    * @return c_base_meni
    *   The created c_base_meni object.
    */
-  protected function pr_include_menu($path, $name, $class) {
+  protected function pr_include_path($path, $name, $class) {
     require_once($path . $name . self::SCRIPT_EXTENSION);
 
     // use default if no aliases are found.
@@ -1294,3 +1294,4 @@ class c_standard_path extends c_base_path {
     return new $class();
   }
 }
+

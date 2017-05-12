@@ -330,6 +330,10 @@ class c_base_paths extends c_base_return {
     $path_tree = &$this->paths[$id_group];
     $path_tree_history = array();
 
+    if (is_array($this->root)) {
+      $path_tree_history[] = $this->root;
+    }
+
     // @fixme: the current design needs to handle multiple possible wildcard paths when searching (such as '/a/b/c/%', '/a/%/c', where '/a/b/c/%' would prevent '/a/%/c' from ever matching).
     $path_part = array_shift($path_parts);
     if (is_array($path_tree) && (array_key_exists($path_part, $path_tree) || array_key_exists('%', $path_tree))) {

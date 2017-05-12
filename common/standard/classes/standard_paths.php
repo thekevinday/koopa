@@ -331,6 +331,12 @@ class c_standard_paths extends c_base_return {
       }
       else {
         $path_tree->set_items(array());
+
+        $handler_settings_index = $this->paths->find_path('')->get_value();
+        if (isset($handler_settings_index['handler'])) {
+          $path_tree->set_item_append($handler_settings_index);
+        }
+        unset($handler_settings_index);
       }
 
       $path_failsafe->set_path_tree($path_tree);
