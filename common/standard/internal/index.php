@@ -15,7 +15,7 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_path_index extends c_standard_path {
 
   /**
-   * Build the breadcrumb.
+   * Implementation of pr_build_breadcrumbs().
    */
   protected function pr_build_breadcrumbs() {
     $this->breadcrumbs = new c_base_menu_item();
@@ -23,6 +23,8 @@ class c_standard_path_index extends c_standard_path {
     $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
     $this->breadcrumbs->set_item($item);
     unset($item);
+
+    return new c_base_return_true();
   }
 
   /**

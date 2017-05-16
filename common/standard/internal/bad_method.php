@@ -14,10 +14,20 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_path_bad_method extends c_standard_path {
 
   /**
-   * Build the breadcrumb.
+   * Implementation of pr_build_breadcrumbs().
    */
   protected function pr_build_breadcrumbs() {
-    $handler_settings = $this->path_tree->get_item_reset()->get_value();
+    if (!is_object($this->path_tree)) {
+      return parent::pr_build_breadcrumbs();
+    }
+
+    $handler_settings = $this->path_tree->get_item_reset();
+    if ($handler_settings instanceof c_base_return_false) {
+      unset($handler_settings);
+      return parent::pr_build_breadcrumbs();
+    }
+
+    $handler_settings = $handler_settings->get_value();
 
     if (!isset($handler_settings['include_name']) || !is_string($handler_settings['include_name'])) {
       return parent::pr_build_breadcrumbs();
@@ -57,6 +67,8 @@ class c_standard_path_bad_method extends c_standard_path {
 
     $this->breadcrumbs = $handler->get_breadcrumbs();
     unset($handler);
+
+    return new c_base_return_true();
   }
 
   /**

@@ -441,9 +441,11 @@ class c_standard_paths extends c_base_return {
 
       // execute path handler, using custom-language if defined.
       if (empty($handler_settings['handler'])) {
-        $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
-        $path_server_error->set_path_tree($path_tree);
+        $handler_server_error = $this->get_handler_server_error();
+        $handler_server_error->set_path_tree($path_tree);
+        $path_server_error = $handler_server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
 
+        unset($handler_server_error);
         unset($handler_settings);
         unset($path_tree);
 
@@ -463,9 +465,11 @@ class c_standard_paths extends c_base_return {
 
           // attempt to fallback to default handler if the language-specific handler class is not found.
           if (!class_exists($handler_settings['handler'])) {
-            $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
-            $path_server_error->set_path_tree($path_tree);
+            $handler_server_error = $this->get_handler_server_error();
+            $handler_server_error->set_path_tree($path_tree);
+            $path_server_error = $handler_server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
 
+            unset($handler_server_error);
             unset($handler_settings);
             unset($path_tree);
 
@@ -483,9 +487,11 @@ class c_standard_paths extends c_base_return {
           $this->handler->set_path_tree($path_tree);
         }
         else {
-          $path_server_error = $this->get_handler_server_error()->do_execute($this->http, $this->database, $this->session, $this->settings);
-          $path_server_error->set_path_tree($path_tree);
+          $handler_server_error = $this->get_handler_server_error();
+          $handler_server_error->set_path_tree($path_tree);
+          $path_server_error = $handler_server_error->do_execute($this->http, $this->database, $this->session, $this->settings);
 
+          unset($handler_server_error);
           unset($handler_settings);
           unset($path_tree);
 
@@ -533,17 +539,17 @@ class c_standard_paths extends c_base_return {
 
     // user paths
     $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
-    $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_CREATE);
+    $this->paths->add_path(self::URI_USER_CREATE . self::WILDCARD_PATH, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
     $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
-    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_VIEW);
+    $this->paths->add_path(self::URI_USER_VIEW . self::WILDCARD_PATH, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
     $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
-    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_SETTINGS . self::WILDCARD_PATH, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
     $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
-    $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_LOCK);
+    $this->paths->add_path(self::URI_USER_LOCK . self::WILDCARD_PATH, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
     $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
-    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_UNLOCK);
+    $this->paths->add_path(self::URI_USER_UNLOCK . self::WILDCARD_PATH, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
     $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
-    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER . self::WILDCARD_PATH, self::NAME_USER_DELETE);
+    $this->paths->add_path(self::URI_USER_DELETE . self::WILDCARD_PATH, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
   }
 
   /**

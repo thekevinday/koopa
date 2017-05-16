@@ -199,6 +199,10 @@ class c_standard_path extends c_base_path {
 
   /**
    * Build the breadcrumb.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_breadcrumbs() {
     $this->breadcrumbs = new c_base_menu_item();
@@ -221,6 +225,8 @@ class c_standard_path extends c_base_path {
     #}
 
     #$this->get_breadcrumbs();
+
+    return new c_base_return_true();
   }
 
   /**
