@@ -136,7 +136,7 @@ create view s_users.v_users_self_update with (security_barrier=true) as
 
 /**** anonymous user has uid = 1 ****/
 create view public.v_users_self with (security_barrier=true) as
-  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, can_manage_roles, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
     where not is_deleted and id = 1;
 
 
