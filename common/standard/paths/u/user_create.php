@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user create.
  */
 
 require_once('common/base/classes/base_error.php');

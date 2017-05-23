@@ -79,10 +79,11 @@ class c_standard_index extends c_base_return {
     $this->settings['ldap_fields']        = array();
 
     // base settings
-    $this->settings['base_scheme'] = 'https';
-    $this->settings['base_host']   = 'localhost';
-    $this->settings['base_port']   = ''; // @todo: implement support for thus such that base_port is something like: ':8080' (as opposed to '8080').
-    $this->settings['base_path']   = $this->settings['cookie_path']; // must end in a trailing slash.
+    $this->settings['base_scheme']      = 'https';
+    $this->settings['base_host']        = 'localhost';
+    $this->settings['base_port']        = ''; // @todo: implement support for thus such that base_port is something like: ':8080' (as opposed to '8080').
+    $this->settings['base_path']        = '/'; // must end in a trailing slash.
+    $this->settings['base_path_prefix'] = ''; // identical to base_path, except there is no trailing slash.
 
     if (!isset($_SERVER["HTTPS"])) {
       $this->settings['base_scheme'] = 'http';
@@ -628,7 +629,6 @@ class c_standard_index extends c_base_return {
 
 
 
-
     // send the session cookie if a session id is specified.
     $session_id = $this->session->get_session_id()->get_value_exact();
     if (!empty($session_id)) {
@@ -662,7 +662,7 @@ class c_standard_index extends c_base_return {
     }
 
     // process any unexpected, but captured, output (if the content is a file, silently ignore output).
-    if (ob_get_length() > 0 && $this->http->is_response_content_file() instanceof c_base_return_false) {
+    if (ob_get_length() > 0 && $this->http->is_response_content_file()->get_value() === FALSE) {
       $response_content = $this->http->get_response_content()->get_value_exact();
       $this->http->set_response_content(ob_get_contents(), FALSE);
       $this->http->set_response_content($response_content);

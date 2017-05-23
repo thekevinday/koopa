@@ -132,15 +132,15 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
 
     if ($code === self::INVALID_ARGUMENT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('無効な引数 :{argument_name} が指定されています' . $function_name_string . '。');
+        return c_base_return_string::s_new('無効な引数 :{argument_name} が指定されています' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
-        return c_base_return_string::s_new('無効な引数が指定されています' . $function_name_string . '。');
+        return c_base_return_string::s_new('無効な引数が指定されています' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
     }
     elseif ($code === self::INVALID_FORMAT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('引数 :{format_name} の形式が無効です' . $function_name_string . '。:{expected_format}');
+        return c_base_return_string::s_new('引数 :{format_name} の形式が無効です' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。:{expected_format}');
       }
       else {
         return c_base_return_string::s_new('無効な形式が指定されています。');
@@ -148,7 +148,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::INVALID_SESSION) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('要求されたセッションは無効です' . $function_name_string . '.:');
+        return c_base_return_string::s_new('要求されたセッションは無効です' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('要求されたセッションは無効です。');
@@ -156,7 +156,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('変数 :{variable_name} は無効です' . $function_name_string . '。');
+        return c_base_return_string::s_new('変数 :{variable_name} は無効です' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('無効な変数が指定されています。');
@@ -180,15 +180,23 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::FUNCTION_FAILURE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('関数 :{function_name} は実行に失敗しました。');
+        return c_base_return_string::s_new('関数 :{function_name} は実行に失敗しました' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('関数の実行に失敗しました。');
       }
     }
+    elseif ($code === self::NOT_FOUND) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('見つかりません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('見つかりません。');
+      }
+    }
     elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('配列 :{index_name} に索引 :{array_name} が見つかりませんでした。' . $function_name_string . '。');
+        return c_base_return_string::s_new('配列 :{index_name} に索引 :{array_name} が見つかりませんでした' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('指定された配列内のインデックスの検索に失敗しました。');
@@ -196,7 +204,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::NOT_FOUND_FILE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('ファイル :{file_name} が見つかりませんでした、またはアクセスできません' . $function_name_string . '。');
+        return c_base_return_string::s_new('ファイル :{file_name} が見つかりませんでした、またはアクセスできません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません。');
@@ -204,15 +212,23 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::NOT_FOUND_DIRECTORY) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('ディレクトリ :{directory_name} が見つかりませんでした、またはアクセスできません' . $function_name_string . '。');
+        return c_base_return_string::s_new('ディレクトリ :{directory_name} が見つかりませんでした、またはアクセスできません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません。');
       }
     }
+    elseif ($code === self::NOT_FOUND_FILE) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('パス ：{path_name} が見つかりませんでした' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('パスが見つかりません。');
+      }
+    }
     elseif ($code === self::NO_CONNECTION) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('リソース :{resource_name} は接続されていません' . $function_name_string . '。');
+        return c_base_return_string::s_new('リソース :{resource_name} は接続されていません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('リソースが接続されていません。');
@@ -220,7 +236,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::NO_SUPPORT) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('機能 :{functionality_name} は現在サポートされていません。' . $function_name_string . '。');
+        return c_base_return_string::s_new('機能 :{functionality_name} は現在サポートされていません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('要求された機能はサポートされていません。');
@@ -236,7 +252,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('データベース :{database_name} は接続されていません' . $function_name_string . '。');
+        return c_base_return_string::s_new('データベース :{database_name} は接続されていません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('データベースが接続されていません。');
@@ -244,7 +260,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     }
     elseif ($code === self::POSTGRESQL_NO_RESOURCE) {
       if ($arguments === TRUE) {
-        return c_base_return_string::s_new('データベースリソースがありません' . $function_name_string . '。');
+        return c_base_return_string::s_new('データベースリソースがありません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
       }
       else {
         return c_base_return_string::s_new('データベースリソースは使用できません。.');
@@ -288,6 +304,14 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
       }
       else {
         return c_base_return_string::s_new('管理上の理由からアクセスが拒否されました。');
+      }
+    }
+    elseif ($code === self::SERVER_ERROR) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('サーバーエラーが発生しました, :{operation_name} ' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('サーバーエラーが発生しました。');
       }
     }
 

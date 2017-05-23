@@ -205,7 +205,7 @@ class c_base_log extends c_base_return_array {
    *
    * @return c_base_return_status|c_base_return_int
    *   The type integer on success.
-   *   FALSE with error bit set on error.
+   *   FALSE with error bit set is returned on error.
    */
   public function get_type() {
     if (!is_int($this->type)) {
@@ -220,7 +220,7 @@ class c_base_log extends c_base_return_array {
    *
    * @return c_base_return_status|c_base_return_int
    *   The type integer on success.
-   *   FALSE with error bit set on error.
+   *   FALSE with error bit set is returned on error.
    */
   public function get_type_sub() {
     if (!is_int($this->type_sub)) {
@@ -235,7 +235,7 @@ class c_base_log extends c_base_return_array {
    *
    * @return c_base_return_status|c_base_return_int
    *   The severity integer on success.
-   *   FALSE with error bit set on error.
+   *   FALSE with error bit set is returned on error.
    */
   public function get_severity() {
     if (!is_int($this->severity)) {
@@ -252,7 +252,7 @@ class c_base_log extends c_base_return_array {
    *
    * @return c_base_return_status|c_base_return_int
    *   The facility integer on success.
-   *   FALSE with error bit set on error.
+   *   FALSE with error bit set is returned on error.
    */
   public function get_facility() {
     if (!is_int($this->facility)) {

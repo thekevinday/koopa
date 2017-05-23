@@ -646,6 +646,34 @@ class c_base_database extends c_base_return {
   }
 
   /**
+   * This breaks a postgresql array string into an array.
+   *
+   * @param string $array_string
+   *   A string representing a postgresql array.
+   *
+   * @return c_base_return_array
+   *   An array containing the exploded string.
+   *   An empty array with the error bit set is returned on error.
+   */
+  public static function s_explode_array($array_string) {
+    if (!is_string($array_string)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'array_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
+    }
+
+    if (mb_strlen($array_string) < 2) {
+      return c_base_return_array::s_new(array());
+    }
+
+    $processed_string = mb_substr($array_string, 1);
+    $processed_string = mb_substr($processed_string, 0, mb_strlen($processed_string) - 1);
+    $exploded = explode(',', $processed_string);
+    unset($processed_string);
+
+    return c_base_return_array::s_new($exploded);
+  }
+
+  /**
    * Assign a session to the database.
    *
    * @param c_base_session $session

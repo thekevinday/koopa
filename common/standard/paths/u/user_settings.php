@@ -12,8 +12,13 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_standard_path_user_dashboard extends c_standard_path {
+class c_standard_path_user_settings extends c_standard_path {
   protected const PATH_SELF = 'u/settings';
+
+  protected const CLASS_USER_SETTINGS_ACCOUNT  = 'user_settings-account';
+  protected const CLASS_USER_SETTINGS_PERSONAL = 'user_settings-personal';
+  protected const CLASS_USER_SETTINGS_ACCESS = 'user_settings-access';
+  protected const CLASS_USER_SETTINGS_HISTORY = 'user_settings-history';
 
   /**
    * Implements do_execute().
@@ -27,15 +32,12 @@ class c_standard_path_user_dashboard extends c_standard_path {
 
     $this->pr_assign_defaults($http, $database, $session, $settings);
 
-    $wrapper = $this->pr_create_tag_section(array(1 => 0));
+    $arguments = $this->pr_get_path_arguments(self::PATH_SELF);
+    if (!empty($arguments)) {
+      // @todo: return $this->p_do_execute_X($executed);
+    }
 
-    // initialize the content as HTML.
-    $this->pr_create_html();
-    $this->html->set_tag($wrapper);
-    unset($wrapper);
-
-    $executed->set_output($this->html);
-    unset($this->html);
+    $this->p_do_execute($executed);
 
     return $executed;
   }
@@ -113,6 +115,18 @@ class c_standard_path_user_dashboard extends c_standard_path {
       case 15:
         $string = 'Administer';
         break;
+      case 16:
+        $string = 'Account Information';
+        break;
+      case 17:
+        $string = 'Personal Information';
+        break;
+      case 18:
+        $string = 'Access Information';
+        break;
+      case 19:
+        $string = 'History Information';
+        break;
     }
 
     if (!empty($arguments)) {
@@ -120,5 +134,71 @@ class c_standard_path_user_dashboard extends c_standard_path {
     }
 
     return $string;
+  }
+
+  /**
+   * Execution of the main path, without arguments.
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution results to be returned.
+   */
+  private function p_do_execute(&$executed) {
+    $wrapper = $this->pr_create_tag_section(array(1 => 0));
+
+    // initialize the content as HTML.
+    $this->pr_create_html();
+    $this->html->set_tag($wrapper);
+    unset($wrapper);
+
+
+    // account information
+    $fieldset = $this->pr_create_tag_fieldset(16, array(), self::CLASS_USER_SETTINGS_ACCOUNT, self::CLASS_USER_SETTINGS_ACCOUNT);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+
+    $fieldset->set_tag($content);
+    unset($content);
+
+    $this->html->set_tag($fieldset);
+    unset($fieldset);
+
+
+    // personal information
+    $fieldset = $this->pr_create_tag_fieldset(17, array(), self::CLASS_USER_SETTINGS_PERSONAL, self::CLASS_USER_SETTINGS_PERSONAL);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+
+    $fieldset->set_tag($content);
+    unset($content);
+
+    $this->html->set_tag($fieldset);
+    unset($fieldset);
+
+
+    // access information
+    $fieldset = $this->pr_create_tag_fieldset(18, array(), self::CLASS_USER_SETTINGS_ACCESS, self::CLASS_USER_SETTINGS_ACCESS);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+
+    $fieldset->set_tag($content);
+    unset($content);
+
+    $this->html->set_tag($fieldset);
+    unset($fieldset);
+
+
+    // history information
+    $fieldset = $this->pr_create_tag_fieldset(18, array(), self::CLASS_USER_SETTINGS_HISTORY, self::CLASS_USER_SETTINGS_HISTORY);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+
+    $fieldset->set_tag($content);
+    unset($content);
+
+    $this->html->set_tag($fieldset);
+    unset($fieldset);
+
+
+    // @todo add edit, cancel, etc.. links.
+
+
+    $executed->set_output($this->html);
+    unset($this->html);
   }
 }

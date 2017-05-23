@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides the standard site index class.
+ * Provides the standard path handling class.
  */
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -29,6 +29,9 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
   protected const CSS_AS_HEADER                 = 'as-header';
   protected const CSS_AS_HEADERS                = 'as-headers';
+  protected const CSS_AS_FIELD_SET              = 'as-field_set';
+  protected const CSS_AS_FIELD_SET_LEGEND       = 'as-field_set-legend';
+  protected const CSS_AS_FIELD_SET_CONTENT      = 'as-field_set-content';
   protected const CSS_IS_JAVASCRIPT_ENABLED     = 'javascript-enabled';
   protected const CSS_IS_JAVASCRIPT_DISABLED    = 'javascript-disabled';
   protected const CSS_IS_CONTENT_TYPE           = 'is-html_5';
@@ -123,6 +126,54 @@ class c_standard_path extends c_base_path {
   }
 
   /**
+   * Assign default variables used by this class.
+   *
+   * This is normally done automatically, but in certain cases, this may need to be explicitly called.
+   *
+   * Calling this will trigger default settings to be regernated, including the breadcrumbs.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   (optional) An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: self::do_execute()
+   */
+  protected function set_parameters(&$http, &$database, &$session, $settings) {
+    if (!($http instanceof c_base_http)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!($database instanceof c_base_database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!($session instanceof c_base_session)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->pr_assign_defaults($http, $database, $session, $settings);
+
+    return new c_base_return_true();
+  }
+
+  /**
    * Get the breadcrumb for this path.
    *
    * The breadcrumb will be built by this function if it is not already built.
@@ -142,6 +193,35 @@ class c_standard_path extends c_base_path {
     }
 
     return new c_base_return_null();
+  }
+
+  /**
+   * Return the current path parts after the specified path.
+   *
+   * This is intended for handling the path parts as arguments.
+   *
+   * No sanitization is performed on these arguments.
+   *
+   * @param string $path_after
+   *   The string to parse.
+   *
+   * @return c_base_return_array
+   *   An array of url path parts.
+   *   An empty array with error bit set on error.
+   */
+  protected function pr_get_path_arguments($path_after) {
+    $path = $this->http->get_request_uri_relative($this->settings['base_path'])->get_value_exact();
+    $path = preg_replace('@^' . $path_after . '(/|$)@i', '', $path);
+
+    if (mb_strlen($path) == 0) {
+      unset($path);
+      return array();
+    }
+
+    $path_parts = explode('/', $path);
+    unset($path);
+
+    return $path_parts;
   }
 
   /**
@@ -205,26 +285,87 @@ class c_standard_path extends c_base_path {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_build_breadcrumbs() {
+    if (!is_object($this->path_tree)) {
+      return new c_base_return_false();
+    }
+
+    $handler_settings = $this->path_tree->get_item_reset();
+    if ($handler_settings instanceof c_base_return_false) {
+      unset($handler_settings);
+      return new c_base_return_false();
+    }
+
     $this->breadcrumbs = new c_base_menu_item();
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
-    $this->breadcrumbs->set_item($item);
-    unset($item);
+    // render the breadcrumbs for all appropriate paths as the default behavior.
+    // this does not include the last path tree item because that item should be this class.
+    $count = 0;
+    $total = $this->path_tree->get_items_count() - 1;
+    for (; $count < $total; $count++) {
+      if ($handler_settings instanceof c_base_return_false) {
+        $handler_settings = $this->path_tree->get_item_next();
+        continue;
+      }
 
-    // @todo: implement a standard breadcrumb handler, that loads parents paths and any language-specific text.
-    //        this may also need to use and load langauge-specific global path text.
+      $handler_settings = $handler_settings->get_value();
 
-    // build breadcrumbs based on current uri path.
-    #if ($this->path_tree instanceof c_base_path_tree) {
-    #  $id_group = $this->path_tree->get_id_group()->get_value_exact();
-    #  $items = $this->path_tree->get_items()->get_value_exact();
-    #}
-    #else {
-    #  $id_group = 0;
-    #  $items = array();
-    #}
+      if (!isset($handler_settings['include_name']) || !is_string($handler_settings['include_name'])) {
+        $handler_settings = $this->path_tree->get_item_next();
+        continue;
+      }
 
-    #$this->get_breadcrumbs();
+      if (!isset($handler_settings['include_directory']) || !is_string($handler_settings['include_directory'])) {
+        $handler_settings = $this->path_tree->get_item_next();
+        continue;
+      }
+
+      if (!isset($handler_settings['handler']) || !is_string($handler_settings['handler'])) {
+        $handler_settings = $this->path_tree->get_item_next();
+        continue;
+      }
+
+      require_once($handler_settings['include_directory'] . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+
+
+      $handler = NULL;
+      if (is_string($this->language_alias)) {
+        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+
+        $handler_class = $handler_settings['handler'] . '_' . $this->language_alias;
+        if (class_exists($handler_class)) {
+          $handler = new $handler_class();
+        }
+        unset($handler_class);
+      }
+
+      if (is_null($handler)) {
+        if (class_exists($handler_settings['handler'])) {
+          $handler = new $handler_settings['handler']();
+        }
+        else {
+          unset($handler);
+          $handler_settings = $this->path_tree->get_item_next();
+          continue;
+        }
+      }
+
+      $handler->set_parameters($this->http, $this->database, $this->session, $this->settings);
+      $breadcrumbs = $handler->get_breadcrumbs();
+      if ($breadcrumbs instanceof c_base_menu_item) {
+        $breadcrumbs = $breadcrumbs->get_items()->get_value_exact();
+        foreach ($breadcrumbs as $breadcrumb) {
+          $this->breadcrumbs->set_item($breadcrumb);
+        }
+        unset($breadcrumb);
+      }
+      unset($breadcrumbs);
+      unset($handler);
+      unset($handler_settings);
+
+      $handler_settings = $this->path_tree->get_item_next();
+    }
+    unset($count);
+    unset($total);
 
     return new c_base_return_true();
   }
@@ -720,6 +861,51 @@ class c_standard_path extends c_base_path {
   }
 
   /**
+   * Creates the standard fieldset block, with an optional fieldset legend.
+   *
+   * This does not define the fieldset body, which is left to be defined by the caller.
+   * The fieldset body is generally assumed to be defined wih self::CSS_AS_FIELD_SET_CONTENT.
+   *
+   * @param int|string|null $text
+   *   The text or the text code to use as the fieldset legend.
+   *   If NULL, then no legend is generated..
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_fieldset($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK,  self::CSS_AS_PARAGRAPH_BLOCK);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+
+    $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FIELD_SET, $id, $classes);
+    unset($classes);
+
+    if (!is_null($text)) {
+      if (is_int($text)) {
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_FIELD_SET_LEGEND), $this->pr_get_text($text, $arguments));
+      }
+      else {
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_FIELD_SET_LEGEND), $text);
+      }
+
+      $block->set_tag($tag);
+      unset($tag);
+    }
+
+    return $block;
+  }
+
+  /**
    * Create a new HTML markup class with default settings populated.
    *
    * @param bool $real_page
@@ -729,7 +915,7 @@ class c_standard_path extends c_base_path {
    *
    * @return c_base_return_status
    *   TRUE on success.
-   *   FALSE with error bit set on error.
+   *   FALSE with error bit set is returned on error.
    *
    * @see: self::pr_create_html_add_primary_ids()
    * @see: self::pr_create_html_add_primary_classes()
@@ -1173,6 +1359,10 @@ class c_standard_path extends c_base_path {
    * @param string|array|null $uri
    *   (optional) The URI string or array the breadcrumb points to.
    *   If NULL, then the uri is not assigned.
+   *
+   * @return c_base_menu_item
+   *   The generated breadcrumb menu item.
+   *   A generated menu item with the error bit set is returned on error.
    */
   protected function pr_create_breadcrumbs_item($text, $uri = NULL) {
     $item = new c_base_menu_item();
@@ -1199,18 +1389,6 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_get_text_title($arguments = array()) {
     return NULL;
-  }
-
-  /**
-   * Load breadcrumbs text for a supported language.
-   *
-   * @param int $index
-   *   A number representing which block of text to return.
-   * @param array $arguments
-   *   (optional) An array of arguments to convert into text.
-   */
-  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
-    return '';
   }
 
   /**

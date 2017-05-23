@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides path handler for the user delete.
+ * Provides path handler for the user dashboard.
  */
 
 require_once('common/base/classes/base_error.php');
@@ -12,8 +12,8 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
-class c_standard_path_user_delete extends c_standard_path {
-  protected const PATH_SELF = 'u/delete';
+class c_standard_path_user_ps extends c_standard_path {
+  protected const PATH_SELF = 'u/ps';
 
   /**
    * Implements do_execute().
@@ -66,7 +66,7 @@ class c_standard_path_user_delete extends c_standard_path {
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'Delete User';
+        $string = 'Lock User';
         break;
     }
 

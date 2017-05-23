@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user view.
  */
 
 /**
  * Implements c_standard_path_user_dashboard().
  */
-class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
+class c_standard_path_user_view_ja extends c_standard_path_user_view {
 
   /**
    * Implements pr_get_text().
@@ -16,51 +16,47 @@ class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'ダッシュボード';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'ユーザーを表示 :{user_name}';
+        }
+        else {
+          $string = 'ユーザーを表示';
+        }
         break;
       case 1:
-        $string = '';
-        break;
-      case 2:
-        $string = '';
-        break;
-      case 3:
-        $string = '';
-        break;
-      case 4:
         $string = 'パブリック';
         break;
-      case 5:
+      case 2:
         $string = 'ユーザー';
         break;
-      case 6:
+      case 3:
         $string = 'リクエスタ';
         break;
-      case 7:
+      case 4:
         $string = 'ドレイター';
         break;
-      case 8:
+      case 5:
         $string = '編集者';
         break;
-      case 9:
+      case 6:
         $string = 'レビューア';
         break;
-      case 10:
+      case 7:
         $string = 'ファイナンサー';
         break;
-      case 11:
+      case 8:
         $string = '保険会社';
         break;
-      case 12:
+      case 9:
         $string = '出版社';
         break;
-      case 13:
+      case 10:
         $string = '審査員';
         break;
-      case 14:
+      case 11:
         $string = 'マネージャー';
         break;
-      case 15:
+      case 12:
         $string = '管理者';
         break;
     }

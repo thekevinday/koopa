@@ -21,10 +21,15 @@ class c_standard_paths extends c_base_return {
   const URI_DASHBOARD_ADMINISTER = 'a/dashboard';
   const URI_USER_CREATE          = 'u/create';
   const URI_USER_VIEW            = 'u/view';
-  const URI_USER_SETTINGS        = 'u/settings';
+  const URI_USER_EDIT            = 'u/edit';
   const URI_USER_LOCK            = 'u/lock';
   const URI_USER_UNLOCK          = 'u/unlock';
   const URI_USER_DELETE          = 'u/create';
+  const URI_USER_CHECK           = 'u/check';
+  const URI_USER_REFRESH         = 'u/refresh';
+  const URI_USER_PRINT           = 'u/print';
+  const URI_USER_PDF             = 'u/pdf';
+  const URI_USER_PS              = 'u/ps';
 
   protected const PATH_INTERNAL   = 'common/standard/internal/';
   protected const PATH_USER       = 'common/standard/paths/u/';
@@ -44,10 +49,13 @@ class c_standard_paths extends c_base_return {
   protected const NAME_INDEX                = 'index';
   protected const NAME_USER_CREATE          = 'user_create';
   protected const NAME_USER_VIEW            = 'user_view';
-  protected const NAME_USER_SETTINGS        = 'user_settings';
+  protected const NAME_USER_EDIT            = 'user_edit';
   protected const NAME_USER_LOCK            = 'user_lock';
   protected const NAME_USER_UNLOCK          = 'user_unlock';
   protected const NAME_USER_DELETE          = 'user_delete';
+  protected const NAME_USER_PRINT           = 'user_print';
+  protected const NAME_USER_PDF             = 'user_pdf';
+  protected const NAME_USER_PS              = 'user_ps';
 
   protected const HANDLER_LOGIN                = 'c_standard_path_user_login';
   protected const HANDLER_LOGOUT               = 'c_standard_path_user_logout';
@@ -62,10 +70,13 @@ class c_standard_paths extends c_base_return {
   protected const HANDLER_INDEX                = 'c_standard_path_index';
   protected const HANDLER_USER_CREATE          = 'c_standard_path_user_create';
   protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
-  protected const HANDLER_USER_SETTINGS        = 'c_standard_path_user_settings';
+  protected const HANDLER_USER_EDIT            = 'c_standard_path_user_edit';
   protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
   protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
   protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
+  protected const HANDLER_USER_PRINT           = 'c_standard_path_user_print';
+  protected const HANDLER_USER_PDF             = 'c_standard_path_user_pdf';
+  protected const HANDLER_USER_PS              = 'c_standard_path_user_ps';
 
   protected const SCRIPT_EXTENSION = '.php';
   protected const WILDCARD_PATH    = '/%';
@@ -291,8 +302,63 @@ class c_standard_paths extends c_base_return {
     }
 
 
-    // load all available paths.
+    // load always available paths.
     $this->pr_paths_create();
+
+
+    // load the remaining paths based on the relative path to avoid generating and processing unnecessary paths.
+    $path = $this->http->get_request_uri_relative($settings['base_path'])->get_value_exact();
+
+    $id_group = 0;
+    $path_object = new c_base_path();
+    if ($path_object->set_value($path)) {
+      $sanitized = $path_object->get_value_exact();
+      unset($path_object);
+
+      $path_parts = explode('/', $sanitized);
+      unset($sanitized);
+
+      if (mb_strlen($path_parts[0]) == 1) {
+        $ordinal = ord($path_parts[0]);
+        if (in_array($ordinal, c_base_defaults_global::RESERVED_PATH_GROUP)) {
+          $id_group = $ordinal;
+        }
+        unset($ordinal);
+      }
+      unset($path_parts);
+    }
+
+    if ($id_group === c_base_ascii::LOWER_A) {
+      $this->pr_paths_create_administer();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_C) {
+      $this->pr_paths_create_cache();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_D) {
+      $this->pr_paths_create_data();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_F) {
+      $this->pr_paths_create_file();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_M) {
+      $this->pr_paths_create_management();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_S) {
+      $this->pr_paths_create_submit();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_T) {
+      $this->pr_paths_create_theme();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_U) {
+      $this->pr_paths_create_user();
+    }
+    elseif ($id_group === c_base_ascii::LOWER_X) {
+      $this->pr_paths_create_ajax();
+    }
+    else {
+      $this->pr_paths_create_ungrouped();
+    }
+    unset($id_group);
 
 
     // load the http method.
@@ -306,7 +372,6 @@ class c_standard_paths extends c_base_return {
 
 
     // find the path
-    $path = $this->http->get_request_uri_relative($settings['base_path'])->get_value_exact();
     $handler_settings = $this->paths->find_path($path)->get_value();
     unset($path);
 
@@ -515,12 +580,9 @@ class c_standard_paths extends c_base_return {
   }
 
   /**
-   * Creates and returns a list of all available paths.
+   * Creates a list of always available paths.
    *
    * Add/modify paths here as desired.
-   *
-   * @return c_base_paths
-   *   The generated paths object.
    */
   protected function pr_paths_create() {
     $this->paths = new c_base_paths();
@@ -531,25 +593,114 @@ class c_standard_paths extends c_base_return {
     // create login/logout paths
     $this->paths->add_path(self::URI_LOGIN, self::HANDLER_LOGIN, self::PATH_USER, self::NAME_LOGIN);
     $this->paths->add_path(self::URI_LOGOUT, self::HANDLER_LOGOUT, self::PATH_USER, self::NAME_LOGOUT);
+  }
 
+  /**
+   * Creates a list of available administer paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_administer() {
+    // dashboards
+    $this->paths->add_path(self::URI_DASHBOARD_ADMINISTER, self::HANDLER_ADMINISTER_DASHBOARD, self::PATH_ADMINISTER, self::NAME_DASHBOARD_ADMINISTER);
+  }
+
+  /**
+   * Creates a list of available cache paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_cache() {
+  }
+
+  /**
+   * Creates a list of available data paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_data() {
+  }
+
+  /**
+   * Creates a list of available file paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_file() {
+  }
+
+  /**
+   * Creates a list of available submit paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_submit() {
+  }
+
+  /**
+   * Creates a list of available management paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_management() {
+    // dashboards
+    $this->paths->add_path(self::URI_DASHBOARD_MANAGEMENT, self::HANDLER_MANAGEMENT_DASHBOARD, self::PATH_MANAGEMENT, self::NAME_DASHBOARD_MANAGEMENT);
+  }
+
+  /**
+   * Creates a list of available theme paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_theme() {
+  }
+
+  /**
+   * Creates a list of available ajax paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_ajax() {
+  }
+
+  /**
+   * Creates a list of available user paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_user() {
     // dashboards
     $this->paths->add_path(self::URI_DASHBOARD_USER, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_DASHBOARD_USER);
-    $this->paths->add_path(self::URI_DASHBOARD_MANAGEMENT, self::HANDLER_MANAGEMENT_DASHBOARD, self::PATH_MANAGEMENT, self::NAME_DASHBOARD_MANAGEMENT);
-    $this->paths->add_path(self::URI_DASHBOARD_ADMINISTER, self::HANDLER_ADMINISTER_DASHBOARD, self::PATH_ADMINISTER, self::NAME_DASHBOARD_ADMINISTER);
 
     // user paths
     $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
     $this->paths->add_path(self::URI_USER_CREATE . self::WILDCARD_PATH, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
     $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
     $this->paths->add_path(self::URI_USER_VIEW . self::WILDCARD_PATH, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
-    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
-    $this->paths->add_path(self::URI_USER_SETTINGS . self::WILDCARD_PATH, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_EDIT, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
+    $this->paths->add_path(self::URI_USER_EDIT . self::WILDCARD_PATH, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
     $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
     $this->paths->add_path(self::URI_USER_LOCK . self::WILDCARD_PATH, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
     $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
     $this->paths->add_path(self::URI_USER_UNLOCK . self::WILDCARD_PATH, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
     $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
     $this->paths->add_path(self::URI_USER_DELETE . self::WILDCARD_PATH, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
+    $this->paths->add_path(self::URI_USER_PRINT, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
+    $this->paths->add_path(self::URI_USER_PRINT . self::WILDCARD_PATH, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
+    $this->paths->add_path(self::URI_USER_PDF, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
+    $this->paths->add_path(self::URI_USER_PDF . self::WILDCARD_PATH, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
+    $this->paths->add_path(self::URI_USER_PS, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
+    $this->paths->add_path(self::URI_USER_PS . self::WILDCARD_PATH, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
+  }
+
+  /**
+   * Creates a list of available paths that are not assigned to any groups.
+   *
+   * These are generally user-defined paths.
+   *
+   * Add/modify paths here as desired.
+   */
+  protected function pr_paths_create_ungrouped() {
   }
 
   /**
@@ -575,7 +726,7 @@ class c_standard_paths extends c_base_return {
     if ($this->handler->is_private()->get_value_exact()) {
       if ($this->session->is_logged_in()->get_value_exact()) {
         unset($id_group);
-        return $this->handler->do_execute($this->http, $this->database, $this->session, $this->settings);
+        return $this->p_handle_execution_errors($this->handler->do_execute($this->http, $this->database, $this->session, $this->settings));
       }
       elseif ($this->handler->is_root()->get_value_exact()) {
         unset($id_group);
@@ -587,7 +738,7 @@ class c_standard_paths extends c_base_return {
           $path_login->set_path_tree($this->handler->get_path_tree());
         }
 
-        return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
+        return $this->p_handle_execution_errors($path_login->do_execute($this->http, $this->database, $this->session, $this->settings));
       }
       else {
         if ($id_group === c_base_ascii::LOWER_U) {
@@ -613,7 +764,7 @@ class c_standard_paths extends c_base_return {
             $path_login->set_path_tree($this->handler->get_path_tree());
           }
 
-          return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
+          return $this->p_handle_execution_errors($path_login->do_execute($this->http, $this->database, $this->session, $this->settings));
         }
 
         // some special case paths always provide login prompt along with access denied.
@@ -627,13 +778,13 @@ class c_standard_paths extends c_base_return {
             $path_login->set_path_tree($this->handler->get_path_tree());
           }
 
-          return $path_login->do_execute($this->http, $this->database, $this->session, $this->settings);
+          return $this->p_handle_execution_errors($path_login->do_execute($this->http, $this->database, $this->session, $this->settings));
         }
       }
     }
     else {
       unset($id_group);
-      return $this->handler->do_execute($this->http, $this->database, $this->session, $this->settings);
+      return $this->p_handle_execution_errors($this->handler->do_execute($this->http, $this->database, $this->session, $this->settings));
     }
 
     // return access denied or page not found depending on path and privacy settings.
@@ -774,5 +925,48 @@ class c_standard_paths extends c_base_return {
 
     // if unable to find, fallback to original class
     return new $class();
+  }
+
+  /**
+   * Check to see if errors occured and change the return execution object accordingly.
+   *
+   * This will usually either return path not found, access denied, or server error, on such errors.
+   * Do not call this on the error handling paths.
+   *
+   * @param c_base_path_executed $executed
+   *   The already executed path handler result.
+   *
+   * @return c_base_path_executed
+   *   The already executed path handler result.
+   */
+  private function p_handle_execution_errors($executed) {
+    if (!c_base_return::s_has_error($executed)) {
+      return $executed;
+    }
+
+    // handle errors here.
+    $error = $executed->get_error(0);
+    $error_code = $error->get_code();
+    unset($error);
+
+    if ($error_code === i_base_error_messages::NOT_FOUND_PATH || $error_code === i_base_error_messages::INVALID_ARGUMENT) {
+      $handler_error = $this->get_handler_not_found();
+    }
+    elseif ($error_code === i_base_error_messages::ACCESS_DENIED) {
+      $handler_error = $this->get_handler_access_denied();
+    }
+    else {
+      $handler_error = $this->get_handler_server_error();
+    }
+    unset($error_code);
+
+    if ($this->handler->get_path_tree() instanceof c_base_path_tree) {
+      $handler_error->set_path_tree($this->handler->get_path_tree());
+    }
+
+    $executed_error = $handler_error->do_execute($this->http, $this->database, $this->session, $this->settings);
+    unset($handler_error);
+
+    return $executed_error;
   }
 }

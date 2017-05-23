@@ -5,9 +5,9 @@
  */
 
 /**
- * Implements c_standard_path_user_create().
+ * Implements c_standard_path_user_ps().
  */
-class c_standard_path_user_create_ja extends c_standard_path_user_create {
+class c_standard_path_user_ps_ja extends c_standard_path_user_ps {
 
   /**
    * Implements pr_get_text().

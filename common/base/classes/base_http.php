@@ -4901,10 +4901,10 @@ class c_base_http extends c_base_rfc_string {
    */
   public function is_response_content_file() {
     if ($this->content_is_file) {
-      return new c_base_return_true();
+      return c_base_return_bool::s_new(TRUE);
     }
 
-    return new c_base_return_false();
+    return c_base_return_bool::s_new(FALSE);
   }
 
   /**

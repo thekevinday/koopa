@@ -79,7 +79,7 @@ class c_standard_users_user extends c_base_users_user {
       $query_string .= 'from v_users_self_session';
     }
     else {
-      if ($use_table) {
+      if ($administrative) {
         $query_string .= 'from s_tables.t_users ';
       }
       else {
@@ -89,12 +89,12 @@ class c_standard_users_user extends c_base_users_user {
       $query_string .= 'where ';
 
       if (is_int($user_name_or_id)) {
-        $query_string .= 'id = :{id} ';
-        $query_arguments[':{id}'] = $user_name_or_id;
+        $query_string .= 'id = $1 ';
+        $query_arguments[] = $user_name_or_id;
       }
       else {
-        $query_string .= 'name_machine = :{name_machine} ';
-        $query_arguments[':{name_machine}'] = $user_name_or_id;
+        $query_string .= 'name_machine = $1 ';
+        $query_arguments[] = $user_name_or_id;
       }
     }
 
@@ -106,6 +106,7 @@ class c_standard_users_user extends c_base_users_user {
       $false = c_base_return_error::s_false($query_result->get_error());
 
       $last_error = $database->get_last_error()->get_value_exact();
+      var_dump($last_error);
       if (!empty($last_error)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
@@ -115,8 +116,6 @@ class c_standard_users_user extends c_base_users_user {
       return $false;
     }
 
-    // @todo: this processes special postgresql datatypes.
-    //        write custom handling functions and classes to handle things such as the 't' and 'f' for boolean types.
     $columns = $query_result->fetch_row()->get_value();
 
     if (is_array($columns) && !empty($columns)) {
@@ -127,35 +126,32 @@ class c_standard_users_user extends c_base_users_user {
       $this->id_sort     = (int) $columns[2];
 
       $this->name_machine = (string) $columns[3];
-      $this->name_human   = (string) $columns[4];
 
-      // @todo: write functions for managing special postgresql types, such as this (possibly using special class types).
-      $this->address_email = array(
-        'name' => NULL,
-        'domain' => NULL,
-        'private' => TRUE,
-      );
-
-      $address_email = (string) $columns[5];
-      if (!empty($address_email)) {
-        $address_email = mb_substr($address_email, 1);
-        $address_email = mb_substr($address_email, 0, mb_strlen($address_email) - 1);
-        $address_email_parts = explode(',', $address_email);
-        unset($address_email);
-
-        if (count($address_email_parts) == 3) {
-          $this->address_email = array(
-            'name' => $address_email_parts[0],
-            'domain' => $address_email_parts[1],
-            'private' => TRUE,
-          );
-
-          if ($address_email_parts[2] == 'f') {
-            $this->address_email['private'] = FALSE;
-          }
-        }
-        unset($address_email_parts);
+      $this->name_human = new c_base_users_user_name();
+      $name_human_parts = c_base_database::s_explode_array((string) $columns[4])->get_value_exact();
+      if (count($name_human_parts) == 6) {
+        $this->name_human->set_prefix($name_human_parts[0]);
+        $this->name_human->set_first($name_human_parts[1]);
+        $this->name_human->set_middle($name_human_parts[2]);
+        $this->name_human->set_last($name_human_parts[3]);
+        $this->name_human->set_suffix($name_human_parts[4]);
+        $this->name_human->set_complete($name_human_parts[5]);
       }
+
+      $this->address_email = new c_base_address_email();
+      $address_email_parts = c_base_database::s_explode_array((string) $columns[5])->get_value_exact();
+      if (count($address_email_parts) == 3) {
+        $this->address_email->set_name($address_email_parts[0]);
+        $this->address_email->set_domain($address_email_parts[1]);
+
+        if ($address_email_parts[2] == 'f') {
+          $this->address_email->is_private(FALSE);
+        }
+        else {
+          $this->address_email->is_private(TRUE);
+        }
+      }
+      unset($address_email_parts);
 
       if ($columns[6] == 't') {
         $this->roles->set_role(c_base_roles::PUBLIC, TRUE);

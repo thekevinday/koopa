@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user print.
  */
 
 /**
- * Implements c_standard_path_user_create().
+ * Implements c_standard_path_user_print().
  */
-class c_standard_path_user_create_ja extends c_standard_path_user_create {
+class c_standard_path_user_print_ja extends c_standard_path_user_print {
 
   /**
    * Implements pr_get_text().

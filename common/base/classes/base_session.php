@@ -63,24 +63,24 @@ class c_base_session extends c_base_return {
   public function __construct() {
     parent::__construct();
 
-    $this->socket = NULL;
+    $this->socket           = NULL;
     $this->socket_directory = NULL;
-    $this->socket_path = NULL;
-    $this->socket_timeout = NULL;
-    $this->socket_error = NULL;
+    $this->socket_path      = NULL;
+    $this->socket_timeout   = NULL;
+    $this->socket_error     = NULL;
 
     $this->cookie = NULL;
 
     $this->system_name = NULL;
 
-    $this->name = NULL;
-    $this->host = NULL;
-    $this->password = NULL;
+    $this->name       = NULL;
+    $this->host       = NULL;
+    $this->password   = NULL;
     $this->session_id = NULL;
-    $this->settings = NULL;
+    $this->settings   = NULL;
 
     $this->timeout_expire = NULL;
-    $this->timeout_max = NULL;
+    $this->timeout_max    = NULL;
 
     $this->problems = NULL;
 

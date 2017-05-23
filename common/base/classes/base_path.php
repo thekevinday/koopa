@@ -1113,7 +1113,7 @@ class c_base_path extends c_base_rfc_string {
    * @param array $settings
    *   (optional) An array of additional settings that are usually site-specific.
    *
-   * @return c_base_path_executed
+   * @return c_base_path_executed|int
    *   An executed array object is returned on success.
    *   An executed array object with error bit set is returned on error.
    */

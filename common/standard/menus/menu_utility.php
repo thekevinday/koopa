@@ -65,7 +65,7 @@ class c_standard_menu_utility extends c_standard_menu {
         unset($item);
       }
 
-      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(6), $settings['base_path'] . c_standard_paths::URI_USER_SETTINGS);
+      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(6), $settings['base_path'] . c_standard_paths::URI_USER_VIEW);
       $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_USER_SETTINGS);
       $menu->set_tag($item);
       unset($item);

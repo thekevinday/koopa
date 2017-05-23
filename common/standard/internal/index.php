@@ -20,7 +20,7 @@ class c_standard_path_index extends c_standard_path {
   protected function pr_build_breadcrumbs() {
     $this->breadcrumbs = new c_base_menu_item();
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(0), '');
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(2), '');
     $this->breadcrumbs->set_item($item);
     unset($item);
 
@@ -64,24 +64,6 @@ class c_standard_path_index extends c_standard_path {
   }
 
   /**
-   * Implements pr_get_text_breadcrumbs().
-   */
-  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
-    $string = '';
-    switch ($code) {
-      case 0:
-        $string = 'Home';
-        break;
-    }
-
-    if (!empty($arguments)) {
-      $this->pr_process_replacements($string, $arguments);
-    }
-
-    return $string;
-  }
-
-  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {
@@ -92,6 +74,9 @@ class c_standard_path_index extends c_standard_path {
         break;
       case 1:
         $string = 'This is the standard system index page.';
+        break;
+      case 2:
+        $string = 'Home';
         break;
     }
 

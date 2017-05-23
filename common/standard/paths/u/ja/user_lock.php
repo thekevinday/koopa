@@ -5,9 +5,9 @@
  */
 
 /**
- * Implements c_standard_path_user_dashboard().
+ * Implements c_standard_path_user_lock().
  */
-class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
+class c_standard_path_user_lock_ja extends c_standard_path_user_lock {
 
   /**
    * Implements pr_get_text().

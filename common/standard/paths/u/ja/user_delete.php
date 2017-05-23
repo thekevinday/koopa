@@ -5,9 +5,9 @@
  */
 
 /**
- * Implements c_standard_path_user_dashboard().
+ * Implements c_standard_path_user_delete().
  */
-class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
+class c_standard_path_user_delete_ja extends c_standard_path_user_delete {
 
   /**
    * Implements pr_get_text().

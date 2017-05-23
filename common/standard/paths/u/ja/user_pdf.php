@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user pdf.
  */
 
 /**
- * Implements c_standard_path_user_create().
+ * Implements c_standard_path_user_pdf().
  */
-class c_standard_path_user_create_ja extends c_standard_path_user_create {
+class c_standard_path_user_pdf_ja extends c_standard_path_user_pdf {
 
   /**
    * Implements pr_get_text().

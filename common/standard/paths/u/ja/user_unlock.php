@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user unlock.
  */
 
 /**
- * Implements c_standard_path_user_dashboard().
+ * Implements c_standard_path_user_unlock().
  */
-class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
+class c_standard_path_user_unlock_ja extends c_standard_path_user_unlock {
 
   /**
    * Implements pr_get_text().

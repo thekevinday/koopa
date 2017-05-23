@@ -181,6 +181,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('A function has failed execution.');
       }
     }
+    elseif ($code === self::NOT_FOUND) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Not found' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Not found.');
+      }
+    }
     elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The index, :{index_name}, was not found in the array, :{array_name}' . $function_name_string . '.');
@@ -203,6 +211,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
       }
       else {
         return c_base_return_string::s_new('File not found or cannot be accessed.');
+      }
+    }
+    elseif ($code === self::NOT_FOUND_PATH) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('The path, :{path_name}, was not found or cannot be accessed' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Path not found or cannot be accessed.');
       }
     }
     elseif ($code === self::NO_CONNECTION) {
@@ -291,6 +307,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
       }
       else {
         return c_base_return_string::s_new('Access is denied for administrative reasons.');
+      }
+    }
+    elseif ($code === self::SERVER_ERROR) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('A server error has occurred, :{operation_name} ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('A server error has occurred.');
       }
     }
 
