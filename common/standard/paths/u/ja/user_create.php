@@ -15,8 +15,12 @@ class c_standard_path_user_create_ja extends c_standard_path_user_create {
   protected function pr_get_text($code, $arguments = array()) {
     $string = '';
     switch ($code) {
-      case 0:
-        $string = '';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'ユーザーをコピー:{user_name}';
+        }
+        else {
+          $string = 'ユーザーを作成する';
+        }
         break;
     }
 

@@ -16,7 +16,12 @@ class c_standard_path_user_unlock_ja extends c_standard_path_user_unlock {
     $string = '';
     switch ($code) {
       case 0:
-        $string = '';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'ユーザーをロック解除:{user_name}';
+        }
+        else {
+          $string = 'ユーザーをロック解除する';
+        }
         break;
     }
 

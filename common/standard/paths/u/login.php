@@ -87,6 +87,8 @@ class c_standard_path_user_login extends c_standard_path {
       $this->html->set_tag($wrapper);
       unset($wrapper);
 
+      $this->pr_add_menus();
+
       $executed->set_output($this->html);
       unset($this->html);
 
@@ -286,6 +288,8 @@ class c_standard_path_user_login extends c_standard_path {
     // assing the content.
     $this->html->set_tag($wrapper);
     unset($wrapper);
+
+    $this->pr_add_menus();
 
     $executed->set_output($this->html);
     unset($this->html);

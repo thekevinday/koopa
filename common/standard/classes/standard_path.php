@@ -28,13 +28,22 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_LINK_BLOCK_LINK        = 'as-link_block-link';
   protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
   protected const CSS_AS_HEADER                 = 'as-header';
+  protected const CSS_AS_HEADER_TEXT            = 'as-header-text';
   protected const CSS_AS_HEADERS                = 'as-headers';
   protected const CSS_AS_FIELD_SET              = 'as-field_set';
   protected const CSS_AS_FIELD_SET_LEGEND       = 'as-field_set-legend';
   protected const CSS_AS_FIELD_SET_CONTENT      = 'as-field_set-content';
-  protected const CSS_IS_JAVASCRIPT_ENABLED     = 'javascript-enabled';
-  protected const CSS_IS_JAVASCRIPT_DISABLED    = 'javascript-disabled';
-  protected const CSS_IS_CONTENT_TYPE           = 'is-html_5';
+  protected const CSS_AS_FIELD_ROW              = 'as-field_row';
+  protected const CSS_AS_FIELD_ROW_NAME         = 'as-field_row-name';
+  protected const CSS_AS_FIELD_ROW_VALUE        = 'as-field_row-value';
+  protected const CSS_AS_ROW                    = 'as-row';
+  protected const CSS_AS_ROW_EVEN               = 'as-row-even';
+  protected const CSS_AS_ROW_ODD                = 'as-row-odd';
+  protected const CSS_AS_SPACER                 = 'as-spacer';
+
+  protected const CSS_IS_JAVASCRIPT_ENABLED  = 'javascript-enabled';
+  protected const CSS_IS_JAVASCRIPT_DISABLED = 'javascript-disabled';
+  protected const CSS_IS_CONTENT_TYPE        = 'is-html_5';
 
   protected const CSS_SYSTEM_PREFIX = 'system-';
 
@@ -381,8 +390,9 @@ class c_standard_path extends c_base_path {
    * @param string|null $id
    *   (optional) An ID attribute to assign.
    *   If NULL, then this is not assigned.
-   * @param string|null $extra_class
+   * @param string|array||null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -392,6 +402,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_SECTION,  self::CSS_AS_SECTION);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SECTION, $id, $classes);
@@ -414,6 +430,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -423,6 +440,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_WRAPPER,  self::CSS_AS_WRAPPER);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
@@ -436,6 +459,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -445,6 +469,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_BREAK,  self::CSS_AS_BREAK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BREAK, $id, $classes);
@@ -462,6 +492,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -471,6 +502,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT,  self::CSS_AS_TEXT);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     if (is_int($text)) {
@@ -495,15 +532,24 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
+   * @param c_base_markup_tag|null $prepend
+   *   If not NULL, then a markup tag to prepend inside of the header tag block.
    *
    * @return c_base_markup_tag
    *   The generated markup tag.
    */
-  protected function pr_create_tag_header($text, $header, $arguments = array(), $id = NULL, $extra_class = NULL) {
+  protected function pr_create_tag_header($text, $header, $arguments = array(), $id = NULL, $extra_class = NULL, $prepend = NULL) {
     $classes = array($this->settings['base_css'] . self::CSS_AS_HEADER,  self::CSS_AS_HEADER,  self::CSS_AS_HEADER . '-' . $header);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     if ($header == 1) {
@@ -528,12 +574,15 @@ class c_standard_path extends c_base_path {
       $type = c_base_markup_tag::TYPE_HX;
     }
 
-    if (is_int($text)) {
-      $tag = c_theme_html::s_create_tag($type, $id, $classes, $this->pr_get_text($text, $arguments));
+    $tag = c_theme_html::s_create_tag($type, $id, $classes);
+
+    if ($prepend instanceof c_base_markup_tag) {
+      $tag->set_tag($prepend);
     }
-    else {
-      $tag = c_theme_html::s_create_tag($type, $id, $classes, $text);
-    }
+
+    $tag_text = $this->pr_create_tag_text($text, $arguments, $id, self::CSS_AS_HEADER_TEXT);
+    $tag->set_tag($tag_text);
+    unset($tag_text);
 
     if ($header > 6) {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'text-text-heading_' . ((int) $header));
@@ -549,6 +598,16 @@ class c_standard_path extends c_base_path {
    *
    * @param array|null $headers
    *   An array of headers, whose keys are the header number and values are the header names.
+   *   Header values may also be an array with the following structure:
+   *   - prepend-outside: A c_base_markup_tag to prepend outside of the header tag, but inside the headers tag.
+   *                      May be NULL for undefined.
+   *   - append-outside: A c_base_markup_tag to append outside of the header tag, but inside the headers tag.
+   *                     May be NULL for undefined.
+   *   - prepend-inside: A c_base_markup_tag to prepend inside of the header tag, but inside the headers tag.
+   *                     May be NULL for undefined.
+   *   - append-inside: A c_base_markup_tag to append inside of the header tag, but inside the headers tag.
+   *                    May be NULL for undefined.
+   *   - text: The header name value string or integer.
    *   If NULL, then the headers are not assigned.
    * @param array $arguments
    *   (optional) An array of arguments to convert into text.
@@ -557,6 +616,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -567,13 +627,50 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
 
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HEADER, $id, $classes);
     unset($classes);
 
     if (is_array($headers)) {
       foreach ($headers as $header_id => $header_text) {
+        if (is_array($header_text)) {
+          if (!isset($header_text['text'])) {
+            continue;
+          }
+
+          if (isset($header_text['prepend-outside']) && $header_text['prepend-outside'] instanceof c_base_markup_tag) {
+            $tag->set_tag($header_text['prepend-outside']);
+          }
+
+          if (isset($header_text['prepend-inside'])) {
+            $header = $this->pr_create_tag_header($header_text['text'], $header_id, $arguments, NULL, NULL, $header_text['prepend-inside']);
+          }
+          else {
+            $header = $this->pr_create_tag_header($header_text['text'], $header_id, $arguments);
+          }
+
+          if (isset($header_text['append-inside'])) {
+            $header->set_tag($header_text['append-inside']);
+          }
+
+          $tag->set_tag($header);
+          unset($header);
+
+          if (isset($header_text['append-outside']) && $header_text['append-outside'] instanceof c_base_markup_tag) {
+            $tag->set_tag($header_text['append-outside']);
+          }
+
+          continue;
+        }
+
         $header = $this->pr_create_tag_header($header_text, $header_id, $arguments);
+
         $tag->set_tag($header);
         unset($header);
       }
@@ -596,6 +693,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -605,6 +703,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH,  self::CSS_AS_PARAGRAPH);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     if (is_int($text)) {
@@ -627,6 +731,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -636,6 +741,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT_BLOCK,  self::CSS_AS_TEXT_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
@@ -671,6 +782,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -680,6 +792,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK,  self::CSS_AS_PARAGRAPH_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
@@ -720,6 +838,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -729,6 +848,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_LINK,  self::CSS_AS_LINK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
@@ -789,6 +914,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -798,6 +924,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_LINK_BLOCK,  self::CSS_AS_LINK_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
@@ -876,6 +1008,7 @@ class c_standard_path extends c_base_path {
    *   If NULL, then this is not assigned.
    * @param string|null $extra_class
    *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
    *   If NULL, then this is not assigned.
    *
    * @return c_base_markup_tag
@@ -885,6 +1018,12 @@ class c_standard_path extends c_base_path {
     $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK,  self::CSS_AS_PARAGRAPH_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
     }
 
     $block = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FIELD_SET, $id, $classes);
@@ -906,12 +1045,77 @@ class c_standard_path extends c_base_path {
   }
 
   /**
+   * Creates the standard "field row".
+   *
+   * @param string|null $field_name
+   *   If not NULL, then is text used to be displayed as the field name or label.
+   * @param string|null $field_value
+   *   If not NULL, then is text used to be displayed as the field value or description.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   * @param int|null $row
+   *   (optional) If not NULL, then is a row number to append as an additional class.
+   * @param bool $spacer
+   *   (optional) If TRUE, then a special spacing class string is added between field name and value.
+   *   This is intended to provide a way to have spacing if CSS is not used (unthemed/raw page).
+   *   If a theme is then used, it can then set the spacer tab to be not displayed.
+   *   If FALSE, this spacer tag is omitted.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_field_row($field_name = NULL, $field_value = NULL, $arguments = array(), $id = NULL, $extra_class = NULL, $row = NULL, $spacer = FALSE) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_FIELD_ROW,  self::CSS_AS_FIELD_ROW);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($row)) {
+      $classes[] = self::CSS_AS_ROW . '-' . $row;
+    }
+
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
+    unset($classes);
+
+    $tag_text = $this->pr_create_tag_text($field_name, $arguments, $id, self::CSS_AS_FIELD_ROW_NAME);
+    $tag->set_tag($tag_text);
+    unset($tag_text);
+
+    if ($spacer) {
+      $this->pr_create_tag_spacer($tag);
+    }
+
+    $tag_text = $this->pr_create_tag_text($field_value, $arguments, $id, self::CSS_AS_FIELD_ROW_VALUE);
+    $tag->set_tag($tag_text);
+    unset($tag_text);
+
+    return $tag;
+  }
+
+  /**
    * Create a new HTML markup class with default settings populated.
    *
    * @param bool $real_page
    *   (optional) A real page is a page where content is being provided.
    *   Examples of non-real pages are 404 pages.
    *   Certain headers and settings are discluded on non-real pages, such as canonical urls.
+   * @param array $arguments_title
+   *   (optional) An array of arguments to convert into text, passed to the title handling functions.
+   * @param array $arguments_script
+   *   (optional) An array of arguments to convert into text, passed to the script handling functions.
    *
    * @return c_base_return_status
    *   TRUE on success.
@@ -927,13 +1131,13 @@ class c_standard_path extends c_base_path {
    * @see: self::pr_create_html_add_header_link_shortlink()
    * @see: self::pr_create_html_add_header_script()
    */
-  protected function pr_create_html($real_page = TRUE) {
+  protected function pr_create_html($real_page = TRUE, $arguments_title = array(), $arguments_script = array()) {
     $this->html = new c_base_html();
 
     $this->pr_create_html_add_primary_ids();
     $this->pr_create_html_add_primary_classes();
     $this->pr_create_html_add_lanaguages();
-    $this->pr_create_html_add_title();
+    $this->pr_create_html_add_title($arguments_title);
     $this->pr_create_html_add_header_base();
     $this->pr_create_html_add_header_meta();
 
@@ -943,7 +1147,7 @@ class c_standard_path extends c_base_path {
       $this->pr_create_html_add_header_link_shortlink();
     }
 
-    $this->pr_create_html_add_header_script();
+    $this->pr_create_html_add_header_script($arguments_script);
 
     return new c_base_return_true();
   }
@@ -1034,10 +1238,13 @@ class c_standard_path extends c_base_path {
   /**
    * Create an HTML title tag.
    *
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   *
    * @see: self::pr_create_html()
    */
-  protected function pr_create_html_add_title() {
-    $title = $this->pr_get_text_title();
+  protected function pr_create_html_add_title($arguments = array()) {
+    $title = $this->pr_get_text_title($arguments);
 
     if (is_string($title)) {
       $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TITLE);
@@ -1187,9 +1394,12 @@ class c_standard_path extends c_base_path {
   /**
    * Create an HTML script header tags.
    *
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   *
    * @see: self::pr_create_html()
    */
-  protected function pr_create_html_add_header_script() {
+  protected function pr_create_html_add_header_script($arguments = array()) {
     // provide a custom javascript for detecting if javascript is enabled and storing in a css class name.
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SCRIPT, 'f_standard_paths_hmtl_javascript_detection');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_TYPE, c_base_mime::TYPE_TEXT_JS);
@@ -1204,6 +1414,20 @@ class c_standard_path extends c_base_path {
     $this->html->set_header($tag);
     $this->html->set_attribute_body(c_base_markup_attributes::ATTRIBUTE_ON_LOAD, 'f_standard_paths_hmtl_javascript_detection();');
     unset($tag);
+  }
+
+  /**
+   * Appends a spacer to the specified tag.
+   *
+   * This is provided so that languages that do not use spacing may override this accordingly.
+   *
+   * @param c_base_markup_tag &$tag
+   *   The markup tag to assign the spacer to.
+   */
+  protected function pr_create_tag_spacer(&$tag) {
+    $tag_text = $this->pr_create_tag_text(' ', array(), NULL, self::CSS_AS_SPACER);
+    $tag->set_tag($tag_text);
+    unset($tag_text);
   }
 
   /**

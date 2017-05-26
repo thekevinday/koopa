@@ -16,7 +16,12 @@ class c_standard_path_user_lock_ja extends c_standard_path_user_lock {
     $string = '';
     switch ($code) {
       case 0:
-        $string = '';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'ユーザーをロック:{user_name}';
+        }
+        else {
+          $string = 'ユーザーをロックする';
+        }
         break;
     }
 

@@ -16,7 +16,12 @@ class c_standard_path_user_delete_ja extends c_standard_path_user_delete {
     $string = '';
     switch ($code) {
       case 0:
-        $string = '';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'ユーザーを削除:{user_name}';
+        }
+        else {
+          $string = 'ユーザーを削除する';
+        }
         break;
     }
 

@@ -68,8 +68,8 @@ class c_standard_index extends c_base_return {
     $this->settings['cookie_secure']    = TRUE;
     $this->settings['session_socket']   = '/programs/sockets/sessionize_accounts/';
     $this->settings['session_system']   = 'standard';
-    $this->settings['session_expire']   = 600; // 10 minutes
-    $this->settings['session_max']      = 1800; // 30 minutes
+    $this->settings['session_expire']   = 1200; // 20 minutes
+    $this->settings['session_max']      = 7200; // 120 minutes / 2 hours
 
     // ldap information
     $this->settings['ldap_server']        = NULL; // 'ldaps://127.0.0.1:1636/';

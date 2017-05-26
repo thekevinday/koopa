@@ -22,6 +22,9 @@ class c_standard_path_user_view extends c_standard_path {
   protected const CLASS_USER_VIEW_ACCESS   = 'user_settings-access';
   protected const CLASS_USER_VIEW_HISTORY  = 'user_settings-history';
 
+  protected const CLASS_ID_USER          = 'id-user';
+  protected const CLASS_ID_USER_EXTERNAL = 'id-user-external';
+
   /**
    * Implements do_execute().
    */
@@ -215,6 +218,66 @@ class c_standard_path_user_view extends c_standard_path {
       case 16:
         $string = 'History Information';
         break;
+      case 17:
+        $string = 'ID';
+        break;
+      case 18:
+        $string = 'External ID';
+        break;
+      case 19:
+        $string = 'Name';
+        break;
+      case 20:
+        $string = 'E-mail';
+        break;
+      case 21:
+        $string = 'Roles';
+        break;
+      case 22:
+        $string = 'Role Management';
+        break;
+      case 23:
+        $string = 'Is Locked';
+        break;
+      case 24:
+        $string = 'Is Deleted';
+        break;
+      case 25:
+        $string = 'Is Public';
+        break;
+      case 26:
+        $string = 'Is Private';
+        break;
+      case 27:
+        $string = 'Is System';
+        break;
+      case 28:
+        $string = 'Date Created';
+        break;
+      case 29:
+        $string = 'Date Changed';
+        break;
+      case 30:
+        $string = 'Date Synchronized';
+        break;
+      case 31:
+        $string = 'Date Locked';
+        break;
+      case 32:
+        $string = 'Date Deleted';
+        break;
+      case 33:
+        $string = 'Yes';
+        break;
+      case 34:
+        $string = 'No';
+        break;
+      case 35:
+        $string = 'Enabled';
+        break;
+      case 36:
+        $string = 'Disabled';
+        break;
     }
 
     if (!empty($arguments)) {
@@ -239,24 +302,38 @@ class c_standard_path_user_view extends c_standard_path {
       unset($arguments[':{user_name}']);
     }
 
-    $wrapper = $this->pr_create_tag_section(array(1 => 0), $arguments);
-    unset($arguments);
+    $id_user = $user->get_id()->get_value();
+    if (is_int($id_user)) {
+      $text_id_user = $this->pr_create_tag_text('[id: ' . $id_user . ']', array(), NULL, self::CLASS_ID_USER);
+      $wrapper = $this->pr_create_tag_section(array(1 => array('text' => 0, 'append-inside' => $text_id_user)), $arguments);
+      unset($text_id_user);
+    }
+    else {
+      $wrapper = $this->pr_create_tag_section(array(1 => 0), $arguments);
+    }
+
 
     // initialize the content as HTML.
-    $this->pr_create_html();
+    $this->pr_create_html(TRUE, $arguments);
     $this->html->set_tag($wrapper);
     unset($wrapper);
+    unset($arguments);
 
 
     // account information
     $fieldset = $this->pr_create_tag_fieldset(13, array(), self::CLASS_USER_VIEW_ACCOUNT, self::CLASS_USER_VIEW_ACCOUNT);
     $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
 
+    $row = $this->pr_create_tag_field_row(17, '' . $id_user, array(), NULL, NULL, 0, TRUE);
+    $content->set_tag($row);
+    unset($row);
+
     $fieldset->set_tag($content);
     unset($content);
 
     $this->html->set_tag($fieldset);
     unset($fieldset);
+    unset($id_user);
 
 
     // personal information
@@ -294,6 +371,8 @@ class c_standard_path_user_view extends c_standard_path {
 
     // @todo add edit, cancel, etc.. links.
 
+
+    $this->pr_add_menus();
 
     $executed->set_output($this->html);
     unset($this->html);

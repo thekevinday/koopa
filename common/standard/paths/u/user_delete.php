@@ -34,6 +34,8 @@ class c_standard_path_user_delete extends c_standard_path {
     $this->html->set_tag($wrapper);
     unset($wrapper);
 
+    $this->pr_add_menus();
+
     $executed->set_output($this->html);
     unset($this->html);
 
@@ -66,7 +68,12 @@ class c_standard_path_user_delete extends c_standard_path {
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'Delete User';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'Delete User: :{user_name}';
+        }
+        else {
+          $string = 'Delete User';
+        }
         break;
     }
 
