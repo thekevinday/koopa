@@ -221,6 +221,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Path not found or cannot be accessed.');
       }
     }
+    elseif ($code === self::NOT_DEFINED) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('The requested data, :{data_name}, is not defined' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('The requested data is not defined.');
+      }
+    }
     elseif ($code === self::NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The resource, :{resource_name}, is not connected' . $function_name_string . '.');

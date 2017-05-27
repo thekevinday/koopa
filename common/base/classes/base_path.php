@@ -89,7 +89,9 @@ class c_base_path extends c_base_rfc_string {
 
   protected $date_created;
   protected $date_changed;
+  protected $date_synced;
   protected $date_locked;
+  protected $date_deleted;
 
   protected $include_directory;
   protected $include_name;
@@ -120,7 +122,9 @@ class c_base_path extends c_base_rfc_string {
 
     $this->date_created = NULL;
     $this->date_changed = NULL;
+    $this->date_synced  = NULL;
     $this->date_locked  = NULL;
+    $this->date_deleted = NULL;
 
     $this->include_directory = NULL;
     $this->include_name      = NULL;
@@ -149,7 +153,9 @@ class c_base_path extends c_base_rfc_string {
 
     unset($this->date_created);
     unset($this->date_changed);
+    unset($this->date_synced);
     unset($this->date_locked);
+    unset($this->date_deleted);
 
     unset($this->include_directory);
     unset($this->include_name);
@@ -494,6 +500,26 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Assigns the date synced setting.
+   *
+   * @param float $date_synced
+   *   The date synced associated with the path.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_date_synced($date_synced) {
+    if (!is_float($date_synced) && !is_int($date_synced)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_synced', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->date_synced = (float) $date_synced;
+    return new c_base_return_true();
+  }
+
+  /**
    * Assigns the date locked setting.
    *
    * @param float $date_locked
@@ -510,6 +536,26 @@ class c_base_path extends c_base_rfc_string {
     }
 
     $this->date_locked = (float) $date_locked;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assigns the date deleted setting.
+   *
+   * @param float $date_deleted
+   *   The date deleted associated with the path.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_date_deleted($date_deleted) {
+    if (!is_float($date_deleted) && !is_int($date_deleted)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->date_deleted = (float) $date_deleted;
     return new c_base_return_true();
   }
 
@@ -799,6 +845,22 @@ class c_base_path extends c_base_rfc_string {
   }
 
   /**
+   * Gets the date synced setting.
+   *
+   * @return c_base_return_float|c_base_return_null
+   *   Date synced on success.
+   *   FALSE is returned if the date is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_date_synced() {
+    if (!is_float($this->date_synced)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_float::s_new($this->date_synced);
+  }
+
+  /**
    * Gets the date locked setting.
    *
    * @return c_base_return_float|c_base_return_null
@@ -812,6 +874,22 @@ class c_base_path extends c_base_rfc_string {
     }
 
     return c_base_return_float::s_new($this->date_locked);
+  }
+
+  /**
+   * Gets the date deleted setting.
+   *
+   * @return c_base_return_float|c_base_return_null
+   *   Date deleted on success.
+   *   FALSE is returned if the date is not assigned.
+   *   Error bit is set on error.
+   */
+  public function get_date_deleted() {
+    if (!is_float($this->date_deleted)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_float::s_new($this->date_deleted);
   }
 
   /**

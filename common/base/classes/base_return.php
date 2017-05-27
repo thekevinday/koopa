@@ -1580,8 +1580,8 @@ class c_base_return_object extends c_base_return_value {
    *
    * @param object $value
    *   Any value so long as it is an object.
+   *   This object is cloned.
    *   NULL is not allowed.
-   *   This does perform clone().
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.

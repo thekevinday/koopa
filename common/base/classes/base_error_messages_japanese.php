@@ -226,6 +226,14 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('パスが見つかりません。');
       }
     }
+    elseif ($code === self::NOT_DEFINED) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('要求されたデータ：{data_name}は定義されていません' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('要求されたデータは定義されていません。');
+      }
+    }
     elseif ($code === self::NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('リソース :{resource_name} は接続されていません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');

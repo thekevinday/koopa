@@ -103,9 +103,9 @@ class c_base_address_email extends c_base_return {
   /**
    * Get the name.
    *
-   * @return c_base_return_status
-   *   TRUE on success.
-   *   FALSE with error bit set is returned on error.
+   * @return c_base_return_string
+   *   The name string on success.
+   *   An empty string with error bit set is returned on error.
    */
   public function get_name() {
     if (!is_string($this->name)) {
@@ -118,9 +118,9 @@ class c_base_address_email extends c_base_return {
   /**
    * Get the domain name.
    *
-   * @return c_base_return_status
-   *   TRUE on success.
-   *   FALSE with error bit set is returned on error.
+   * @return c_base_return_string
+   *   The domain name string on success.
+   *   An empty string with error bit set is returned on error.
    */
   public function get_domain() {
     if (!is_string($this->domain)) {
@@ -128,6 +128,29 @@ class c_base_address_email extends c_base_return {
     }
 
     return c_base_return_string::s_new($this->domain);
+  }
+
+  /**
+   * Get the combined name and domain name.
+   *
+   * @return c_base_return_string
+   *   The name and domain name string on success.
+   *   An empty string with error bit set is returned on error.
+   */
+  public function get_address() {
+    if (!is_string($this->name)) {
+      $this->name = '';
+    }
+
+    if (!is_string($this->domain)) {
+      $this->domain = '';
+    }
+
+    if (empty($this->name) || empty($this->domain)) {
+      return c_base_return_string::s_new('');
+    }
+
+    return c_base_return_string::s_new($this->name . '@' . $this->domain);
   }
 
   /**

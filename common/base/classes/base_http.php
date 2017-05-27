@@ -2868,10 +2868,10 @@ class c_base_http extends c_base_rfc_string {
    *
    * @param c_base_cookie $cookie
    *   The cookie object to assign as a cookie.
+   *   This object is cloned.
    *   These header fields apply only to the immediate client.
    *   The header name format is:
    *   - 1*(tchar)
-   *   This does perform clone().
    * @param bool $append
    *   (optional) If TRUE, then append the header name.
    *   If FALSE, then assign the header name.

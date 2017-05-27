@@ -39,6 +39,7 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_ROW                    = 'as-row';
   protected const CSS_AS_ROW_EVEN               = 'as-row-even';
   protected const CSS_AS_ROW_ODD                = 'as-row-odd';
+  protected const CSS_AS_ROW_VALUE              = 'as-row-value';
   protected const CSS_AS_SPACER                 = 'as-spacer';
 
   protected const CSS_IS_JAVASCRIPT_ENABLED  = 'javascript-enabled';
@@ -1045,7 +1046,57 @@ class c_standard_path extends c_base_path {
   }
 
   /**
+   * Creates the standard "row".
+   *
+   * A row only has a single tag within it, generally called the value.
+   *
+   * @param string|null $value
+   *   If not NULL, then is text used to be displayed as the field value or description.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   * @param int|null $row
+   *   (optional) If not NULL, then is a row number to append as an additional class.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_row($value = NULL, $arguments = array(), $id = NULL, $extra_class = NULL, $row = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_ROW,  self::CSS_AS_ROW);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($row)) {
+      $classes[] = self::CSS_AS_ROW . '-' . $row;
+    }
+
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
+    unset($classes);
+
+    $tag_text = $this->pr_create_tag_text($value, $arguments, $id, self::CSS_AS_ROW_VALUE);
+    $tag->set_tag($tag_text);
+    unset($tag_text);
+
+    return $tag;
+  }
+
+  /**
    * Creates the standard "field row".
+   *
+   * A field row has a field name tag and a field value tag.
    *
    * @param string|null $field_name
    *   If not NULL, then is text used to be displayed as the field name or label.
@@ -1067,6 +1118,7 @@ class c_standard_path extends c_base_path {
    *   This is intended to provide a way to have spacing if CSS is not used (unthemed/raw page).
    *   If a theme is then used, it can then set the spacer tab to be not displayed.
    *   If FALSE, this spacer tag is omitted.
+   *   @fixme: spacer was added experimentally and may or may not be used in the future depending on how practical it is.
    *
    * @return c_base_markup_tag
    *   The generated markup tag.

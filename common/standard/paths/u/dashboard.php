@@ -52,17 +52,7 @@ class c_standard_path_user_dashboard extends c_standard_path {
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
-    $roles = array();
-    $current_user = $session->get_user_current();
-    #$session_user = $session->get_user_session();
-
-
-    $roles = array();
-    if ($current_user instanceof c_base_users_user) {
-      $roles = $current_user->get_roles()->get_value_exact();
-    }
-    unset($current_user);
-    #unset($session_user);
+    $roles = $session->get_user_current()->get_roles()->get_value_exact();
 
     $wrapper->set_tag($this->pr_create_tag_text_block($this->pr_get_text(2, array('@{user}' => $session->get_name()->get_value_exact()))));
 

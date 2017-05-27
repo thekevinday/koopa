@@ -45,6 +45,36 @@ class c_base_defaults_global {
   // default backtrace setting (TRUE = perform backtrace on error, FALSE do not perform backtrace on error).
   const BACKTRACE_PERFORM = TRUE;
 
+  // a machine-friendly date and time format string.
+  const FORMAT_DATE_MACHINE = 'Y/m/d';
+
+  // a machine-friendly date and time format string.
+  const FORMAT_DATE_TIME_MACHINE = 'Y/m/d h:i a';
+
+  // a machine-friendly date and time format string, with seconds.
+  const FORMAT_DATE_TIME_SECONDS_MACHINE = 'Y/m/d h:i:s a';
+
+  // a human-friendly date and time format string.
+  const FORMAT_DATE_HUMAN = 'l, F jS Y';
+
+  // a human-friendly date and time format string.
+  const FORMAT_DATE_TIME_HUMAN = 'l, F jS Y h:ia';
+
+  // a human-friendly date and time format string, with seconds.
+  const FORMAT_DATE_TIME_SECONDS_HUMAN = 'l, F jS Y h:i:sa';
+
+  // a machine-friendly time format string.
+  const FORMAT_TIME_MACHINE = 'h:i a';
+
+  // a machine-friendly time format string, with seconds.
+  const FORMAT_TIME_SECONDS_MACHINE = 'h:i:s a';
+
+  // a human-friendly time format string.
+  const FORMAT_TIME_HUMAN = 'h:i a';
+
+  // a human-friendly time format string, with seconds.
+  const FORMAT_TIME_SECONDS_HUMAN = 'h:i:s a';
+
 
   // Represents the current timestamp of this PHP process/session, see: self::s_get_timestamp_session().
   private static $s_timestamp_session = NULL;

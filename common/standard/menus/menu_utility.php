@@ -36,12 +36,7 @@ class c_standard_menu_utility extends c_standard_menu {
     }
     unset($result);
 
-    $roles = array();
-    $session_user = $session->get_user_current();
-    if ($session_user instanceof c_base_session) {
-      $roles = $session_user->get_roles()->get_value_exact();
-    }
-    unset($session_user);
+    $roles = $session->get_user_current()->get_roles()->get_value_exact();
 
     $menu = $this->pr_create_html_create_menu($settings['base_css'] . self::CLASS_NAME, $this->pr_get_text(0));
 

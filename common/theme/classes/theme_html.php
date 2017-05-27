@@ -164,11 +164,11 @@ class c_theme_html extends c_base_return {
    *
    * @param c_base_html $html
    *   The markup html to apply the theme to.
+   *   This object is cloned.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
-   *   This does perform clone().
    */
   public function set_html($html) {
     if (!($html instanceof c_base_html)) {
@@ -184,10 +184,9 @@ class c_theme_html extends c_base_return {
    * Get the markup html assigned to this object.
    *
    * @return c_base_html|c_base_return_status
-   *   The markup html object.
+   *   The (cloned) markup html object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
-   *   This does perform clone().
    */
   public function get_html() {
     if (!($this->html instanceof c_base_html)) {
@@ -258,10 +257,9 @@ class c_theme_html extends c_base_return {
    * Get the HTTP information
    *
    * @return c_base_http|c_base_return_status
-   *   The markup tags object.
+   *   The (cloned) markup tags object.
    *   FALSE is returned if no id is assigned.
    *   FALSE with error bit set is returned on error.
-   *   This does perform clone().
    */
   public function get_http() {
     if (!($this->http instanceof c_base_http)) {

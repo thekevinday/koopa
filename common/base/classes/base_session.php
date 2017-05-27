@@ -198,13 +198,13 @@ class c_base_session extends c_base_return {
    * Assigns the cookie associated with this session.
    *
    * @param c_base_cookie|null $cookie
-   *   The session cookie.
+   *   The session cookie object.
+   *   This object is cloned.
    *   Set to NULL to remove any existing values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
-   *   This does perform clone().
    */
   public function set_cookie($cookie) {
     if (!is_null($cookie) && !($cookie instanceof c_base_cookie)) {
@@ -593,8 +593,8 @@ class c_base_session extends c_base_return {
    *
    * @param c_base_users_user|null $user
    *   The current user object (generally populated from the database).
+   *   This object is cloned.
    *   If NULL, then the user object is removed.
-   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -621,8 +621,8 @@ class c_base_session extends c_base_return {
    *
    * @param c_base_users_user|null $user
    *   The current user object (generally populated from the database).
+   *   This object is cloned.
    *   If NULL, then the user object is removed.
-   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -678,9 +678,8 @@ class c_base_session extends c_base_return {
    * Returns the cookie associated with this session.
    *
    * @return c_base_cookie|c_base_return_null
-   *   The session cookie or NULL if undefined.
+   *   The (cloned) session cookie or NULL if undefined.
    *   FALSE with the error bit set is returned on error.
-   *   This does perform clone().
    */
   public function get_cookie() {
     if (is_null($this->cookie)) {
@@ -895,37 +894,35 @@ class c_base_session extends c_base_return {
   }
 
   /**
-   * Get the current user object
+   * Get the current user object.
    *
-   * @return c_base_users_user|c_base_return_null
-   *   The user object is returned on success.
-   *   NULL is returned if there is no user object assigned.
-   *   The error bit set is returned on error.
-   *   This does perform clone().
+   * @return c_base_users_user
+   *   The user object (cloned) is returned on success.
+   *   A user object with the error bit set is returned on error.
    */
   public function get_user_current() {
     if ($this->user_current instanceof c_base_users_user) {
       return clone($this->user_current);
     }
 
-    return new c_base_return_null();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':{data_name}' => 'user_current', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_DEFINED);
+    return c_base_return_error::s_return('c_base_users_user', $error);
   }
 
   /**
-   * Get the session user object
+   * Get the session user object.
    *
-   * @return c_base_users_user|c_base_return_null
-   *   The user object is returned on success.
-   *   NULL is returned if there is no user object assigned.
-   *   The error bit set is returned on error.
-   *   This does perform clone().
+   * @return c_base_users_user
+   *   The user object (cloned) is returned on success.
+   *   A user object with the error bit set is returned on error.
    */
   public function get_user_session() {
     if ($this->user_session instanceof c_base_users_user) {
       return clone($this->user_session);
     }
 
-    return new c_base_return_null();
+    $error = c_base_error::s_log(NULL, array('arguments' => array(':{data_name}' => 'user_session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_DEFINED);
+    return c_base_return_error::s_return('c_base_users_user', $error);
   }
 
   /**

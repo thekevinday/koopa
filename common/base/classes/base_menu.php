@@ -233,7 +233,7 @@ class c_base_menu_item extends c_base_array {
    *
    * @param c_base_menu_item $item
    *   An instance of c_base_menu_item to assign.
-   *   This does perform clone().
+   *   This object is cloned.
    * @param int|string|NULL $index
    *   An index to assign a specific value to.
    *   Set to NULL to append item.
@@ -271,9 +271,9 @@ class c_base_menu_item extends c_base_array {
    * Assign the items array.
    *
    * @param c_base_array $items
-   *   Replace the current array with this value.
+   *   Replace the current array object with this object.
+   *   This object is cloned.
    *   If NULL, then a new array is created.
-   *   This does perform clone().
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -375,10 +375,9 @@ class c_base_menu_item extends c_base_array {
    *   An index to assign a specific value to.
    *
    * @return c_base_return_status|c_base_menu_item
-   *   Value on success, FALSE otherwise.
+   *   The (cloned) value object.
    *   FALSE without error bit set is returned if $index us not defined.
    *   FALSE with the error bit set is returned on error.
-   *   This does perform clone().
    */
   public function get_item($index) {
     if (!is_string($index) || empty($index)) {
