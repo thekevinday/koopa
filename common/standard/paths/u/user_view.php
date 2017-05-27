@@ -389,7 +389,7 @@ class c_standard_path_user_view extends c_standard_path {
       $content->set_tag($this->pr_create_tag_field_row(27, $tag_text, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
       $count++;
 
-      if ($user->can_manage_roles()->get_value_exact()) {
+      if ($user->is_roler()->get_value_exact()) {
         $tag_text = $this->pr_get_text(33);
       }
       else {

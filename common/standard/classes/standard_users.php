@@ -69,7 +69,7 @@ class c_standard_users_user extends c_base_users_user {
       return c_base_return_error::s_false($error);
     }
 
-    $query_string = 'select id, id_external, id_sort, name_machine, name_human, address_email, is_public, is_system, is_requester, is_drafter, is_editor, is_reviewer, is_insurer, is_financer, is_publisher, is_auditor, is_manager, is_administer, is_private, is_locked, is_deleted, can_manage_roles, date_created, date_changed, date_synced, date_locked, date_deleted, settings ';
+    $query_string = 'select id, id_external, id_sort, name_machine, name_human, address_email, is_public, is_system, is_requester, is_drafter, is_editor, is_reviewer, is_insurer, is_financer, is_publisher, is_auditor, is_manager, is_administer, is_private, is_locked, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, date_deleted, settings ';
     $query_arguments = array();
 
     if (is_null($user_name_or_id)) {
@@ -259,10 +259,10 @@ class c_standard_users_user extends c_base_users_user {
       }
 
       if ($columns[21] == 't') {
-        $this->can_manage_roles = TRUE;
+        $this->is_roler = TRUE;
       }
       else {
-        $this->can_manage_roles = FALSE;
+        $this->is_roler = FALSE;
       }
 
       $this->date_created = c_base_defaults_global::s_get_timestamp($columns[22])->get_value_exact();

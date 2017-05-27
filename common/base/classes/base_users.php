@@ -27,8 +27,7 @@ class c_base_users_user extends c_base_return_array {
   protected $is_private;
   protected $is_locked;
   protected $is_deleted;
-
-  protected $can_manage_roles;
+  protected $is_roler;
 
   protected $date_created;
   protected $date_changed;
@@ -56,8 +55,7 @@ class c_base_users_user extends c_base_return_array {
     $this->is_private = TRUE;
     $this->is_locked  = FALSE;
     $this->is_deleted = FALSE;
-
-    $this->can_manage_roles = FALSE;
+    $this->is_roler   = FALSE;
 
     $this->date_created = NULL;
     $this->date_changed = NULL;
@@ -84,8 +82,7 @@ class c_base_users_user extends c_base_return_array {
     unset($this->is_private);
     unset($this->is_locked);
     unset($this->is_deleted);
-
-    unset($this->can_manage_roles);
+    unset($this->is_roler);
 
     unset($this->date_created);
     unset($this->date_changed);
@@ -643,31 +640,33 @@ class c_base_users_user extends c_base_return_array {
 
 
   /**
-   * Get the is can manage roles setting.
+   * Get the is roler setting.
    *
-   * @param bool|null $can_manage_roles
+   * A "roler" refers to a user who is allowed to manage roles.
+   *
+   * @param bool|null $is_roler
    *   When a boolean, this is assigned as the current can manage roles setting.
    *   When NULL, the can manage roles setting is returned.
    *
    * @return c_base_return_bool|c_base_return_status
-   *   When $can_manage_roles is NULL, is content boolean setting on success.
+   *   When $is_roler is NULL, is content boolean setting on success.
    *   FALSE with error bit is set on error.
    */
-  public function can_manage_roles($can_manage_roles = NULL) {
-    if (!is_null($can_manage_roles) && !is_bool($can_manage_roles)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'can_manage_roles', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+  public function is_roler($is_roler = NULL) {
+    if (!is_null($is_roler) && !is_bool($is_roler)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_roler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    if (is_null($can_manage_roles)) {
-      if (!is_bool($this->can_manage_roles)) {
-        $this->can_manage_roles = FALSE;
+    if (is_null($is_roler)) {
+      if (!is_bool($this->is_roler)) {
+        $this->is_roler = FALSE;
       }
 
-      return c_base_return_bool::s_new($this->can_manage_roles);
+      return c_base_return_bool::s_new($this->is_roler);
     }
 
-    $this->can_manage_roles = $can_manage_roles;
+    $this->is_roler = $is_roler;
     return new c_base_return_true();
   }
 
