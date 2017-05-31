@@ -470,7 +470,7 @@ grant select,usage on s_tables.se_files_id to r_reservation_administer;
 grant usage on s_tables.se_files_id to r_reservation, r_reservation_system;
 
 grant select on s_users.v_files to r_reservation, r_reservation_system;
-grant select on public.v_path_types to r_reservation, r_reservation_public, r_reservation_system;
+grant select on public.v_files to r_reservation, r_reservation_public, r_reservation_system;
 
 
 /* standard-paths.sql permissions */

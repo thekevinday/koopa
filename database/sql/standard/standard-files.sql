@@ -37,14 +37,12 @@ create table s_tables.t_files (
   constraint cp_files primary key (id),
 
   constraint cu_files_name_machine unique (name_machine),
-  constraint cu_files_field_path unique (field_path),
 
   constraint cc_files_id check (id > 0),
   constraint cc_files_name_machine check (name_machine ~ '[A-Za-z]\w*'),
 
   constraint cf_files_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
   constraint cf_files_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete cascade on update cascade,
-  constraint cf_files_id_type foreign key (id_type) references s_tables.t_file_types (id) on delete restrict on update cascade,
   constraint cf_files_id_group foreign key (id_group) references s_tables.t_groups (id) on delete restrict on update cascade
 );
 
