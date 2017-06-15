@@ -25,8 +25,6 @@ class c_standard_path_management_dashboard extends c_standard_path {
       return $executed;
     };
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
 
 

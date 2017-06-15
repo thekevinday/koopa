@@ -527,11 +527,17 @@ class c_standard_index extends c_base_return {
     if ($user_current->do_load($this->database) instanceof c_base_return_true) {
       $this->session->set_user_current($user_current);
     }
+    else {
+      // @todo: hanle errors.
+    }
     unset($user_current);
 
     $user_session = new c_standard_users_user();
     if ($user_session->do_load($this->database, TRUE) instanceof c_base_return_true) {
       $this->session->set_user_current($user_session);
+    }
+    else {
+      // @todo: hanle errors.
     }
     unset($user_session);
 

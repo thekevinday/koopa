@@ -136,49 +136,41 @@ class c_standard_path extends c_base_path {
   }
 
   /**
-   * Assign default variables used by this class.
-   *
-   * This is normally done automatically, but in certain cases, this may need to be explicitly called.
-   *
-   * Calling this will trigger default settings to be regernated, including the breadcrumbs.
-   *
-   * @param c_base_http &$http
-   *   The entire HTTP information to allow for the execution to access anything that is necessary.
-   * @param c_base_database &$database
-   *   The database object, which is usually used by form and ajax paths.
-   * @param c_base_session &$session
-   *   The current session.
-   * @param array $settings
-   *   (optional) An array of additional settings that are usually site-specific.
-   *
-   * @return c_base_return_status
-   *   TRUE on success.
-   *   FALSE with error bit set is returned on error.
-   *
-   * @see: self::do_execute()
+   * Implements do_execute().
+   */
+  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+    $executed = parent::do_execute($http, $database, $session, $settings);
+    if (c_base_return::s_has_error($executed)) {
+      return $executed;
+    }
+
+    // to avoid recursion, breadcrumbs are initialized here instead of in set_parameters().
+    $this->pr_build_breadcrumbs();
+
+    return $executed;
+  }
+
+  /**
+   * Implements set_parameters().
    */
   protected function set_parameters(&$http, &$database, &$session, $settings) {
-    if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+    $result = parent::set_parameters($http, $database, $session, $settings);
+    if (c_base_return::s_has_error($result)) {
+      return $result;
+    }
+    unset($result);
+
+    $this->text_type = c_base_markup_tag::TYPE_SPAN;
+    if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
+      $this->text_type = c_base_markup_tag::TYPE_PARAGRAPH;
     }
 
-    if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+    $this->languages = $this->http->get_response_content_language()->get_value_exact();
+    if (!is_array($this->languages)) {
+      $this->languages = array();
     }
 
-    if (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    $this->pr_assign_defaults($http, $database, $session, $settings);
+    $this->pr_get_language_alias();
 
     return new c_base_return_true();
   }
@@ -234,58 +226,6 @@ class c_standard_path extends c_base_path {
     return $path_parts;
   }
 
-  /**
-   * Load any default settings.
-   *
-   * @param c_base_http &$http
-   *   The entire HTTP information to allow for the execution to access anything that is necessary.
-   * @param c_base_database &$database
-   *   The database object, which is usually used by form and ajax paths.
-   * @param c_base_session &$session
-   *   The current session.
-   * @param array $settings
-   *   (optional) An array of additional settings that are usually site-specific.
-   */
-  protected function pr_assign_defaults(&$http, &$database, &$session, &$settings) {
-    $this->http = $http;
-    $this->database = $database;
-    $this->session = $session;
-    $this->settings = $settings;
-
-    $this->text_type = c_base_markup_tag::TYPE_SPAN;
-    if (isset($this->settings['standards_issue-use_p_tags']) && $this->settings['standards_issue-use_p_tags']) {
-      $this->text_type = c_base_markup_tag::TYPE_PARAGRAPH;
-    }
-
-    $request_uri = $this->http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
-    if (isset($request_uri['data']) && is_string($request_uri['data'])) {
-      $request_uri = $request_uri['data'];
-      unset($request_uri['current']);
-      unset($request_uri['invalid']);
-
-      $this->request_uri = $request_uri;
-    }
-    else {
-      $this->request_uri = array(
-        'scheme' => $this->settings['base_scheme'],
-        'authority' => $this->settings['base_host'],
-        'path' => $this->settings['base_path'],
-        'query' => NULL,
-        'fragment' => NULL,
-        'url' => TRUE,
-      );
-    }
-    unset($request_uri);
-
-    $this->languages = $this->http->get_response_content_language()->get_value_exact();
-    if (!is_array($this->languages)) {
-      $this->languages = array();
-    }
-
-    $this->pr_get_language_alias();
-
-    $this->pr_build_breadcrumbs();
-  }
 
   /**
    * Build the breadcrumb.

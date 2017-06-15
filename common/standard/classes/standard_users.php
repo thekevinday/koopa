@@ -106,10 +106,11 @@ class c_standard_users_user extends c_base_users_user {
       $false = c_base_return_error::s_false($query_result->get_error());
 
       $last_error = $database->get_last_error()->get_value_exact();
-      var_dump($last_error);
+
       if (!empty($last_error)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
+        unset($error);
       }
       unset($last_error);
 

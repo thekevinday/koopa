@@ -1198,33 +1198,89 @@ class c_base_path extends c_base_rfc_string {
   public function do_execute(&$http, &$database, &$session, $settings = array()) {
     $executed = new c_base_path_executed();
 
-    if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      $executed->set_error($error);
-      unset($error);
-    }
-    elseif (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      $executed->set_error($error);
-      unset($error);
-    }
-    elseif (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      $executed->set_error($error);
-      unset($error);
-    }
-    elseif (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      $executed->set_error($error);
-      unset($error);
-    }
-
     if ($this->is_redirect) {
       $http->set_response_location($this->field_destination);
       $http->set_response_status($this->field_response_code);
     }
 
+    $result = $this->set_parameters($http, $database, $session, $settings);
+    if (c_base_return::s_has_error($result)) {
+      $executed->set_error($result->get_errors());
+    }
+    unset($result);
+
     return $executed;
+  }
+
+  /**
+   * Assign default variables used by this class.
+   *
+   * This is normally done automatically, but in certain cases, this may need to be explicitly called.
+   *
+   * Calling this will trigger default settings to be regernated, including the breadcrumbs.
+   *
+   * @param c_base_http &$http
+   *   The entire HTTP information to allow for the execution to access anything that is necessary.
+   * @param c_base_database &$database
+   *   The database object, which is usually used by form and ajax paths.
+   * @param c_base_session &$session
+   *   The current session.
+   * @param array $settings
+   *   (optional) An array of additional settings that are usually site-specific.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: self::do_execute()
+   */
+  protected function set_parameters(&$http, &$database, &$session, $settings) {
+    if (!($http instanceof c_base_http)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!($database instanceof c_base_database)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!($session instanceof c_base_session)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_array($settings)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->http = $http;
+    $this->database = $database;
+    $this->session = $session;
+    $this->settings = $settings;
+
+    $request_uri = $this->http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+    if (isset($request_uri['data']) && is_string($request_uri['data'])) {
+      $request_uri = $request_uri['data'];
+      unset($request_uri['current']);
+      unset($request_uri['invalid']);
+
+      $this->request_uri = $request_uri;
+    }
+    else {
+      $this->request_uri = array(
+        'scheme' => $this->settings['base_scheme'],
+        'authority' => $this->settings['base_host'],
+        'path' => $this->settings['base_path'],
+        'query' => NULL,
+        'fragment' => NULL,
+        'url' => TRUE,
+      );
+    }
+    unset($request_uri);
+
+    return new c_base_return_true();
   }
 
   /**

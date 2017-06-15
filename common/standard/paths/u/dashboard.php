@@ -47,8 +47,6 @@ class c_standard_path_user_dashboard extends c_standard_path {
       return $executed;
     };
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
 

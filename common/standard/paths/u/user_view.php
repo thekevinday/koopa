@@ -35,10 +35,9 @@ class c_standard_path_user_view extends c_standard_path {
       return $executed;
     };
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     // @todo: this function needs to check to see if the user has administer (or manager?) roles (c_base_roles::MANAGER, c_base_roles::ADMINISTER) and if they do, set administrative to TRUE when calling do_load().
-    $roles_current = $this->session->get_user_current()->get_roles()->get_value_exact();
+    $user = $this->session->get_user_current();
+    $roles_current = $user->get_roles()->get_value_exact();
 
     $id_user = NULL;
     $arguments = $this->pr_get_path_arguments(self::PATH_SELF);
@@ -51,13 +50,14 @@ class c_standard_path_user_view extends c_standard_path {
 
         // do not allow view access to reserved/special accounts.
         if ($id_user < self::ID_USER_MINIMUM) {
-          $id_user = NULL;
+          $id_user = FALSE;
         }
       }
       else {
         unset($arguments_total);
         unset($argument);
         unset($id_user);
+        unset($user);
 
         $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => self::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
         $executed->set_error($error);
@@ -84,13 +84,16 @@ class c_standard_path_user_view extends c_standard_path {
         #  $id_user = NULL;
         #}
         else {
-          $id_user = NULL;
+          $id_user = FALSE;
         }
       }
       unset($arguments_total);
       unset($argument);
 
-      if (is_null($id_user)) {
+      if ($id_user === FALSE) {
+        unset($user);
+        unset($id_user);
+
         $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => self::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
         $executed->set_error($error);
 
@@ -101,10 +104,14 @@ class c_standard_path_user_view extends c_standard_path {
       }
     }
 
+    $user = NULL;
     if (is_null($id_user)) {
-      // load current user.
-      if ($this->session->get_user_current()->get_id()->get_value_exact() > 0) {
-        $user = $this->session->get_user_current();
+      $user = $this->session->get_user_current();
+      $id_user = $user->get_id()->get_value_exact();
+
+      // do not allow view access to reserved/special accounts.
+      if ($id_user < self::ID_USER_MINIMUM) {
+        $id_user = FALSE;
       }
     }
     else {
@@ -113,14 +120,14 @@ class c_standard_path_user_view extends c_standard_path {
       // @todo: handle database errors.
       $loaded = $user->do_load($this->database, $id_user);
       if ($loaded instanceof c_base_return_false) {
-        $user = NULL;
+        $id_user = FALSE;
       }
       unset($loaded);
     }
-    unset($id_user);
 
-    // user is set to NULL on error.
-    if (is_null($user)) {
+    if ($id_user === FALSE) {
+      unset($id_user);
+
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => self::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
 
@@ -129,6 +136,7 @@ class c_standard_path_user_view extends c_standard_path {
       return $executed;
     }
     unset($arguments);
+    unset($id_user);
 
     $this->p_do_execute_view($executed, $user);
     unset($user);
@@ -314,8 +322,14 @@ class c_standard_path_user_view extends c_standard_path {
    *   The execution results to be returned.
    * @param c_base_users_user $user_id
    *   An object representing the user to view.
+   *
+   * @return null|c_base_return_error
+   *   NULL is returned if no errors are found.
+   *   Errors are returned if found.
    */
-  private function p_do_execute_view(&$executed, $user) {
+  protected function p_do_execute_view(&$executed, $user) {
+    $errors = NULL;
+
     $arguments = array();
     $arguments[':{user_name}'] = $user->get_name_human()->get_first()->get_value_exact() . ' ' . $user->get_name_human()->get_last()->get_value_exact();
     if (mb_strlen($arguments[':{user_name}']) == 0) {
@@ -547,6 +561,46 @@ class c_standard_path_user_view extends c_standard_path {
       $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
 
       // @todo: implement code for processing and generating a table/list of history, with the ability to navigate additional entries.
+
+      $query_result = $this->database->do_query('select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from v_log_users_self limit 10');
+
+      if (c_base_return::s_has_error($query_result)) {
+        if (is_null($errors)) {
+          $errors = $query_result->get_error();
+        }
+        else {
+          c_base_return::s_copy_errors($query_result->get_error(), $errors);
+        }
+
+        $last_error = $this->database->get_last_error()->get_value_exact();
+
+        if (!empty($last_error)) {
+          $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+          $errors->set_error($error);
+          unset($error);
+        }
+        unset($last_error);
+      }
+      else {
+        $columns = $query_result->fetch_row()->get_value();
+        while (is_array($columns) && !empty($columns)) {
+          $this->id = (int) $columns[0];
+          $this->id_user = (int) $columns[1];
+
+          $this->log_title = (string) $columns[2];
+          $this->log_type = (int) $columns[3];
+          $this->log_type_sub = (int) $columns[4];
+          $this->log_severity = (int) $columns[5];
+          $this->log_facility = (int) $columns[6];
+          $this->log_details = json_decode($columns[7], TRUE);
+          $this->log_date = c_base_defaults_global::s_get_timestamp($columns[8])->get_value_exact();
+          $this->request_client = (string) $columns[9];
+          $this->response_code = (int) $columns[10];
+
+          $columns = $query_result->fetch_row()->get_value();
+        }
+        unset($columns);
+      }
 
       $fieldset->set_tag($content);
       unset($content);

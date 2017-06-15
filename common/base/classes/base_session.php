@@ -6,6 +6,7 @@
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_form.php');
+require_once('common/base/classes/base_users.php');
 
 /**
  * A class for managing sessions.

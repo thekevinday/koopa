@@ -30,8 +30,6 @@ class c_standard_path_user_settings extends c_standard_path {
       return $executed;
     };
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     $arguments = $this->pr_get_path_arguments(self::PATH_SELF);
     if (!empty($arguments)) {
       // @todo: return $this->p_do_execute_X($executed);

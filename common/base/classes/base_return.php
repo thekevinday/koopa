@@ -1916,7 +1916,7 @@ class c_base_return_error {
    * @see: self::s_value()
    */
   public static function s_return($class, $error = NULL) {
-    if (!class_exists($class) || !($class instanceof c_base_return)) {
+    if (!class_exists($class) && !($class instanceof c_base_return)) {
       return self::s_false($error);
     }
 

@@ -26,6 +26,24 @@ class c_base_array extends c_base_rfc_string {
   protected $items;
 
   /**
+   * Class constructor.
+   */
+  public function __construct() {
+    parent::__construct();
+
+    $this->items = array();
+  }
+
+  /**
+   * Class constructor.
+   */
+  public function __destruct() {
+    unset($this->items);
+
+    parent::__destruct();
+  }
+
+  /**
    * @see: t_base_return_value::p_s_new()
    */
   public static function s_new($value) {

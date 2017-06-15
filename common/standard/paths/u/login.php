@@ -37,8 +37,6 @@ class c_standard_path_user_login extends c_standard_path {
       return $executed;
     }
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     // initialize the content as HTML.
     $this->pr_create_html();
 
