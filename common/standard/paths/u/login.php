@@ -25,6 +25,7 @@ require_once('common/theme/classes/theme_html.php');
  * This listens on: /u/login
  */
 class c_standard_path_user_login extends c_standard_path {
+  protected const PATH_SELF   = 'u/login';
   protected const USER_PUBLIC = 'u_standard_public';
 
   /**
@@ -293,6 +294,31 @@ class c_standard_path_user_login extends c_standard_path {
     unset($this->html);
 
     return $executed;
+  }
+
+  /**
+   * Implementation of pr_build_breadcrumbs().
+   */
+  protected function pr_build_breadcrumbs() {
+    $result = parent::pr_build_breadcrumbs();
+    if ($result instanceof c_base_return_false) {
+      unset($result);
+      return new c_base_return_false();
+    }
+    unset($result);
+
+    // @todo: using $this->path_tree->get_item_end(), get the current path and render the breadcrumb based on that path instead of this path.
+    //        consider adding this with additional customization, because it may be desired for some paths to remain hidden until logged in.
+
+    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
+      $this->breadcrumbs = new c_base_menu_item();
+    }
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(12), self::PATH_SELF);
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    return new c_base_return_true();
   }
 
   /**

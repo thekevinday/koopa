@@ -41,6 +41,28 @@ class c_standard_path_user_delete extends c_standard_path {
   }
 
   /**
+   * Implementation of pr_build_breadcrumbs().
+   */
+  protected function pr_build_breadcrumbs() {
+    $result = parent::pr_build_breadcrumbs();
+    if ($result instanceof c_base_return_false) {
+      unset($result);
+      return new c_base_return_false();
+    }
+    unset($result);
+
+    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
+      $this->breadcrumbs = new c_base_menu_item();
+    }
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), self::PATH_SELF);
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    return new c_base_return_true();
+  }
+
+  /**
    * Implementation of pr_create_html_add_header_link_canonical().
    */
   protected function pr_create_html_add_header_link_canonical() {

@@ -41,6 +41,7 @@ class c_standard_menu_breadcrumbs extends c_standard_menu {
 
       $item_text = $item->get_text()->get_value_exact();
       $item_uri = $item->get_uri()->get_value();
+
       if (is_string($item_uri) || is_array($item_uri)) {
         // @fixme: handle if $item_uri is an array.
         $tag = $this->pr_create_html_add_menu_item_link($item_text, $settings['base_path'] . $item_uri);
