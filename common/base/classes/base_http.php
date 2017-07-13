@@ -664,34 +664,34 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['accept']);
     }
 
-    if (array_key_exists('accept_language', $this->headers)) {
+    if (array_key_exists('accept-language', $this->headers)) {
       $this->p_load_request_accept_language();
-      unset($headers['accept_language']);
+      unset($headers['accept-language']);
     }
 
-    if (array_key_exists('accept_encoding', $this->headers)) {
+    if (array_key_exists('accept-encoding', $this->headers)) {
       $this->p_load_request_accept_encoding();
-      unset($headers['accept_encoding']);
+      unset($headers['accept-encoding']);
     }
 
-    if (array_key_exists('accept_charset', $this->headers)) {
+    if (array_key_exists('accept-charset', $this->headers)) {
       $this->p_load_request_accept_charset();
-      unset($headers['accept_charset']);
+      unset($headers['accept-charset']);
     }
 
-    if (array_key_exists('accept_datetime', $this->headers)) {
+    if (array_key_exists('accept-datetime', $this->headers)) {
       $this->p_load_request_accept_datetime();
-      unset($headers['accept_datetime']);
+      unset($headers['accept-datetime']);
     }
 
-    if (array_key_exists('access_control_request_method', $this->headers)) {
+    if (array_key_exists('access-control-request-method', $this->headers)) {
       $this->p_load_request_access_control_request_method();
-      unset($headers['access_control_request_method']);
+      unset($headers['access-control-request-method']);
     }
 
-    if (array_key_exists('access_control_request_headers', $this->headers)) {
+    if (array_key_exists('access-control-request-headers', $this->headers)) {
       $this->p_load_request_access_control_request_headers();
-      unset($headers['access_control_request_headers']);
+      unset($headers['access-control-request-headers']);
     }
 
     if (array_key_exists('authorization', $this->headers)) {
@@ -699,9 +699,9 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['authorization']);
     }
 
-    if (array_key_exists('cache_control', $this->headers)) {
+    if (array_key_exists('cache-control', $this->headers)) {
       $this->p_load_request_cache_control();
-      unset($headers['cache_control']);
+      unset($headers['cache-control']);
     }
 
     if (array_key_exists('connection', $this->headers)) {
@@ -719,24 +719,24 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['cookie']);
     }
 
-    if (array_key_exists('content_length', $this->headers)) {
+    if (array_key_exists('content-length', $this->headers)) {
       $this->p_load_request_content_length();
-      unset($headers['content_length']);
+      unset($headers['content-length']);
     }
 
-    if (array_key_exists('content_md5', $this->headers)) {
+    if (array_key_exists('content-md5', $this->headers)) {
       $this->p_load_request_content_md5();
-      unset($headers['content_md5']);
+      unset($headers['content-md5']);
     }
 
-    if (array_key_exists('content_checksum', $this->headers)) {
+    if (array_key_exists('content-checksum', $this->headers)) {
       $this->p_load_request_content_checksum();
-      unset($headers['content_checksum']);
+      unset($headers['content-checksum']);
     }
 
-    if (array_key_exists('content_type', $this->headers)) {
+    if (array_key_exists('content-type', $this->headers)) {
       $this->p_load_request_content_type();
-      unset($headers['content_type']);
+      unset($headers['content-type']);
     }
 
     if (array_key_exists('date', $this->headers)) {
@@ -759,29 +759,29 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['host']);
     }
 
-    if (array_key_exists('if_match', $this->headers)) {
+    if (array_key_exists('if-match', $this->headers)) {
       $this->p_load_request_if_match();
-      unset($headers['if_match']);
+      unset($headers['if-match']);
     }
 
-    if (array_key_exists('if_none_match', $this->headers)) {
+    if (array_key_exists('if-none-match', $this->headers)) {
       $this->p_load_request_if_none_match();
-      unset($headers['if_none_match']);
+      unset($headers['if-none-match']);
     }
 
-    if (array_key_exists('if_modified_since', $this->headers)) {
+    if (array_key_exists('if-modified-since', $this->headers)) {
       $this->p_load_request_if_modified_since();
-      unset($headers['if_modified_since']);
+      unset($headers['if-modified-since']);
     }
 
-    if (array_key_exists('if_unmodified_since', $this->headers)) {
+    if (array_key_exists('if-unmodified-since', $this->headers)) {
       $this->p_load_request_if_unmodified_since();
-      unset($headers['if_unmodified_since']);
+      unset($headers['if-unmodified-since']);
     }
 
-    if (array_key_exists('if_range', $this->headers)) {
+    if (array_key_exists('if-range', $this->headers)) {
       $this->p_load_request_if_range();
-      unset($headers['if_range']);
+      unset($headers['if-range']);
     }
 
     if (array_key_exists('range', $this->headers)) {
@@ -789,9 +789,9 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['range']);
     }
 
-    if (array_key_exists('max_forwards', $this->headers)) {
+    if (array_key_exists('max-forwards', $this->headers)) {
       $this->p_load_request_max_forwards();
-      unset($headers['max_forwards']);
+      unset($headers['max-forwards']);
     }
 
     // request method is stored in $_SERVER['REQUEST_METHOD'] and should always be defined (by PHP) for valid HTTP requests.
@@ -804,9 +804,9 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['origin']);
     }
 
-    if (array_key_exists('proxy_authorization', $this->headers)) {
+    if (array_key_exists('proxy-authorization', $this->headers)) {
       $this->p_load_request_proxy_authorization();
-      unset($headers['proxy_authorization']);
+      unset($headers['proxy-authorization']);
     }
 
     if (array_key_exists('referer', $this->headers)) {
@@ -814,9 +814,9 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['referer']);
     }
 
-    if (array_key_exists('script_name', $this->headers)) {
+    if (array_key_exists('script-name', $this->headers)) {
       $this->p_load_request_script_name();
-      unset($headers['script_name']);
+      unset($headers['script-name']);
     }
 
     if (array_key_exists('te', $this->headers)) {
@@ -834,9 +834,9 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['uri']);
     }
 
-    if (array_key_exists('user_agent', $this->headers)) {
+    if (array_key_exists('user-agent', $this->headers)) {
       $this->p_load_request_user_agent();
-      unset($headers['user_agent']);
+      unset($headers['user-agent']);
     }
 
     if (array_key_exists('via', $this->headers)) {
@@ -849,24 +849,24 @@ class c_base_http extends c_base_rfc_string {
       unset($headers['warning']);
     }
 
-    if (array_key_exists('x_requested_with', $this->headers)) {
+    if (array_key_exists('x-requested-with', $this->headers)) {
       $this->p_load_request_x_requested_with();
       unset($headers['x_requested_with']);
     }
 
-    if (array_key_exists('x_forwarded_for', $this->headers)) {
+    if (array_key_exists('x-forwarded-for', $this->headers)) {
       $this->p_load_request_x_requested_for();
-      unset($headers['x_forwarded_for']);
+      unset($headers['x-forwarded-for']);
     }
 
-    if (array_key_exists('x_forwarded_host', $this->headers)) {
+    if (array_key_exists('x_-orwarded-host', $this->headers)) {
       $this->p_load_request_x_requested_host();
-      unset($headers['x_forwarded_host']);
+      unset($headers['x-forwarded-host']);
     }
 
-    if (array_key_exists('x_forwarded_proto', $this->headers)) {
+    if (array_key_exists('x-forwarded-proto', $this->headers)) {
       $this->p_load_request_x_requested_proto();
-      unset($headers['x_forwarded_proto']);
+      unset($headers['x-forwarded-proto']);
     }
 
     if (array_key_exists('checksum_header', $this->headers)) {
@@ -8137,10 +8137,18 @@ class c_base_http extends c_base_rfc_string {
    * The uppercase situation is not a problem, they just need to be all lowercased.
    * The '-' to '_' is a problem because the '_' may be the intended functionality.
    *
-   * There are also some values stored in $_SERVER that may be useful, so additional fields may be created and used.
-   * - These will be prefixed with 'environment-'.
+   * For nginx, be sure to set 'underscores_in_headers' to 'on'.
    *
    * @fixme: do something about converting '_' to '-'.
+   * look under sapi/cgi/cgi_main.c, for function add_request_header().
+   * - remove the underscore conversions!
+   * - there is also an apache_request_headers in this file, apply same fixes!
+   *
+   * @fixme: $_SERVER does not contain all headers (only well-known)!
+   *
+   * Custom headers may have to be handled outside of PHP such as via apache or nginx.
+   * - With apache, the following might work: RewriteRule .* - [E=HTTP_EXAMPLE_HEADER:%{HTTP:Example_Header}]
+   *   - This will then appear in $_SERVER.
    */
   private function p_get_all_headers() {
     $this->headers = array();
@@ -8150,14 +8158,11 @@ class c_base_http extends c_base_rfc_string {
       $all_headers = getallheaders();
 
       foreach ($all_headers as $key => $value) {
-        // break the header name so that it is consistent until such time that PHP stops clobbering the header names.
-        $broken = preg_replace('/-/u', '_', $key);
-        $broken = c_base_utf8::s_lowercase($broken)->get_value_exact();
+        $lowered = c_base_utf8::s_lowercase($value)->get_value_exact();
 
-        $this->headers[$broken] = $value;
-        unset($broken);
+        $this->headers[$lowered] = $value;
+        unset($lowered);
       }
-      unset($broken);
       unset($key);
       unset($value);
     }
@@ -8171,12 +8176,20 @@ class c_base_http extends c_base_rfc_string {
             continue;
           }
 
-          $part = c_base_utf8::s_lowercase(c_base_utf8::s_substring($key, 5))->get_value_exact();
+          $part = c_base_utf8::s_lowercase(c_base_utf8::s_substring($key, 5)->get_value_exact())->get_value_exact();
           $this->headers[$part] = $value;
         }
         unset($part);
         unset($key);
         unset($value);
+      }
+
+      if (isset($_SERVER['CONTENT_TYPE'])) {
+        $this->headers['content-type'] = $_SERVER['CONTENT_TYPE'];
+      }
+
+      if (isset($_SERVER['CONTENT_LENGTH'])) {
+        $this->headers['content-length'] = $_SERVER['CONTENT_LENGTH'];
       }
     }
 
