@@ -210,13 +210,12 @@ class c_base_defaults_global {
    * Get a timestamp, relative to UTC, with support for milliseconds and microseconds.
    *
    * Use this in place of strtotime() to ensure consistent timestamps in UTC format, with microseconds.
+   * To ensure proper support for microseconds (and milliseconds), both $string and $format must contain microseconds, even if it is set to 0.
    *
    * @param string $string
-   *   The time string to get the timestamp of (relative to $timestmap if specified).
-   * @param int|float|null $timestamp
-   *   (optional) If not NULL, a unix timestamp representing the timestamp to get the date string of.
-   *   If NULL, the current session time is used.
-   *   Timestamp is expected to be in UTC.
+   *   The time string to get the timestamp of (relative to $timestamp if specified).
+   * @param string $format
+   *   (optional) The format the $string is structured as.
    *
    * @return c_base_return_float
    *   A timestamp in floating format.
@@ -224,14 +223,9 @@ class c_base_defaults_global {
    *
    * @see: strtotime()
    */
-  public static function s_get_timestamp($string, $timestamp = NULL) {
+  public static function s_get_timestamp($string, $format = 'Y/m/d h:i:s.u P') {
     if (!is_string($string)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
-    }
-
-    if (!is_null($timestamp) && !is_float($timestamp) && !is_int($timestamp)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'timestamp', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -240,24 +234,7 @@ class c_base_defaults_global {
     }
 
     // To ensure support for microseconds (and milliseconds), datetime must be initialized woth microseconds.
-    if (is_null($timestamp)) {
-      $now = self::s_get_timestamp_session()->get_value_exact();
-      $microseconds = (int) (($now - ((int) $now)) * 1000000);
-
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $now) . '.' . $microseconds . date(' P', (int) $now));
-      unset($now);
-    }
-    else {
-      if (is_float($timestamp)) {
-        $microseconds = (int) (($timestamp - ((int) $timestamp)) * 1000000);
-      }
-      else {
-        $microseconds = 0;
-      }
-
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $timestamp) . '.' . $microseconds . date(' P', (int) $timestamp));
-    }
-    unset($microseconds);
+    $date = DateTime::createFromFormat($format, $string);
 
     if (!($date instanceof DateTime)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);

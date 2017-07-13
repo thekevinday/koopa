@@ -7,6 +7,7 @@
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_path.php');
+require_once('common/base/classes/base_database.php');
 
 require_once('common/standard/classes/standard_path.php');
 
@@ -615,7 +616,7 @@ class c_standard_path_user_view extends c_standard_path {
           $this->log_severity = (int) $columns[5];
           $this->log_facility = (int) $columns[6];
           $this->log_details = json_decode($columns[7], TRUE);
-          $this->log_date = c_base_defaults_global::s_get_timestamp($columns[8])->get_value_exact();
+          $this->log_date = c_base_defaults_global::s_get_timestamp($columns[8], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
           $this->request_client = (string) $columns[9];
           $this->response_code = (int) $columns[10];
 

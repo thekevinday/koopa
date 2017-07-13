@@ -579,6 +579,8 @@ class c_base_database_connection_string extends c_base_return_string {
  * @require class c_base_session
  */
 class c_base_database extends c_base_return {
+  const STANDARD_TIMESTAMP_FORMAT = 'Y-m-d h:i:s.uP';
+
   private $session;
   private $persistent;
   private $database;

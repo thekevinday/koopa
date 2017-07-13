@@ -266,11 +266,11 @@ class c_standard_users_user extends c_base_users_user {
         $this->is_roler = FALSE;
       }
 
-      $this->date_created = c_base_defaults_global::s_get_timestamp($columns[22])->get_value_exact();
-      $this->date_changed = c_base_defaults_global::s_get_timestamp($columns[23])->get_value_exact();
-      $this->date_synced = c_base_defaults_global::s_get_timestamp($columns[24])->get_value_exact();
-      $this->date_locked = c_base_defaults_global::s_get_timestamp($columns[25])->get_value_exact();
-      $this->date_deleted = c_base_defaults_global::s_get_timestamp($columns[26])->get_value_exact();
+      $this->date_created = c_base_defaults_global::s_get_timestamp($columns[22], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+      $this->date_changed = c_base_defaults_global::s_get_timestamp($columns[23], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+      $this->date_synced = c_base_defaults_global::s_get_timestamp($columns[24], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+      $this->date_locked = c_base_defaults_global::s_get_timestamp($columns[25], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+      $this->date_deleted = c_base_defaults_global::s_get_timestamp($columns[26], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
 
       if (isset($columns[27])) {
         $this->settings = json_decode($columns[27], TRUE);
