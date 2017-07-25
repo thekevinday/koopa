@@ -198,7 +198,7 @@ class c_base_cookie extends c_base_return_array {
    */
   public function set_expires($expires) {
     if (!is_null($expires) && (!is_int($expires) || $this->expires < 0)) {
-      if (is_string($this->max_age) && is_numeric($expires)) {
+      if (is_string($expires) && is_numeric($expires)) {
         $expires = (int) $expires;
 
         if ($expires < 0) {
@@ -219,14 +219,19 @@ class c_base_cookie extends c_base_return_array {
   /**
    * Returns the stored cookie expires timestamp.
    *
-   * @return c_base_return_int
+   * @return c_base_return_int|c_base_return_null
    *   The expiration unix timestamp for the cookie.
+   *   NULL is returned if this is disabled.
    *
    * @see: self::get_max_age()
    */
   public function get_expires() {
     if (is_null($this->expires) && is_null($this->max_age)) {
       $this->p_set_lifetime_default();
+    }
+
+    if (is_null($this->expires)) {
+      return new c_base_return_null();
     }
 
     return c_base_return_int::s_new($this->expires);
@@ -276,15 +281,19 @@ class c_base_cookie extends c_base_return_array {
   /**
    * Returns the stored cookie max age value.
    *
-   * @return c_base_return_int
+   * @return c_base_return_int|c_base_return_null
    *   The expiration unix timestamp for the cookie.
-   *   FALSE (without error bit) is returned if there is no value as per $timestamp parameter.
+   *   NULL is returned if this is disabled.
    *
    * @see: self::get_expires()
    */
   public function get_max_age() {
     if (is_null($this->expires) && is_null($this->max_age)) {
       $this->p_set_lifetime_default();
+    }
+
+    if (is_null($this->max_age)) {
+      return new c_base_return_null();
     }
 
     return c_base_return_int::s_new($this->max_age);

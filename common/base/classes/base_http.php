@@ -370,7 +370,6 @@ class c_base_http extends c_base_rfc_string {
       return c_base_return_error::s_false($error);
     }
 
-
     if (is_null($header_name)) {
       return c_base_return_array::s_new($this->request);
     }
@@ -5228,12 +5227,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.3.5
    */
   private function p_load_request_accept_language() {
-    if (empty($this->headers['accept_language'])) {
+    if (empty($this->headers['accept-language'])) {
       $this->request[self::REQUEST_ACCEPT_LANGUAGE]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['accept_language']);
+    $text = $this->pr_rfc_string_prepare($this->headers['accept-language']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_ACCEPT_LANGUAGE]['invalid'] = TRUE;
       unset($text);
@@ -5288,12 +5287,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.3.4
    */
   private function p_load_request_accept_encoding() {
-    if (empty($this->headers['accept_encoding'])) {
+    if (empty($this->headers['accept-encoding'])) {
       $this->request[self::REQUEST_ACCEPT_ENCODING]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['accept_encoding']);
+    $text = $this->pr_rfc_string_prepare($this->headers['accept-encoding']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_ACCEPT_ENCODING]['invalid'] = TRUE;
       unset($text);
@@ -5399,12 +5398,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.3.3
    */
   private function p_load_request_accept_charset() {
-    if (empty($this->headers['accept_charset'])) {
+    if (empty($this->headers['accept-charset'])) {
       $this->request[self::REQUEST_ACCEPT_CHARSET]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['accept_charset']);
+    $text = $this->pr_rfc_string_prepare($this->headers['accept-charset']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_ACCEPT_CHARSET]['invalid'] = TRUE;
       unset($text);
@@ -5551,12 +5550,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: http://www.mementoweb.org/guide/rfc/ID/#Accept-Memento-Datetime
    */
   private function p_load_request_accept_datetime() {
-    if (p_validate_date_is_valid_rfc($this->headers['accept_datetime']) === FALSE) {
+    if (p_validate_date_is_valid_rfc($this->headers['accept-datetime']) === FALSE) {
       $this->request[self::REQUEST_DATE]['invalid'] = TRUE;
       return;
     }
 
-    $timestamp = strtotime($this->headers['accept_datetime']);
+    $timestamp = strtotime($this->headers['accept-datetime']);
     if ($timestamp === FALSE) {
       $this->request[self::REQUEST_DATE]['invalid'] = TRUE;
       unset($timestamp);
@@ -5578,7 +5577,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Request-Method
    */
   private function p_load_request_access_control_request_method() {
-    $method_string = c_base_utf8::s_lowercase($this->headers['access_control_request_method'])->get_value_exact();
+    $method_string = c_base_utf8::s_lowercase($this->headers['access-control-request-method'])->get_value_exact();
     $method_string = str_replace(' ', '', $method_string);
 
     $methods = explode(',', $method_string);
@@ -5665,12 +5664,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Access-Control-Request-Headers
    */
   private function p_load_request_access_control_request_headers() {
-    if (empty($this->headers['access_control_request_headers'])) {
+    if (empty($this->headers['access-control-request-headers'])) {
       $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['access_control_request_headers']);
+    $text = $this->pr_rfc_string_prepare($this->headers['access-control-request-headers']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_ACCESS_CONTROL_REQUEST_HEADERS]['invalid'] = TRUE;
       unset($text);
@@ -5739,7 +5738,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2
    */
   private function p_load_request_cache_control() {
-    $cache_control = $this->headers['cache_control'];
+    $cache_control = $this->headers['cache-control'];
     if (empty($cache_control)) {
       $this->request[self::REQUEST_CACHE_CONTROL]['invalid'] = TRUE;
       unset($cache_control);
@@ -5916,13 +5915,13 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7230#section-3.3.2
    */
   private function p_load_request_content_length() {
-    if (is_int($this->headers['content_length'])) {
+    if (is_int($this->headers['content-length'])) {
       $this->request[self::REQUEST_CONTENT_LENGTH]['defined'] = TRUE;
-      $this->request[self::REQUEST_CONTENT_LENGTH]['data'] = (int) $this->headers['content_length'];
+      $this->request[self::REQUEST_CONTENT_LENGTH]['data'] = (int) $this->headers['content-length'];
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['content_length']);
+    $text = $this->pr_rfc_string_prepare($this->headers['content-length']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_CONTENT_LENGTH]['invalid'] = TRUE;
       unset($text);
@@ -5951,7 +5950,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-3.1.1.5
    */
   private function p_load_request_content_type() {
-    $content_type = $this->headers['content_type'];
+    $content_type = $this->headers['content-type'];
     if (empty($content_type)) {
       $this->request[self::REQUEST_CONTENT_TYPE]['invalid'] = TRUE;
       unset($content_type);
@@ -6090,12 +6089,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7232#section-2.3
    */
   private function p_load_request_if_match() {
-    if (empty($this->headers['if_match'])) {
+    if (empty($this->headers['if-match'])) {
       $this->request[self::REQUEST_IF_MATCH]['invalid'] = TRUE;
       return;
     }
 
-    $this->request[self::REQUEST_IF_MATCH]['data'] = $this->p_parse_if_entity_tag($this->headers['if_match']);
+    $this->request[self::REQUEST_IF_MATCH]['data'] = $this->p_parse_if_entity_tag($this->headers['if-match']);
 
     if ($this->request[self::REQUEST_IF_MATCH]['data']['invalid']) {
       $this->request[self::REQUEST_IF_MATCH]['invalid'] = TRUE;
@@ -6117,12 +6116,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7232#section-2.3
    */
   private function p_load_request_if_none_match() {
-    if (empty($this->headers['if_none_match'])) {
+    if (empty($this->headers['if-none-match'])) {
       $this->request[self::REQUEST_IF_NONE_MATCH]['invalid'] = TRUE;
       return;
     }
 
-    $this->request[self::REQUEST_IF_NONE_MATCH]['data'] = $this->p_parse_if_entity_tag_and_weak($this->headers['if_none_match']);
+    $this->request[self::REQUEST_IF_NONE_MATCH]['data'] = $this->p_parse_if_entity_tag_and_weak($this->headers['if-none-match']);
 
     if ($this->request[self::REQUEST_IF_NONE_MATCH]['data']['invalid']) {
       $this->request[self::REQUEST_IF_NONE_MATCH]['invalid'] = TRUE;
@@ -6141,12 +6140,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7232#section-3.3
    */
   private function p_load_request_if_modified_since() {
-    if ($this->p_validate_date_is_valid_rfc($this->headers['if_modified_since']) === FALSE) {
+    if ($this->p_validate_date_is_valid_rfc($this->headers['if-modified-since']) === FALSE) {
       $this->request[self::REQUEST_IF_MODIFIED_SINCE]['invalid'] = TRUE;
       return;
     }
 
-    $timestamp = strtotime($this->headers['if_modified_since']);
+    $timestamp = strtotime($this->headers['if-modified-since']);
     if ($timestamp === FALSE) {
       $this->request[self::REQUEST_IF_MODIFIED_SINCE]['invalid'] = TRUE;
       unset($timestamp);
@@ -6167,12 +6166,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7232#section-3.4
    */
   private function p_load_request_if_unmodified_since() {
-    if (p_validate_date_is_valid_rfc($this->headers['if_unmodified_since']) === FALSE) {
+    if (p_validate_date_is_valid_rfc($this->headers['if-unmodified-since']) === FALSE) {
       $this->request[self::REQUEST_IF_UNMODIFIED_SINCE]['invalid'] = TRUE;
       return;
     }
 
-    $timestamp = strtotime($this->headers['if_unmodified_since']);
+    $timestamp = strtotime($this->headers['if-unmodified-since']);
     if ($timestamp === FALSE) {
       $this->request[self::REQUEST_IF_UNMODIFIED_SINCE]['invalid'] = TRUE;
       unset($timestamp);
@@ -6196,8 +6195,8 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7233#section-3.2
    */
   private function p_load_request_if_range() {
-    if (p_validate_date_is_valid_rfc($this->headers['if_range'])) {
-      $timestamp = strtotime($this->headers['if_range']);
+    if (p_validate_date_is_valid_rfc($this->headers['if-range'])) {
+      $timestamp = strtotime($this->headers['if-range']);
       if ($timestamp === FALSE) {
         $this->request[self::REQUEST_IF_RANGE]['invalid'] = TRUE;
         $this->request[self::REQUEST_IF_RANGE]['data'] = array(
@@ -6218,9 +6217,9 @@ class c_base_http extends c_base_rfc_string {
     }
 
     // at this point, assume the if-range is an entity tag.
-    $if_range = $this->headers['if_range'];
+    $if_range = $this->headers['if-range'];
     if (empty($if_range)) {
-      $this->request[self::REQUEST_IF_RANGE]['if_range'] = TRUE;
+      $this->request[self::REQUEST_IF_RANGE]['if-range'] = TRUE;
       $this->request[self::REQUEST_IF_RANGE]['data']['is_date'] = FALSE;
       unset($if_range);
       return;
@@ -6280,12 +6279,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.1.2
    */
   private function p_load_request_max_forwards() {
-    if (is_int($this->headers['max_forwards'])) {
+    if (is_int($this->headers['max-forwards'])) {
       $this->request[self::REQUEST_MAX_FORWARDS]['defined'] = TRUE;
-      $this->request[self::REQUEST_MAX_FORWARDS]['data'] = (int) $this->headers['max_forwards'];
+      $this->request[self::REQUEST_MAX_FORWARDS]['data'] = (int) $this->headers['max-forwards'];
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['max_forwards']);
+    $text = $this->pr_rfc_string_prepare($this->headers['max-forwards']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_MAX_FORWARDS]['invalid'] = TRUE;
       unset($text);
@@ -6407,12 +6406,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7235#section-4.4
    */
   private function p_load_request_proxy_authorization() {
-    if (empty($this->headers['proxy_authorization'])) {
+    if (empty($this->headers['proxy-authorization'])) {
       $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['proxy_authorization']);
+    $text = $this->pr_rfc_string_prepare($this->headers['proxy-authorization']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_PROXY_AUTHORIZATION]['invalid'] = TRUE;
       unset($text);
@@ -6546,12 +6545,12 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.5.3
    */
   private function p_load_request_user_agent() {
-    if (empty($this->headers['user_agent'])) {
+    if (empty($this->headers['user-agent'])) {
       $this->request[self::REQUEST_USER_AGENT]['invalid'] = TRUE;
       return;
     }
 
-    $text = $this->pr_rfc_string_prepare($this->headers['user_agent']);
+    $text = $this->pr_rfc_string_prepare($this->headers['user-agent']);
     if ($text['invalid']) {
       $this->request[self::REQUEST_USER_AGENT]['invalid'] = TRUE;
       unset($text);
@@ -6886,7 +6885,7 @@ class c_base_http extends c_base_rfc_string {
    */
   private function p_load_request_checksum_header() {
     // this requires checksum_headers to be defined.
-    if (empty($this->headers['checksum_headers'])) {
+    if (empty($this->headers['checksum_header'])) {
       $this->request[self::REQUEST_CHECKSUM_HEADER]['invalid'] = TRUE;
       return;
     }
@@ -6918,7 +6917,7 @@ class c_base_http extends c_base_rfc_string {
    */
   private function p_load_request_checksum_headers() {
     // this requires checksum_header to be defined.
-    if (empty($this->headers['checksum_header'])) {
+    if (empty($this->headers['checksum_headers'])) {
       $this->request[self::REQUEST_CHECKSUM_HEADERS]['invalid'] = TRUE;
       return;
     }
@@ -8158,7 +8157,7 @@ class c_base_http extends c_base_rfc_string {
       $all_headers = getallheaders();
 
       foreach ($all_headers as $key => $value) {
-        $lowered = c_base_utf8::s_lowercase($value)->get_value_exact();
+        $lowered = c_base_utf8::s_lowercase($key)->get_value_exact();
 
         $this->headers[$lowered] = $value;
         unset($lowered);
@@ -8193,9 +8192,12 @@ class c_base_http extends c_base_rfc_string {
       }
     }
 
-    $this->headers['uri'] = '';
-    if (isset($_SERVER['REQUEST_URI'])) {
-      $this->headers['uri'] = $_SERVER['REQUEST_URI'];
+    if (!array_key_exists('uri', $this->headers)) {
+      $this->headers['uri'] = '';
+
+      if (isset($_SERVER['REQUEST_URI'])) {
+        $this->headers['uri'] = $_SERVER['REQUEST_URI'];
+      }
     }
 
     $timestamp = c_base_defaults_global::s_get_timestamp_session();

@@ -61,7 +61,7 @@ class c_standard_index extends c_base_return {
     // cookie/session information
     $this->settings['cookie_name']      = NULL;
     $this->settings['cookie_path']      = '/';
-    $this->settings['cookie_domain']    = '.localhost';
+    $this->settings['cookie_domain']    = 'localhost'; // warning: the standards require '.' in front, but webkit-based browsers reject such domains as '.localhost'.
     $this->settings['cookie_http_only'] = FALSE; // setting this to false will allow javascript to access this cookie, such as for ajax.
     $this->settings['cookie_host_only'] = TRUE;
     $this->settings['cookie_same_site'] = c_base_cookie::SAME_SITE_STRICT;
@@ -79,11 +79,12 @@ class c_standard_index extends c_base_return {
     $this->settings['ldap_fields']        = array();
 
     // base settings
-    $this->settings['base_scheme']      = 'https';
-    $this->settings['base_host']        = 'localhost';
-    $this->settings['base_port']        = ''; // @todo: implement support for thus such that base_port is something like: ':8080' (as opposed to '8080').
-    $this->settings['base_path']        = '/'; // must end in a trailing slash.
-    $this->settings['base_path_prefix'] = ''; // identical to base_path, except there is no trailing slash.
+    $this->settings['base_scheme']       = 'https';
+    $this->settings['base_host']         = 'localhost';
+    $this->settings['base_port']         = ''; // @todo: implement support for thus such that base_port is something like: ':8080' (as opposed to '8080').
+    $this->settings['base_path']         = '/'; // must end in a trailing slash.
+    $this->settings['base_path_prefix']  = ''; // identical to base_path, except there is no trailing slash.
+    $this->settings['response_encoding'] = FALSE; // set to FALSE to disable, otherwise set to a valid $compression parameter value for c_base_http::encode_response_content().
 
     if (!isset($_SERVER["HTTPS"])) {
       $this->settings['base_scheme'] = 'http';
@@ -374,8 +375,8 @@ class c_standard_index extends c_base_return {
 
     $cookie_data = $cookie_login->get_value_exact();
     if (!($cookie_login->validate() instanceof c_base_return_true) || empty($cookie_data['session_id'])) {
-      $cookie_login->set_expires(-1);
-      $cookie_login->set_max_age(-1);
+      $cookie_login->set_expires(0);
+      $cookie_login->set_max_age(NULL);
       $this->session->set_cookie($cookie_login);
       unset($cookie_login);
 
@@ -430,8 +431,8 @@ class c_standard_index extends c_base_return {
 
     // if either the session name or password is undefined for any reason, then consider the session invalid and expire it.
     if (is_null($this->session->get_name()->get_value()) || is_null($this->session->get_password()->get_value())) {
-      $cookie_login->set_expires(-1);
-      $cookie_login->set_max_age(-1);
+      $cookie_login->set_expires(0);
+      $cookie_login->set_max_age(NULL);
       $this->session->set_cookie($cookie_login);
       unset($cookie_login);
 
@@ -690,7 +691,9 @@ class c_standard_index extends c_base_return {
     #$this->http->set_response_warning('1234 This site is under active development.');
 
     // finalize the content prior to sending headers to ensure header accuracy.
-    $this->http->encode_response_content();
+    if ($this->settings['response_encoding'] !== FALSE) {
+      $this->http->encode_response_content($this->settings['response_encoding']);
+    }
 
     // http head method responses do not sent content.
     if ($method === c_base_http::HTTP_METHOD_HEAD) {

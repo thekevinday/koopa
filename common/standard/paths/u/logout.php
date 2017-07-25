@@ -130,8 +130,8 @@ class c_standard_path_user_logout extends c_standard_path {
     // delete the login cookie.
     $cookie_login = $session->get_cookie();
     if ($cookie_login instanceof c_base_cookie) {
-      $cookie_login->set_expires(-1);
-      $cookie_login->set_max_age(-1);
+      $cookie_login->set_expires(0);
+      $cookie_login->set_max_age(NULL);
       $result = $session->set_cookie($cookie_login);
     }
     unset($cookie_login);
