@@ -330,7 +330,7 @@ class c_base_http extends c_base_rfc_string {
    * @see: https://www.w3.org/TR/html5/document-metadata.html#the-meta-element
    */
   public function get_response_headers_for_meta() {
-    return c_base_return_arrray::s_new(array(
+    return c_base_return_array::s_new(array(
       self::RESPONSE_CACHE_CONTROL => self::RESPONSE_CACHE_CONTROL,
       self::RESPONSE_CONTENT_ENCODING => self::RESPONSE_CONTENT_ENCODING,
       self::RESPONSE_CONTENT_LANGUAGE => self::RESPONSE_CONTENT_LANGUAGE,
@@ -396,6 +396,23 @@ class c_base_http extends c_base_rfc_string {
   }
 
   /**
+   * Get all provided HTTP request headers exactly as they were provided.
+   *
+   * @return c_base_return_array
+   *   This always returns an array.
+   *   An array with all request headers is returned.
+   *   An empty array with the error bit set is returned on error.
+   */
+  public function get_request_headers() {
+    if (!is_array($this->headers)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{data_name}' => 'request headers', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_DEFINED);
+      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
+    }
+
+    return c_base_return_array::s_new($this->headers);
+  }
+
+  /**
    * Return the relative part of the request URI that is also relative to the base path.
    *
    * @param string $base_path
@@ -421,7 +438,9 @@ class c_base_http extends c_base_rfc_string {
 
     if (is_string($this->request_uri_relative)) {
       if ($with_query) {
-        return c_base_return_string::s_new($this->request_uri_relative . '?' . $this->request_uri_query);
+        if (is_string($this->request_uri_query)) {
+          return c_base_return_string::s_new($this->request_uri_relative . '?' . $this->request_uri_query);
+        }
       }
 
       return c_base_return_string::s_new($this->request_uri_relative);
@@ -440,18 +459,65 @@ class c_base_http extends c_base_rfc_string {
     }
 
     $this->request_uri_relative = $request_uri['data']['path'];
-    $this->request_uri_query = '';
+    $this->request_uri_query = NULL;
 
-    if (is_string($request_uri['data']['query'])) {
+    if (is_array($request_uri['data']['query']) && !empty($request_uri['data']['query'])) {
       $this->request_uri_query = http_build_query($request_uri['data']['query']);
     }
     unset($request_uri);
 
-    if ($with_query) {
+    if ($with_query && is_string($this->request_uri_query)) {
       return c_base_return_string::s_new($this->request_uri_relative . '?' . $this->request_uri_query);
     }
 
     return c_base_return_string::s_new($this->request_uri_relative);
+  }
+
+  /**
+   * Return the query part of the request URI that is also relative to the base path.
+   *
+   * This is functionally similar to get_request_uri_relative() except that it returns the request query arguments (if any) instead of the request path.
+   *
+   * @param string $base_path
+   *   The base_path to remove from the request uri.
+   *
+   * @return c_base_return_string
+   *   A string is always returned.
+   *   A string with error bit set is returned on error.
+   *
+   * @see: self::get_request_uri_relative()
+   */
+  public function get_request_uri_query($base_path) {
+    if (!is_string($base_path)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'base_path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value('', 'c_base_return_string', $error);
+    }
+
+    if (is_string($this->request_uri_query)) {
+      return c_base_return_string::s_new($this->request_uri_query);
+    }
+
+    $request_uri = $this->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+    if (!isset($request_uri['defined']) || !$request_uri['defined']) {
+      unset($request_uri);
+      return c_base_return_string::s_new('');
+    }
+
+    // strip the base path from the requested uri.
+    if (strlen($base_path) > 0) {
+      $request_uri['data']['path'] = preg_replace('@^' . preg_quote($base_path, '@') . '@i', '', $request_uri['data']['path']);
+      $request_uri['data']['path'] = preg_replace('@/$@', '', $request_uri['data']['path']);
+    }
+
+    $this->request_uri_relative = $request_uri['data']['path'];
+    $this->request_uri_query = NULL;
+
+    if (is_array($request_uri['data']['query']) && !empty($request_uri['data']['query'])) {
+      $this->request_uri_query = http_build_query($request_uri['data']['query']);
+    }
+    unset($request_uri);
+
+    return c_base_return_string::s_new($this->request_uri_query);
   }
 
   /**
@@ -480,7 +546,6 @@ class c_base_http extends c_base_rfc_string {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'delta', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
-
 
     if (is_null($header_name)) {
       return c_base_return_array::s_new($this->response);
@@ -5551,13 +5616,13 @@ class c_base_http extends c_base_rfc_string {
    */
   private function p_load_request_accept_datetime() {
     if (p_validate_date_is_valid_rfc($this->headers['accept-datetime']) === FALSE) {
-      $this->request[self::REQUEST_DATE]['invalid'] = TRUE;
+      $this->request[self::REQUEST_ACCEPT_DATETIME]['invalid'] = TRUE;
       return;
     }
 
     $timestamp = strtotime($this->headers['accept-datetime']);
     if ($timestamp === FALSE) {
-      $this->request[self::REQUEST_DATE]['invalid'] = TRUE;
+      $this->request[self::REQUEST_ACCEPT_DATETIME]['invalid'] = TRUE;
       unset($timestamp);
       return;
     }

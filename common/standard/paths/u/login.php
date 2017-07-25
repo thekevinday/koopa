@@ -472,6 +472,7 @@ class c_standard_path_user_login extends c_standard_path {
 
       // if LDAP is available, make sure the account information exists.
       $ldap = $this->pr_load_ldap_data($settings, $_POST['login_form-user_name']);
+
       if ($ldap['status']) {
         $this->pr_update_user_data($database, $ldap);
       }

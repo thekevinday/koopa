@@ -599,6 +599,8 @@ class c_standard_index extends c_base_return {
     $this->processed = $executed->get_output();
     unset($executed);
 
+    $this->pr_do_log_user_activity();
+
     $this->pr_do_database_disconnect();
 
     return new c_base_return_true();
@@ -728,7 +730,7 @@ class c_standard_index extends c_base_return {
    *   FALSE with error bit set is returned on error.
    */
   protected function pr_do_unload_database() {
-    if ($this->database->is_connected()) {
+    if ($this->database->is_connected() instanceof c_base_return_true) {
       $this->database->do_disconnect();
     }
 
@@ -749,6 +751,57 @@ class c_standard_index extends c_base_return {
 
     // make sure the database is disconnected.
     $this->pr_do_database_disconnect();
+
+    return new c_base_return_true();
+  }
+
+  /**
+   * Add a log entry for the current user in regards to their request.
+   *
+   * This is expected to include a log of the intended response code and should be called only after the response has been determined.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function pr_do_log_user_activity() {
+    if ($this->database->is_connected() instanceof c_base_return_false) {
+      // an active database connection is required.
+      return new c_base_return_false();
+    }
+
+    $query_string = 'insert into v_log_user_activity_self_insert (request_path, request_arguments, request_client, request_headers, response_headers, response_code)';
+    $query_string .= ' values ($1, $2, ($3, $4, $5), $6, $7, $8)';
+
+    $query_parameters = array();
+    $query_parameters[0] = $this->http->get_request_uri_relative($this->settings['base_path'])->get_value_exact();
+    $query_parameters[1] = $this->http->get_request_uri_query($this->settings['base_path'])->get_value_exact();
+
+    $query_parameters[2] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+    $query_parameters[3] = isset($_SERVER['REMOTE_PORT']) && is_numeric($_SERVER['REMOTE_PORT']) ? (int) $_SERVER['REMOTE_PORT'] : 0;
+    $query_parameters[4] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
+
+    $query_parameters[5] = json_encode($this->http->get_request_headers()->get_value_exact());
+    $query_parameters[6] = json_encode($this->http->get_response()->get_value_exact());
+    $query_parameters[7] = $this->http->get_response_status()->get_value_exact();
+
+    $query_result = $this->database->do_query($query_string, $query_parameters);
+
+    if (c_base_return::s_has_error($query_result)) {
+      $last_error = $this->database->get_last_error()->get_value_exact();
+
+      $false = c_base_return_error::s_false($query_result->get_error());
+      unset($query_result);
+
+      if (!empty($last_error)) {
+        $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+        $false->set_error($error);
+      }
+      unset($last_error);
+
+      return $false;
+    }
+    unset($query_result);
 
     return new c_base_return_true();
   }

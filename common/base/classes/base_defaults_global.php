@@ -213,7 +213,7 @@ class c_base_defaults_global {
    * To ensure proper support for microseconds (and milliseconds), both $string and $format must contain microseconds, even if it is set to 0.
    *
    * @param string $string
-   *   The time string to get the timestamp of (relative to $timestamp if specified).
+   *   The time string to get the timestamp of.
    * @param string $format
    *   (optional) The format the $string is structured as.
    *

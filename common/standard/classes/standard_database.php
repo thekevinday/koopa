@@ -91,6 +91,8 @@ class c_standard_database extends c_base_database {
       $last_error = $this->get_last_error()->get_value_exact();
 
       $false = c_base_return_error::s_false($query_result->get_error());
+      unset($query_result);
+
       if (!empty($last_error)) {
         $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
@@ -99,6 +101,7 @@ class c_standard_database extends c_base_database {
 
       return $false;
     }
+    unset($query_result);
 
     return new c_base_return_true();
   }
