@@ -559,12 +559,13 @@ grant insert on public.v_log_user_activity_self_insert to r_reservation_public;
 /* standard-statistics.sql permissions */
 grant select,insert,update on s_tables.t_statistics_http_status_codes to r_reservation_manager, u_reservation_statistics_update;
 grant select on s_tables.t_statistics_http_status_codes to r_reservation_auditor;
-grant select on s_tables.t_statistics_request_path to r_reservation_manager, r_reservation_auditor;
+grant select on s_tables.t_statistics_http_request_path to r_reservation_manager, r_reservation_auditor;
 
-grant select,insert,update on s_users.v_statistics_request_path to r_reservation, r_reservation_system;
-grant select,insert,update on public.v_statistics_request_path to r_reservation_public;
+grant select,insert,update on s_users.v_statistics_http_request_path to r_reservation, r_reservation_system;
+grant select,insert,update on public.v_statistics_http_request_path to r_reservation_public;
 
 alter function s_tables.f_statistics_http_status_codes_insert () owner to u_reservation_statistics_update;
+alter function s_tables.f_statistics_http_request_path_insert () owner to u_reservation_statistics_update;
 
 
 /* reservation-dates permissions */
@@ -638,9 +639,9 @@ alter function s_tables.f_request_revisions_record_revision () owner to u_reserv
 
 
 /* reservation-statistics permissions */
-grant select on s_tables.t_statistics_request_path to r_reservation_manager, r_reservation_auditor;
-grant select,insert,update on s_users.v_statistics_request_path to r_reservation, r_reservation_system;
-grant select,insert,update on public.v_statistics_request_path to r_reservation_public;
+grant select on s_tables.t_statistics_http_request_path to r_reservation_manager, r_reservation_auditor;
+grant select,insert,update on s_users.v_statistics_http_request_path to r_reservation, r_reservation_system;
+grant select,insert,update on public.v_statistics_http_request_path to r_reservation_public;
 
 
 /* reservation-legal permissions */

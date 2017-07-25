@@ -559,12 +559,13 @@ grant insert on public.v_log_user_activity_self_insert to r_standard_public;
 /* standard-statistics.sql permissions */
 grant select,insert,update on s_tables.t_statistics_http_status_codes to r_standard_manager, u_standard_statistics_update;
 grant select on s_tables.t_statistics_http_status_codes to r_standard_auditor;
-grant select on s_tables.t_statistics_request_path to r_standard_manager, r_standard_auditor;
+grant select on s_tables.t_statistics_http_request_path to r_standard_manager, r_standard_auditor;
 
-grant select,insert,update on s_users.v_statistics_request_path to r_standard, r_standard_system;
-grant select,insert,update on public.v_statistics_request_path to r_standard_public;
+grant select,insert,update on s_users.v_statistics_http_request_path to r_standard, r_standard_system;
+grant select,insert,update on public.v_statistics_http_request_path to r_standard_public;
 
 alter function s_tables.f_statistics_http_status_codes_insert () owner to u_standard_statistics_update;
+alter function s_tables.f_statistics_http_request_path_insert () owner to u_standard_statistics_update;
 
 
 
