@@ -605,24 +605,59 @@ class c_standard_path_user_view extends c_standard_path {
         unset($last_error);
       }
       else {
+        $tag_table = $this->pr_create_tag_table(17);
+
+        // @fixme: replace all text here with numeric ids for translation.
+        $tag_table_header = $this->pr_create_tag_table_header();
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('ID'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('User ID'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Title'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Type'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Sub-Type'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Severity'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Facility'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Details'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Date'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Client'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Response Code'));
+        $tag_table->set_tag($tag_table_header);
+        unset($tag_table_header);
+
+        $tag_table_body = $this->pr_create_tag_table_body();
+
+        // @fixme: below is just an example/test. Rewrite this, cleaning up the code and adding more appropriate sanitizers and structure.
         $columns = $query_result->fetch_row()->get_value();
         while (is_array($columns) && !empty($columns)) {
-          $this->id = (int) $columns[0];
-          $this->id_user = (int) $columns[1];
+          $row_timestamp = c_base_defaults_global::s_get_timestamp($columns[8], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+          $row_date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $row_timestamp)->get_value_exact();
+          unset($row_timestamp);
 
-          $this->log_title = (string) $columns[2];
-          $this->log_type = (int) $columns[3];
-          $this->log_type_sub = (int) $columns[4];
-          $this->log_severity = (int) $columns[5];
-          $this->log_facility = (int) $columns[6];
-          $this->log_details = json_decode($columns[7], TRUE);
-          $this->log_date = c_base_defaults_global::s_get_timestamp($columns[8], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
-          $this->request_client = (string) $columns[9];
-          $this->response_code = (int) $columns[10];
+          $tag_table_row = $this->pr_create_tag_table_row();
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[0])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[1])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[2]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[3])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[4])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[5])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[6])));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[7])); // @todo: json_decode($columns[7], TRUE)
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell($row_date));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[9]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[10])));
+          unset($row_date);
+
+          $tag_table_body->set_tag($tag_table_row);
+          unset($tag_table_row);
 
           $columns = $query_result->fetch_row()->get_value();
         }
         unset($columns);
+
+        $tag_table->set_tag($tag_table_body);
+        unset($tag_table_body);
+
+        $content->set_tag($tag_table);
+        unset($tag_table);
       }
 
       $fieldset->set_tag($content);

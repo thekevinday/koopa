@@ -41,6 +41,16 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_ROW_ODD                = 'as-row-odd';
   protected const CSS_AS_ROW_VALUE              = 'as-row-value';
   protected const CSS_AS_SPACER                 = 'as-spacer';
+  protected const CSS_AS_TABLE                  = 'as-table';
+  protected const CSS_AS_TABLE_CAPTION          = 'as-table-caption';
+  protected const CSS_AS_TABLE_COLUMN           = 'as-table-column';
+  protected const CSS_AS_TABLE_COLUMN_GROUP     = 'as-table-column_group';
+  protected const CSS_AS_TABLE_HEADER           = 'as-table-header';
+  protected const CSS_AS_TABLE_HEADER_CELL      = 'as-table-header-cell';
+  protected const CSS_AS_TABLE_BODY             = 'as-table-body';
+  protected const CSS_AS_TABLE_ROW              = 'as-table-row';
+  protected const CSS_AS_TABLE_CELL             = 'as-table-cell';
+  protected const CSS_AS_TABLE_FOOTER           = 'as-table-footer';
 
   protected const CSS_IS_JAVASCRIPT_ENABLED  = 'javascript-enabled';
   protected const CSS_IS_JAVASCRIPT_DISABLED = 'javascript-disabled';
@@ -1095,6 +1105,356 @@ class c_standard_path extends c_base_path {
     unset($tag_text);
 
     return $tag;
+  }
+
+  /**
+   * Creates the standard "table".
+   *
+   * This does not create/add the colgroup, thead, tbody, tr, or tfoot tags.
+   *
+   * @param int|string|null $text
+   *   The text or the text code to use as the table caption.
+   *   If NULL, then no caption is generated..
+   *   If adding additional markup, caption should be added manually.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE,  self::CSS_AS_TABLE);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    $table_tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE, $id, $classes);
+
+    if (!is_null($text)) {
+      if (is_int($text)) {
+        $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $this->pr_get_text($text, $arguments));
+      }
+      else {
+        $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $text);
+      }
+
+      $table_tag->set_tag($tag);
+      unset($tag);
+    }
+
+    return $table_tag;
+  }
+
+  /**
+   * Creates the standard "table caption".
+   *
+   * @param int|string|null $text
+   *   The text or the text code to use as the table caption.
+   *   If NULL, then no text is added..
+   *   If adding additional markup, caption should be added manually.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_caption($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CAPTION,  self::CSS_AS_TABLE_CAPTION);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (!is_null($text)) {
+      if (is_int($text)) {
+        return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $this->pr_get_text($text, $arguments));
+      }
+
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $text);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table column".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_column($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN,  self::CSS_AS_TABLE_COLUMN);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_COLUMN, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table column group".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_column_group($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN_GROUP,  self::CSS_AS_TABLE_COLUMN_GROUP);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_COLUMN_GROUP, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table header".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_header($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER,  self::CSS_AS_TABLE_HEADER);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_HEADER, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table header cell".
+   *
+   * @param int|string|null $text
+   *   The text or the text code to use as the table caption.
+   *   If NULL, then no text is added..
+   *   If adding additional markup, text should be added manually.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_header_cell($text, $id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER_CELL,  self::CSS_AS_TABLE_HEADER_CELL);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (!is_null($text)) {
+      if (is_int($text)) {
+        return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_HEADER_CELL, $id, $classes, $this->pr_get_text($text, $arguments));
+      }
+
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_HEADER_CELL, $id, $classes, $text);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_HEADER_CELL, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table body".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_body($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_BODY,  self::CSS_AS_TABLE_BODY);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_BODY, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table row".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_row($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_ROW,  self::CSS_AS_TABLE_ROW);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_ROW, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table body".
+   *
+   * @param int|string|null $text
+   *   The text or the text code to use as the table caption.
+   *   If NULL, then no text is added..
+   *   If adding additional markup, text should be added manually.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_cell($text, $id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CELL,  self::CSS_AS_TABLE_CELL);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (!is_null($text)) {
+      if (is_int($text)) {
+        return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_CELL, $id, $classes, $this->pr_get_text($text, $arguments));
+      }
+
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_CELL, $id, $classes, $text);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_CELL, $id, $classes);
+  }
+
+  /**
+   * Creates the standard "table body".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_table_footer($id = NULL, $extra_class = NULL) {
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_FOOTER,  self::CSS_AS_TABLE_FOOTER);
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_FOOTER, $id, $classes);
   }
 
   /**

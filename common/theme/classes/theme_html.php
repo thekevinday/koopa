@@ -380,6 +380,10 @@ class c_theme_html extends c_base_return {
       $class_1 = 'structure';
       $class_2 = 'structure-canvas';
     }
+    elseif ($type === c_base_markup_tag::TYPE_CAPTION) {
+      $class_1 = 'text';
+      $class_2 = 'text-caption';
+    }
     elseif ($type === c_base_markup_tag::TYPE_CHECKBOX) {
       $class_1 = 'field';
       $class_2 = 'field-checkbox';
@@ -392,7 +396,7 @@ class c_theme_html extends c_base_return {
       $class_1 = 'text';
       $class_2 = 'text-code';
     }
-    elseif ($type === c_base_markup_tag::TYPE_COL) {
+    elseif ($type === c_base_markup_tag::TYPE_COLUMN) {
       $class_1 = 'structure';
       $class_2 = 'structure-column';
     }
@@ -400,7 +404,7 @@ class c_theme_html extends c_base_return {
       $class_1 = 'field';
       $class_2 = 'field-color';
     }
-    elseif ($type === c_base_markup_tag::TYPE_COL_GROUP) {
+    elseif ($type === c_base_markup_tag::TYPE_COLUMN_GROUP) {
       $class_1 = 'structure';
       $class_2 = 'structure-column_group';
     }
@@ -1736,13 +1740,13 @@ class c_theme_html extends c_base_return {
       $markup .= $child_markup;
       $markup .= '</code>';
     }
-    elseif ($type === c_base_markup_tag::TYPE_COL) {
+    elseif ($type === c_base_markup_tag::TYPE_COLUMN) {
       $markup .= '<col' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_col($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
       $markup .= $tag->get_text()->get_value_exact();
       $markup .= $child_markup;
       $markup .= '</col>';
     }
-    elseif ($type === c_base_markup_tag::TYPE_COL_GROUP) {
+    elseif ($type === c_base_markup_tag::TYPE_COLUMN_GROUP) {
       $markup .= '<colgroup' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_colgroup($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
       $markup .= $tag->get_text()->get_value_exact();
       $markup .= $child_markup;

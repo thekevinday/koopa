@@ -195,6 +195,7 @@ class c_base_defaults_global {
 
     if (!is_null(self::$s_timezone)) {
       date_default_timezone_set(self::$s_timezone);
+      $date->setTimeZone(new DateTimeZone(self::$s_timezone));
     }
 
     $formatted = $date->format($string);
