@@ -1710,6 +1710,12 @@ class c_theme_html extends c_base_return {
       $markup .= $child_markup;
       $markup .= '</canvas>';
     }
+    elseif ($type === c_base_markup_tag::TYPE_CAPTION) {
+      $markup .= '<caption' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
+      $markup .= $tag->get_text()->get_value_exact();
+      $markup .= $child_markup;
+      $markup .= '</caption>';
+    }
     elseif ($type === c_base_markup_tag::TYPE_CHECKBOX) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'checkbox') . $this->p_render_markup_attributes_event_handler($tag) . '>';
       $markup .= $tag->get_text()->get_value_exact();

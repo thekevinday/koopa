@@ -236,7 +236,6 @@ class c_standard_path extends c_base_path {
     return $path_parts;
   }
 
-
   /**
    * Build the breadcrumb.
    *
@@ -350,7 +349,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_section($headers = NULL, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_SECTION,  self::CSS_AS_SECTION);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_SECTION, self::CSS_AS_SECTION);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -388,7 +387,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_wrapper($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_WRAPPER,  self::CSS_AS_WRAPPER);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_WRAPPER, self::CSS_AS_WRAPPER);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -417,7 +416,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_break($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_BREAK,  self::CSS_AS_BREAK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_BREAK, self::CSS_AS_BREAK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -450,7 +449,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_text($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT,  self::CSS_AS_TEXT);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -492,7 +491,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_header($text, $header, $arguments = array(), $id = NULL, $extra_class = NULL, $prepend = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_HEADER,  self::CSS_AS_HEADER,  self::CSS_AS_HEADER . '-' . $header);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_HEADER, self::CSS_AS_HEADER, self::CSS_AS_HEADER . '-' . $header);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -574,7 +573,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_headers($headers, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_HEADERS,  self::CSS_AS_HEADERS);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_HEADERS, self::CSS_AS_HEADERS);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -651,7 +650,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_paragraph($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH,  self::CSS_AS_PARAGRAPH);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH, self::CSS_AS_PARAGRAPH);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -689,7 +688,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_text_block($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT_BLOCK,  self::CSS_AS_TEXT_BLOCK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TEXT_BLOCK, self::CSS_AS_TEXT_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -705,10 +704,10 @@ class c_standard_path extends c_base_path {
 
     if (!is_null($text)) {
       if (is_int($text)) {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_TEXT), $this->pr_get_text($text, $arguments));
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $this->pr_get_text($text, $arguments));
       }
       else {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_TEXT), $text);
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $text);
       }
 
       $block->set_tag($tag);
@@ -740,7 +739,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_paragraph_block($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK,  self::CSS_AS_PARAGRAPH_BLOCK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK, self::CSS_AS_PARAGRAPH_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -756,10 +755,10 @@ class c_standard_path extends c_base_path {
 
     if (!is_null($text)) {
       if (is_int($text)) {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_PARAGRAPH_BLOCK), $this->pr_get_text($text, $arguments));
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $this->pr_get_text($text, $arguments));
       }
       else {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_PARAGRAPH_BLOCK), $text);
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $text);
       }
 
       $block->set_tag($tag);
@@ -796,7 +795,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_link($text, $tooltip, $destination, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_LINK,  self::CSS_AS_LINK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_LINK, self::CSS_AS_LINK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -811,10 +810,10 @@ class c_standard_path extends c_base_path {
     unset($classes);
 
     if (is_int($text)) {
-      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, $classes, $this->pr_get_text($text, $arguments));
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $this->pr_get_text($text, $arguments));
     }
     else {
-      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, $classes, $text);
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, array($this->settings['base_css'] . self::CSS_AS_TEXT, self::CSS_AS_TEXT), $text);
     }
 
     if (is_array($destination)) {
@@ -872,7 +871,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_link_block($text, $tooltip, $destination, $description, $arguments = array(), $header = 0, $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_LINK_BLOCK,  self::CSS_AS_LINK_BLOCK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_LINK_BLOCK, self::CSS_AS_LINK_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -891,7 +890,7 @@ class c_standard_path extends c_base_path {
         $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, array(self::CSS_AS_TEXT, self::CSS_AS_LINK_BLOCK_NAME));
       }
       else {
-        $header_classes = array($this->settings['base_css'] . self::CSS_AS_HEADER,  self::CSS_AS_HEADER,  self::CSS_AS_HEADER . '-' . $header, self::CSS_AS_LINK_BLOCK_NAME);
+        $header_classes = array($this->settings['base_css'] . self::CSS_AS_HEADER, self::CSS_AS_HEADER, self::CSS_AS_HEADER . '-' . $header, self::CSS_AS_LINK_BLOCK_NAME);
 
         if ($header == 1) {
           $type = c_base_markup_tag::TYPE_H1;
@@ -966,7 +965,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_fieldset($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK,  self::CSS_AS_PARAGRAPH_BLOCK);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_PARAGRAPH_BLOCK, self::CSS_AS_PARAGRAPH_BLOCK);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -982,10 +981,10 @@ class c_standard_path extends c_base_path {
 
     if (!is_null($text)) {
       if (is_int($text)) {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_FIELD_SET_LEGEND), $this->pr_get_text($text, $arguments));
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_FIELD_SET_LEGEND, self::CSS_AS_FIELD_SET_LEGEND), $this->pr_get_text($text, $arguments));
       }
       else {
-        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array(self::CSS_AS_FIELD_SET_LEGEND), $text);
+        $tag = c_theme_html::s_create_tag($this->text_type, NULL, array($this->settings['base_css'] . self::CSS_AS_FIELD_SET_LEGEND, self::CSS_AS_FIELD_SET_LEGEND), $text);
       }
 
       $block->set_tag($tag);
@@ -1018,7 +1017,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_row($value = NULL, $arguments = array(), $id = NULL, $extra_class = NULL, $row = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_ROW,  self::CSS_AS_ROW);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_ROW, self::CSS_AS_ROW);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1074,7 +1073,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_field_row($field_name = NULL, $field_value = NULL, $arguments = array(), $id = NULL, $extra_class = NULL, $row = NULL, $spacer = FALSE) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_FIELD_ROW,  self::CSS_AS_FIELD_ROW);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_FIELD_ROW, self::CSS_AS_FIELD_ROW);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1092,7 +1091,7 @@ class c_standard_path extends c_base_path {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, $id, $classes);
     unset($classes);
 
-    $tag_text = $this->pr_create_tag_text($field_name, $arguments, $id, self::CSS_AS_FIELD_ROW_NAME);
+    $tag_text = $this->pr_create_tag_text($field_name, $arguments, NULL, self::CSS_AS_FIELD_ROW_NAME);
     $tag->set_tag($tag_text);
     unset($tag_text);
 
@@ -1100,7 +1099,7 @@ class c_standard_path extends c_base_path {
       $this->pr_create_tag_spacer($tag);
     }
 
-    $tag_text = $this->pr_create_tag_text($field_value, $arguments, $id, self::CSS_AS_FIELD_ROW_VALUE);
+    $tag_text = $this->pr_create_tag_text($field_value, $arguments, NULL, self::CSS_AS_FIELD_ROW_VALUE);
     $tag->set_tag($tag_text);
     unset($tag_text);
 
@@ -1130,7 +1129,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE,  self::CSS_AS_TABLE);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE, self::CSS_AS_TABLE);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1141,21 +1140,21 @@ class c_standard_path extends c_base_path {
       unset($class);
     }
 
-    $table_tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE, $id, $classes);
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE, $id, $classes);
 
     if (!is_null($text)) {
       if (is_int($text)) {
-        $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $this->pr_get_text($text, $arguments));
+        $tag_text = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, NULL, array($this->settings['base_css'] . self::CSS_AS_TABLE_CAPTION,  self::CSS_AS_TABLE_CAPTION), $this->pr_get_text($text, $arguments));
       }
       else {
-        $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, $id, $classes, $text);
+        $tag_text = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CAPTION, NULL, array($this->settings['base_css'] . self::CSS_AS_TABLE_CAPTION,  self::CSS_AS_TABLE_CAPTION), $text);
       }
 
-      $table_tag->set_tag($tag);
-      unset($tag);
+      $tag->set_tag($tag_text);
+      unset($tag_text);
     }
 
-    return $table_tag;
+    return $tag;
   }
 
   /**
@@ -1179,7 +1178,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_caption($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CAPTION,  self::CSS_AS_TABLE_CAPTION);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CAPTION, self::CSS_AS_TABLE_CAPTION);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1216,7 +1215,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_column($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN,  self::CSS_AS_TABLE_COLUMN);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN, self::CSS_AS_TABLE_COLUMN);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1245,7 +1244,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_column_group($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN_GROUP,  self::CSS_AS_TABLE_COLUMN_GROUP);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_COLUMN_GROUP, self::CSS_AS_TABLE_COLUMN_GROUP);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1274,7 +1273,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_header($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER,  self::CSS_AS_TABLE_HEADER);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER, self::CSS_AS_TABLE_HEADER);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1307,7 +1306,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_header_cell($text, $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER_CELL,  self::CSS_AS_TABLE_HEADER_CELL);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER_CELL, self::CSS_AS_TABLE_HEADER_CELL);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1344,7 +1343,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_body($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_BODY,  self::CSS_AS_TABLE_BODY);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_BODY, self::CSS_AS_TABLE_BODY);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1373,7 +1372,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_row($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_ROW,  self::CSS_AS_TABLE_ROW);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_ROW, self::CSS_AS_TABLE_ROW);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1406,7 +1405,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_cell($text, $id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CELL,  self::CSS_AS_TABLE_CELL);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CELL, self::CSS_AS_TABLE_CELL);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1443,7 +1442,7 @@ class c_standard_path extends c_base_path {
    *   The generated markup tag.
    */
   protected function pr_create_tag_table_footer($id = NULL, $extra_class = NULL) {
-    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_FOOTER,  self::CSS_AS_TABLE_FOOTER);
+    $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_FOOTER, self::CSS_AS_TABLE_FOOTER);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
@@ -1503,7 +1502,6 @@ class c_standard_path extends c_base_path {
 
     return new c_base_return_true();
   }
-
 
   /**
    * Create an HTML primary id attributes.

@@ -25,6 +25,8 @@ require_once('common/theme/classes/theme_html.php');
  * This listens on: /u/login
  */
 class c_standard_path_user_login extends c_standard_path {
+  public const SESSION_DATE_FORMAT = 'D, d-M-Y H:i:s T';
+
   protected const PATH_SELF   = 'u/login';
   protected const USER_PUBLIC = 'u_standard_public';
 
@@ -402,6 +404,9 @@ class c_standard_path_user_login extends c_standard_path {
           // it is a pity that postgresql doesn't differentiate the two.
           $access_denied = TRUE;
         }
+        elseif (preg_match('/password authentication failed for user /i', $details['arguments'][':{failure_reasons}'][0]['message']) > 0) {
+          $access_denied = TRUE;
+        }
         else {
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, reason: ' . $details['arguments'][':{failure_reasons}'][0]['message'] . '.');
           unset($details);
@@ -426,7 +431,6 @@ class c_standard_path_user_login extends c_standard_path {
 
               if ($database instanceof c_standard_database) {
                 $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, array('user_name' => $_POST['login_form-user_name']));
-                $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
               }
             }
           }
@@ -465,6 +469,26 @@ class c_standard_path_user_login extends c_standard_path {
           }
         }
         unset($ensure_result);
+
+        // report login attempt and failure using public user account.
+        if ($connected instanceof c_base_return_false && isset($settings['database_user_public']) && is_string($settings['database_user_public'])) {
+          $connection_string = $database->get_connection_string();
+          $connection_string->set_user($settings['database_user_public']);
+          $connection_string->set_password(NULL);
+
+          $database->set_connection_string($connection_string);
+          unset($connection_string);
+
+          $connected = $database->do_connect();
+          if ($connected instanceof c_base_return_true) {
+            c_standard_index::s_do_initialize_database($database);
+
+            $result = $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::FORBIDDEN, array('user_name' => $_POST['login_form-user_name']));
+            $database->do_disconnect();
+
+            $connected = new c_base_return_false();
+          }
+        }
       }
     }
     else {
@@ -480,10 +504,6 @@ class c_standard_path_user_login extends c_standard_path {
         $this->pr_update_user_data($database);
       }
       unset($ldap);
-
-      if ($database instanceof c_standard_database) {
-        $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
-      }
     }
 
     if (c_base_return::s_has_error($connected) || $connected instanceof c_base_return_false) {
@@ -510,8 +530,13 @@ class c_standard_path_user_login extends c_standard_path {
         }
         unset($details);
       }
-
       unset($access_denied);
+
+      // connection was established but errors have occured.
+      if ($connected instanceof c_base_return_true && $database instanceof c_standard_database) {
+        $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::FORBIDDEN);
+        $database->do_disconnect();
+      }
       unset($connected);
 
       if (empty($problems)) {
@@ -576,7 +601,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         $data = array(
           'session_id' => $session->get_session_id()->get_value_exact(),
-          'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
+          'expire' => gmdate(self::SESSION_DATE_FORMAT, $session_expire), // unnecessary, but provided for debug purposes.
         );
 
         $cookie_login->set_value($data);
@@ -588,6 +613,11 @@ class c_standard_path_user_login extends c_standard_path {
       unset($pushed);
     }
     unset($result);
+
+    // now that any session/cookie information is loaded and processed, log any login connections.
+    if ($connected instanceof c_base_return_true && $database instanceof c_standard_database) {
+      $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
+    }
     unset($connected);
 
     if (empty($problems)) {

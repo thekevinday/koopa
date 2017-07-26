@@ -10,6 +10,7 @@ standard-log_groups
 standard-log_problems
 standard-log_users
 standard-statistics
+reservation-public
 reservation-dates
 reservation-fields
 reservation-associations

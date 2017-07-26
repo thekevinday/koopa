@@ -35,19 +35,30 @@ class c_standard_database extends c_base_database {
     $query_parameters[8] = $response_code;
 
     if ($log_type === c_base_log::TYPE_CONNECT) {
-      $expires = NULL;
-      if (isset($data['expires']) && is_int($data['expires'])) {
-        $expires = $data['expires'];
-      }
-
       $query_parameters[0] = "Logging in to the system.";
       $query_parameters[1] = c_base_log::TYPE_SESSION;
       $query_parameters[2] = c_base_log::TYPE_CONNECT;
       $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
       $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
-      $query_parameters[9] = json_encode(array('expires' => $expires));
 
-      unset($expires);
+      if ($response_code == c_base_http_status::FORBIDDEN) {
+        $user_name = NULL;
+        if (isset($data['user_name']) && is_string($data['user_name'])) {
+          $user_name = $data['user_name'];
+        }
+
+        $query_parameters[9] = json_encode(array('user_name' => $user_name));
+        unset($user_name);
+      }
+      else {
+        $expires = NULL;
+        if (isset($data['expires']) && is_int($data['expires'])) {
+          $expires = $data['expires'];
+        }
+
+        $query_parameters[9] = json_encode(array('expires' => $expires));
+        unset($expires);
+      }
     }
     elseif ($log_type === c_base_log::TYPE_DISCONNECT) {
       $query_parameters[0] = "Logging out of the system.";

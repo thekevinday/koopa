@@ -520,8 +520,6 @@ class c_standard_path_user_view extends c_standard_path {
       $fieldset = $this->pr_create_tag_fieldset(15, array(), self::CLASS_USER_VIEW_PERSONAL, self::CLASS_USER_VIEW_PERSONAL);
       $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
 
-      #($count & 2 == 0) ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD)
-
       $content->set_tag($this->pr_create_tag_field_row(37, '' . $user->get_name_human()->get_prefix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
       $content->set_tag($this->pr_create_tag_field_row(38, '' . $user->get_name_human()->get_first()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
       $content->set_tag($this->pr_create_tag_field_row(39, '' . $user->get_name_human()->get_middle()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 2, TRUE));
@@ -585,7 +583,7 @@ class c_standard_path_user_view extends c_standard_path {
 
       // @todo: implement code for processing and generating a table/list of history, with the ability to navigate additional entries.
 
-      $query_result = $this->database->do_query('select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from v_log_users_self limit 10');
+      $query_result = $this->database->do_query('select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from v_log_users_self order by id desc limit 10');
 
       if (c_base_return::s_has_error($query_result)) {
         if (is_null($errors)) {
