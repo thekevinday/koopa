@@ -329,6 +329,66 @@ class c_standard_path_user_view extends c_standard_path {
       case 43:
         $string = 'Undisclosed';
         break;
+      case 44:
+        $string = 'User ID';
+        break;
+      case 45:
+        $string = 'Title';
+        break;
+      case 46:
+        $string = 'Type';
+        break;
+      case 47:
+        $string = 'Sub-Type';
+        break;
+      case 48:
+        $string = 'Severity';
+        break;
+      case 49:
+        $string = 'Facility';
+        break;
+      case 50:
+        $string = 'Details';
+        break;
+      case 51:
+        $string = 'Date';
+        break;
+      case 52:
+        $string = 'Client';
+        break;
+      case 53:
+        $string = 'Response Code';
+        break;
+      case 54:
+        $string = 'Session User ID';
+        break;
+      case 55:
+        $string = 'Request Path';
+        break;
+      case 56:
+        $string = 'Request Arguments';
+        break;
+      case 57:
+        $string = 'Request Client';
+        break;
+      case 58:
+        $string = 'Request Date';
+        break;
+      case 59:
+        $string = 'Request Headers';
+        break;
+      case 60:
+        $string = 'Response Headers';
+        break;
+      case 61:
+        $string = 'Response Code';
+        break;
+      case 62:
+        $string = 'User History';
+        break;
+      case 63:
+        $string = 'Access History';
+        break;
     }
 
     if (!empty($arguments)) {
@@ -346,9 +406,9 @@ class c_standard_path_user_view extends c_standard_path {
    * @param c_base_users_user $user_id
    *   An object representing the user to view.
    *
-   * @return null|c_base_return_error
+   * @return null|array
    *   NULL is returned if no errors are found.
-   *   Errors are returned if found.
+   *   An array of errors are returned if found.
    */
   protected function p_do_execute_view(&$executed, $user) {
     $errors = NULL;
@@ -581,43 +641,103 @@ class c_standard_path_user_view extends c_standard_path {
       $fieldset = $this->pr_create_tag_fieldset(17, array(), self::CLASS_USER_VIEW_HISTORY, self::CLASS_USER_VIEW_HISTORY);
       $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
 
+      // user history
       // @todo: implement code for processing and generating a table/list of history, with the ability to navigate additional entries.
-
-      $query_result = $this->database->do_query('select id, id_user, log_title, log_type, log_type_sub, log_severity, log_facility, log_details, log_date, request_client, response_code from v_log_users_self order by id desc limit 10');
+      $query_result = $this->database->do_query('select id, log_title, log_type, log_type_sub, log_severity, log_facility, log_date, request_client, response_code from v_log_users_self order by id desc limit 10');
 
       if (c_base_return::s_has_error($query_result)) {
         if (is_null($errors)) {
-          $errors = $query_result->get_error();
+          $errors = array();
         }
-        else {
-          c_base_return::s_copy_errors($query_result->get_error(), $errors);
-        }
+
+        c_base_return::s_copy_errors($query_result->get_error(), $errors);
 
         $last_error = $this->database->get_last_error()->get_value_exact();
-
         if (!empty($last_error)) {
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
-          $errors->set_error($error);
-          unset($error);
+          $errors[] = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
         }
         unset($last_error);
       }
       else {
-        $tag_table = $this->pr_create_tag_table(17);
+        $tag_table = $this->pr_create_tag_table(62);
 
-        // @fixme: replace all text here with numeric ids for translation.
         $tag_table_header = $this->pr_create_tag_table_header();
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('ID'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('User ID'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Title'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Type'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Sub-Type'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Severity'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Facility'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Details'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Date'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Client'));
-        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell('Response Code'));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(18));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(45));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(46));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(47));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(48));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(49));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(51));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(52));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(53));
+
+        $tag_table->set_tag($tag_table_header);
+        unset($tag_table_header);
+
+        $tag_table_body = $this->pr_create_tag_table_body();
+
+        $columns = $query_result->fetch_row()->get_value();
+        while (is_array($columns) && !empty($columns)) {
+          $row_timestamp = c_base_defaults_global::s_get_timestamp($columns[6], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
+          $row_date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $row_timestamp)->get_value_exact();
+          unset($row_timestamp);
+
+          $tag_table_row = $this->pr_create_tag_table_row();
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[0]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[1]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[2]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[3]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[4]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[5]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $row_date));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[7]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[8]));
+          unset($row_date);
+
+          $tag_table_body->set_tag($tag_table_row);
+          unset($tag_table_row);
+
+          $columns = $query_result->fetch_row()->get_value();
+        }
+        unset($columns);
+
+        $tag_table->set_tag($tag_table_body);
+        unset($tag_table_body);
+
+        $content->set_tag($tag_table);
+        unset($tag_table);
+      }
+
+
+      // access history
+      // @todo: implement code for processing and generating a table/list of history, with the ability to navigate additional entries.
+      $query_result = $this->database->do_query('select id, request_path, request_arguments, request_date, request_client, response_code from v_log_user_activity_self order by id desc limit 10');
+
+      if (c_base_return::s_has_error($query_result)) {
+        if (is_null($errors)) {
+          $errors = array();
+        }
+
+        c_base_return::s_copy_errors($query_result->get_error(), $errors);
+
+        $last_error = $this->database->get_last_error()->get_value_exact();
+        if (!empty($last_error)) {
+          $errors[] = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+        }
+        unset($last_error);
+      }
+      else {
+        $tag_table = $this->pr_create_tag_table(62);
+
+        $tag_table_header = $this->pr_create_tag_table_header();
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(18));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(55));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(56));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(58));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(57));
+        $tag_table_header->set_tag($this->pr_create_tag_table_header_cell(61));
+
         $tag_table->set_tag($tag_table_header);
         unset($tag_table_header);
 
@@ -626,23 +746,13 @@ class c_standard_path_user_view extends c_standard_path {
         // @fixme: below is just an example/test. Rewrite this, cleaning up the code and adding more appropriate sanitizers and structure.
         $columns = $query_result->fetch_row()->get_value();
         while (is_array($columns) && !empty($columns)) {
-          $row_timestamp = c_base_defaults_global::s_get_timestamp($columns[8], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
-          $row_date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $row_timestamp)->get_value_exact();
-          unset($row_timestamp);
-
           $tag_table_row = $this->pr_create_tag_table_row();
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[0])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[1])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[2]));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[3])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[4])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[5])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[6])));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[7])); // @todo: json_decode($columns[7], TRUE)
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell($row_date));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell($columns[9]));
-          $tag_table_row->set_tag($this->pr_create_tag_table_cell('' . ((int) $columns[10])));
-          unset($row_date);
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[0]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[1]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[2]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[3]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[4]));
+          $tag_table_row->set_tag($this->pr_create_tag_table_cell((string) $columns[5]));
 
           $tag_table_body->set_tag($tag_table_row);
           unset($tag_table_row);
@@ -673,5 +783,7 @@ class c_standard_path_user_view extends c_standard_path {
 
     $executed->set_output($this->html);
     unset($this->html);
+
+    return $errors;
   }
 }

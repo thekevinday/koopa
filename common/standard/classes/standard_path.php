@@ -1294,6 +1294,8 @@ class c_standard_path extends c_base_path {
    *   The text or the text code to use as the table caption.
    *   If NULL, then no text is added..
    *   If adding additional markup, text should be added manually.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
    * @param string|null $id
    *   (optional) An ID attribute to assign.
    *   If NULL, then this is not assigned.
@@ -1305,7 +1307,7 @@ class c_standard_path extends c_base_path {
    * @return c_base_markup_tag
    *   The generated markup tag.
    */
-  protected function pr_create_tag_table_header_cell($text, $id = NULL, $extra_class = NULL) {
+  protected function pr_create_tag_table_header_cell($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
     $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_HEADER_CELL, self::CSS_AS_TABLE_HEADER_CELL);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
@@ -1393,6 +1395,8 @@ class c_standard_path extends c_base_path {
    *   The text or the text code to use as the table caption.
    *   If NULL, then no text is added..
    *   If adding additional markup, text should be added manually.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
    * @param string|null $id
    *   (optional) An ID attribute to assign.
    *   If NULL, then this is not assigned.
@@ -1404,7 +1408,7 @@ class c_standard_path extends c_base_path {
    * @return c_base_markup_tag
    *   The generated markup tag.
    */
-  protected function pr_create_tag_table_cell($text, $id = NULL, $extra_class = NULL) {
+  protected function pr_create_tag_table_cell($text, $arguments = array(), $id = NULL, $extra_class = NULL) {
     $classes = array($this->settings['base_css'] . self::CSS_AS_TABLE_CELL, self::CSS_AS_TABLE_CELL);
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
