@@ -14,15 +14,15 @@ require_once('common/standard/classes/standard_path.php');
  */
 class c_standard_paths extends c_base_return {
   const URI_HOME                 = '';
-  const URI_LOGIN                = 'u/login';
-  const URI_LOGOUT               = 'u/logout';
-  const URI_DASHBOARD_USER       = 'u/dashboard';
   const URI_DASHBOARD_MANAGEMENT = 'm/dashboard';
   const URI_DASHBOARD_ADMINISTER = 'a/dashboard';
   const URI_USER_CREATE          = 'u/create';
+  const URI_USER_DASHBOARD       = 'u/dashboard';
   const URI_USER_VIEW            = 'u/view';
   const URI_USER_EDIT            = 'u/edit';
   const URI_USER_LOCK            = 'u/lock';
+  const URI_USER_LOGIN           = 'u/login';
+  const URI_USER_LOGOUT          = 'u/logout';
   const URI_USER_UNLOCK          = 'u/unlock';
   const URI_USER_DELETE          = 'u/create';
   const URI_USER_CHECK           = 'u/check';
@@ -36,42 +36,42 @@ class c_standard_paths extends c_base_return {
   protected const PATH_MANAGEMENT = 'common/standard/paths/m/';
   protected const PATH_ADMINISTER = 'common/standard/paths/a/';
 
-  protected const NAME_LOGIN                = 'login';
-  protected const NAME_LOGOUT               = 'logout';
   protected const NAME_ACCESS_DENIED        = 'access_denied';
   protected const NAME_NOT_FOUND            = 'not_found';
   protected const NAME_BAD_METHOD           = 'bad_method';
   protected const NAME_SERVER_ERROR         = 'server_error';
   protected const NAME_OPTIONS_METHOD       = 'options';
-  protected const NAME_DASHBOARD_USER       = 'dashboard';
   protected const NAME_DASHBOARD_MANAGEMENT = 'dashboard';
   protected const NAME_DASHBOARD_ADMINISTER = 'dashboard';
   protected const NAME_INDEX                = 'index';
   protected const NAME_USER_CREATE          = 'user_create';
+  protected const NAME_USER_DASHBOARD       = 'user_dashboard';
   protected const NAME_USER_VIEW            = 'user_view';
   protected const NAME_USER_EDIT            = 'user_edit';
   protected const NAME_USER_LOCK            = 'user_lock';
+  protected const NAME_USER_LOGIN           = 'user_login';
+  protected const NAME_USER_LOGOUT          = 'user_logout';
   protected const NAME_USER_UNLOCK          = 'user_unlock';
   protected const NAME_USER_DELETE          = 'user_delete';
   protected const NAME_USER_PRINT           = 'user_print';
   protected const NAME_USER_PDF             = 'user_pdf';
   protected const NAME_USER_PS              = 'user_ps';
 
-  protected const HANDLER_LOGIN                = 'c_standard_path_user_login';
-  protected const HANDLER_LOGOUT               = 'c_standard_path_user_logout';
   protected const HANDLER_NOT_FOUND            = 'c_standard_path_not_found';
   protected const HANDLER_ACCESS_DENIED        = 'c_standard_path_access_denied';
   protected const HANDLER_BAD_METHOD           = 'c_standard_path_bad_method';
   protected const HANDLER_SERVER_ERROR         = 'c_standard_path_server_error';
   protected const HANDLER_OPTIONS_METHOD       = 'c_standard_path_options_method';
-  protected const HANDLER_USER_DASHBOARD       = 'c_standard_path_user_dashboard';
   protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_path_management_dashboard';
   protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_path_administer_dashboard';
   protected const HANDLER_INDEX                = 'c_standard_path_index';
   protected const HANDLER_USER_CREATE          = 'c_standard_path_user_create';
+  protected const HANDLER_USER_DASHBOARD       = 'c_standard_path_user_dashboard';
   protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
   protected const HANDLER_USER_EDIT            = 'c_standard_path_user_edit';
   protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
+  protected const HANDLER_USER_LOGIN           = 'c_standard_path_user_login';
+  protected const HANDLER_USER_LOGOUT          = 'c_standard_path_user_logout';
   protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
   protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
   protected const HANDLER_USER_PRINT           = 'c_standard_path_user_print';
@@ -159,7 +159,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_login() {
-    return $this->pr_include_path(self::PATH_USER, self::NAME_LOGIN, self::HANDLER_LOGIN);
+    return $this->pr_include_path(self::PATH_USER, self::NAME_USER_LOGIN, self::HANDLER_USER_LOGIN);
   }
 
   /**
@@ -169,7 +169,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_logout() {
-    return $this->pr_include_path(self::PATH_USER, self::NAME_LOGOUT, self::HANDLER_LOGOUT);
+    return $this->pr_include_path(self::PATH_USER, self::NAME_USER_LOGOUT, self::HANDLER_USER_LOGOUT);
   }
 
   /**
@@ -591,8 +591,8 @@ class c_standard_paths extends c_base_return {
     $this->paths->add_path(self::URI_HOME, self::HANDLER_INDEX, self::PATH_INTERNAL, self::NAME_INDEX);
 
     // create login/logout paths
-    $this->paths->add_path(self::URI_LOGIN, self::HANDLER_LOGIN, self::PATH_USER, self::NAME_LOGIN);
-    $this->paths->add_path(self::URI_LOGOUT, self::HANDLER_LOGOUT, self::PATH_USER, self::NAME_LOGOUT);
+    $this->paths->add_path(self::URI_USER_LOGIN, self::HANDLER_USER_LOGIN, self::PATH_USER, self::NAME_USER_LOGIN);
+    $this->paths->add_path(self::URI_USER_LOGOUT, self::HANDLER_USER_LOGOUT, self::PATH_USER, self::NAME_USER_LOGOUT);
   }
 
   /**
@@ -670,7 +670,7 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_user() {
     // dashboards
-    $this->paths->add_path(self::URI_DASHBOARD_USER, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_DASHBOARD_USER);
+    $this->paths->add_path(self::URI_USER_DASHBOARD, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_USER_DASHBOARD);
 
     // user paths
     $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
@@ -745,7 +745,7 @@ class c_standard_paths extends c_base_return {
           unset($id_group);
 
           // PHP's instanceof does not support strings, so is_subclass_of() and is_a() must instead be used.
-          if (class_exists(self::HANDLER_LOGOUT) && (is_subclass_of($this->handler, self::HANDLER_LOGOUT) || is_a($this->handler, self::HANDLER_LOGOUT, TRUE))) {
+          if (class_exists(self::HANDLER_USER_LOGOUT) && (is_subclass_of($this->handler, self::HANDLER_USER_LOGOUT) || is_a($this->handler, self::HANDLER_USER_LOGOUT, TRUE))) {
             // if the user is not logged in. then provide a page not found for logout path.
             if (!$this->session->is_logged_in()->get_value_exact()) {
               $path_not_found = $this->get_handler_not_found();

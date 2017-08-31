@@ -77,7 +77,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         $href = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A);
         $href->set_text($this->pr_get_text(6));
-        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $settings['base_path'] . c_standard_paths::URI_LOGOUT);
+        $href->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $settings['base_path'] . c_standard_paths::URI_USER_LOGOUT);
         $block->set_tag($href);
         unset($href);
 
@@ -646,7 +646,7 @@ class c_standard_path_user_login extends c_standard_path {
     return array(
       'scheme' => NULL,
       'authority' => NULL,
-      'path' => $this->settings['base_path'] . c_standard_paths::URI_DASHBOARD_USER,
+      'path' => $this->settings['base_path'] . c_standard_paths::URI_USER_DASHBOARD,
       'query' => NULL,
       'fragment' => NULL,
       'url' => TRUE,
@@ -945,7 +945,7 @@ class c_standard_path_user_login extends c_standard_path {
   protected function pr_create_html_add_header_link_canonical() {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF,  $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . c_standard_paths::URI_LOGIN);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF,  $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . c_standard_paths::URI_USER_LOGIN);
     $this->html->set_header($tag);
 
     unset($tag);

@@ -41,7 +41,7 @@ class c_standard_menu_utility extends c_standard_menu {
     $menu = $this->pr_create_html_create_menu($settings['base_css'] . self::CLASS_NAME, $this->pr_get_text(0));
 
     if ($session->is_logged_in() instanceof c_base_return_true) {
-      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(3), $settings['base_path'] . c_standard_paths::URI_DASHBOARD_USER);
+      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(3), $settings['base_path'] . c_standard_paths::URI_USER_DASHBOARD);
       $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_DASHBOARD_USER);
       $menu->set_tag($item);
       unset($item);
@@ -65,7 +65,7 @@ class c_standard_menu_utility extends c_standard_menu {
       $menu->set_tag($item);
       unset($item);
 
-      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(7), $settings['base_path'] . c_standard_paths::URI_LOGOUT);
+      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(7), $settings['base_path'] . c_standard_paths::URI_USER_LOGOUT);
       $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_LOGOUT);
       $menu->set_tag($item);
       unset($item);
@@ -76,7 +76,7 @@ class c_standard_menu_utility extends c_standard_menu {
       $menu->set_tag($item);
       unset($item);
 
-      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(2), $settings['base_path'] . c_standard_paths::URI_LOGIN);
+      $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(2), $settings['base_path'] . c_standard_paths::URI_USER_LOGIN);
       $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_LOGIN);
       $menu->set_tag($item);
       unset($item);
