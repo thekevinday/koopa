@@ -299,7 +299,7 @@ class c_standard_path_user_login extends c_standard_path {
       $this->breadcrumbs = new c_base_menu_item();
     }
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(12), self::PATH_SELF);
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(12), static::PATH_SELF);
     $this->breadcrumbs->set_item($item);
     unset($item);
 

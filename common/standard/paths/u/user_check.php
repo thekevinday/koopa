@@ -1,7 +1,10 @@
 <?php
 /**
  * @file
- * Provides path handler for the user dashboard.
+ * Provides path handler for the user check.
+ *
+ * This is generally intended to be used to trigger one or more checks against a user account or related data.
+ * This could be a simple reaction as is common with ajax but could also be a page containing forms.
  */
 
 require_once('common/base/classes/base_error.php');
@@ -13,12 +16,12 @@ require_once('common/standard/classes/standard_path.php');
 require_once('common/theme/classes/theme_html.php');
 
 /**
- * Provides a path handler for user in pdf format.
+ * Provides a path handler for user creation.
  *
- * This listens on: /u/pdf
+ * This listens on: /u/check
  */
-class c_standard_path_user_pdf extends c_standard_path {
-  protected const PATH_SELF = 'u/pdf';
+class c_standard_path_user_check extends c_standard_path {
+  protected const PATH_SELF = 'u/check';
 
   /**
    * Implements do_execute().
@@ -30,8 +33,6 @@ class c_standard_path_user_pdf extends c_standard_path {
       return $executed;
     }
 
-    $this->pr_assign_defaults($http, $database, $session, $settings);
-
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
 
     // initialize the content as HTML.
@@ -39,10 +40,34 @@ class c_standard_path_user_pdf extends c_standard_path {
     $this->html->set_tag($wrapper);
     unset($wrapper);
 
+    $this->pr_add_menus();
+
     $executed->set_output($this->html);
     unset($this->html);
 
     return $executed;
+  }
+
+  /**
+   * Implementation of pr_build_breadcrumbs().
+   */
+  protected function pr_build_breadcrumbs() {
+    $result = parent::pr_build_breadcrumbs();
+    if ($result instanceof c_base_return_false) {
+      unset($result);
+      return new c_base_return_false();
+    }
+    unset($result);
+
+    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
+      $this->breadcrumbs = new c_base_menu_item();
+    }
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), static::PATH_SELF);
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    return new c_base_return_true();
   }
 
   /**
@@ -71,7 +96,12 @@ class c_standard_path_user_pdf extends c_standard_path {
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'Lock User';
+        if (array_key_exists(':{user_name}', $arguments)) {
+          $string = 'Check User: :{user_name}';
+        }
+        else {
+          $string = 'Check User';
+        }
         break;
     }
 

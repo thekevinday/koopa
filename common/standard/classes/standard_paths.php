@@ -16,20 +16,21 @@ class c_standard_paths extends c_base_return {
   const URI_HOME                 = '';
   const URI_DASHBOARD_MANAGEMENT = 'm/dashboard';
   const URI_DASHBOARD_ADMINISTER = 'a/dashboard';
+  const URI_USER_CHECK           = 'u/check';
   const URI_USER_CREATE          = 'u/create';
   const URI_USER_DASHBOARD       = 'u/dashboard';
-  const URI_USER_VIEW            = 'u/view';
+  const URI_USER_DELETE          = 'u/delete';
   const URI_USER_EDIT            = 'u/edit';
   const URI_USER_LOCK            = 'u/lock';
   const URI_USER_LOGIN           = 'u/login';
   const URI_USER_LOGOUT          = 'u/logout';
-  const URI_USER_UNLOCK          = 'u/unlock';
-  const URI_USER_DELETE          = 'u/create';
-  const URI_USER_CHECK           = 'u/check';
-  const URI_USER_REFRESH         = 'u/refresh';
-  const URI_USER_PRINT           = 'u/print';
   const URI_USER_PDF             = 'u/pdf';
+  const URI_USER_PRINT           = 'u/print';
   const URI_USER_PS              = 'u/ps';
+  const URI_USER_REFRESH         = 'u/refresh';
+  const URI_USER_SETTINGS        = 'u/settings';
+  const URI_USER_UNLOCK          = 'u/unlock';
+  const URI_USER_VIEW            = 'u/view';
 
   protected const PATH_INTERNAL   = 'common/standard/internal/';
   protected const PATH_USER       = 'common/standard/paths/u/';
@@ -44,18 +45,21 @@ class c_standard_paths extends c_base_return {
   protected const NAME_DASHBOARD_MANAGEMENT = 'dashboard';
   protected const NAME_DASHBOARD_ADMINISTER = 'dashboard';
   protected const NAME_INDEX                = 'index';
+  protected const NAME_USER_CHECK           = 'user_check';
   protected const NAME_USER_CREATE          = 'user_create';
   protected const NAME_USER_DASHBOARD       = 'user_dashboard';
-  protected const NAME_USER_VIEW            = 'user_view';
+  protected const NAME_USER_DELETE          = 'user_delete';
   protected const NAME_USER_EDIT            = 'user_edit';
   protected const NAME_USER_LOCK            = 'user_lock';
   protected const NAME_USER_LOGIN           = 'user_login';
   protected const NAME_USER_LOGOUT          = 'user_logout';
-  protected const NAME_USER_UNLOCK          = 'user_unlock';
-  protected const NAME_USER_DELETE          = 'user_delete';
-  protected const NAME_USER_PRINT           = 'user_print';
   protected const NAME_USER_PDF             = 'user_pdf';
+  protected const NAME_USER_PRINT           = 'user_print';
   protected const NAME_USER_PS              = 'user_ps';
+  protected const NAME_USER_REFRESH         = 'user_refresh';
+  protected const NAME_USER_SETTINGS        = 'user_settings';
+  protected const NAME_USER_UNLOCK          = 'user_unlock';
+  protected const NAME_USER_VIEW            = 'user_view';
 
   protected const HANDLER_NOT_FOUND            = 'c_standard_path_not_found';
   protected const HANDLER_ACCESS_DENIED        = 'c_standard_path_access_denied';
@@ -65,18 +69,21 @@ class c_standard_paths extends c_base_return {
   protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_path_management_dashboard';
   protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_path_administer_dashboard';
   protected const HANDLER_INDEX                = 'c_standard_path_index';
+  protected const HANDLER_USER_CHECK           = 'c_standard_path_user_check';
   protected const HANDLER_USER_CREATE          = 'c_standard_path_user_create';
   protected const HANDLER_USER_DASHBOARD       = 'c_standard_path_user_dashboard';
-  protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
+  protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
   protected const HANDLER_USER_EDIT            = 'c_standard_path_user_edit';
   protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
   protected const HANDLER_USER_LOGIN           = 'c_standard_path_user_login';
   protected const HANDLER_USER_LOGOUT          = 'c_standard_path_user_logout';
-  protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
-  protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
-  protected const HANDLER_USER_PRINT           = 'c_standard_path_user_print';
   protected const HANDLER_USER_PDF             = 'c_standard_path_user_pdf';
+  protected const HANDLER_USER_PRINT           = 'c_standard_path_user_print';
   protected const HANDLER_USER_PS              = 'c_standard_path_user_ps';
+  protected const HANDLER_USER_REFRESH         = 'c_standard_path_user_refresh';
+  protected const HANDLER_USER_SETTINGS        = 'c_standard_path_user_settings';
+  protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
+  protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
 
   protected const SCRIPT_EXTENSION = '.php';
   protected const WILDCARD_PATH    = '/%';
@@ -673,24 +680,30 @@ class c_standard_paths extends c_base_return {
     $this->paths->add_path(self::URI_USER_DASHBOARD, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_USER_DASHBOARD);
 
     // user paths
+    $this->paths->add_path(self::URI_USER_CHECK, self::HANDLER_USER_CHECK, self::PATH_USER, self::NAME_USER_CHECK);
+    $this->paths->add_path(self::URI_USER_CHECK . self::WILDCARD_PATH, self::HANDLER_USER_CHECK, self::PATH_USER, self::NAME_USER_CHECK);
     $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
     $this->paths->add_path(self::URI_USER_CREATE . self::WILDCARD_PATH, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
-    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
-    $this->paths->add_path(self::URI_USER_VIEW . self::WILDCARD_PATH, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
+    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
+    $this->paths->add_path(self::URI_USER_DELETE . self::WILDCARD_PATH, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
     $this->paths->add_path(self::URI_USER_EDIT, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
     $this->paths->add_path(self::URI_USER_EDIT . self::WILDCARD_PATH, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
     $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
     $this->paths->add_path(self::URI_USER_LOCK . self::WILDCARD_PATH, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
-    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
-    $this->paths->add_path(self::URI_USER_UNLOCK . self::WILDCARD_PATH, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
-    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
-    $this->paths->add_path(self::URI_USER_DELETE . self::WILDCARD_PATH, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
-    $this->paths->add_path(self::URI_USER_PRINT, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
-    $this->paths->add_path(self::URI_USER_PRINT . self::WILDCARD_PATH, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
     $this->paths->add_path(self::URI_USER_PDF, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
     $this->paths->add_path(self::URI_USER_PDF . self::WILDCARD_PATH, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
+    $this->paths->add_path(self::URI_USER_PRINT, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
+    $this->paths->add_path(self::URI_USER_PRINT . self::WILDCARD_PATH, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
     $this->paths->add_path(self::URI_USER_PS, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
     $this->paths->add_path(self::URI_USER_PS . self::WILDCARD_PATH, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
+    $this->paths->add_path(self::URI_USER_REFRESH, self::HANDLER_USER_REFRESH, self::PATH_USER, self::NAME_USER_REFRESH);
+    $this->paths->add_path(self::URI_USER_REFRESH . self::WILDCARD_PATH, self::HANDLER_USER_REFRESH, self::PATH_USER, self::NAME_USER_REFRESH);
+    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_SETTINGS . self::WILDCARD_PATH, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
+    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
+    $this->paths->add_path(self::URI_USER_UNLOCK . self::WILDCARD_PATH, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
+    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
+    $this->paths->add_path(self::URI_USER_VIEW . self::WILDCARD_PATH, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
   }
 
   /**

@@ -31,7 +31,7 @@ class c_standard_path_user_edit extends c_standard_path {
   protected function pr_build_breadcrumbs() {
     parent::pr_build_breadcrumbs();
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(1), self::PATH_SELF);
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text_breadcrumbs(1), static::PATH_SELF);
     $this->breadcrumbs->set_item($item);
     unset($item);
 
@@ -46,7 +46,7 @@ class c_standard_path_user_edit extends c_standard_path {
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
       return $executed;
-    };
+    }
 
     $this->pr_assign_defaults($http, $database, $session, $settings);
 
@@ -71,7 +71,7 @@ class c_standard_path_user_edit extends c_standard_path {
   protected function pr_create_html_add_header_link_canonical() {
     $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_SELF);
+    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . static::PATH_SELF);
     $this->html->set_header($tag);
 
     unset($tag);
