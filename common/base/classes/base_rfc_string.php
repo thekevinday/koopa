@@ -195,7 +195,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
     $stop_at_closing_quote = FALSE;
     if ($stop < 0) {
-      if ($stop == self::STOP_AT_CLOSING_CHARACTER) {
+      if ($stop == static::STOP_AT_CLOSING_CHARACTER) {
         $stop_at_closing_quote = TRUE;
       }
 
@@ -734,7 +734,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -907,7 +907,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           return $result;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -1786,7 +1786,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
                 break;
               }
 
-              $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+              $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
               $result['current'] = $parsed['current'];
 
               if ($parsed['invalid']) {
@@ -2069,7 +2069,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -2269,7 +2269,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], self::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {

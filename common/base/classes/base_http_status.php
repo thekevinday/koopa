@@ -103,264 +103,264 @@ class c_base_http_status {
 
     $string = "";
     switch ($status) {
-      case self::CONTINUE_REQUEST:
+      case static::CONTINUE_REQUEST:
         $string = "Continue Request";
         break;
 
-      case self::SWITCHING_PROTOCOLS:
+      case static::SWITCHING_PROTOCOLS:
         $string = "Switching Protocols";
         break;
 
-      case self::PROCESSING:
+      case static::PROCESSING:
         $string = "Processing";
         break;
 
-      case self::OK:
+      case static::OK:
         $string = "OK";
         break;
 
-      case self::CREATED:
+      case static::CREATED:
         $string = "Created";
         break;
 
-      case self::ACCEPTED:
+      case static::ACCEPTED:
         $string = "Accepted";
         break;
 
-      case self::NON_AUTHORATATIVE:
+      case static::NON_AUTHORATATIVE:
         $string = "Non-Authoratative";
         break;
 
-      case self::NO_CONTENT:
+      case static::NO_CONTENT:
         $string = "No Content";
         break;
 
-      case self::RESET_CONTENT:
+      case static::RESET_CONTENT:
         $string = "Reset Content";
         break;
 
-      case self::PARTIAL_CONTENT:
+      case static::PARTIAL_CONTENT:
         $string = "Partial Content";
         break;
 
-      case self::MULTI_STATUS:
+      case static::MULTI_STATUS:
         $string = "Multi-Status";
         break;
 
-      case self::ALREADY_REPORTED:
+      case static::ALREADY_REPORTED:
         $string = "Already Reported";
         break;
 
-      case self::IM_USED:
+      case static::IM_USED:
         $string = "IM Used";
         break;
 
-      case self::MULTIPLE_CHOICES:
+      case static::MULTIPLE_CHOICES:
         $string = "Multiple Choices";
         break;
 
-      case self::MOVED_PERMANENTLY:
+      case static::MOVED_PERMANENTLY:
         $string = "Moved Permanently";
         break;
 
-      case self::FOUND:
+      case static::FOUND:
         $string = "Found";
         break;
 
-      case self::SEE_OTHER:
+      case static::SEE_OTHER:
         $string = "See Other";
         break;
 
-      case self::NOT_MODIFIED:
+      case static::NOT_MODIFIED:
         $string = "Not Modified";
         break;
 
-      case self::USE_PROXY:
+      case static::USE_PROXY:
         $string = "Use Proxy";
         break;
 
-      case self::SWITCH_PROXY:
+      case static::SWITCH_PROXY:
         $string = "Switch Proxy";
         break;
 
-      case self::TEMPORARY_REDIRECT:
+      case static::TEMPORARY_REDIRECT:
         $string = "Temporary Redirect";
         break;
 
-      case self::PERMANENT_REDIRECT:
+      case static::PERMANENT_REDIRECT:
         $string = "Permanent Redirect";
         break;
 
-      case self::BAD_REQUEST:
+      case static::BAD_REQUEST:
         $string = "Bad Request";
         break;
 
-      case self::UNAUTHORIZED:
+      case static::UNAUTHORIZED:
         $string = "Unauthorized";
         break;
 
-      case self::PAYMENT_REQUIRED:
+      case static::PAYMENT_REQUIRED:
         $string = "Payment Required";
         break;
 
-      case self::FORBIDDEN:
+      case static::FORBIDDEN:
         $string = "Forbidden";
         break;
 
-      case self::NOT_FOUND:
+      case static::NOT_FOUND:
         $string = "Not Found";
         break;
 
-      case self::METHOD_NOT_ALLOWED:
+      case static::METHOD_NOT_ALLOWED:
         $string = "Method Not Allowed";
         break;
 
-      case self::NOT_ACCEPTABLE:
+      case static::NOT_ACCEPTABLE:
         $string = "Not Acceptable";
         break;
 
-      case self::PROXY_AUTHENTICATION_REQUIRED:
+      case static::PROXY_AUTHENTICATION_REQUIRED:
         $string = "Proxy Authentication Required";
         break;
 
-      case self::REQUEST_TIMEOUT:
+      case static::REQUEST_TIMEOUT:
         $string = "Request Timeout";
         break;
 
-      case self::CONFLICT:
+      case static::CONFLICT:
         $string = "Conflict";
         break;
 
-      case self::GONE:
+      case static::GONE:
         $string = "Gone";
         break;
 
-      case self::LENGTH_REQUIRED:
+      case static::LENGTH_REQUIRED:
         $string = "Length Required";
         break;
 
-      case self::PRECONDITION_FAILED:
+      case static::PRECONDITION_FAILED:
         $string = "Pre-condition Failed";
         break;
 
-      case self::PAYLOAD_TOO_LARGE:
+      case static::PAYLOAD_TOO_LARGE:
         $string = "Payload Too Large";
         break;
 
-      case self::REQUEST_URI_TOO_LONG:
+      case static::REQUEST_URI_TOO_LONG:
         $string = "Request URI Too Long";
         break;
 
-      case self::UNSUPPORTED_MEDIA_TYPE:
+      case static::UNSUPPORTED_MEDIA_TYPE:
         $string = "Unsupported Media Type";
         break;
 
-      case self::REQUESTED_RANGE_NOT_SATISFIABLE:
+      case static::REQUESTED_RANGE_NOT_SATISFIABLE:
         $string = "Requested Range Not Satisfiable";
         break;
 
-      case self::EXPECTATION_FAILED:
+      case static::EXPECTATION_FAILED:
         $string = "Expectation Failed";
         break;
 
-      case self::MISDIRECTED_REQUEST:
+      case static::MISDIRECTED_REQUEST:
         $string = "Misdirected Request";
         break;
 
-      case self::LOCKED:
+      case static::LOCKED:
         $string = "Locked";
         break;
 
-      case self::FAILED_DEPENDENCY:
+      case static::FAILED_DEPENDENCY:
         $string = "Failed Dependency";
         break;
 
-      case self::UPGRADE_REQUIRED:
+      case static::UPGRADE_REQUIRED:
         $string = "Upgrade Required";
         break;
 
-      case self::PRECONDITION_REQUIRED:
+      case static::PRECONDITION_REQUIRED:
         $string = "Pre-Condition Required";
         break;
 
-      case self::TOO_MANY_REQUESTS:
+      case static::TOO_MANY_REQUESTS:
         $string = "Too Many Requests";
         break;
 
-      case self::REQUEST_HEADER_FIELDS_TOO_LARGE:
+      case static::REQUEST_HEADER_FIELDS_TOO_LARGE:
         $string = "Request Header Fields Too Large";
         break;
 
-      case self::NO_RESPONSE:
+      case static::NO_RESPONSE:
         $string = "No Response";
         break;
 
-      case self::UNAVAILABLE_FOR_LEGAL_REASONS:
+      case static::UNAVAILABLE_FOR_LEGAL_REASONS:
         $string = "Unavailable for Legal Reasons";
         break;
 
-      case self::SSL_CERTIFICATE_ERROR:
+      case static::SSL_CERTIFICATE_ERROR:
         $string = "SSL Certificate Error";
         break;
 
-      case self::HTTP_REQUEST_SENT_TO_HTTPS:
+      case static::HTTP_REQUEST_SENT_TO_HTTPS:
         $string = "HTTP Request Sent to HTTPS Port";
         break;
 
-      case self::CLIENT_CLOSED_REQUEST:
+      case static::CLIENT_CLOSED_REQUEST:
         $string = "Client Closed Request";
         break;
 
-      case self::INTERNAL_SERVER_ERROR:
+      case static::INTERNAL_SERVER_ERROR:
         $string = "Internal Server Error";
         break;
 
-      case self::NOT_IMPLEMENTED:
+      case static::NOT_IMPLEMENTED:
         $string = "Not Implemented";
         break;
 
-      case self::BAD_GATEWAY:
+      case static::BAD_GATEWAY:
         $string = "Bad Gateway";
         break;
 
-      case self::SERVICE_UNAVAILABLE:
+      case static::SERVICE_UNAVAILABLE:
         $string = "Service Unavailable";
         break;
 
-      case self::GATEWAY_TIMEOUT:
+      case static::GATEWAY_TIMEOUT:
         $string = "Gateway Timeout";
         break;
 
-      case self::HTTP_VERSION_NOT_SUPPORTED:
+      case static::HTTP_VERSION_NOT_SUPPORTED:
         $string = "HTTP Version Not Supported";
         break;
 
-      case self::VARIANT_ALSO_NEGOTIATES:
+      case static::VARIANT_ALSO_NEGOTIATES:
         $string = "Variant Also Negotiates";
         break;
 
-      case self::INSUFFICIENT_STORAGE:
+      case static::INSUFFICIENT_STORAGE:
         $string = "Unsufficient Storage";
         break;
 
-      case self::LOOP_DETECTED:
+      case static::LOOP_DETECTED:
         $string = "Loop Detected";
         break;
 
-      case self::NOT_EXTENDED:
+      case static::NOT_EXTENDED:
         $string = "Not Extended";
         break;
 
-      case self::NETWORK_AUTHENTICATION_REQUIRED:
+      case static::NETWORK_AUTHENTICATION_REQUIRED:
         $string = "Network Authentication Required";
         break;
 
-      case self::UNDEFINED:
-      case self::UNKNOWN:
+      case static::UNDEFINED:
+      case static::UNKNOWN:
         $string = "";
         break;
 
-      case self::INVALID:
+      case static::INVALID:
         // invalid will not be processed because it is invalid.
 
       default:

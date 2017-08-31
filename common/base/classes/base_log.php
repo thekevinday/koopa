@@ -77,8 +77,8 @@ class c_base_log extends c_base_return_array {
   public function __construct() {
     parent::__construct();
 
-    $this->type     = self::TYPE_NONE;
-    $this->type_sub = self::TYPE_NONE;
+    $this->type     = static::TYPE_NONE;
+    $this->type_sub = static::TYPE_NONE;
 
     $this->severity = c_base_error::SEVERITY_NONE;
     $this->facility = c_base_error::FACILITY_NONE;
@@ -209,7 +209,7 @@ class c_base_log extends c_base_return_array {
    */
   public function get_type() {
     if (!is_int($this->type)) {
-      $this->type = self::TYPE_NONE;
+      $this->type = static::TYPE_NONE;
     }
 
     return c_base_return_int::s_new($this->type);
@@ -224,7 +224,7 @@ class c_base_log extends c_base_return_array {
    */
   public function get_type_sub() {
     if (!is_int($this->type_sub)) {
-      $this->type_sub = self::TYPE_NONE;
+      $this->type_sub = static::TYPE_NONE;
     }
 
     return c_base_return_int::s_new($this->type_sub);

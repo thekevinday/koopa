@@ -80,8 +80,6 @@ class c_base_error {
     $this->ignore_arguments  = TRUE;
 
     $this->code = NULL;
-
-
   }
 
   /**
@@ -153,11 +151,11 @@ class c_base_error {
       $entry->set_code(0);
     }
 
-    if (is_int($severity) && $severity >= self::SEVERITY_EMERGENCY && $severity < self::SEVERITY_UNKNOWN) {
+    if (is_int($severity) && $severity >= static::SEVERITY_EMERGENCY && $severity < static::SEVERITY_UNKNOWN) {
       $entry->set_severity($severity);
     }
     elseif (is_null($severity)) {
-      $entry->set_severity(self::SEVERITY_ERROR);
+      $entry->set_severity(static::SEVERITY_ERROR);
     }
 
     if (is_int($limit) && $limit >= 0) {
@@ -405,7 +403,7 @@ class c_base_error {
    */
   public function get_severity() {
     if (is_null($this->severity)) {
-      $this->severity = self::SEVERITY_ERROR;
+      $this->severity = static::SEVERITY_ERROR;
     }
 
     return $this->severity;
@@ -423,7 +421,7 @@ class c_base_error {
    */
   public function get_limit() {
     if ($limit !== FALSE && (!is_int($limit) || $limit < 0)) {
-      $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
+      $this->limit = static::DEFAULT_BACKTRACE_LIMIT;
     }
 
     return $this->limit;
@@ -527,7 +525,7 @@ class c_base_error {
     }
 
     if (is_null($this->limit)) {
-      $this->limit = self::DEFAULT_BACKTRACE_LIMIT;
+      $this->limit = static::DEFAULT_BACKTRACE_LIMIT;
     }
 
     // Make sure unnecessary backtrace logs are not part of the count.

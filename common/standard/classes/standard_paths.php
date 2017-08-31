@@ -166,7 +166,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_login() {
-    return $this->pr_include_path(self::PATH_USER, self::NAME_USER_LOGIN, self::HANDLER_USER_LOGIN);
+    return $this->pr_include_path(static::PATH_USER, static::NAME_USER_LOGIN, static::HANDLER_USER_LOGIN);
   }
 
   /**
@@ -176,7 +176,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_logout() {
-    return $this->pr_include_path(self::PATH_USER, self::NAME_USER_LOGOUT, self::HANDLER_USER_LOGOUT);
+    return $this->pr_include_path(static::PATH_USER, static::NAME_USER_LOGOUT, static::HANDLER_USER_LOGOUT);
   }
 
   /**
@@ -186,7 +186,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_not_found() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_NOT_FOUND, self::HANDLER_NOT_FOUND);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_NOT_FOUND, static::HANDLER_NOT_FOUND);
   }
 
   /**
@@ -196,7 +196,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_access_denied() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_ACCESS_DENIED, self::HANDLER_ACCESS_DENIED);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_ACCESS_DENIED, static::HANDLER_ACCESS_DENIED);
   }
 
   /**
@@ -206,7 +206,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_bad_method() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_BAD_METHOD, self::HANDLER_BAD_METHOD);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_BAD_METHOD, static::HANDLER_BAD_METHOD);
   }
 
   /**
@@ -216,7 +216,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_server_error() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_SERVER_ERROR, self::HANDLER_SERVER_ERROR);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_SERVER_ERROR, static::HANDLER_SERVER_ERROR);
   }
 
   /**
@@ -226,7 +226,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_options_method() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_OPTIONS_METHOD, self::HANDLER_OPTIONS_METHOD);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_OPTIONS_METHOD, static::HANDLER_OPTIONS_METHOD);
   }
 
   /**
@@ -236,7 +236,7 @@ class c_standard_paths extends c_base_return {
    *   A path object.
    */
   public function get_handler_index() {
-    return $this->pr_include_path(self::PATH_INTERNAL, self::NAME_INDEX, self::HANDLER_INDEX);
+    return $this->pr_include_path(static::PATH_INTERNAL, static::NAME_INDEX, static::HANDLER_INDEX);
   }
 
   /**
@@ -508,7 +508,7 @@ class c_standard_paths extends c_base_return {
     }
     else {
       if (!empty($handler_settings['include_name']) && is_string($handler_settings['include_name'])) {
-        require_once($handler_settings['include_directory'] . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+        require_once($handler_settings['include_directory'] . $handler_settings['include_name'] . static::SCRIPT_EXTENSION);
       }
 
       // execute path handler, using custom-language if defined.
@@ -524,7 +524,7 @@ class c_standard_paths extends c_base_return {
         return $path_server_error;
       }
       elseif (is_string($this->language_alias)) {
-        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . static::SCRIPT_EXTENSION);
 
         $handler_class = $handler_settings['handler'] . '_' . $this->language_alias;
         if (class_exists($handler_class)) {
@@ -595,11 +595,11 @@ class c_standard_paths extends c_base_return {
     $this->paths = new c_base_paths();
 
     // set root path.
-    $this->paths->add_path(self::URI_HOME, self::HANDLER_INDEX, self::PATH_INTERNAL, self::NAME_INDEX);
+    $this->paths->add_path(static::URI_HOME, static::HANDLER_INDEX, static::PATH_INTERNAL, static::NAME_INDEX);
 
     // create login/logout paths
-    $this->paths->add_path(self::URI_USER_LOGIN, self::HANDLER_USER_LOGIN, self::PATH_USER, self::NAME_USER_LOGIN);
-    $this->paths->add_path(self::URI_USER_LOGOUT, self::HANDLER_USER_LOGOUT, self::PATH_USER, self::NAME_USER_LOGOUT);
+    $this->paths->add_path(static::URI_USER_LOGIN, static::HANDLER_USER_LOGIN, static::PATH_USER, static::NAME_USER_LOGIN);
+    $this->paths->add_path(static::URI_USER_LOGOUT, static::HANDLER_USER_LOGOUT, static::PATH_USER, static::NAME_USER_LOGOUT);
   }
 
   /**
@@ -609,7 +609,7 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_administer() {
     // dashboards
-    $this->paths->add_path(self::URI_DASHBOARD_ADMINISTER, self::HANDLER_ADMINISTER_DASHBOARD, self::PATH_ADMINISTER, self::NAME_DASHBOARD_ADMINISTER);
+    $this->paths->add_path(static::URI_DASHBOARD_ADMINISTER, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_ADMINISTER, static::NAME_DASHBOARD_ADMINISTER);
   }
 
   /**
@@ -651,7 +651,7 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_management() {
     // dashboards
-    $this->paths->add_path(self::URI_DASHBOARD_MANAGEMENT, self::HANDLER_MANAGEMENT_DASHBOARD, self::PATH_MANAGEMENT, self::NAME_DASHBOARD_MANAGEMENT);
+    $this->paths->add_path(static::URI_DASHBOARD_MANAGEMENT, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_MANAGEMENT, static::NAME_DASHBOARD_MANAGEMENT);
   }
 
   /**
@@ -677,33 +677,33 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_user() {
     // dashboards
-    $this->paths->add_path(self::URI_USER_DASHBOARD, self::HANDLER_USER_DASHBOARD, self::PATH_USER, self::NAME_USER_DASHBOARD);
+    $this->paths->add_path(static::URI_USER_DASHBOARD, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
 
     // user paths
-    $this->paths->add_path(self::URI_USER_CHECK, self::HANDLER_USER_CHECK, self::PATH_USER, self::NAME_USER_CHECK);
-    $this->paths->add_path(self::URI_USER_CHECK . self::WILDCARD_PATH, self::HANDLER_USER_CHECK, self::PATH_USER, self::NAME_USER_CHECK);
-    $this->paths->add_path(self::URI_USER_CREATE, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
-    $this->paths->add_path(self::URI_USER_CREATE . self::WILDCARD_PATH, self::HANDLER_USER_CREATE, self::PATH_USER, self::NAME_USER_CREATE);
-    $this->paths->add_path(self::URI_USER_DELETE, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
-    $this->paths->add_path(self::URI_USER_DELETE . self::WILDCARD_PATH, self::HANDLER_USER_DELETE, self::PATH_USER, self::NAME_USER_DELETE);
-    $this->paths->add_path(self::URI_USER_EDIT, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
-    $this->paths->add_path(self::URI_USER_EDIT . self::WILDCARD_PATH, self::HANDLER_USER_EDIT, self::PATH_USER, self::NAME_USER_EDIT);
-    $this->paths->add_path(self::URI_USER_LOCK, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
-    $this->paths->add_path(self::URI_USER_LOCK . self::WILDCARD_PATH, self::HANDLER_USER_LOCK, self::PATH_USER, self::NAME_USER_LOCK);
-    $this->paths->add_path(self::URI_USER_PDF, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
-    $this->paths->add_path(self::URI_USER_PDF . self::WILDCARD_PATH, self::HANDLER_USER_PDF, self::PATH_USER, self::NAME_USER_PDF);
-    $this->paths->add_path(self::URI_USER_PRINT, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
-    $this->paths->add_path(self::URI_USER_PRINT . self::WILDCARD_PATH, self::HANDLER_USER_PRINT, self::PATH_USER, self::NAME_USER_PRINT);
-    $this->paths->add_path(self::URI_USER_PS, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
-    $this->paths->add_path(self::URI_USER_PS . self::WILDCARD_PATH, self::HANDLER_USER_PS, self::PATH_USER, self::NAME_USER_PS);
-    $this->paths->add_path(self::URI_USER_REFRESH, self::HANDLER_USER_REFRESH, self::PATH_USER, self::NAME_USER_REFRESH);
-    $this->paths->add_path(self::URI_USER_REFRESH . self::WILDCARD_PATH, self::HANDLER_USER_REFRESH, self::PATH_USER, self::NAME_USER_REFRESH);
-    $this->paths->add_path(self::URI_USER_SETTINGS, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
-    $this->paths->add_path(self::URI_USER_SETTINGS . self::WILDCARD_PATH, self::HANDLER_USER_SETTINGS, self::PATH_USER, self::NAME_USER_SETTINGS);
-    $this->paths->add_path(self::URI_USER_UNLOCK, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
-    $this->paths->add_path(self::URI_USER_UNLOCK . self::WILDCARD_PATH, self::HANDLER_USER_UNLOCK, self::PATH_USER, self::NAME_USER_UNLOCK);
-    $this->paths->add_path(self::URI_USER_VIEW, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
-    $this->paths->add_path(self::URI_USER_VIEW . self::WILDCARD_PATH, self::HANDLER_USER_VIEW, self::PATH_USER, self::NAME_USER_VIEW);
+    $this->paths->add_path(static::URI_USER_CHECK, static::HANDLER_USER_CHECK, static::PATH_USER, static::NAME_USER_CHECK);
+    $this->paths->add_path(static::URI_USER_CHECK . static::WILDCARD_PATH, static::HANDLER_USER_CHECK, static::PATH_USER, static::NAME_USER_CHECK);
+    $this->paths->add_path(static::URI_USER_CREATE, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
+    $this->paths->add_path(static::URI_USER_CREATE . static::WILDCARD_PATH, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
+    $this->paths->add_path(static::URI_USER_DELETE, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
+    $this->paths->add_path(static::URI_USER_DELETE . static::WILDCARD_PATH, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
+    $this->paths->add_path(static::URI_USER_EDIT, static::HANDLER_USER_EDIT, static::PATH_USER, static::NAME_USER_EDIT);
+    $this->paths->add_path(static::URI_USER_EDIT . static::WILDCARD_PATH, static::HANDLER_USER_EDIT, static::PATH_USER, static::NAME_USER_EDIT);
+    $this->paths->add_path(static::URI_USER_LOCK, static::HANDLER_USER_LOCK, static::PATH_USER, static::NAME_USER_LOCK);
+    $this->paths->add_path(static::URI_USER_LOCK . static::WILDCARD_PATH, static::HANDLER_USER_LOCK, static::PATH_USER, static::NAME_USER_LOCK);
+    $this->paths->add_path(static::URI_USER_PDF, static::HANDLER_USER_PDF, static::PATH_USER, static::NAME_USER_PDF);
+    $this->paths->add_path(static::URI_USER_PDF . static::WILDCARD_PATH, static::HANDLER_USER_PDF, static::PATH_USER, static::NAME_USER_PDF);
+    $this->paths->add_path(static::URI_USER_PRINT, static::HANDLER_USER_PRINT, static::PATH_USER, static::NAME_USER_PRINT);
+    $this->paths->add_path(static::URI_USER_PRINT . static::WILDCARD_PATH, static::HANDLER_USER_PRINT, static::PATH_USER, static::NAME_USER_PRINT);
+    $this->paths->add_path(static::URI_USER_PS, static::HANDLER_USER_PS, static::PATH_USER, static::NAME_USER_PS);
+    $this->paths->add_path(static::URI_USER_PS . static::WILDCARD_PATH, static::HANDLER_USER_PS, static::PATH_USER, static::NAME_USER_PS);
+    $this->paths->add_path(static::URI_USER_REFRESH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
+    $this->paths->add_path(static::URI_USER_REFRESH . static::WILDCARD_PATH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
+    $this->paths->add_path(static::URI_USER_SETTINGS, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
+    $this->paths->add_path(static::URI_USER_SETTINGS . static::WILDCARD_PATH, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
+    $this->paths->add_path(static::URI_USER_UNLOCK, static::HANDLER_USER_UNLOCK, static::PATH_USER, static::NAME_USER_UNLOCK);
+    $this->paths->add_path(static::URI_USER_UNLOCK . static::WILDCARD_PATH, static::HANDLER_USER_UNLOCK, static::PATH_USER, static::NAME_USER_UNLOCK);
+    $this->paths->add_path(static::URI_USER_VIEW, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
+    $this->paths->add_path(static::URI_USER_VIEW . static::WILDCARD_PATH, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
   }
 
   /**
@@ -758,7 +758,7 @@ class c_standard_paths extends c_base_return {
           unset($id_group);
 
           // PHP's instanceof does not support strings, so is_subclass_of() and is_a() must instead be used.
-          if (class_exists(self::HANDLER_USER_LOGOUT) && (is_subclass_of($this->handler, self::HANDLER_USER_LOGOUT) || is_a($this->handler, self::HANDLER_USER_LOGOUT, TRUE))) {
+          if (class_exists(static::HANDLER_USER_LOGOUT) && (is_subclass_of($this->handler, static::HANDLER_USER_LOGOUT) || is_a($this->handler, static::HANDLER_USER_LOGOUT, TRUE))) {
             // if the user is not logged in. then provide a page not found for logout path.
             if (!$this->session->is_logged_in()->get_value_exact()) {
               $path_not_found = $this->get_handler_not_found();
@@ -920,7 +920,7 @@ class c_standard_paths extends c_base_return {
    *   The created c_base_path object.
    */
   protected function pr_include_path($path, $name, $class) {
-    require_once($path . $name . self::SCRIPT_EXTENSION);
+    require_once($path . $name . static::SCRIPT_EXTENSION);
 
     // use default if no aliases are found.
     if (is_null($this->language_alias)) {
@@ -928,7 +928,7 @@ class c_standard_paths extends c_base_return {
     }
 
     // use include_once instead of require_require to allow for failsafe behavior.
-    @include_once($path . $this->language_alias . '/' . $name . self::SCRIPT_EXTENSION);
+    @include_once($path . $this->language_alias . '/' . $name . static::SCRIPT_EXTENSION);
 
     $language_class = $class . '_' . $this->language_alias;
     if (class_exists($language_class)) {

@@ -189,7 +189,7 @@ class c_base_session extends c_base_return {
 
     // if the directory is changed after the socket path is defined, then update the socket path.
     if (!is_null($this->socket_path)) {
-      $this->socket_path = $this->socket_directory . $this->system_name . self::SOCKET_PATH_SUFFIX;
+      $this->socket_path = $this->socket_directory . $this->system_name . static::SOCKET_PATH_SUFFIX;
     }
 
     return new c_base_return_true();
@@ -236,11 +236,11 @@ class c_base_session extends c_base_return {
 
     // make sure the socket directory is defined before assigning the socket path based on the system name.
     if (is_null($this->socket_directory)) {
-      $this->socket_directory = self::SOCKET_PATH_PREFIX;
+      $this->socket_directory = static::SOCKET_PATH_PREFIX;
     }
 
     $this->system_name = basename($system_name);
-    $this->socket_path = $this->socket_directory . $this->system_name . self::SOCKET_PATH_SUFFIX;
+    $this->socket_path = $this->socket_directory . $this->system_name . static::SOCKET_PATH_SUFFIX;
 
     return new c_base_return_true();
   }
@@ -656,7 +656,7 @@ class c_base_session extends c_base_return {
    * @see: gc_collect_cycles()
    */
   public function clear_password() {
-    $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
+    $this->password = str_repeat(' ', static::PASSWORD_CLEAR_TEXT_LENGTH);
     unset($this->password);
   }
 
@@ -1136,7 +1136,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!is_null($this->password)) {
-      $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
+      $this->password = str_repeat(' ', static::PASSWORD_CLEAR_TEXT_LENGTH);
     }
 
     $this->password = NULL;
@@ -1303,7 +1303,7 @@ class c_base_session extends c_base_return {
     }
 
     if (!is_null($this->password)) {
-      $this->password = str_repeat(' ', self::PASSWORD_CLEAR_TEXT_LENGTH);
+      $this->password = str_repeat(' ', static::PASSWORD_CLEAR_TEXT_LENGTH);
     }
 
     $this->name = NULL;
@@ -1381,7 +1381,7 @@ class c_base_session extends c_base_return {
     }
     unset($written);
 
-    $json = @socket_read($this->socket, self::PACKET_MAX_LENGTH);
+    $json = @socket_read($this->socket, static::PACKET_MAX_LENGTH);
     if (!is_string($json) || mb_strlen($json) == 0) {
       unset($json);
 

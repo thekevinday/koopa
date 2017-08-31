@@ -33,7 +33,7 @@ class c_standard_menu_breadcrumbs extends c_standard_menu {
       return new c_base_return_false();
     }
 
-    $menu = $this->pr_create_html_create_menu($settings['base_css'] . self::CLASS_NAME, $this->pr_get_text(0));
+    $menu = $this->pr_create_html_create_menu($settings['base_css'] . static::CLASS_NAME, $this->pr_get_text(0));
     foreach ($items->get_items()->get_value_exact() as $item) {
       if (!($item instanceof c_base_menu_item)) {
         continue;
@@ -52,7 +52,7 @@ class c_standard_menu_breadcrumbs extends c_standard_menu {
       unset($item_uri);
       unset($item_text);
 
-      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_ITEM);
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_ITEM);
 
       $item_attributes = $item->get_attributes()->get_value_exact();
       if (is_array($item_attributes) && !empty($item_attributes)) {

@@ -327,7 +327,7 @@ class c_standard_path_user_login extends c_standard_path {
     if (empty($_POST['login_form-user_name']) || !is_string($_POST['login_form-user_name'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
-    elseif ($_POST['login_form-user_name'] == self::USER_PUBLIC) {
+    elseif ($_POST['login_form-user_name'] == static::USER_PUBLIC) {
       // explicitly deny access to internal user accounts
       $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
@@ -584,7 +584,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         $data = array(
           'session_id' => $session->get_session_id()->get_value_exact(),
-          'expire' => gmdate(self::SESSION_DATE_FORMAT, $session_expire), // unnecessary, but provided for debug purposes.
+          'expire' => gmdate(static::SESSION_DATE_FORMAT, $session_expire), // unnecessary, but provided for debug purposes.
         );
 
         $cookie_login->set_value($data);

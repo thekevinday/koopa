@@ -38,46 +38,46 @@ class c_standard_menu_utility extends c_standard_menu {
 
     $roles = $session->get_user_current()->get_roles()->get_value_exact();
 
-    $menu = $this->pr_create_html_create_menu($settings['base_css'] . self::CLASS_NAME, $this->pr_get_text(0));
+    $menu = $this->pr_create_html_create_menu($settings['base_css'] . static::CLASS_NAME, $this->pr_get_text(0));
 
     if ($session->is_logged_in() instanceof c_base_return_true) {
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(3), $settings['base_path'] . c_standard_paths::URI_USER_DASHBOARD);
-      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_DASHBOARD_USER);
+      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_DASHBOARD_USER);
       $menu->set_tag($item);
       unset($item);
 
       if (array_key_exists(c_base_roles::MANAGER, $roles) || array_key_exists(c_base_roles::ADMINISTER, $roles)) {
         $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(4), $settings['base_path'] . c_standard_paths::URI_DASHBOARD_MANAGEMENT);
-        $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_DASHBOARD_MANAGEMENT);
+        $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_DASHBOARD_MANAGEMENT);
         $menu->set_tag($item);
         unset($item);
       }
 
       if (array_key_exists(c_base_roles::ADMINISTER, $roles)) {
         $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(5), $settings['base_path'] . c_standard_paths::URI_DASHBOARD_ADMINISTER);
-        $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_DASHBOARD_ADMINISTER);
+        $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_DASHBOARD_ADMINISTER);
         $menu->set_tag($item);
         unset($item);
       }
 
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(6), $settings['base_path'] . c_standard_paths::URI_USER_VIEW);
-      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_USER_SETTINGS);
+      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_USER_SETTINGS);
       $menu->set_tag($item);
       unset($item);
 
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(7), $settings['base_path'] . c_standard_paths::URI_USER_LOGOUT);
-      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_LOGOUT);
+      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_LOGOUT);
       $menu->set_tag($item);
       unset($item);
     }
     else {
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(1), $settings['base_path'] . c_standard_paths::URI_HOME);
-      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_HOME);
+      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_HOME);
       $menu->set_tag($item);
       unset($item);
 
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(2), $settings['base_path'] . c_standard_paths::URI_USER_LOGIN);
-      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, self::CLASS_LOGIN);
+      $item->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CLASS_LOGIN);
       $menu->set_tag($item);
       unset($item);
     }

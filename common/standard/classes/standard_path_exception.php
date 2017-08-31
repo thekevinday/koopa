@@ -51,12 +51,12 @@ class c_standard_path_exception extends c_standard_path {
         continue;
       }
 
-      require_once($handler_settings['include_directory'] . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+      require_once($handler_settings['include_directory'] . $handler_settings['include_name'] . static::SCRIPT_EXTENSION);
 
 
       $handler = NULL;
       if (is_string($this->language_alias)) {
-        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . self::SCRIPT_EXTENSION);
+        @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . static::SCRIPT_EXTENSION);
 
         $handler_class = $handler_settings['handler'] . '_' . $this->language_alias;
         if (class_exists($handler_class)) {

@@ -120,7 +120,7 @@ class c_theme_tag {
     $this->tags = array();
     $this->tags_length = NULL;
 
-    $this->type = self::TYPE_NONE;
+    $this->type = static::TYPE_NONE;
   }
 
   /**
@@ -183,24 +183,24 @@ class c_theme_tag {
    *   FALSE with error bit set is returned on error.
    */
   public function set_type($type) {
-    if (!is_int($type) || $type < self::TYPE_NONE) {
+    if (!is_int($type) || $type < static::TYPE_NONE) {
       return c_base_return_error::s_false();
     }
 
     if ($this->type === $type) {
       return new c_base_return_true();
     }
-    elseif ($type === self::TYPE_NONE) {
+    elseif ($type === static::TYPE_NONE) {
       $new_attributes = array();
     }
-    elseif ($type === self::TYPE_TITLE) {
+    elseif ($type === static::TYPE_TITLE) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
-    elseif ($type === self::TYPE_HEADING) {
+    elseif ($type === static::TYPE_HEADING) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
@@ -215,7 +215,7 @@ class c_theme_tag {
         $new_attributes['name'] = $this->attributes['name'];
       }
     }
-    elseif ($type === self::TYPE_FILES) {
+    elseif ($type === static::TYPE_FILES) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
@@ -226,14 +226,14 @@ class c_theme_tag {
         $new_attributes['type'] = $this->attributes['type'];
       }
     }
-    elseif ($type === self::TYPE_CONTEXT) {
+    elseif ($type === static::TYPE_CONTEXT) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
-    elseif ($type === self::TYPE_PRESENTATION) {
+    elseif ($type === static::TYPE_PRESENTATION) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
@@ -260,7 +260,7 @@ class c_theme_tag {
         $new_attributes['file'] = $this->attributes['file'];
       }
     }
-    elseif ($type === self::TYPE_CONTENT) {
+    elseif ($type === static::TYPE_CONTENT) {
       $new_attributes = array();
 
       if (array_key_exists('id', $this->attributes)) {
@@ -837,12 +837,12 @@ class c_theme_tag {
       $markup .= 's';
     }
 
-    if ($this->type === self::TYPE_TITLE) {
+    if ($this->type === static::TYPE_TITLE) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
     }
-    elseif ($this->type === self::TYPE_HEADING) {
+    elseif ($this->type === static::TYPE_HEADING) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -855,7 +855,7 @@ class c_theme_tag {
         $markup .= ' name="' . $this->attributes['name'] . '"';
       }
     }
-    elseif ($this->type === self::TYPE_FILES) {
+    elseif ($this->type === static::TYPE_FILES) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -864,12 +864,12 @@ class c_theme_tag {
         $markup .= ' type="' . $this->attributes['type'] . '"';
       }
     }
-    elseif ($this->type === self::TYPE_CONTEXT) {
+    elseif ($this->type === static::TYPE_CONTEXT) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
     }
-    elseif ($this->type === self::TYPE_PRESENTATION) {
+    elseif ($this->type === static::TYPE_PRESENTATION) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -894,7 +894,7 @@ class c_theme_tag {
         $markup .= ' file="' . $this->attributes['file'] . '"';
       }
     }
-    elseif ($this->type === self::TYPE_CONTENT) {
+    elseif ($this->type === static::TYPE_CONTENT) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -992,11 +992,11 @@ class c_theme_tag {
     // clear the contents of this class.
     $this->__construct();
 
-    if ($this->type === self::TYPE_TAG) {
+    if ($this->type === static::TYPE_TAG) {
       // @todo: does this need to be sanitized, or would that result in double-sanitization?
       $this->text = $node->textContent;
     }
-    elseif ($this->type === self::TYPE_TAGS && $node->hasChildNodes()) {
+    elseif ($this->type === static::TYPE_TAGS && $node->hasChildNodes()) {
       foreach ($node->childNodes as $child_node) {
         if (!($child_node instanceof DOMNode)) {
           continue;
@@ -1252,7 +1252,7 @@ class c_theme_tag {
    *   NULL is returned for unknown tag type.
    */
   private function p_allowed_attribute($attribute_name) {
-    if ($this->type === self::TYPE_TITLE) {
+    if ($this->type === static::TYPE_TITLE) {
       switch ($attribute_name) {
         case 'id':
           return TRUE;
@@ -1260,7 +1260,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === self::TYPE_HEADING) {
+    elseif ($this->type === static::TYPE_HEADING) {
       switch ($attribute_name) {
         case 'id':
         case 'type':
@@ -1270,7 +1270,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === self::TYPE_FILES) {
+    elseif ($this->type === static::TYPE_FILES) {
       switch ($attribute_name) {
         case 'id':
         case 'type':
@@ -1279,7 +1279,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === self::TYPE_CONTEXT) {
+    elseif ($this->type === static::TYPE_CONTEXT) {
       switch ($attribute_name) {
         case 'id':
           return TRUE;
@@ -1287,7 +1287,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === self::TYPE_PRESENTATION) {
+    elseif ($this->type === static::TYPE_PRESENTATION) {
       switch ($attribute_name) {
         case 'id':
         case 'class':
@@ -1300,7 +1300,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === self::TYPE_CONTENT) {
+    elseif ($this->type === static::TYPE_CONTENT) {
       switch ($attribute_name) {
         case 'id':
         case 'context':
@@ -1346,8 +1346,8 @@ class c_theme_tag {
       unset($tags);
       unset($total);
 
-      if ($this->type === self::TYPE_TAG) {
-        $this->type = self::TYPE_TAGS;
+      if ($this->type === static::TYPE_TAG) {
+        $this->type = static::TYPE_TAGS;
       }
     }
 
@@ -1363,13 +1363,13 @@ class c_theme_tag {
     if ($this->tags_length > 0) {
       $this->text = NULL;
 
-      if ($this->type === self::TYPE_TAG) {
-        $this->type = self::TYPE_TAGS;
+      if ($this->type === static::TYPE_TAG) {
+        $this->type = static::TYPE_TAGS;
       }
     }
     elseif (!is_null($this->text)) {
-      if ($this->type !== self::TYPE_TAG) {
-        $this->type = self::TYPE_TAG;
+      if ($this->type !== static::TYPE_TAG) {
+        $this->type = static::TYPE_TAG;
       }
     }
 
@@ -1421,12 +1421,12 @@ class c_theme_tag {
       }
     }
 
-    if ($this->type === self::TYPE_TITLE) {
+    if ($this->type === static::TYPE_TITLE) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
     }
-    elseif ($this->type === self::TYPE_HEADING) {
+    elseif ($this->type === static::TYPE_HEADING) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1439,7 +1439,7 @@ class c_theme_tag {
         $element->setAttribute('name', $this->attributes['name']);
       }
     }
-    elseif ($this->type === self::TYPE_FILES) {
+    elseif ($this->type === static::TYPE_FILES) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1448,12 +1448,12 @@ class c_theme_tag {
         $element->setAttribute('type', $this->attributes['type']);
       }
     }
-    elseif ($this->type === self::TYPE_CONTEXT) {
+    elseif ($this->type === static::TYPE_CONTEXT) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
     }
-    elseif ($this->type === self::TYPE_PRESENTATION) {
+    elseif ($this->type === static::TYPE_PRESENTATION) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1478,7 +1478,7 @@ class c_theme_tag {
         $element->setAttribute('file', $this->attributes['file']);
       }
     }
-    elseif ($this->type === self::TYPE_CONTENT) {
+    elseif ($this->type === static::TYPE_CONTENT) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }

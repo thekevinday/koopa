@@ -46,7 +46,7 @@ class c_base_charset {
       return c_base_return_error::s_false($error);
     }
 
-    if ($charset < self::ASCII || $charset > self::ISO_8859_16) {
+    if ($charset < static::ASCII || $charset > static::ISO_8859_16) {
       return new c_base_return_false();
     }
 
@@ -70,45 +70,45 @@ class c_base_charset {
     }
 
     switch ($charset) {
-      case self::UTF_8:
+      case static::UTF_8:
         return c_base_return_string::s_new('UTF-8');
-      case self::ASCII:
+      case static::ASCII:
         return c_base_return_string::s_new('ASCII');
-      case self::UTF_16:
+      case static::UTF_16:
         return c_base_return_string::s_new('UTF-16');
-      case self::UTF_32:
+      case static::UTF_32:
         return c_base_return_string::s_new('UTF-32');
-      case self::ISO_8859_1:
+      case static::ISO_8859_1:
         return c_base_return_string::s_new('ISO-8859-1');
-      case self::ISO_8859_2:
+      case static::ISO_8859_2:
         return c_base_return_string::s_new('ISO-8859-2');
-      case self::ISO_8859_3:
+      case static::ISO_8859_3:
         return c_base_return_string::s_new('ISO-8859-3');
-      case self::ISO_8859_4:
+      case static::ISO_8859_4:
         return c_base_return_string::s_new('ISO-8859-4');
-      case self::ISO_8859_5:
+      case static::ISO_8859_5:
         return c_base_return_string::s_new('ISO-8859-5');
-      case self::ISO_8859_6:
+      case static::ISO_8859_6:
         return c_base_return_string::s_new('ISO-8859-6');
-      case self::ISO_8859_7:
+      case static::ISO_8859_7:
         return c_base_return_string::s_new('ISO-8859-7');
-      case self::ISO_8859_8:
+      case static::ISO_8859_8:
         return c_base_return_string::s_new('ISO-8859-8');
-      case self::ISO_8859_9:
+      case static::ISO_8859_9:
         return c_base_return_string::s_new('ISO-8859-9');
-      case self::ISO_8859_10:
+      case static::ISO_8859_10:
         return c_base_return_string::s_new('ISO-8859-10');
-      case self::ISO_8859_11:
+      case static::ISO_8859_11:
         return c_base_return_string::s_new('ISO-8859-11');
-      case self::ISO_8859_12:
+      case static::ISO_8859_12:
         return c_base_return_string::s_new('ISO-8859-12');
-      case self::ISO_8859_13:
+      case static::ISO_8859_13:
         return c_base_return_string::s_new('ISO-8859-13');
-      case self::ISO_8859_14:
+      case static::ISO_8859_14:
         return c_base_return_string::s_new('ISO-8859-14');
-      case self::ISO_8859_15:
+      case static::ISO_8859_15:
         return c_base_return_string::s_new('ISO-8859-15');
-      case self::ISO_8859_16:
+      case static::ISO_8859_16:
         return c_base_return_string::s_new('ISO-8859-16');
     }
 

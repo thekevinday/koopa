@@ -1,0 +1,85 @@
+This project is intended to be both extended and directly modified.
+The code is intended to be written this way so that classfull extensions can be used.
+However, when it comes to PHP there are some additional considerations that must be made.
+
+PHP Class Constants and Extending Classes:
+  - Class Constants are static variables specific to a given class and also cannot be changed.
+  - When a class constant is changed by an extending class, references to 'self::' but the extended class are not bound to the extension but instead to the original class constant.
+  - Also, when references to 'self::' are used by the extending class for an extended constant are made, the extension class constant is instead used.
+  - To both avoid confusion and to ensure that the extended class constants are used, 'static::' may and should be used in place of 'self::'.
+
+Do not do this for static class variables or static class functions.
+
+static:: may not be used in compile-time cases such as with __construct() and function parameters, instead use self::.
+
+When creating a class that is final, just use self::.
+
+If there are specific situations where the extended class should not be referenced, then the use of self:: instead of static:: can and should be used.
+This works because PHP uses "Late Static Binding" for static:: but not for self::.
+
+For example, consider classes A, B, and C, such that B and C are extensions of A:
+<?php
+  class A {
+    const NAME = 'A';
+
+    public function print_self() {
+      print("Class Name = " . self::NAME . "\n");
+    }
+
+    public function print_static() {
+      print("Class Name = " . static::NAME . "\n");
+    }
+  }
+
+  class B extends A {
+    const NAME = 'B';
+  }
+
+  class C extends A {
+    const NAME = 'C';
+
+    public function print_self() {
+      print("Class Name = " . self::NAME . "\n");
+    }
+
+    public function print_static() {
+      print("Class Name = " . static::NAME . "\n");
+    }
+  }
+
+  $a = new A();
+  $b = new B();
+  $c = new C();
+
+  print("Class A:\n");
+  $a->print_self();
+  $a->print_static();
+  print("\n");
+
+  print("Class B:\n");
+  $b->print_self();
+  $b->print_static();
+  print("\n");
+
+  print("Class C:\n");
+  $c->print_self();
+  $c->print_static();
+  print("\n");
+?>
+
+The above has the following output:
+  Class A:
+  Class Name = A
+  Class Name = A
+
+  Class B:
+  Class Name = A
+  Class Name = B
+
+  Class C:
+  Class Name = C
+  Class Name = C
+
+For the purposes of this project and consistency, the expected behavior is case where class B is printing a class name of 'B' and not 'A'.
+
+see: http://php.net/manual/en/language.oop5.late-static-bindings.php

@@ -125,7 +125,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
       $function_name_string = ' while calling :{function_name}';
     }
 
-    if ($code === self::INVALID_ARGUMENT) {
+    if ($code === static::INVALID_ARGUMENT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('An invalid argument, :{argument_name}, has been specified' . $function_name_string . '.');
       }
@@ -133,7 +133,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('An invalid argument has been specified' . $function_name_string . '.');
       }
     }
-    elseif ($code === self::INVALID_FORMAT) {
+    elseif ($code === static::INVALID_FORMAT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The argument, :{format_name}, has an invalid format' . $function_name_string . '.:{expected_format}');
       }
@@ -141,7 +141,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('An invalid format has been specified.');
       }
     }
-    elseif ($code === self::INVALID_SESSION) {
+    elseif ($code === static::INVALID_SESSION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The requested session is invalid' . $function_name_string . '.');
       }
@@ -149,7 +149,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('The requested session is invalid.');
       }
     }
-    elseif ($code === self::INVALID_VARIABLE) {
+    elseif ($code === static::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The variable, :{variable_name}, is invalid' . $function_name_string . '.');
       }
@@ -157,7 +157,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('An invalid variable has been specified.');
       }
     }
-    elseif ($code === self::OPERATION_FAILURE) {
+    elseif ($code === static::OPERATION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Failed to perform operation, :{operation_name}' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -165,7 +165,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to perform operation.');
       }
     }
-    elseif ($code === self::OPERATION_UNECESSARY) {
+    elseif ($code === static::OPERATION_UNECESSARY) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Did not perform unnecessary operation, :{operation_name}' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -173,7 +173,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Did not perform unnecessary operation.');
       }
     }
-    elseif ($code === self::FUNCTION_FAILURE) {
+    elseif ($code === static::FUNCTION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The function, :{function_name}, has failed execution.');
       }
@@ -181,7 +181,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('A function has failed execution.');
       }
     }
-    elseif ($code === self::NOT_FOUND) {
+    elseif ($code === static::NOT_FOUND) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Not found' . $function_name_string . '.');
       }
@@ -189,7 +189,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Not found.');
       }
     }
-    elseif ($code === self::NOT_FOUND_ARRAY_INDEX) {
+    elseif ($code === static::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The index, :{index_name}, was not found in the array, :{array_name}' . $function_name_string . '.');
       }
@@ -197,7 +197,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to find index within specified array.');
       }
     }
-    elseif ($code === self::NOT_FOUND_FILE) {
+    elseif ($code === static::NOT_FOUND_FILE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The file, :{file_name}, was not found or cannot be accessed' . $function_name_string . '.');
       }
@@ -205,7 +205,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('File not found or cannot be accessed.');
       }
     }
-    elseif ($code === self::NOT_FOUND_DIRECTORY) {
+    elseif ($code === static::NOT_FOUND_DIRECTORY) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The directory, :{directory_name}, was not found or cannot be accessed' . $function_name_string . '.');
       }
@@ -213,7 +213,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('File not found or cannot be accessed.');
       }
     }
-    elseif ($code === self::NOT_FOUND_PATH) {
+    elseif ($code === static::NOT_FOUND_PATH) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The path, :{path_name}, was not found or cannot be accessed' . $function_name_string . '.');
       }
@@ -221,7 +221,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Path not found or cannot be accessed.');
       }
     }
-    elseif ($code === self::NOT_DEFINED) {
+    elseif ($code === static::NOT_DEFINED) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The requested data, :{data_name}, is not defined' . $function_name_string . '.');
       }
@@ -229,7 +229,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('The requested data is not defined.');
       }
     }
-    elseif ($code === self::NO_CONNECTION) {
+    elseif ($code === static::NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The resource, :{resource_name}, is not connected' . $function_name_string . '.');
       }
@@ -237,7 +237,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('The resource is not connected.');
       }
     }
-    elseif ($code === self::NO_SUPPORT) {
+    elseif ($code === static::NO_SUPPORT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The functionality, :{functionality_name}, is currently not supported.' . $function_name_string . '.');
       }
@@ -245,7 +245,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('The requested functionality is not supported.');
       }
     }
-    elseif ($code === self::POSTGRESQL_CONNECTION_FAILURE) {
+    elseif ($code === static::POSTGRESQL_CONNECTION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Failed to connect to the database, :{database_name}, reasons: :{failure_reasons}' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -253,7 +253,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to connect to the database.');
       }
     }
-    elseif ($code === self::POSTGRESQL_NO_CONNECTION) {
+    elseif ($code === static::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The database, :{database_name}, is not connected' . $function_name_string . '.');
       }
@@ -261,7 +261,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('The database is not connected.');
       }
     }
-    elseif ($code === self::POSTGRESQL_NO_RESOURCE) {
+    elseif ($code === static::POSTGRESQL_NO_RESOURCE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('No database resource is available' . $function_name_string . '.');
       }
@@ -269,7 +269,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('No database resource is available.');
       }
     }
-    elseif ($code === self::POSTGRESQL_ERROR) {
+    elseif ($code === static::POSTGRESQL_ERROR) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Database query error: :{database_error_message}' . $function_name_string . '.');
       }
@@ -277,7 +277,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to perform database query.');
       }
     }
-    elseif ($code === self::SOCKET_FAILURE) {
+    elseif ($code === static::SOCKET_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Failed to perform socket operation, :{operation_name}, socket error (:{socket_error}) \':{socket_error_message}\'' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -285,7 +285,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to perform socket operation.');
       }
     }
-    elseif ($code === self::ACCESS_DENIED) {
+    elseif ($code === static::ACCESS_DENIED) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Access is denied, :{operation_name}' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -293,7 +293,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Access is denied.');
       }
     }
-    elseif ($code === self::ACCESS_DENIED_UNAVAILABLE) {
+    elseif ($code === static::ACCESS_DENIED_UNAVAILABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Access is denied due to unavailability, :{operation_name} ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -301,7 +301,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Access is denied due to unavailability.');
       }
     }
-    elseif ($code === self::ACCESS_DENIED_USER) {
+    elseif ($code === static::ACCESS_DENIED_USER) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Access is denied for user :name_machine_user (:{id_user}), :{operation_name} ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -309,7 +309,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Access is denied for user.');
       }
     }
-    elseif ($code === self::ACCESS_DENIED_ADMINISTRATION) {
+    elseif ($code === static::ACCESS_DENIED_ADMINISTRATION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('Access is denied for administrative reasons, :{operation_name} ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }
@@ -317,7 +317,7 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Access is denied for administrative reasons.');
       }
     }
-    elseif ($code === self::SERVER_ERROR) {
+    elseif ($code === static::SERVER_ERROR) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('A server error has occurred, :{operation_name} ' . (is_null($function_name_string) ? '' : ',') . $function_name_string . '.');
       }

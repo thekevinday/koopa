@@ -552,7 +552,7 @@ class c_base_markup_tag extends c_base_rfc_string {
     $this->tags = array();
     $this->tags_total = 0;
     $this->text = NULL;
-    $this->type = self::TYPE_TEXT;
+    $this->type = static::TYPE_TEXT;
   }
 
   /**
@@ -1772,7 +1772,7 @@ class c_base_markup_tag extends c_base_rfc_string {
    */
   public function get_type() {
     if (!isset($this->type)) {
-      $this->type = self::TYPE_NONE;
+      $this->type = static::TYPE_NONE;
     }
 
     return c_base_return_int::s_new($this->type);

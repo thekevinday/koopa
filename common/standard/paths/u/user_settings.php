@@ -55,7 +55,7 @@ class c_standard_path_user_settings extends c_standard_path {
         $id_user = (int) $argument;
 
         // do not allow view access to reserved/special accounts.
-        if ($id_user < self::ID_USER_MINIMUM) {
+        if ($id_user < static::ID_USER_MINIMUM) {
           $id_user = FALSE;
         }
       }
@@ -116,7 +116,7 @@ class c_standard_path_user_settings extends c_standard_path {
       $id_user = $user->get_id()->get_value_exact();
 
       // do not allow view access to reserved/special accounts.
-      if ($id_user < self::ID_USER_MINIMUM) {
+      if ($id_user < static::ID_USER_MINIMUM) {
         $id_user = FALSE;
       }
     }
@@ -426,7 +426,7 @@ class c_standard_path_user_settings extends c_standard_path {
 
     $id_user = $user->get_id()->get_value();
     if (is_int($id_user)) {
-      $text_id_user = $this->pr_create_tag_text('[id: ' . $id_user . ']', array(), NULL, self::CLASS_ID_USER);
+      $text_id_user = $this->pr_create_tag_text('[id: ' . $id_user . ']', array(), NULL, static::CLASS_ID_USER);
       $wrapper = $this->pr_create_tag_section(array(1 => array('text' => 0, 'append-inside' => $text_id_user)), $arguments);
       unset($text_id_user);
     }
@@ -454,8 +454,8 @@ class c_standard_path_user_settings extends c_standard_path {
 
 
     // account information
-    $fieldset = $this->pr_create_tag_fieldset(14, array(), self::CLASS_USER_SETTINGS_ACCOUNT, self::CLASS_USER_SETTINGS_ACCOUNT);
-    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+    $fieldset = $this->pr_create_tag_fieldset(14, array(), static::CLASS_USER_SETTINGS_ACCOUNT, static::CLASS_USER_SETTINGS_ACCOUNT);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
     $content->set_tag($this->pr_create_tag_field_row(18, '' . $id_user, array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
 
@@ -582,8 +582,8 @@ class c_standard_path_user_settings extends c_standard_path {
 
     if ($full_view_access || !$user->is_private()->get_value()) {
       // personal information
-      $fieldset = $this->pr_create_tag_fieldset(15, array(), self::CLASS_USER_SETTINGS_PERSONAL, self::CLASS_USER_SETTINGS_PERSONAL);
-      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+      $fieldset = $this->pr_create_tag_fieldset(15, array(), static::CLASS_USER_SETTINGS_PERSONAL, static::CLASS_USER_SETTINGS_PERSONAL);
+      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
       $content->set_tag($this->pr_create_tag_field_row(37, '' . $user->get_name_human()->get_prefix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
       $content->set_tag($this->pr_create_tag_field_row(38, '' . $user->get_name_human()->get_first()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
@@ -600,8 +600,8 @@ class c_standard_path_user_settings extends c_standard_path {
 
 
       // access information
-      $fieldset = $this->pr_create_tag_fieldset(16, array(), self::CLASS_USER_SETTINGS_ACCESS, self::CLASS_USER_SETTINGS_ACCESS);
-      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+      $fieldset = $this->pr_create_tag_fieldset(16, array(), static::CLASS_USER_SETTINGS_ACCESS, static::CLASS_USER_SETTINGS_ACCESS);
+      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
       $access_to_text_mapping = array(
         c_base_roles::PUBLIC => 1,
@@ -643,8 +643,8 @@ class c_standard_path_user_settings extends c_standard_path {
 
 
       // history information
-      $fieldset = $this->pr_create_tag_fieldset(17, array(), self::CLASS_USER_SETTINGS_HISTORY, self::CLASS_USER_SETTINGS_HISTORY);
-      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, self::CSS_AS_FIELD_SET_CONTENT, array(self::CSS_AS_FIELD_SET_CONTENT));
+      $fieldset = $this->pr_create_tag_fieldset(17, array(), static::CLASS_USER_SETTINGS_HISTORY, static::CLASS_USER_SETTINGS_HISTORY);
+      $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
       // user history
       // @todo: implement code for processing and generating a table/list of history, with the ability to navigate additional entries.

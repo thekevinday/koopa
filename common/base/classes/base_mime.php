@@ -286,32 +286,32 @@ class c_base_mime {
     if (is_null($category)) {
       $result = NULL;
 
-      if (array_key_exists($id, self::$s_names_provided)) {
-        return c_base_return_array::s_new(self::$s_names_provided[$id]);
+      if (array_key_exists($id, static::$s_names_provided)) {
+        return c_base_return_array::s_new(static::$s_names_provided[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_text)) {
-        return c_base_return_array::s_new(self::$s_names_text[$id]);
+      if (array_key_exists($id, static::$s_names_text)) {
+        return c_base_return_array::s_new(static::$s_names_text[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_audio)) {
-        return c_base_return_array::s_new(self::$s_names_audio[$id]);
+      if (array_key_exists($id, static::$s_names_audio)) {
+        return c_base_return_array::s_new(static::$s_names_audio[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_video)) {
-        return c_base_return_array::s_new(self::$s_names_video[$id]);
+      if (array_key_exists($id, static::$s_names_video)) {
+        return c_base_return_array::s_new(static::$s_names_video[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_document)) {
-        return c_base_return_array::s_new(self::$s_names_document[$id]);
+      if (array_key_exists($id, static::$s_names_document)) {
+        return c_base_return_array::s_new(static::$s_names_document[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_container)) {
-        return c_base_return_array::s_new(self::$s_names_container[$id]);
+      if (array_key_exists($id, static::$s_names_container)) {
+        return c_base_return_array::s_new(static::$s_names_container[$id]);
       }
 
-      if (array_key_exists($id, self::$s_names_application)) {
-        return c_base_return_array::s_new(self::$s_names_application[$id]);
+      if (array_key_exists($id, static::$s_names_application)) {
+        return c_base_return_array::s_new(static::$s_names_application[$id]);
       }
     }
     else {
@@ -320,44 +320,44 @@ class c_base_mime {
       return c_base_return_error::s_false($error);
       }
 
-      if ($category == self::CATEGORY_PROVIDED) {
-        if (array_key_exists($id, self::$s_names_provided)) {
-          return c_base_return_array::s_new(self::$s_names_provided[$id]);
+      if ($category == static::CATEGORY_PROVIDED) {
+        if (array_key_exists($id, static::$s_names_provided)) {
+          return c_base_return_array::s_new(static::$s_names_provided[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_TEXT) {
-        if (array_key_exists($id, self::$s_names_text)) {
-          return c_base_return_array::s_new(self::$s_names_text[$id]);
+      elseif ($category == static::CATEGORY_TEXT) {
+        if (array_key_exists($id, static::$s_names_text)) {
+          return c_base_return_array::s_new(static::$s_names_text[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_IMAGE) {
-        if (array_key_exists($id, self::$s_names_text)) {
-          return c_base_return_array::s_new(self::$s_names_text[$id]);
+      elseif ($category == static::CATEGORY_IMAGE) {
+        if (array_key_exists($id, static::$s_names_text)) {
+          return c_base_return_array::s_new(static::$s_names_text[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_AUDIO) {
-        if (array_key_exists($id, self::$s_names_audio)) {
-          return c_base_return_array::s_new(self::$s_names_audio[$id]);
+      elseif ($category == static::CATEGORY_AUDIO) {
+        if (array_key_exists($id, static::$s_names_audio)) {
+          return c_base_return_array::s_new(static::$s_names_audio[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_VIDEO) {
-        if (array_key_exists($id, self::$s_names_video)) {
-          return c_base_return_array::s_new(self::$s_names_video[$id]);
+      elseif ($category == static::CATEGORY_VIDEO) {
+        if (array_key_exists($id, static::$s_names_video)) {
+          return c_base_return_array::s_new(static::$s_names_video[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_DOCUMENT) {
-        if (array_key_exists($id, self::$s_names_document)) {
-          return c_base_return_array::s_new(self::$s_names_document[$id]);
+      elseif ($category == static::CATEGORY_DOCUMENT) {
+        if (array_key_exists($id, static::$s_names_document)) {
+          return c_base_return_array::s_new(static::$s_names_document[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_CONTAINER) {
-        if (array_key_exists($id, self::$s_names_container)) {
-          return c_base_return_array::s_new(self::$s_names_container[$id]);
+      elseif ($category == static::CATEGORY_CONTAINER) {
+        if (array_key_exists($id, static::$s_names_container)) {
+          return c_base_return_array::s_new(static::$s_names_container[$id]);
         }
       }
-      elseif ($category == self::CATEGORY_APPLICATION) {
-        if (array_key_exists($id, self::$s_names_application)) {
-          return c_base_return_array::s_new(self::$s_names_application[$id]);
+      elseif ($category == static::CATEGORY_APPLICATION) {
+        if (array_key_exists($id, static::$s_names_application)) {
+          return c_base_return_array::s_new(static::$s_names_application[$id]);
         }
       }
     }
@@ -404,8 +404,8 @@ class c_base_mime {
     }
 
     $information = array(
-      'id_category' => self::CATEGORY_PROVIDED,
-      'id_type' => self::TYPE_PROVIDED,
+      'id_category' => static::CATEGORY_PROVIDED,
+      'id_type' => static::TYPE_PROVIDED,
       'name_category' => '*',
       'name_type' => '*',
     );
@@ -428,232 +428,232 @@ class c_base_mime {
     $information['name_type'] = $parts[1];
 
     if ($parts[0] == 'text') {
-      $information['id_category'] = self::CATEGORY_TEXT;
+      $information['id_category'] = static::CATEGORY_TEXT;
 
       if ($parts[1] == '*') {
         // nothing to change.
       }
       elseif ($parts[1] == 'html') {
-        $information['id_type'] = self::TYPE_TEXT_HTML;
+        $information['id_type'] = static::TYPE_TEXT_HTML;
       }
       elseif ($parts[1] == 'plain') {
-        $information['id_type'] = self::TYPE_TEXT_PLAIN;
+        $information['id_type'] = static::TYPE_TEXT_PLAIN;
       }
       elseif ($parts[1] == 'calendar') {
-        $information['id_type'] = self::TYPE_TEXT_ICAL;
+        $information['id_type'] = static::TYPE_TEXT_ICAL;
       }
       elseif ($parts[1] == 'csv') {
-        $information['id_type'] = self::TYPE_TEXT_CSV;
+        $information['id_type'] = static::TYPE_TEXT_CSV;
       }
       elseif ($parts[1] == 'xml') {
-        $information['id_type'] = self::TYPE_TEXT_XML;
+        $information['id_type'] = static::TYPE_TEXT_XML;
       }
       elseif ($parts[1] == 'css') {
-        $information['id_type'] = self::TYPE_TEXT_CSS;
+        $information['id_type'] = static::TYPE_TEXT_CSS;
       }
       elseif ($parts[1] == 'rtf') {
-        $information['id_type'] = self::TYPE_TEXT_RICH;
+        $information['id_type'] = static::TYPE_TEXT_RICH;
       }
       elseif ($parts[1] == 'javascript') {
-        $information['id_type'] = self::TYPE_TEXT_JS;
+        $information['id_type'] = static::TYPE_TEXT_JS;
       }
       else {
-        $information['id_type'] = self::TYPE_UNKNOWN;
+        $information['id_type'] = static::TYPE_UNKNOWN;
       }
     }
     elseif ($parts[0] == 'application') {
-      $information['id_category'] = self::CATEGORY_APPLICATION;
+      $information['id_category'] = static::CATEGORY_APPLICATION;
 
       if ($parts[1] == '*') {
         // nothing to change.
       }
       elseif ($parts[1] == 'octet-stream') {
-        $information['id_category'] = self::CATEGORY_STREAM;
-        $information['id_type'] = self::TYPE_STREAM;
+        $information['id_category'] = static::CATEGORY_STREAM;
+        $information['id_type'] = static::TYPE_STREAM;
       }
       elseif ($parts[1] == 'pdf') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_APPLICATION_PDF;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_APPLICATION_PDF;
       }
       elseif ($parts[1] == 'rss' || $parts[1] == 'rss+xml' || $parts[1] == 'rdf+xml' || $parts[1] == 'atom+xml') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_RSS;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_RSS;
       }
       elseif ($parts[1] == 'xml') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_XML;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_XML;
       }
       elseif ($parts[1] == 'javascript') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_JS;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_JS;
       }
       elseif ($parts[1] == 'json') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_JSON;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_JSON;
       }
       elseif ($parts[1] == 'xhtml' || $parts[1] == 'xhtml+xml') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_XHTML;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_XHTML;
       }
       elseif ($parts[1] == 'ps') {
-        $information['id_category'] = self::CATEGORY_TEXT;
-        $information['id_type'] = self::TYPE_TEXT_PS;
+        $information['id_category'] = static::CATEGORY_TEXT;
+        $information['id_type'] = static::TYPE_TEXT_PS;
       }
       elseif ($parts[1] == 'tar') {
-        $information['id_category'] = self::CATEGORY_CONTAINER;
-        $information['id_type'] = self::TYPE_CONTAINER_TAR;
+        $information['id_category'] = static::CATEGORY_CONTAINER;
+        $information['id_type'] = static::TYPE_CONTAINER_TAR;
       }
       elseif ($parts[1] == 'cpio') {
-        $information['id_category'] = self::CATEGORY_CONTAINER;
-        $information['id_type'] = self::TYPE_CONTAINER_CPIO;
+        $information['id_category'] = static::CATEGORY_CONTAINER;
+        $information['id_type'] = static::TYPE_CONTAINER_CPIO;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.chart') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBRECHART;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBRECHART;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.formula') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBREFORMULA;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBREFORMULA;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.graphics') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBREGRAPHIC;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBREGRAPHIC;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.presentation') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBREPRESENTATION;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBREPRESENTATION;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.spreadsheet') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBRESPREADSHEET;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBRESPREADSHEET;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.text') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBRETEXT;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBRETEXT;
       }
       elseif ($parts[1] == 'vnd.oasis.opendocument.text-web') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_LIBREHTML;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_LIBREHTML;
       }
       elseif ($parts[1] == 'abiword' || $parts[1] == 'abiword-compressed') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_ABIWORD;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_ABIWORD;
       }
       elseif ($parts[1] == 'msword' || $parts[1] == 'vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_MSWORD;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_MSWORD;
       }
       elseif ($parts[1] == 'ms-excel' || $parts[1] == 'vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_MSEXCEL;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_MSEXCEL;
       }
       elseif ($parts[1] == 'ms-powerpoint' || $parts[1] == 'vnd.openxmlformats-officedocument.presentationml.presentation') {
-        $information['id_category'] = self::CATEGORY_DOCUMENT;
-        $information['id_type'] = self::TYPE_DOCUMENT_MSPOWERPOINT;
+        $information['id_category'] = static::CATEGORY_DOCUMENT;
+        $information['id_type'] = static::TYPE_DOCUMENT_MSPOWERPOINT;
       }
       elseif ($parts[1] == 'java') {
-        $information['id_category'] = self::CATEGORY_CONTAINER;
-        $information['id_type'] = self::TYPE_CONTAINER_JAVA;
+        $information['id_category'] = static::CATEGORY_CONTAINER;
+        $information['id_type'] = static::TYPE_CONTAINER_JAVA;
       }
       elseif ($parts[1] == 'ocsp-request') {
-        $information['id_category'] = self::CATEGORY_APPLICATION;
-        $information['id_type'] = self::TYPE_PACKET_OCSP_REQUEST;
+        $information['id_category'] = static::CATEGORY_APPLICATION;
+        $information['id_type'] = static::TYPE_PACKET_OCSP_REQUEST;
       }
       elseif ($parts[1] == 'ocsp-response') {
-        $information['id_category'] = self::CATEGORY_APPLICATION;
-        $information['id_type'] = self::TYPE_PACKET_OCSP_RESPONSE;
+        $information['id_category'] = static::CATEGORY_APPLICATION;
+        $information['id_type'] = static::TYPE_PACKET_OCSP_RESPONSE;
       }
       else {
-        $information['id_type'] = self::TYPE_UNKNOWN;
+        $information['id_type'] = static::TYPE_UNKNOWN;
       }
     }
     elseif ($parts[0] == 'image') {
-      $information['id_category'] = self::CATEGORY_IMAGE;
+      $information['id_category'] = static::CATEGORY_IMAGE;
 
       if ($parts[1] == '*') {
         // nothing to change.
       }
       elseif ($parts[1] == 'png') {
-        $information['id_type'] = self::TYPE_IMAGE_PNG;
+        $information['id_type'] = static::TYPE_IMAGE_PNG;
       }
       elseif ($parts[1] == 'jpeg' || $parts[1] == 'jpg' || $parts[1] == 'jpx') {
-        $information['id_type'] = self::TYPE_IMAGE_JPEG;
+        $information['id_type'] = static::TYPE_IMAGE_JPEG;
       }
       elseif ($parts[1] == 'gif') {
-        $information['id_type'] = self::TYPE_IMAGE_GIF;
+        $information['id_type'] = static::TYPE_IMAGE_GIF;
       }
       elseif ($parts[1] == 'bmp') {
-        $information['id_type'] = self::TYPE_IMAGE_BMP;
+        $information['id_type'] = static::TYPE_IMAGE_BMP;
       }
       elseif ($parts[1] == 'svg') {
-        $information['id_type'] = self::TYPE_IMAGE_SVG;
+        $information['id_type'] = static::TYPE_IMAGE_SVG;
       }
       elseif ($parts[1] == 'tiff' || $parts[1] == 'tiff-fx') {
-        $information['id_type'] = self::TYPE_IMAGE_TIFF;
+        $information['id_type'] = static::TYPE_IMAGE_TIFF;
       }
       else {
-        $information['id_type'] = self::TYPE_UNKNOWN;
+        $information['id_type'] = static::TYPE_UNKNOWN;
       }
     }
     elseif ($parts[0] == 'audio') {
-      $information['id_category'] = self::CATEGORY_AUDIO;
+      $information['id_category'] = static::CATEGORY_AUDIO;
 
       if ($parts[1] == '*') {
         // nothing to change.
       }
       elseif ($parts[1] == 'ogg') {
-        $information['id_type'] = self::TYPE_AUDIO_OGG;
+        $information['id_type'] = static::TYPE_AUDIO_OGG;
       }
       elseif ($parts[1] == 'mpeg') {
-        $information['id_type'] = self::TYPE_AUDIO_MP3;
+        $information['id_type'] = static::TYPE_AUDIO_MP3;
       }
       elseif ($parts[1] == 'mp4') {
-        $information['id_type'] = self::TYPE_AUDIO_MP4;
+        $information['id_type'] = static::TYPE_AUDIO_MP4;
       }
       elseif ($parts[1] == 'wav') {
-        $information['id_type'] = self::TYPE_AUDIO_WAV;
+        $information['id_type'] = static::TYPE_AUDIO_WAV;
       }
       elseif ($parts[1] == 'midi') {
-        $information['id_type'] = self::TYPE_AUDIO_MIDI;
+        $information['id_type'] = static::TYPE_AUDIO_MIDI;
       }
       else {
-        $information['id_type'] = self::TYPE_UNKNOWN;
+        $information['id_type'] = static::TYPE_UNKNOWN;
       }
     }
     elseif ($parts[0] == 'video') {
-      $information['id_category'] = self::CATEGORY_VIDEO;
+      $information['id_category'] = static::CATEGORY_VIDEO;
 
       if ($parts[1] == '*') {
         // nothing to change.
       }
       elseif ($parts[1] == 'mp4' || $parts[1] == 'mpeg') {
-        $information['id_type'] = self::TYPE_VIDEO_MPEG;
+        $information['id_type'] = static::TYPE_VIDEO_MPEG;
       }
       elseif ($parts[1] == 'ogg') {
-        $information['id_type'] = self::TYPE_VIDEO_OGG;
+        $information['id_type'] = static::TYPE_VIDEO_OGG;
       }
       elseif ($parts[1] == 'h264') {
-        $information['id_type'] = self::TYPE_VIDEO_H264;
+        $information['id_type'] = static::TYPE_VIDEO_H264;
       }
       elseif ($parts[1] == 'quicktime') {
-        $information['id_type'] = self::TYPE_VIDEO_QUICKTIME;
+        $information['id_type'] = static::TYPE_VIDEO_QUICKTIME;
       }
       elseif ($parts[1] == 'dv') {
-        $information['id_type'] = self::TYPE_VIDEO_DV;
+        $information['id_type'] = static::TYPE_VIDEO_DV;
       }
       elseif ($parts[1] == 'jpeg' || $parts[1] == 'jpeg2000') {
-        $information['id_type'] = self::TYPE_VIDEO_JPEG;
+        $information['id_type'] = static::TYPE_VIDEO_JPEG;
       }
       elseif ($parts[1] == 'webm') {
-        $information['id_type'] = self::TYPE_VIDEO_WEBM;
+        $information['id_type'] = static::TYPE_VIDEO_WEBM;
       }
       else {
-        $information['id_type'] = self::TYPE_UNKNOWN;
+        $information['id_type'] = static::TYPE_UNKNOWN;
       }
     }
     else {
-      $information['id_category'] = self::CATEGORY_UNKNOWN;
-      $information['id_type'] = self::TYPE_UNKNOWN;
+      $information['id_category'] = static::CATEGORY_UNKNOWN;
+      $information['id_type'] = static::TYPE_UNKNOWN;
     }
     unset($parts);
 

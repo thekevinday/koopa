@@ -288,7 +288,7 @@ class c_standard_index extends c_base_return {
     $this->http->do_load_request();
 
     // Assign a default response protocol.
-    $this->http->set_response_protocol(self::HTTP_RESPONSE_PROTOCOL);
+    $this->http->set_response_protocol(static::HTTP_RESPONSE_PROTOCOL);
 
     // Assign a default response status (expected to be overridden by path handlers).
     $this->http->set_response_status(c_base_http_status::OK);

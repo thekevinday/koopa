@@ -79,7 +79,7 @@ class c_base_utf8 {
       return c_base_return_error::s_false($error);
     }
 
-    if (mb_check_encoding($text, self::UTF_8)) {
+    if (mb_check_encoding($text, static::UTF_8)) {
       return new c_base_return_true();
     }
 
@@ -534,7 +534,7 @@ class c_base_utf8 {
     }
 
     if (!s_is_bom(substr($text, 0, 3))) {
-      return c_base_return_string::s_new(self::BOM . $text);
+      return c_base_return_string::s_new(static::BOM . $text);
     }
 
     return c_base_return_string::s_new($text);
@@ -611,7 +611,7 @@ class c_base_utf8 {
     $search_for = self::p_s_clean($search_for);
     $target = self::p_s_clean($haystack);
 
-    return c_base_return_int::s_new(mb_strpos($target, $search_for, $offset, self::UTF_8));
+    return c_base_return_int::s_new(mb_strpos($target, $search_for, $offset, static::UTF_8));
   }
 
   /**
@@ -929,18 +929,18 @@ class c_base_utf8 {
       return 0;
     }
 
-    if (($ordinal & self::MASK_1) == 0) {
+    if (($ordinal & static::MASK_1) == 0) {
       return $ordinal;
     }
 
-    if (($ordinal & self::MASK_2) == 0) {
+    if (($ordinal & static::MASK_2) == 0) {
       $high = ($ordinal >> 8);
       $low = $ordinal - ($high << 8);
 
       return ((($high & 0x1f) << 6) | ($low & 0x3f));
     }
 
-    if (($ordinal & self::MASK_3) == 0) {
+    if (($ordinal & static::MASK_3) == 0) {
       $high = ($ordinal >> 16);
       $medium = ($ordinal - ($high << 16) >> 8);
       $low = ($ordinal - ($high << 16) - ($medium << 8));
@@ -966,7 +966,7 @@ class c_base_utf8 {
     // mb_convert_encoding() accepts codepoints, so first convert the ordinal to a codepoint.
     $codepoint = self::p_s_ordinal_to_codepoint($ordinal);
 
-    return mb_convert_encoding('&#' . $codepoint . ';', self::UTF_8, 'HTML-ENTITIES');
+    return mb_convert_encoding('&#' . $codepoint . ';', static::UTF_8, 'HTML-ENTITIES');
   }
 
   /**
@@ -999,7 +999,7 @@ class c_base_utf8 {
    * @see: self::s_length_string()
    */
   private static function p_s_length_string($text) {
-    return mb_strlen($text, self::UTF_8);
+    return mb_strlen($text, static::UTF_8);
   }
 
   /**
@@ -1016,7 +1016,7 @@ class c_base_utf8 {
     }
 
     if ($remove_bom) {
-      $sanitized = str_replace(self::BOM, '', $sanitized);
+      $sanitized = str_replace(static::BOM, '', $sanitized);
     }
 
     return $sanitized;
@@ -1093,7 +1093,7 @@ class c_base_utf8 {
 
     $sanitized = self::p_s_clean($text);
 
-    return mb_substr($sanitized, $start, $length, self::UTF_8);
+    return mb_substr($sanitized, $start, $length, static::UTF_8);
   }
 
   /**
@@ -1146,7 +1146,7 @@ class c_base_utf8 {
    * @see: self::s_is_bom()
    */
   private static function p_s_is_bom($text) {
-    if ($text === self::BOM) {
+    if ($text === static::BOM) {
       return TRUE;
     }
 

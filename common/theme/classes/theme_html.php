@@ -41,7 +41,7 @@ class c_theme_html extends c_base_return {
     $this->html = NULL;
     $this->markup = NULL;
     $this->http = NULL;
-    $this->max_recursion_depth = self::DEFAULT_MAX_RECURSION_DEPTH;
+    $this->max_recursion_depth = static::DEFAULT_MAX_RECURSION_DEPTH;
   }
 
   /**
@@ -299,7 +299,7 @@ class c_theme_html extends c_base_return {
    */
   public function get_max_recursion_depth() {
     if (!is_int($this->max_recursion_depth)) {
-      $this->max_recursion_depth = self::DEFAULT_MAX_RECURSION_DEPTH;
+      $this->max_recursion_depth = static::DEFAULT_MAX_RECURSION_DEPTH;
     }
 
     return c_base_return_int::s_new($this->max_recursion_depth);

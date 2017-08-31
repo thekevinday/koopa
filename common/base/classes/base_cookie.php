@@ -56,13 +56,13 @@ class c_base_cookie extends c_base_return_array {
     $this->secure = TRUE;
     $this->max_age = NULL;
     $this->expires = NULL;
-    $this->path = self::DEFAULT_PATH;
+    $this->path = static::DEFAULT_PATH;
     $this->domain = NULL;
     $this->http_only = FALSE;
     $this->first_only = TRUE;
     $this->host_only = TRUE;
     $this->same_site = TRUE;
-    $this->json_encode_depth = self::DEFAULT_JSON_ENCODE_DEPTH;
+    $this->json_encode_depth = static::DEFAULT_JSON_ENCODE_DEPTH;
 
     $this->p_set_lifetime_default();
   }
@@ -337,7 +337,7 @@ class c_base_cookie extends c_base_return_array {
   public function get_path() {
     // this flag should never be undefined, if it is NULL, then force the default.
     if (is_null($this->path)) {
-      $this->path = self::DEFAULT_PATH;
+      $this->path = static::DEFAULT_PATH;
     }
 
     return c_base_return_string::s_new($this->path);
@@ -514,9 +514,9 @@ class c_base_cookie extends c_base_return_array {
     }
 
     switch ($same_site) {
-      case self::SAME_SITE_NONE:
-      case self::SAME_SITE_RELAXED:
-      case self::SAME_SITE_STRICT:
+      case static::SAME_SITE_NONE:
+      case static::SAME_SITE_RELAXED:
+      case static::SAME_SITE_STRICT:
         $this->same_site = $same_site;
         break;
       default:
@@ -538,7 +538,7 @@ class c_base_cookie extends c_base_return_array {
   public function get_same_site() {
     // this flag should never be undefined, if it is NULL, then force the default.
     if (is_null($this->same_site)) {
-      $this->same_site = self::SAME_SITE_RELAXED;
+      $this->same_site = static::SAME_SITE_RELAXED;
     }
 
     return c_base_return_int::s_new($this->same_site);
@@ -790,7 +790,7 @@ class c_base_cookie extends c_base_return_array {
   private function p_set_lifetime_default() {
     $lifetime = ini_get('session.cookie_lifetime');
     if ($lifetime <= 0) {
-      $lifetime = self::DEFAULT_LIFETIME;
+      $lifetime = static::DEFAULT_LIFETIME;
     }
 
     $this->max_age = $lifetime;
@@ -935,13 +935,13 @@ class c_base_cookie extends c_base_return_array {
     }
 
     switch ($this->same_site) {
-      case self::SAME_SITE_NONE:
+      case static::SAME_SITE_NONE:
         $cookie .= ' samesite=no_restriction;';
         break;
-      case self::SAME_SITE_RELAXED:
+      case static::SAME_SITE_RELAXED:
         $cookie .= ' samesite=lax;';
         break;
-      case self::SAME_SITE_STRICT:
+      case static::SAME_SITE_STRICT:
         $cookie .= ' samesite=strict;';
         break;
     }
