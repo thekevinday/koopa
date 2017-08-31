@@ -14,6 +14,7 @@ require_once('common/base/classes/base_log.php');
 
 require_once('common/standard/classes/standard_index.php');
 require_once('common/standard/classes/standard_path.php');
+require_once('common/standard/classes/standard_paths.php');
 require_once('common/standard/classes/standard_users.php');
 
 require_once('common/theme/classes/theme_html.php');
@@ -125,25 +126,7 @@ class c_standard_path_user_login extends c_standard_path {
       }
       elseif ($login_result === TRUE) {
         // successfully logged in.
-        $request_uri = $http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
-        if (isset($request_uri['data']) && is_array($request_uri['data'])) {
-          $destination = $request_uri['data'];
-        }
-        else {
-          $destination = array(
-            'scheme' => NULL,
-            'authority' => NULL,
-            'path' => NULL,
-            'query' => NULL,
-            'fragment' => NULL,
-            'url' => TRUE,
-            'current' => $start,
-            'invalid' => FALSE,
-          );
-        }
-        unset($request_uri);
-
-        $destination['path'] = $settings['base_path'] . 'u/dashboard';
+        $destination = $this->pr_do_login_redirect();
 
         // note: by using a SEE OTHER redirect, the client knows to make a GET request and that the redirect is temporary.
         $redirect = c_standard_path::s_create_redirect($destination, c_base_http_status::SEE_OTHER, FALSE);
@@ -642,6 +625,34 @@ class c_standard_path_user_login extends c_standard_path {
     }
 
     return $problems;
+  }
+
+  /**
+   * Provide a path to redirect to on successful login.
+   *
+   * @param c_base_http &$http
+   *   The HTTP settings.
+   *
+   * @return array
+   *   A array of destination url parts is always returned.
+   */
+  protected function pr_do_login_redirect() {
+    $request_uri = $this->http->get_request(c_base_http::REQUEST_URI)->get_value_exact();
+    if (isset($request_uri['data']['path'])) {
+      return $request_uri['data'];
+    }
+    unset($request_uri);
+
+    return array(
+      'scheme' => NULL,
+      'authority' => NULL,
+      'path' => $this->settings['base_path'] . c_standard_paths::URI_DASHBOARD_USER,
+      'query' => NULL,
+      'fragment' => NULL,
+      'url' => TRUE,
+      'current' => $start,
+      'invalid' => FALSE,
+    );
   }
 
   /**
