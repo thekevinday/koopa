@@ -12,6 +12,11 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
+/**
+ * Provides a path handler for user locking.
+ *
+ * This listens on: /u/lock
+ */
 class c_standard_path_user_lock extends c_standard_path {
   protected const PATH_SELF = 'u/lock';
 

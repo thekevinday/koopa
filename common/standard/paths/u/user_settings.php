@@ -12,6 +12,11 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
+/**
+ * Provides a path handler for user settings.
+ *
+ * This listens on: /u/settings
+ */
 class c_standard_path_user_settings extends c_standard_path {
   protected const PATH_SELF = 'u/settings';
 

@@ -12,6 +12,11 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
+/**
+ * Provides a path handler for user print format (printer-friendly).
+ *
+ * This listens on: /u/print
+ */
 class c_standard_path_user_print extends c_standard_path {
   protected const PATH_SELF = 'u/print';
 
