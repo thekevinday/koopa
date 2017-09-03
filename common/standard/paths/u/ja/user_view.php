@@ -218,6 +218,9 @@ class c_standard_path_user_view_ja extends c_standard_path_user_view {
       case 63:
         $string = 'アクセス履歴';
         break;
+      default:
+        unset($string);
+        return parent::pr_get_text($code, $arguments);
     }
 
     if (!empty($arguments)) {

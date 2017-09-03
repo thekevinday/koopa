@@ -27,8 +27,8 @@ require_once('common/theme/classes/theme_html.php');
  */
 class c_standard_path_user_login extends c_standard_path {
   public const SESSION_DATE_FORMAT = 'D, d-M-Y H:i:s T';
+  public const PATH_SELF           = 'u/login';
 
-  protected const PATH_SELF   = 'u/login';
   protected const USER_PUBLIC = 'u_standard_public';
 
   /**
@@ -299,7 +299,7 @@ class c_standard_path_user_login extends c_standard_path {
       $this->breadcrumbs = new c_base_menu_item();
     }
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(12), static::PATH_SELF);
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(12), self::PATH_SELF);
     $this->breadcrumbs->set_item($item);
     unset($item);
 
@@ -955,7 +955,7 @@ class c_standard_path_user_login extends c_standard_path {
    * Implements pr_get_text_title().
    */
   protected function pr_get_text_title($arguments = array()) {
-    return $this->pr_get_text(0, $arguments);
+    return self::pr_get_text(0, $arguments);
   }
 
   /**

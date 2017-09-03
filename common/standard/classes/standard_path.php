@@ -14,6 +14,8 @@ require_once('common/base/classes/base_markup.php');
  * This is used primarily for generating HTML5 pages.
  */
 class c_standard_path extends c_base_path {
+  public const PATH_SELF = '';
+
   protected const CSS_AS_SECTION                = 'as-section';
   protected const CSS_AS_SECTION_HEADERS        = 'as-section-headers';
   protected const CSS_AS_WRAPPER                = 'as-wrapper';
@@ -68,8 +70,6 @@ class c_standard_path extends c_base_path {
 
   protected const CSS_PATH_PART = 'path-part-';
   protected const CSS_PATH_FULL = 'path-full-';
-
-  protected const PATH_SELF = '';
 
   protected const PATH_MENU_HEADER      = 'common/standard/menus/';
   protected const PATH_MENU_UTILITY     = 'common/standard/menus/';
@@ -163,7 +163,7 @@ class c_standard_path extends c_base_path {
   /**
    * Implements set_parameters().
    */
-  protected function set_parameters(&$http, &$database, &$session, $settings) {
+  public function set_parameters(&$http, &$database, &$session, $settings) {
     $result = parent::set_parameters($http, $database, $session, $settings);
     if (c_base_return::s_has_error($result)) {
       return $result;
@@ -1976,6 +1976,9 @@ class c_standard_path extends c_base_path {
    *   A number representing which block of text to return.
    * @param array $arguments
    *   (optional) An array of arguments to convert into text.
+   *
+   * @return string
+   *   A string is returned as the custom text.
    */
   protected function pr_get_text($code, $arguments = array()) {
     return '';

@@ -1,9 +1,9 @@
 <?php
 /**
  * @file
- * Provides path handler for the user check.
+ * Provides path handler for the user session actions.
  *
- * This is generally intended to be used to trigger one or more checks against a user account or related data.
+ * This is generally intended to be used to trigger one or more session actions against a user account or related data.
  * This could be a simple reaction as is common with ajax but could also be a page containing forms.
  */
 
@@ -20,13 +20,10 @@ require_once('common/theme/classes/theme_html.php');
 /**
  * Provides a path handler for user creation.
  *
- * This listens on: /u/check
+ * This listens on: /u/session
  */
-class c_standard_path_user_check extends c_standard_path_user {
-  public const PATH_SELF = 'u/check';
-
-  protected const NAME_MENU_CONTENT    = 'menu_content_user_view';
-  protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_user_view';
+class c_standard_path_user_session extends c_standard_path_user {
+  public const PATH_SELF = 'u/session';
 
   /**
    * Implements do_execute().
@@ -144,83 +141,23 @@ class c_standard_path_user_check extends c_standard_path_user {
     unset($arguments);
     unset($id_user);
 
-    $wrapper = $this->pr_create_tag_section(array(1 => 0));
-
-    // initialize the content as HTML.
-    $this->pr_create_html();
-    $this->html->set_tag($wrapper);
-    unset($wrapper);
-
-    $this->pr_add_menus();
-
-    $executed->set_output($this->html);
-    unset($this->html);
+    // @todo: json responses are expected to be returned for ajax purposes.
+    //        this will very likely support u/session/(ajax_action_name) such as u/session/ping for keeping the session and therefore session cookie alive.
 
     return $executed;
   }
 
   /**
-   * Implementation of pr_build_breadcrumbs().
+   * Implements pr_get_text_title().
    */
-  protected function pr_build_breadcrumbs() {
-    $path_user_view = new c_standard_path_user_view();
-    $path_user_view->set_parameters($this->http, $this->database, $this->session, $this->settings);
-    $path_user_view->set_path_tree($this->get_path_tree($this->path_tree));
-    $this->breadcrumbs = $path_user_view->get_breadcrumbs();
-    unset($path_user_view);
-
-    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
-      $result = parent::pr_build_breadcrumbs();
-      if ($result instanceof c_base_return_false) {
-        unset($result);
-        return new c_base_return_false();
-      }
-      unset($result);
-    }
-
-    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
-      $this->breadcrumbs = new c_base_menu_item();
-    }
-
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), self::PATH_SELF);
-    $this->breadcrumbs->set_item($item);
-    unset($item);
-
-    return new c_base_return_true();
-  }
-
-  /**
-   * Implementation of pr_create_html_add_header_link_canonical().
-   */
-  protected function pr_create_html_add_header_link_canonical() {
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LINK);
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REL, 'canonical');
-    $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $this->settings['base_scheme'] . '://' . $this->settings['base_host'] . $this->settings['base_port'] . $this->settings['base_path'] . self::PATH_SELF);
-    $this->html->set_header($tag);
-
-    unset($tag);
+  protected function pr_get_text_title($arguments = array()) {
+    return '';
   }
 
   /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {
-    $string = '';
-    switch ($code) {
-      case 0:
-        if (array_key_exists(':{user_name}', $arguments)) {
-          $string = 'Check User: :{user_name}';
-        }
-        else {
-          $string = 'Check User';
-        }
-        break;
-    }
-
-    if (!empty($arguments)) {
-      $this->pr_process_replacements($string, $arguments);
-    }
-
-    return $string;
+    return '';
   }
 }

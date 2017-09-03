@@ -15,6 +15,7 @@ class c_standard_path_user_refresh_ja extends c_standard_path_user_refresh {
   protected function pr_get_text($code, $arguments = array()) {
     $string = '';
     switch ($code) {
+      case 0:
         if (array_key_exists(':{user_name}', $arguments)) {
           $string = '晴らす:{user_name}';
         }
@@ -22,6 +23,9 @@ class c_standard_path_user_refresh_ja extends c_standard_path_user_refresh {
           $string = '晴らす';
         }
         break;
+      default:
+        unset($string);
+        return parent::pr_get_text($code, $arguments);
     }
 
     if (!empty($arguments)) {

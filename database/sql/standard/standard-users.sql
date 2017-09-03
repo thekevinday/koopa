@@ -48,6 +48,10 @@ create table s_tables.t_users (
   date_locked timestamp with time zone,
   date_deleted timestamp with time zone,
 
+  image_original bytea,
+  image_cropped bytea,
+  image_icon bytea,
+
   settings json,
 
   constraint cp_users primary key (id),
@@ -103,51 +107,49 @@ create index i_users_id_sort_x on s_tables.t_users (id_sort) with (fillfactor = 
 create index i_users_id_sort_y on s_tables.t_users (id_sort) with (fillfactor = 100) where id_sort = 121;
 create index i_users_id_sort_z on s_tables.t_users (id_sort) with (fillfactor = 100) where id_sort = 122;
 
-
-
 /*** provide current user access to their own information (system users are not allowed to update their account) ***/
 create view s_users.v_users_self with (security_barrier=true) as
-  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and (name_machine)::text = (current_user)::text;
 
 create view public.v_users_self_session with (security_barrier=true) as
-  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and (name_machine)::text = (session_user)::text;
 
 create view public.v_users_self_locked_not with (security_barrier=true) as
-  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and not is_locked and (name_machine)::text = (current_user)::text;
 
 create view public.v_users_self_exists with (security_barrier=true) as
-  select id, name_machine, is_system, is_public, is_locked, is_deleted from s_tables.t_users
+  select id, name_machine, is_system, is_public, is_locked, is_deleted, image_original, image_cropped, image_icon from s_tables.t_users
     where (name_machine)::text = (current_user)::text;
 
 create view s_users.v_users_self_insert with (security_barrier=true) as
-  select id_external, name_human, address_email, is_private, settings from s_tables.t_users
+  select id_external, name_human, address_email, is_private, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
     with check option;
 
 create view s_users.v_users_self_update with (security_barrier=true) as
-  select address_email, is_private, settings from s_tables.t_users
+  select address_email, is_private, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and not is_locked and not is_system and not is_public and (name_machine)::text = (current_user)::text
     with check option;
 
 
 /**** anonymous user has uid = 1 ****/
 create view public.v_users_self with (security_barrier=true) as
-  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, settings from s_tables.t_users
+  select id, id_external, id_sort, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted and id = 1;
 
 
 /*** provide public user information ***/
 create view public.v_users with (security_barrier=true) as
-  select id, null::bigint as id_external, id_sort, name_machine, name_human, null::public.ct_email as address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, is_private, is_deleted, null::bool as is_roler, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::timestamp as date_deleted, null::json as settings from s_tables.t_users
+  select id, null::bigint as id_external, id_sort, name_machine, name_human, null::public.ct_email as address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, is_private, is_deleted, null::bool as is_roler, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, null::json as settings from s_tables.t_users
     where (not is_deleted and not is_private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
 
 /*** provide e-mail address as public information only if it is explicitly allowed ***/
 create view public.v_users_email with (security_barrier=true) as
-  select id, null::bigint as id_external, id_sort, name_machine, name_human, address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, is_private, is_deleted, null::bool as is_roler, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::timestamp as date_deleted, null::json as settings from s_tables.t_users
+  select id, null::bigint as id_external, id_sort, name_machine, name_human, address_email, null::bool as is_administer, null::bool as is_manager, null::bool as is_auditor, null::bool as is_publisher, null::bool as is_insurer, null::bool as is_financer, null::bool as is_reviewer, null::bool as is_editor, null::bool as is_drafter, null::bool as is_requester, is_system, is_public, null::bool as is_locked, is_private, is_deleted, null::bool as is_roler, null::timestamp as date_created, null::timestamp as date_changed, null::timestamp as date_synced, null::timestamp as date_locked, null::timestamp as date_deleted, image_original, image_cropped, image_icon, null::json as settings from s_tables.t_users
     where (not is_deleted and not is_private and not (address_email).private) or (not is_deleted and (name_machine)::text = (current_user)::text);
 
 
@@ -157,16 +159,16 @@ create view s_managers.v_users with (security_barrier=true) as
     where not is_deleted;
 
 create view s_managers.v_users_insert with (security_barrier=true) as
-  select id, id_external, name_machine, name_human, address_email, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, settings from s_tables.t_users
+  select id, id_external, name_machine, name_human, address_email, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, image_original, image_cropped, image_icon, settings from s_tables.t_users
     with check option;
 
 create view s_managers.v_users_update with (security_barrier=true) as
-  select id, id_external, name_machine, name_human, address_email, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, settings from s_tables.t_users
+  select id, id_external, name_machine, name_human, address_email, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where not is_deleted
     with check option;
 
 create view s_managers.v_users_deleted with (security_barrier=true) as
-  select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, date_created, date_changed, date_synced, date_locked, settings from s_tables.t_users
+  select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_insurer, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_locked, is_private, is_roler, date_created, date_changed, date_synced, date_locked, image_original, image_cropped, image_icon, settings from s_tables.t_users
     where is_deleted;
 
 

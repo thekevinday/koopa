@@ -67,7 +67,7 @@ class c_standard_path_user_logout extends c_standard_path {
       $this->breadcrumbs = new c_base_menu_item();
     }
 
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), static::PATH_SELF);
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), self::PATH_SELF);
     $this->breadcrumbs->set_item($item);
     unset($item);
 

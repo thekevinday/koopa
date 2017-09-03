@@ -15,6 +15,7 @@ class c_standard_path_user_check_ja extends c_standard_path_user_check {
   protected function pr_get_text($code, $arguments = array()) {
     $string = '';
     switch ($code) {
+      case 0:
         if (array_key_exists(':{user_name}', $arguments)) {
           $string = '照合:{user_name}';
         }
@@ -22,6 +23,9 @@ class c_standard_path_user_check_ja extends c_standard_path_user_check {
           $string = '照合';
         }
         break;
+      default:
+        unset($string);
+        return parent::pr_get_text($code, $arguments);
     }
 
     if (!empty($arguments)) {

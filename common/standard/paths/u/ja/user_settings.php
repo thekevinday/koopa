@@ -63,6 +63,9 @@ class c_standard_path_user_dashboard_ja extends c_standard_path_user_dashboard {
       case 15:
         $string = '管理者';
         break;
+      default:
+        unset($string);
+        return parent::pr_get_text($code, $arguments);
     }
 
     if (!empty($arguments)) {

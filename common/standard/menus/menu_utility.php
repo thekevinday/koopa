@@ -111,7 +111,7 @@ class c_standard_menu_utility extends c_standard_menu {
         $string = 'Administration';
         break;
       case 6:
-        $string = 'Settings';
+        $string = 'Profile';
         break;
       case 7:
         $string = 'Logout';

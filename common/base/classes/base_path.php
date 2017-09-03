@@ -1217,7 +1217,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * This is normally done automatically, but in certain cases, this may need to be explicitly called.
    *
-   * Calling this will trigger default settings to be regernated, including the breadcrumbs.
+   * Calling this will trigger default settings to be regenerated, including the breadcrumbs.
    *
    * @param c_base_http &$http
    *   The entire HTTP information to allow for the execution to access anything that is necessary.
@@ -1234,7 +1234,7 @@ class c_base_path extends c_base_rfc_string {
    *
    * @see: self::do_execute()
    */
-  protected function set_parameters(&$http, &$database, &$session, $settings) {
+  public function set_parameters(&$http, &$database, &$session, $settings) {
     if (!($http instanceof c_base_http)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);

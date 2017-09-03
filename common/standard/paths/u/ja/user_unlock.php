@@ -23,6 +23,9 @@ class c_standard_path_user_unlock_ja extends c_standard_path_user_unlock {
           $string = 'ユーザーをロック解除する';
         }
         break;
+      default:
+        unset($string);
+        return parent::pr_get_text($code, $arguments);
     }
 
     if (!empty($arguments)) {
