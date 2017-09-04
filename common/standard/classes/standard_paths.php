@@ -24,9 +24,6 @@ class c_standard_paths extends c_base_return {
   const URI_USER_LOCK            = 'u/lock';
   const URI_USER_LOGIN           = 'u/login';
   const URI_USER_LOGOUT          = 'u/logout';
-  const URI_USER_PDF             = 'u/pdf';
-  const URI_USER_PRINT           = 'u/print';
-  const URI_USER_PS              = 'u/ps';
   const URI_USER_REFRESH         = 'u/refresh';
   const URI_USER_SESSION         = 'u/session';
   const URI_USER_SETTINGS        = 'u/settings';
@@ -54,9 +51,6 @@ class c_standard_paths extends c_base_return {
   protected const NAME_USER_LOCK            = 'user_lock';
   protected const NAME_USER_LOGIN           = 'user_login';
   protected const NAME_USER_LOGOUT          = 'user_logout';
-  protected const NAME_USER_PDF             = 'user_pdf';
-  protected const NAME_USER_PRINT           = 'user_print';
-  protected const NAME_USER_PS              = 'user_ps';
   protected const NAME_USER_REFRESH         = 'user_refresh';
   protected const NAME_USER_SESSION         = 'user_session';
   protected const NAME_USER_SETTINGS        = 'user_settings';
@@ -79,9 +73,6 @@ class c_standard_paths extends c_base_return {
   protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
   protected const HANDLER_USER_LOGIN           = 'c_standard_path_user_login';
   protected const HANDLER_USER_LOGOUT          = 'c_standard_path_user_logout';
-  protected const HANDLER_USER_PDF             = 'c_standard_path_user_pdf';
-  protected const HANDLER_USER_PRINT           = 'c_standard_path_user_print';
-  protected const HANDLER_USER_PS              = 'c_standard_path_user_ps';
   protected const HANDLER_USER_REFRESH         = 'c_standard_path_user_refresh';
   protected const HANDLER_USER_SESSION         = 'c_standard_path_user_session';
   protected const HANDLER_USER_SETTINGS        = 'c_standard_path_user_settings';
@@ -683,37 +674,49 @@ class c_standard_paths extends c_base_return {
     $this->paths->add_path(static::URI_USER_DASHBOARD, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
     $this->paths->add_path(static::URI_USER_DASHBOARD . static::WILDCARD_PATH, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
 
+
     // pages / forms
     $this->paths->add_path(static::URI_USER_CREATE, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
     $this->paths->add_path(static::URI_USER_CREATE . static::WILDCARD_PATH, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
+    $this->paths->add_path(static::URI_USER_CREATE . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
+
     $this->paths->add_path(static::URI_USER_DELETE, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
     $this->paths->add_path(static::URI_USER_DELETE . static::WILDCARD_PATH, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
+    $this->paths->add_path(static::URI_USER_DELETE . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
+
     $this->paths->add_path(static::URI_USER_EDIT, static::HANDLER_USER_EDIT, static::PATH_USER, static::NAME_USER_EDIT);
     $this->paths->add_path(static::URI_USER_EDIT . static::WILDCARD_PATH, static::HANDLER_USER_EDIT, static::PATH_USER, static::NAME_USER_EDIT);
+    $this->paths->add_path(static::URI_USER_EDIT . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_EDIT, static::PATH_USER, static::NAME_USER_EDIT);
+
     $this->paths->add_path(static::URI_USER_SETTINGS, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
     $this->paths->add_path(static::URI_USER_SETTINGS . static::WILDCARD_PATH, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
+    $this->paths->add_path(static::URI_USER_SETTINGS . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
+
     $this->paths->add_path(static::URI_USER_VIEW, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
     $this->paths->add_path(static::URI_USER_VIEW . static::WILDCARD_PATH, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
+    $this->paths->add_path(static::URI_USER_VIEW . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
+
 
     // actions / triggers
     $this->paths->add_path(static::URI_USER_CHECK, static::HANDLER_USER_CHECK, static::PATH_USER, static::NAME_USER_CHECK);
     $this->paths->add_path(static::URI_USER_CHECK . static::WILDCARD_PATH, static::HANDLER_USER_CHECK, static::PATH_USER, static::NAME_USER_CHECK);
+    $this->paths->add_path(static::URI_USER_CHECK . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_CHECK, static::PATH_USER, static::NAME_USER_CHECK);
+
     $this->paths->add_path(static::URI_USER_LOCK, static::HANDLER_USER_LOCK, static::PATH_USER, static::NAME_USER_LOCK);
     $this->paths->add_path(static::URI_USER_LOCK . static::WILDCARD_PATH, static::HANDLER_USER_LOCK, static::PATH_USER, static::NAME_USER_LOCK);
+    $this->paths->add_path(static::URI_USER_LOCK . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_LOCK, static::PATH_USER, static::NAME_USER_LOCK);
+
     $this->paths->add_path(static::URI_USER_REFRESH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
     $this->paths->add_path(static::URI_USER_REFRESH . static::WILDCARD_PATH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
+    $this->paths->add_path(static::URI_USER_REFRESH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
+
     $this->paths->add_path(static::URI_USER_SESSION, static::HANDLER_USER_SESSION, static::PATH_USER, static::NAME_USER_SESSION);
     $this->paths->add_path(static::URI_USER_SESSION . static::WILDCARD_PATH, static::HANDLER_USER_SESSION, static::PATH_USER, static::NAME_USER_SESSION);
+    $this->paths->add_path(static::URI_USER_SESSION . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_SESSION, static::PATH_USER, static::NAME_USER_SESSION);
+
     $this->paths->add_path(static::URI_USER_UNLOCK, static::HANDLER_USER_UNLOCK, static::PATH_USER, static::NAME_USER_UNLOCK);
     $this->paths->add_path(static::URI_USER_UNLOCK . static::WILDCARD_PATH, static::HANDLER_USER_UNLOCK, static::PATH_USER, static::NAME_USER_UNLOCK);
-
-    // presentation / formats
-    $this->paths->add_path(static::URI_USER_PDF, static::HANDLER_USER_PDF, static::PATH_USER, static::NAME_USER_PDF);
-    $this->paths->add_path(static::URI_USER_PDF . static::WILDCARD_PATH, static::HANDLER_USER_PDF, static::PATH_USER, static::NAME_USER_PDF);
-    $this->paths->add_path(static::URI_USER_PRINT, static::HANDLER_USER_PRINT, static::PATH_USER, static::NAME_USER_PRINT);
-    $this->paths->add_path(static::URI_USER_PRINT . static::WILDCARD_PATH, static::HANDLER_USER_PRINT, static::PATH_USER, static::NAME_USER_PRINT);
-    $this->paths->add_path(static::URI_USER_PS, static::HANDLER_USER_PS, static::PATH_USER, static::NAME_USER_PS);
-    $this->paths->add_path(static::URI_USER_PS . static::WILDCARD_PATH, static::HANDLER_USER_PS, static::PATH_USER, static::NAME_USER_PS);
+    $this->paths->add_path(static::URI_USER_UNLOCK . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_UNLOCK, static::PATH_USER, static::NAME_USER_UNLOCK);
   }
 
   /**

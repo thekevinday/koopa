@@ -181,6 +181,7 @@ class c_base_paths extends c_base_return {
     $depth_total = count($path_parts);
 
     // make sure the first path exists.
+    // note that 'paths' is not populated here, but is later used when being processed by self::find_path().
     $path_part = array_shift($path_parts);
     if (!array_key_exists($path_part, $path_tree)) {
       $path_tree[$path_part] = array(
@@ -352,7 +353,7 @@ class c_base_paths extends c_base_return {
         'methods' => isset($path_tree['methods']) ? $path_tree['methods'] : NULL,
       );
 
-      if ($depth_current == $depth_total)  {
+      if ($depth_current == $depth_total) {
         $found = array(
           'include_directory' => $path_tree['include_directory'],
           'include_name' => $path_tree['include_name'],

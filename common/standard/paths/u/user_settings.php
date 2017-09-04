@@ -40,113 +40,25 @@ class c_standard_path_user_settings extends c_standard_path_user {
       return $executed;
     }
 
-    // @todo: this function needs to check to see if the user has administer (or manager?) roles (c_base_roles::MANAGER, c_base_roles::ADMINISTER) and if they do, set administrative to TRUE when calling do_load().
-    $user = $this->session->get_user_current();
-    $roles_current = $user->get_roles()->get_value_exact();
-
-    $id_user = NULL;
-    $arguments = $this->pr_get_path_arguments(static::PATH_SELF);
-    if (!empty($arguments)) {
-      $arguments_total = count($arguments);
-      $argument = reset($arguments);
-
-      if (is_numeric($argument)) {
-        $id_user = (int) $argument;
-
-        // do not allow view access to reserved/special accounts.
-        if ($id_user < static::ID_USER_MINIMUM) {
-          $id_user = FALSE;
-        }
-
-        // @todo: check to see if user id is valid and accessible.
-        //        If the current viewer cannot access the user, then deny access to this page as appropriate.
-      }
-      else {
-        unset($arguments_total);
-        unset($argument);
-        unset($id_user);
-        unset($user);
-
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
-        $executed->set_error($error);
-
-        unset($error);
-        unset($arguments);
-
-        return $executed;
-      }
-
-      if ($arguments_total > 1) {
-        $argument = next($arguments);
-
-        if ($argument == 'print') {
-          // @todo: execute custom print function and then return.
-          $id_user = NULL;
-        }
-        #elseif ($argument == 'pdf') {
-        #  // @todo: execute custom pdf function and then return.
-        #  $id_user = NULL;
-        #}
-        #elseif ($argument == 'ps') {
-        #  // @todo: execute custom postscript function and then return.
-        #  $id_user = NULL;
-        #}
-        else {
-          $id_user = FALSE;
-        }
-      }
-      unset($arguments_total);
-      unset($argument);
-
-      if ($id_user === FALSE) {
-        unset($user);
-        unset($id_user);
-
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
-        $executed->set_error($error);
-
-        unset($error);
-        unset($arguments);
-
-        return $executed;
-      }
+    if (!$this->pr_process_arguments($executed)) {
+      return $executed;
     }
 
-    $user = NULL;
-    if (is_null($id_user)) {
-      $user = $this->session->get_user_current();
-      $id_user = $user->get_id()->get_value_exact();
-
-      // do not allow view access to reserved/special accounts.
-      if ($id_user < static::ID_USER_MINIMUM) {
-        $id_user = FALSE;
-      }
-    }
-    else {
-      $user = new c_standard_users_user();
-
-      // @todo: handle database errors.
-      $loaded = $user->do_load($this->database, $id_user);
-      if ($loaded instanceof c_base_return_false) {
-        $id_user = FALSE;
-      }
-      unset($loaded);
-    }
-
-    if ($id_user === FALSE) {
-      unset($id_user);
-
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+    // only support HTML output unless otherwise needed.
+    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
+    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
-
       unset($error);
 
       return $executed;
     }
-    unset($arguments);
-    unset($id_user);
 
-    $this->p_do_execute_settings($executed, $user);
+    // @todo: this function needs to check to see if the user has administer (or manager?) roles (c_base_roles::MANAGER, c_base_roles::ADMINISTER) and if they do, set administrative to TRUE when calling do_load().
+    #$user = $this->session->get_user_current();
+    #$roles_current = $user->get_roles()->get_value_exact();
+
+    $this->pr_do_execute_settings($executed);
     unset($user);
 
     return $executed;
@@ -411,25 +323,22 @@ class c_standard_path_user_settings extends c_standard_path_user {
    *
    * @param c_base_path_executed &$executed
    *   The execution results to be returned.
-   * @param c_base_users_user $user_id
-   *   An object representing the user to view.
    *
    * @return null|array
    *   NULL is returned if no errors are found.
    *   An array of errors are returned if found.
    */
-  protected function p_do_execute_settings(&$executed, $user) {
+  protected function pr_do_execute_settings(&$executed) {
     $errors = NULL;
 
     $arguments = array();
-    $arguments[':{user_name}'] = $user->get_name_human()->get_first()->get_value_exact() . ' ' . $user->get_name_human()->get_last()->get_value_exact();
+    $arguments[':{user_name}'] = $this->path_user->get_name_human()->get_first()->get_value_exact() . ' ' . $this->path_user->get_name_human()->get_last()->get_value_exact();
     if (mb_strlen($arguments[':{user_name}']) == 0) {
       unset($arguments[':{user_name}']);
     }
 
-    $id_user = $user->get_id()->get_value();
-    if (is_int($id_user)) {
-      $text_id_user = $this->pr_create_tag_text('[id: ' . $id_user . ']', array(), NULL, static::CLASS_ID_USER);
+    if (is_int($this->path_user_id)) {
+      $text_id_user = $this->pr_create_tag_text('[id: ' . $this->path_user_id . ']', array(), NULL, static::CLASS_ID_USER);
       $wrapper = $this->pr_create_tag_section(array(1 => array('text' => 0, 'append-inside' => $text_id_user)), $arguments);
       unset($text_id_user);
     }
@@ -438,10 +347,10 @@ class c_standard_path_user_settings extends c_standard_path_user {
     }
 
     $roles_current = $this->session->get_user_current()->get_roles()->get_value_exact();
-    $roles = $user->get_roles()->get_value_exact();
+    $roles = $this->path_user->get_roles()->get_value_exact();
 
     $full_view_access = FALSE;
-    if ($id_user === $this->session->get_user_current()->get_id()->get_value_exact()) {
+    if ($this->path_user_id === $this->session->get_user_current()->get_id()->get_value_exact()) {
       $full_view_access = TRUE;
     }
     elseif (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
@@ -460,23 +369,23 @@ class c_standard_path_user_settings extends c_standard_path_user {
     $fieldset = $this->pr_create_tag_fieldset(14, array(), static::CLASS_USER_SETTINGS_ACCOUNT, static::CLASS_USER_SETTINGS_ACCOUNT);
     $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
-    $content->set_tag($this->pr_create_tag_field_row(18, '' . $id_user, array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
+    $content->set_tag($this->pr_create_tag_field_row(18, '' . $this->path_user_id, array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
 
-    if ($full_view_access || !$user->get_address_email()->is_private()->get_value()) {
+    if ($full_view_access || !$this->path_user->get_address_email()->is_private()->get_value()) {
       $count = 1;
 
       if ($full_view_access) {
-        $content->set_tag($this->pr_create_tag_field_row(19, '' . $user->get_id_external()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
+        $content->set_tag($this->pr_create_tag_field_row(19, '' . $this->path_user->get_id_external()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
         $count++;
       }
 
-      $content->set_tag($this->pr_create_tag_field_row(20, '' . $user->get_name_machine()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(20, '' . $this->path_user->get_name_machine()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
       $count++;
 
-      $content->set_tag($this->pr_create_tag_field_row(21, '' . $user->get_address_email()->get_address()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(21, '' . $this->path_user->get_address_email()->get_address()->get_value(), array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
       $count++;
 
-      if ($user->is_locked()->get_value_exact()) {
+      if ($this->path_user->is_locked()->get_value_exact()) {
         $tag_text = $this->pr_get_text(33);
       }
       else {
@@ -485,7 +394,7 @@ class c_standard_path_user_settings extends c_standard_path_user {
       $content->set_tag($this->pr_create_tag_field_row(24, $tag_text, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
       $count++;
 
-      if ($user->is_private()->get_value_exact()) {
+      if ($this->path_user->is_private()->get_value_exact()) {
         $tag_text = $this->pr_get_text(33);
       }
       else {
@@ -494,7 +403,7 @@ class c_standard_path_user_settings extends c_standard_path_user {
       $content->set_tag($this->pr_create_tag_field_row(27, $tag_text, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
       $count++;
 
-      if ($user->is_roler()->get_value_exact()) {
+      if ($this->path_user->is_roler()->get_value_exact()) {
         $tag_text = $this->pr_get_text(33);
       }
       else {
@@ -504,7 +413,7 @@ class c_standard_path_user_settings extends c_standard_path_user {
       $count++;
 
       if (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
-        if ($user->is_deleted()->get_value_exact()) {
+        if ($this->path_user->is_deleted()->get_value_exact()) {
           $tag_text = $this->pr_get_text(33);
         }
         else {
@@ -519,8 +428,8 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
         // date created
         $date = NULL;
-        if (!is_null($user->get_date_created()->get_value())) {
-          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $user->get_date_created()->get_value())->get_value_exact();
+        if (!is_null($this->path_user->get_date_created()->get_value())) {
+          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $this->path_user->get_date_created()->get_value())->get_value_exact();
         }
 
         $content->set_tag($this->pr_create_tag_field_row(28, $date, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
@@ -529,8 +438,8 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
         // date changed
         $date = NULL;
-        if (!is_null($user->get_date_changed()->get_value())) {
-          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $user->get_date_changed()->get_value())->get_value_exact();
+        if (!is_null($this->path_user->get_date_changed()->get_value())) {
+          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $this->path_user->get_date_changed()->get_value())->get_value_exact();
         }
 
         $content->set_tag($this->pr_create_tag_field_row(29, $date, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
@@ -539,8 +448,8 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
         // date synced
         $date = NULL;
-        if (!is_null($user->get_date_synced()->get_value())) {
-          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $user->get_date_synced()->get_value())->get_value_exact();
+        if (!is_null($this->path_user->get_date_synced()->get_value())) {
+          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $this->path_user->get_date_synced()->get_value())->get_value_exact();
         }
 
         $content->set_tag($this->pr_create_tag_field_row(30, $date, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
@@ -549,8 +458,8 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
         // date locked
         $date = NULL;
-        if (!is_null($user->get_date_locked()->get_value())) {
-          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $user->get_date_locked()->get_value())->get_value_exact();
+        if (!is_null($this->path_user->get_date_locked()->get_value())) {
+          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $this->path_user->get_date_locked()->get_value())->get_value_exact();
         }
 
         $content->set_tag($this->pr_create_tag_field_row(31, '' . $date, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
@@ -559,8 +468,8 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
         // date deleted
         $date = NULL;
-        if (!is_null($user->get_date_deleted()->get_value())) {
-          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $user->get_date_deleted()->get_value())->get_value_exact();
+        if (!is_null($this->path_user->get_date_deleted()->get_value())) {
+          $date = c_base_defaults_global::s_get_date(c_base_defaults_global::FORMAT_DATE_TIME_SECONDS_HUMAN, $this->path_user->get_date_deleted()->get_value())->get_value_exact();
         }
 
         $content->set_tag($this->pr_create_tag_field_row(32, '' . $date, array(), NULL, ($count % 2 == 0 ? c_standard_path::CSS_AS_ROW_EVEN : c_standard_path::CSS_AS_ROW_ODD), $count, TRUE));
@@ -571,7 +480,7 @@ class c_standard_path_user_settings extends c_standard_path_user {
       unset($date);
     }
     else {
-      $content->set_tag($this->pr_create_tag_field_row(20, '' . $user->get_name_machine()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(20, '' . $this->path_user->get_name_machine()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
       $content->set_tag($this->pr_create_tag_field_row(21, $this->pr_get_text(43), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 2, TRUE));
     }
 
@@ -580,20 +489,19 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
     $this->html->set_tag($fieldset);
     unset($fieldset);
-    unset($id_user);
 
 
-    if ($full_view_access || !$user->is_private()->get_value()) {
+    if ($full_view_access || !$this->path_user->is_private()->get_value()) {
       // personal information
       $fieldset = $this->pr_create_tag_fieldset(15, array(), static::CLASS_USER_SETTINGS_PERSONAL, static::CLASS_USER_SETTINGS_PERSONAL);
       $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
 
-      $content->set_tag($this->pr_create_tag_field_row(37, '' . $user->get_name_human()->get_prefix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
-      $content->set_tag($this->pr_create_tag_field_row(38, '' . $user->get_name_human()->get_first()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
-      $content->set_tag($this->pr_create_tag_field_row(39, '' . $user->get_name_human()->get_middle()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 2, TRUE));
-      $content->set_tag($this->pr_create_tag_field_row(40, '' . $user->get_name_human()->get_last()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 3, TRUE));
-      $content->set_tag($this->pr_create_tag_field_row(41, '' . $user->get_name_human()->get_suffix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 4, TRUE));
-      $content->set_tag($this->pr_create_tag_field_row(42, '' . $user->get_name_human()->get_complete()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 5, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(37, '' . $this->path_user->get_name_human()->get_prefix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 0, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(38, '' . $this->path_user->get_name_human()->get_first()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 1, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(39, '' . $this->path_user->get_name_human()->get_middle()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 2, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(40, '' . $this->path_user->get_name_human()->get_last()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 3, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(41, '' . $this->path_user->get_name_human()->get_suffix()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_EVEN, 4, TRUE));
+      $content->set_tag($this->pr_create_tag_field_row(42, '' . $this->path_user->get_name_human()->get_complete()->get_value(), array(), NULL, c_standard_path::CSS_AS_ROW_ODD, 5, TRUE));
 
       $fieldset->set_tag($content);
       unset($content);

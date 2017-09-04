@@ -279,6 +279,9 @@ class c_standard_users_user extends c_base_users_user {
         $this->settings = array();
       }
     }
+    else {
+      return new c_base_return_false();
+    }
     unset($columns);
 
     return new c_base_return_true();

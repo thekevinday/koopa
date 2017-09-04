@@ -366,7 +366,7 @@ class c_base_path extends c_base_rfc_string {
 
     // the path wildcard is intentionally non-standard.
     // remove it so that it does not cause the validator to fail.
-    $without_wildcard = preg_replace('@(^%/|^%$|/%/|/%$)@', '', $sanitized);
+    $without_wildcard = preg_replace('@(^%/|^%$|(/%)+|/%/$|/%$)@', '', $sanitized);
     if (!is_string($without_wildcard)) {
       return FALSE;
     }

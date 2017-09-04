@@ -26,7 +26,7 @@ class c_standard_menu_content_user_view extends c_standard_menu_content {
   protected const CLASS_USER_VIEW      = 'user-view';
 
   /**
-   * Implements do_prepare().
+   * Implements do_build().
    */
   public function do_build(&$http, &$database, &$session, $settings, $items = NULL) {
     $result = parent::do_build($http, $database, $session, $settings);

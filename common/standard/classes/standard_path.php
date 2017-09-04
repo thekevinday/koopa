@@ -7,6 +7,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_menu.php');
 require_once('common/base/classes/base_markup.php');
+require_once('common/base/classes/base_mime.php');
 
 /**
  * Provides standard extensions to base paths.
@@ -103,6 +104,8 @@ class c_standard_path extends c_base_path {
   protected $text_type;
   protected $request_uri;
   protected $breadcrumbs;
+  protected $arguments;
+  protected $output_format;
 
 
   /**
@@ -120,9 +123,11 @@ class c_standard_path extends c_base_path {
     $this->languages      = array();
     $this->language_alias = NULL;
 
-    $this->text_type   = NULL;
-    $this->request_uri = NULL;
-    $this->breadcrumbs = NULL;
+    $this->text_type     = NULL;
+    $this->request_uri   = NULL;
+    $this->breadcrumbs   = NULL;
+    $this->arguments     = array();
+    $this->output_format = c_base_mime::TYPE_TEXT_HTML;
   }
 
   /**
@@ -141,6 +146,8 @@ class c_standard_path extends c_base_path {
     unset($this->text_type);
     unset($this->request_uri);
     unset($this->breadcrumbs);
+    unset($this->arguments);
+    unset($this->output_format);
 
     parent::__destruct();
   }
@@ -211,29 +218,31 @@ class c_standard_path extends c_base_path {
    * Return the current path parts after the specified path.
    *
    * This is intended for handling the path parts as arguments.
+   * Processed path arguments are stored on the classes arguments variable.
    *
    * No sanitization is performed on these arguments.
    *
    * @param string $path_after
    *   The string to parse.
    *
-   * @return c_base_return_array
-   *   An array of url path parts.
-   *   An empty array with error bit set on error.
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   *   On error, arguments is assigned to an empty array.
    */
-  protected function pr_get_path_arguments($path_after) {
+  protected function pr_process_path_arguments($path_after) {
     $path = $this->http->get_request_uri_relative($this->settings['base_path'])->get_value_exact();
     $path = preg_replace('@^' . $path_after . '(/|$)@i', '', $path);
 
     if (mb_strlen($path) == 0) {
       unset($path);
-      return array();
+      $this->arguments = array();
+      return FALSE;
     }
 
-    $path_parts = explode('/', $path);
+    $this->arguments = explode('/', $path);
     unset($path);
 
-    return $path_parts;
+    return TRUE;
   }
 
   /**
