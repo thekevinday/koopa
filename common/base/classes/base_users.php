@@ -35,6 +35,10 @@ class c_base_users_user extends c_base_return_array {
   protected $date_locked;
   protected $date_deleted;
 
+  protected $image_original;
+  protected $image_cropped;
+  protected $image_icon;
+
   /**
    * Class constructor.
    */
@@ -62,6 +66,10 @@ class c_base_users_user extends c_base_return_array {
     $this->date_synced  = NULL;
     $this->date_locked  = NULL;
     $this->date_deleted = NULL;
+
+    $this->image_original = NULL;
+    $this->image_cropped  = NULL;
+    $this->image_icon     = NULL;
   }
 
   /**
@@ -89,6 +97,10 @@ class c_base_users_user extends c_base_return_array {
     unset($this->date_synced);
     unset($this->date_locked);
     unset($this->date_deleted);
+
+    unset($this->image_original);
+    unset($this->image_cropped);
+    unset($this->image_icon);
 
     parent::__destruct();
   }
@@ -344,6 +356,69 @@ class c_base_users_user extends c_base_return_array {
   }
 
   /**
+   * Set the original image.
+   *
+   * @param int|null $image_original
+   *   The numeric id representing the image in the database.
+   *   Set to NULL to remove the image.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_image_original($image_original) {
+    if (!is_int($image_original) && !is_null($image_original)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_original', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->image_original = $image_original;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Set the cropped image.
+   *
+   * @param int|null $image_cropped
+   *   The numeric id representing the image in the database.
+   *   Set to NULL to remove the image.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_image_cropped($image_cropped) {
+    if (!is_int($image_cropped) && !is_null($image_cropped)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_cropped', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->image_cropped = $image_cropped;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Set the icon image.
+   *
+   * @param int|null $image_icon
+   *   The numeric id representing the image in the database.
+   *   Set to NULL to remove the image.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_image_icon($image_icon) {
+    if (!is_int($image_icon) && !is_null($image_icon)) {
+      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_icon', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->image_icon = $image_icon;
+    return new c_base_return_true();
+  }
+
+  /**
    * Get the currently assigned user id.
    *
    * @return c_base_return_int
@@ -549,6 +624,54 @@ class c_base_users_user extends c_base_return_array {
     }
 
     return c_base_return_int::s_new($this->date_deleted);
+  }
+
+  /**
+   * Get the currently assigned original image.
+   *
+   * @return c_base_return_null|c_base_return_int
+   *   Image ID on success.
+   *   NULL without error bit is returned if not defined.
+   *   NULL with error bit set is returned on error.
+   */
+  public function get_image_original() {
+    if (is_null($this->image_original)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->image_original);
+  }
+
+  /**
+   * Get the currently assigned cropped image.
+   *
+   * @return c_base_return_null|c_base_return_int
+   *   Image ID on success.
+   *   NULL without error bit is returned if not defined.
+   *   NULL with error bit set is returned on error.
+   */
+  public function get_image_cropped() {
+    if (is_null($this->image_cropped)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->image_cropped);
+  }
+
+  /**
+   * Get the currently assigned icon image.
+   *
+   * @return c_base_return_null|c_base_return_int
+   *   Image ID on success.
+   *   NULL without error bit is returned if not defined.
+   *   NULL with error bit set is returned on error.
+   */
+  public function get_image_icon() {
+    if (is_null($this->image_icon)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->image_icon);
   }
 
   /**

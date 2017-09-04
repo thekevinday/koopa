@@ -69,7 +69,7 @@ class c_standard_users_user extends c_base_users_user {
       return c_base_return_error::s_false($error);
     }
 
-    $query_string = 'select id, id_external, id_sort, name_machine, name_human, address_email, is_public, is_system, is_requester, is_drafter, is_editor, is_reviewer, is_insurer, is_financer, is_publisher, is_auditor, is_manager, is_administer, is_private, is_locked, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, date_deleted, settings ';
+    $query_string = 'select id, id_external, id_sort, name_machine, name_human, address_email, is_public, is_system, is_requester, is_drafter, is_editor, is_reviewer, is_insurer, is_financer, is_publisher, is_auditor, is_manager, is_administer, is_private, is_locked, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, date_deleted, image_original, image_cropped, image_icon, settings ';
     $query_arguments = array();
 
     if (is_null($user_name_or_id)) {
@@ -272,8 +272,29 @@ class c_standard_users_user extends c_base_users_user {
       $this->date_locked = c_base_defaults_global::s_get_timestamp($columns[25], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
       $this->date_deleted = c_base_defaults_global::s_get_timestamp($columns[26], c_base_database::STANDARD_TIMESTAMP_FORMAT)->get_value_exact();
 
-      if (isset($columns[27])) {
-        $this->settings = json_decode($columns[27], TRUE);
+      if (is_null($columns[27])) {
+        $this->image_original = NULL;
+      }
+      else {
+        $this->image_original = (int) $columns[27];
+      }
+
+      if (is_null($columns[28])) {
+        $this->image_cropped = NULL;
+      }
+      else {
+        $this->image_cropped = (int) $columns[28];
+      }
+
+      if (is_null($columns[29])) {
+        $this->image_icon = NULL;
+      }
+      else {
+        $this->image_icon = (int) $columns[29];
+      }
+
+      if (isset($columns[30])) {
+        $this->settings = json_decode($columns[30], TRUE);
       }
       else {
         $this->settings = array();

@@ -25,6 +25,7 @@ class c_standard_path_user_settings extends c_standard_path_user {
 
   protected const NAME_MENU_CONTENT    = 'menu_content_user_view';
   protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_user_view';
+
   protected const CLASS_USER_SETTINGS_ACCOUNT  = 'user_settings-account';
   protected const CLASS_USER_SETTINGS_PERSONAL = 'user_settings-personal';
   protected const CLASS_USER_SETTINGS_ACCESS   = 'user_settings-access';

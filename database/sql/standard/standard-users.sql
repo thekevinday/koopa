@@ -48,9 +48,9 @@ create table s_tables.t_users (
   date_locked timestamp with time zone,
   date_deleted timestamp with time zone,
 
-  image_original bytea,
-  image_cropped bytea,
-  image_icon bytea,
+  image_original bigint,
+  image_cropped bigint,
+  image_icon bigint,
 
   settings json,
 

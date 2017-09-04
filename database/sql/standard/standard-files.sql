@@ -49,6 +49,10 @@ create table s_tables.t_files (
 create sequence s_tables.se_files_id owned by s_tables.t_files.id;
 alter table s_tables.t_files alter column id set default nextval('s_tables.se_files_id'::regclass);
 
+alter table s_tables.t_users add constraint cf_users_image_original foreign key (image_original) references s_tables.t_files (id) on delete cascade on update cascade;
+alter table s_tables.t_users add constraint cf_users_image_cropped foreign key (image_cropped) references s_tables.t_files (id) on delete cascade on update cascade;
+alter table s_tables.t_users add constraint cf_users_image_icon foreign key (image_icon) references s_tables.t_files (id) on delete cascade on update cascade;
+
 
 create index i_files_deleted_not on s_tables.t_files (id)
   where not is_deleted;
