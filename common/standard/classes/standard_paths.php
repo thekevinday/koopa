@@ -14,70 +14,153 @@ require_once('common/standard/classes/standard_path.php');
  */
 class c_standard_paths extends c_base_return {
   const URI_HOME                 = '';
-  const URI_DASHBOARD_MANAGEMENT = 'm/dashboard';
-  const URI_DASHBOARD_ADMINISTER = 'a/dashboard';
-  const URI_USER_CHECK           = 'u/check';
-  const URI_USER_CREATE          = 'u/create';
-  const URI_USER_DASHBOARD       = 'u/dashboard';
-  const URI_USER_DELETE          = 'u/delete';
-  const URI_USER_EDIT            = 'u/edit';
-  const URI_USER_LOCK            = 'u/lock';
-  const URI_USER_LOGIN           = 'u/login';
-  const URI_USER_LOGOUT          = 'u/logout';
-  const URI_USER_REFRESH         = 'u/refresh';
-  const URI_USER_SESSION         = 'u/session';
-  const URI_USER_SETTINGS        = 'u/settings';
-  const URI_USER_UNLOCK          = 'u/unlock';
-  const URI_USER_VIEW            = 'u/view';
 
-  protected const PATH_INTERNAL   = 'common/standard/internal/';
-  protected const PATH_USER       = 'common/standard/paths/u/';
-  protected const PATH_MANAGEMENT = 'common/standard/paths/m/';
+  const URI_ADMINISTER_DASHBOARD = 'a/dashboard';
+  const URI_ADMINISTER_CONTENT   = 'a/content';
+  const URI_ADMINISTER_LOGS      = 'a/logs';
+
+  #const URI_AJAX = 'x';
+
+  const URI_CACHE_STATIC = 'c/static';
+  const URI_CACHE_ERROR  = 'c/error';
+
+  const URI_FILE_BY_ID       = 'f/i';
+  const URI_FILE_BY_CHECKSUM = 'f/c';
+
+  const URI_FILE_CHECKSUM_BY_ID       = 'f/s';
+  const URI_FILE_CHECKSUM_BY_CHECKSUM = 'f/m';
+
+  const URI_MANAGEMENT_DASHBOARD = 'm/dashboard';
+  const URI_MANAGEMENT_CONTENT   = 'm/content';
+  const URI_MANAGEMENT_LOGS      = 'm/logs';
+
+  const URI_SUBMIT_FORM_ID = 's/form_id';
+
+  #const URI_THEME = 't';
+
+  const URI_USER_CHECK     = 'u/check';
+  const URI_USER_CONTACT   = 'u/contact';
+  const URI_USER_CONTENT   = 'u/content';
+  const URI_USER_CREATE    = 'u/create';
+  const URI_USER_DASHBOARD = 'u/dashboard';
+  const URI_USER_DELETE    = 'u/delete';
+  const URI_USER_EDIT      = 'u/edit';
+  const URI_USER_LOCK      = 'u/lock';
+  const URI_USER_LOGIN     = 'u/login';
+  const URI_USER_LOGOUT    = 'u/logout';
+  const URI_USER_LOGS      = 'u/logs';
+  const URI_USER_REFRESH   = 'u/refresh';
+  const URI_USER_RESET     = 'u/reset';
+  const URI_USER_SESSION   = 'u/session';
+  const URI_USER_SETTINGS  = 'u/settings';
+  const URI_USER_UNLOCK    = 'u/unlock';
+  const URI_USER_VIEW      = 'u/view';
+
   protected const PATH_ADMINISTER = 'common/standard/paths/a/';
+  protected const PATH_AJAX       = 'common/standard/paths/x/';
+  protected const PATH_CACHE      = 'common/standard/paths/c/';
+  protected const PATH_FILE       = 'common/standard/paths/f/';
+  protected const PATH_INTERNAL   = 'common/standard/internal/';
+  protected const PATH_MANAGEMENT = 'common/standard/paths/m/';
+  protected const PATH_SUBMIT     = 'common/standard/paths/s/';
+  protected const PATH_THEME      = 'common/standard/paths/t/';
+  protected const PATH_USER       = 'common/standard/paths/u/';
 
-  protected const NAME_ACCESS_DENIED        = 'access_denied';
-  protected const NAME_NOT_FOUND            = 'not_found';
-  protected const NAME_BAD_METHOD           = 'bad_method';
-  protected const NAME_SERVER_ERROR         = 'server_error';
-  protected const NAME_OPTIONS_METHOD       = 'options';
-  protected const NAME_DASHBOARD_MANAGEMENT = 'dashboard';
-  protected const NAME_DASHBOARD_ADMINISTER = 'dashboard';
-  protected const NAME_INDEX                = 'index';
-  protected const NAME_USER_CHECK           = 'user_check';
-  protected const NAME_USER_CREATE          = 'user_create';
-  protected const NAME_USER_DASHBOARD       = 'user_dashboard';
-  protected const NAME_USER_DELETE          = 'user_delete';
-  protected const NAME_USER_EDIT            = 'user_edit';
-  protected const NAME_USER_LOCK            = 'user_lock';
-  protected const NAME_USER_LOGIN           = 'user_login';
-  protected const NAME_USER_LOGOUT          = 'user_logout';
-  protected const NAME_USER_REFRESH         = 'user_refresh';
-  protected const NAME_USER_SESSION         = 'user_session';
-  protected const NAME_USER_SETTINGS        = 'user_settings';
-  protected const NAME_USER_UNLOCK          = 'user_unlock';
-  protected const NAME_USER_VIEW            = 'user_view';
+  protected const NAME_ACCESS_DENIED  = 'access_denied';
+  protected const NAME_BAD_METHOD     = 'bad_method';
+  protected const NAME_INDEX          = 'index';
+  protected const NAME_NOT_FOUND      = 'not_found';
+  protected const NAME_OPTIONS_METHOD = 'options';
+  protected const NAME_SERVER_ERROR   = 'server_error';
 
-  protected const HANDLER_NOT_FOUND            = 'c_standard_path_not_found';
-  protected const HANDLER_ACCESS_DENIED        = 'c_standard_path_access_denied';
-  protected const HANDLER_BAD_METHOD           = 'c_standard_path_bad_method';
-  protected const HANDLER_SERVER_ERROR         = 'c_standard_path_server_error';
-  protected const HANDLER_OPTIONS_METHOD       = 'c_standard_path_options_method';
-  protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_path_management_dashboard';
-  protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_path_administer_dashboard';
-  protected const HANDLER_INDEX                = 'c_standard_path_index';
-  protected const HANDLER_USER_CHECK           = 'c_standard_path_user_check';
-  protected const HANDLER_USER_CREATE          = 'c_standard_path_user_create';
-  protected const HANDLER_USER_DASHBOARD       = 'c_standard_path_user_dashboard';
-  protected const HANDLER_USER_DELETE          = 'c_standard_path_user_delete';
-  protected const HANDLER_USER_EDIT            = 'c_standard_path_user_edit';
-  protected const HANDLER_USER_LOCK            = 'c_standard_path_user_lock';
-  protected const HANDLER_USER_LOGIN           = 'c_standard_path_user_login';
-  protected const HANDLER_USER_LOGOUT          = 'c_standard_path_user_logout';
-  protected const HANDLER_USER_REFRESH         = 'c_standard_path_user_refresh';
-  protected const HANDLER_USER_SESSION         = 'c_standard_path_user_session';
-  protected const HANDLER_USER_SETTINGS        = 'c_standard_path_user_settings';
-  protected const HANDLER_USER_UNLOCK          = 'c_standard_path_user_unlock';
-  protected const HANDLER_USER_VIEW            = 'c_standard_path_user_view';
+  protected const NAME_ADMINISTER_DASHBOARD = 'administer_dashboard';
+  protected const NAME_ADMINISTER_CONTENT   = 'administer_content';
+  protected const NAME_ADMINISTER_LOGS      = 'administer_logs';
+
+  #protected const NAME_AJAX = 'ajax';
+
+  protected const NAME_CACHE_STATIC = 'cache_static';
+  protected const NAME_CACHE_ERROR  = 'cache_error';
+
+  protected const NAME_FILE_BY_ID       = 'file_by_id';
+  protected const NAME_FILE_BY_CHECKSUM = 'file_by_checksum';
+
+  protected const NAME_FILE_CHECKSUM_BY_ID       = 'file_checksum_by_id';
+  protected const NAME_FILE_CHECKSUM_BY_CHECKSUM = 'file_checksum_by_checksum';
+
+  protected const NAME_MANAGEMENT_DASHBOARD = 'management_dashboard';
+  protected const NAME_MANAGEMENT_CONTENT   = 'management_content';
+  protected const NAME_MANAGEMENT_LOGS      = 'management_logs';
+
+  protected const NAME_SUBMIT_FORM_ID = 'submit_form_id';
+
+  #protected const NAME_THEME = 'theme';
+
+  protected const NAME_USER_CHECK     = 'user_check';
+  protected const NAME_USER_CONTACT   = 'user_contact';
+  protected const NAME_USER_CONTENT   = 'user_content';
+  protected const NAME_USER_CREATE    = 'user_create';
+  protected const NAME_USER_DASHBOARD = 'user_dashboard';
+  protected const NAME_USER_DELETE    = 'user_delete';
+  protected const NAME_USER_EDIT      = 'user_edit';
+  protected const NAME_USER_LOCK      = 'user_lock';
+  protected const NAME_USER_LOGIN     = 'user_login';
+  protected const NAME_USER_LOGOUT    = 'user_logout';
+  protected const NAME_USER_LOGS      = 'user_logs';
+  protected const NAME_USER_REFRESH   = 'user_refresh';
+  protected const NAME_USER_RESET     = 'user_reset';
+  protected const NAME_USER_SESSION   = 'user_session';
+  protected const NAME_USER_SETTINGS  = 'user_settings';
+  protected const NAME_USER_UNLOCK    = 'user_unlock';
+  protected const NAME_USER_VIEW      = 'user_view';
+
+  protected const HANDLER_ACCESS_DENIED  = 'c_standard_path_access_denied';
+  protected const HANDLER_BAD_METHOD     = 'c_standard_path_bad_method';
+  protected const HANDLER_INDEX          = 'c_standard_path_index';
+  protected const HANDLER_NOT_FOUND      = 'c_standard_path_not_found';
+  protected const HANDLER_OPTIONS_METHOD = 'c_standard_path_options_method';
+  protected const HANDLER_SERVER_ERROR   = 'c_standard_path_server_error';
+
+  protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_administer_dashboard';
+  protected const HANDLER_ADMINISTER_CONTENT   = 'c_standard_administer_content';
+  protected const HANDLER_ADMINISTER_LOGS      = 'c_standard_administer_logs';
+
+  #protected const HANDLER_AJAX = 'c_standard_ajax';
+
+  protected const HANDLER_CACHE_STATIC = 'c_standard_cache_static';
+  protected const HANDLER_CACHE_ERROR  = 'c_standard_cache_error';
+
+  protected const HANDLER_FILE_BY_ID       = 'c_standard_file_by_id';
+  protected const HANDLER_FILE_BY_CHECKSUM = 'c_standard_file_by_checksum';
+
+  protected const HANDLER_FILE_CHECKSUM_BY_ID       = 'c_standard_file_checksum_by_id';
+  protected const HANDLER_FILE_CHECKSUM_BY_CHECKSUM = 'c_standard_file_checksum_by_checksum';
+
+  protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_management_dashboard';
+  protected const HANDLER_MANAGEMENT_CONTENT   = 'c_standard_management_content';
+  protected const HANDLER_MANAGEMENT_LOGS      = 'c_standard_management_logs';
+
+  protected const HANDLER_SUBMIT_FORM_ID = 'c_standard_submit_form_id';
+
+  #protected const HANDLER_THEME = 'c_standard_theme';
+
+  protected const HANDLER_USER_CHECK     = 'c_standard_path_user_check';
+  protected const HANDLER_USER_CONTACT   = 'c_standard_path_user_contact';
+  protected const HANDLER_USER_CONTENT   = 'c_standard_path_user_content';
+  protected const HANDLER_USER_CREATE    = 'c_standard_path_user_create';
+  protected const HANDLER_USER_DASHBOARD = 'c_standard_path_user_dashboard';
+  protected const HANDLER_USER_DELETE    = 'c_standard_path_user_delete';
+  protected const HANDLER_USER_EDIT      = 'c_standard_path_user_edit';
+  protected const HANDLER_USER_LOCK      = 'c_standard_path_user_lock';
+  protected const HANDLER_USER_LOGIN     = 'c_standard_path_user_login';
+  protected const HANDLER_USER_LOGOUT    = 'c_standard_path_user_logout';
+  protected const HANDLER_USER_LOGS      = 'c_standard_path_user_logs';
+  protected const HANDLER_USER_REFRESH   = 'c_standard_path_user_refresh';
+  protected const HANDLER_USER_RESET     = 'c_standard_path_user_reset';
+  protected const HANDLER_USER_SESSION   = 'c_standard_path_user_session';
+  protected const HANDLER_USER_SETTINGS  = 'c_standard_path_user_settings';
+  protected const HANDLER_USER_UNLOCK    = 'c_standard_path_user_unlock';
+  protected const HANDLER_USER_VIEW      = 'c_standard_path_user_view';
 
   protected const SCRIPT_EXTENSION = '.php';
   protected const WILDCARD_PATH    = '/%';
@@ -304,7 +387,7 @@ class c_standard_paths extends c_base_return {
 
 
     // load always available paths.
-    $this->pr_paths_create();
+    $this->pr_paths_create_always();
 
 
     // load the remaining paths based on the relative path to avoid generating and processing unnecessary paths.
@@ -585,7 +668,7 @@ class c_standard_paths extends c_base_return {
    *
    * Add/modify paths here as desired.
    */
-  protected function pr_paths_create() {
+  protected function pr_paths_create_always() {
     $this->paths = new c_base_paths();
 
     // set root path.
@@ -603,7 +686,20 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_administer() {
     // dashboards
-    $this->paths->add_path(static::URI_DASHBOARD_ADMINISTER, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_ADMINISTER, static::NAME_DASHBOARD_ADMINISTER);
+    $this->paths->add_path(static::URI_ADMINISTER_DASHBOARD, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_USER, static::NAME_ADMINISTER_DASHBOARD);
+    $this->paths->add_path(static::URI_ADMINISTER_DASHBOARD . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_ADMINISTER, static::NAME_ADMINISTER_DASHBOARD);
+    $this->paths->add_path(static::URI_ADMINISTER_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_ADMINISTER, static::NAME_ADMINISTER_DASHBOARD);
+    $this->paths->add_path(static::URI_ADMINISTER_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_DASHBOARD, static::PATH_ADMINISTER, static::NAME_ADMINISTER_DASHBOARD);
+
+    $this->paths->add_path(static::URI_ADMINISTER_CONTENT, static::HANDLER_ADMINISTER_CONTENT, static::PATH_USER, static::NAME_ADMINISTER_CONTENT);
+    $this->paths->add_path(static::URI_ADMINISTER_CONTENT . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_CONTENT, static::PATH_ADMINISTER, static::NAME_ADMINISTER_CONTENT);
+    $this->paths->add_path(static::URI_ADMINISTER_CONTENT . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_CONTENT, static::PATH_ADMINISTER, static::NAME_ADMINISTER_CONTENT);
+    $this->paths->add_path(static::URI_ADMINISTER_CONTENT . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_CONTENT, static::PATH_ADMINISTER, static::NAME_ADMINISTER_CONTENT);
+
+    $this->paths->add_path(static::URI_ADMINISTER_LOGS, static::HANDLER_ADMINISTER_LOGS, static::PATH_USER, static::NAME_ADMINISTER_LOGS);
+    $this->paths->add_path(static::URI_ADMINISTER_LOGS . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_LOGS, static::PATH_ADMINISTER, static::NAME_ADMINISTER_LOGS);
+    $this->paths->add_path(static::URI_ADMINISTER_LOGS . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_LOGS, static::PATH_ADMINISTER, static::NAME_ADMINISTER_LOGS);
+    $this->paths->add_path(static::URI_ADMINISTER_LOGS . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_ADMINISTER_LOGS, static::PATH_ADMINISTER, static::NAME_ADMINISTER_LOGS);
   }
 
   /**
@@ -612,6 +708,13 @@ class c_standard_paths extends c_base_return {
    * Add/modify paths here as desired.
    */
   protected function pr_paths_create_cache() {
+    $this->paths->add_path(static::URI_CACHE_STATIC, static::HANDLER_CACHE_STATIC, static::PATH_USER, static::NAME_CACHE_STATIC);
+    $this->paths->add_path(static::URI_CACHE_STATIC . static::WILDCARD_PATH, static::HANDLER_CACHE_STATIC, static::PATH_USER, static::NAME_CACHE_STATIC);
+    $this->paths->add_path(static::URI_CACHE_STATIC . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_CACHE_STATIC, static::PATH_USER, static::NAME_CACHE_STATIC);
+
+    $this->paths->add_path(static::URI_CACHE_ERROR, static::HANDLER_CACHE_ERROR, static::PATH_USER, static::NAME_CACHE_ERROR);
+    $this->paths->add_path(static::URI_CACHE_ERROR . static::WILDCARD_PATH, static::HANDLER_CACHE_ERROR, static::PATH_USER, static::NAME_CACHE_ERROR);
+    $this->paths->add_path(static::URI_CACHE_ERROR . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_CACHE_ERROR, static::PATH_USER, static::NAME_CACHE_ERROR);
   }
 
   /**
@@ -628,6 +731,21 @@ class c_standard_paths extends c_base_return {
    * Add/modify paths here as desired.
    */
   protected function pr_paths_create_file() {
+    $this->paths->add_path(static::URI_FILE_BY_ID, static::HANDLER_FILE_BY_ID, static::PATH_USER, static::NAME_FILE_BY_ID);
+    $this->paths->add_path(static::URI_FILE_BY_ID . static::WILDCARD_PATH, static::HANDLER_FILE_BY_ID, static::PATH_USER, static::NAME_FILE_BY_ID);
+    $this->paths->add_path(static::URI_FILE_BY_ID . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_FILE_BY_ID, static::PATH_USER, static::NAME_FILE_BY_ID);
+
+    $this->paths->add_path(static::URI_FILE_BY_CHECKSUM, static::HANDLER_FILE_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_BY_CHECKSUM);
+    $this->paths->add_path(static::URI_FILE_BY_CHECKSUM . static::WILDCARD_PATH, static::HANDLER_FILE_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_BY_CHECKSUM);
+    $this->paths->add_path(static::URI_FILE_BY_CHECKSUM . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_FILE_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_BY_CHECKSUM);
+
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_ID, static::HANDLER_FILE_CHECKSUM_BY_ID, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_ID);
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_ID . static::WILDCARD_PATH, static::HANDLER_FILE_CHECKSUM_BY_ID, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_ID);
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_ID . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_FILE_CHECKSUM_BY_ID, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_ID);
+
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_CHECKSUM, static::HANDLER_FILE_CHECKSUM_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_CHECKSUM);
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_CHECKSUM . static::WILDCARD_PATH, static::HANDLER_FILE_CHECKSUM_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_CHECKSUM);
+    $this->paths->add_path(static::URI_FILE_CHECKSUM_BY_CHECKSUM . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_FILE_CHECKSUM_BY_CHECKSUM, static::PATH_USER, static::NAME_FILE_CHECKSUM_BY_CHECKSUM);
   }
 
   /**
@@ -636,6 +754,9 @@ class c_standard_paths extends c_base_return {
    * Add/modify paths here as desired.
    */
   protected function pr_paths_create_submit() {
+    $this->paths->add_path(static::URI_SUBMIT_FORM_ID, static::HANDLER_SUBMIT_FORM_ID, static::PATH_USER, static::NAME_SUBMIT_FORM_ID);
+    $this->paths->add_path(static::URI_SUBMIT_FORM_ID . static::WILDCARD_PATH, static::HANDLER_SUBMIT_FORM_ID, static::PATH_USER, static::NAME_SUBMIT_FORM_ID);
+    $this->paths->add_path(static::URI_SUBMIT_FORM_ID . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_SUBMIT_FORM_ID, static::PATH_USER, static::NAME_SUBMIT_FORM_ID);
   }
 
   /**
@@ -645,7 +766,20 @@ class c_standard_paths extends c_base_return {
    */
   protected function pr_paths_create_management() {
     // dashboards
-    $this->paths->add_path(static::URI_DASHBOARD_MANAGEMENT, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_MANAGEMENT, static::NAME_DASHBOARD_MANAGEMENT);
+    $this->paths->add_path(static::URI_MANAGEMENT_DASHBOARD, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_USER, static::NAME_MANAGEMENT_DASHBOARD);
+    $this->paths->add_path(static::URI_MANAGEMENT_DASHBOARD . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_USER, static::NAME_MANAGEMENT_DASHBOARD);
+    $this->paths->add_path(static::URI_MANAGEMENT_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_USER, static::NAME_MANAGEMENT_DASHBOARD);
+    $this->paths->add_path(static::URI_MANAGEMENT_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_DASHBOARD, static::PATH_USER, static::NAME_MANAGEMENT_DASHBOARD);
+
+    $this->paths->add_path(static::URI_MANAGEMENT_CONTENT, static::HANDLER_MANAGEMENT_CONTENT, static::PATH_USER, static::NAME_MANAGEMENT_CONTENT);
+    $this->paths->add_path(static::URI_MANAGEMENT_CONTENT . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_CONTENT, static::PATH_USER, static::NAME_MANAGEMENT_CONTENT);
+    $this->paths->add_path(static::URI_MANAGEMENT_CONTENT . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_CONTENT, static::PATH_USER, static::NAME_MANAGEMENT_CONTENT);
+    $this->paths->add_path(static::URI_MANAGEMENT_CONTENT . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_CONTENT, static::PATH_USER, static::NAME_MANAGEMENT_CONTENT);
+
+    $this->paths->add_path(static::URI_MANAGEMENT_LOGS, static::HANDLER_MANAGEMENT_LOGS, static::PATH_USER, static::NAME_MANAGEMENT_LOGS);
+    $this->paths->add_path(static::URI_MANAGEMENT_LOGS . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_LOGS, static::PATH_USER, static::NAME_MANAGEMENT_LOGS);
+    $this->paths->add_path(static::URI_MANAGEMENT_LOGS . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_LOGS, static::PATH_USER, static::NAME_MANAGEMENT_LOGS);
+    $this->paths->add_path(static::URI_MANAGEMENT_LOGS . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_MANAGEMENT_LOGS, static::PATH_USER, static::NAME_MANAGEMENT_LOGS);
   }
 
   /**
@@ -673,12 +807,22 @@ class c_standard_paths extends c_base_return {
     // dashboards
     $this->paths->add_path(static::URI_USER_DASHBOARD, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
     $this->paths->add_path(static::URI_USER_DASHBOARD . static::WILDCARD_PATH, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
+    $this->paths->add_path(static::URI_USER_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
+    $this->paths->add_path(static::URI_USER_DASHBOARD . static::WILDCARD_PATH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_DASHBOARD, static::PATH_USER, static::NAME_USER_DASHBOARD);
 
 
     // pages / forms
     $this->paths->add_path(static::URI_USER_CREATE, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
     $this->paths->add_path(static::URI_USER_CREATE . static::WILDCARD_PATH, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
     $this->paths->add_path(static::URI_USER_CREATE . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_CREATE, static::PATH_USER, static::NAME_USER_CREATE);
+
+    $this->paths->add_path(static::URI_USER_CONTACT, static::HANDLER_USER_CONTACT, static::PATH_USER, static::NAME_USER_CONTACT);
+    $this->paths->add_path(static::URI_USER_CONTACT . static::WILDCARD_PATH, static::HANDLER_USER_CONTACT, static::PATH_USER, static::NAME_USER_CONTACT);
+    $this->paths->add_path(static::URI_USER_CONTACT . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_CONTACT, static::PATH_USER, static::NAME_USER_CONTACT);
+
+    $this->paths->add_path(static::URI_USER_CONTENT, static::HANDLER_USER_CONTENT, static::PATH_USER, static::NAME_USER_CONTENT);
+    $this->paths->add_path(static::URI_USER_CONTENT . static::WILDCARD_PATH, static::HANDLER_USER_CONTENT, static::PATH_USER, static::NAME_USER_CONTENT);
+    $this->paths->add_path(static::URI_USER_CONTENT . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_CONTENT, static::PATH_USER, static::NAME_USER_CONTENT);
 
     $this->paths->add_path(static::URI_USER_DELETE, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
     $this->paths->add_path(static::URI_USER_DELETE . static::WILDCARD_PATH, static::HANDLER_USER_DELETE, static::PATH_USER, static::NAME_USER_DELETE);
@@ -691,6 +835,10 @@ class c_standard_paths extends c_base_return {
     $this->paths->add_path(static::URI_USER_SETTINGS, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
     $this->paths->add_path(static::URI_USER_SETTINGS . static::WILDCARD_PATH, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
     $this->paths->add_path(static::URI_USER_SETTINGS . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_SETTINGS, static::PATH_USER, static::NAME_USER_SETTINGS);
+
+    $this->paths->add_path(static::URI_USER_LOGS, static::HANDLER_USER_LOGS, static::PATH_USER, static::NAME_USER_LOGS);
+    $this->paths->add_path(static::URI_USER_LOGS . static::WILDCARD_PATH, static::HANDLER_USER_LOGS, static::PATH_USER, static::NAME_USER_LOGS);
+    $this->paths->add_path(static::URI_USER_LOGS . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_LOGS, static::PATH_USER, static::NAME_USER_LOGS);
 
     $this->paths->add_path(static::URI_USER_VIEW, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
     $this->paths->add_path(static::URI_USER_VIEW . static::WILDCARD_PATH, static::HANDLER_USER_VIEW, static::PATH_USER, static::NAME_USER_VIEW);
@@ -709,6 +857,10 @@ class c_standard_paths extends c_base_return {
     $this->paths->add_path(static::URI_USER_REFRESH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
     $this->paths->add_path(static::URI_USER_REFRESH . static::WILDCARD_PATH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
     $this->paths->add_path(static::URI_USER_REFRESH . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_REFRESH, static::PATH_USER, static::NAME_USER_REFRESH);
+
+    $this->paths->add_path(static::URI_USER_RESET, static::HANDLER_USER_RESET, static::PATH_USER, static::NAME_USER_RESET);
+    $this->paths->add_path(static::URI_USER_RESET . static::WILDCARD_PATH, static::HANDLER_USER_RESET, static::PATH_USER, static::NAME_USER_RESET);
+    $this->paths->add_path(static::URI_USER_RESET . static::WILDCARD_PATH . static::WILDCARD_PATH, static::HANDLER_USER_RESET, static::PATH_USER, static::NAME_USER_RESET);
 
     $this->paths->add_path(static::URI_USER_SESSION, static::HANDLER_USER_SESSION, static::PATH_USER, static::NAME_USER_SESSION);
     $this->paths->add_path(static::URI_USER_SESSION . static::WILDCARD_PATH, static::HANDLER_USER_SESSION, static::PATH_USER, static::NAME_USER_SESSION);

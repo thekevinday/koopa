@@ -53,13 +53,6 @@ class c_standard_path_management_dashboard extends c_standard_path {
   }
 
   /**
-   * Implements pr_get_title().
-   */
-  protected function pr_get_title($arguments = array()) {
-    return $this->pr_get_text(0, $arguments);
-  }
-
-  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = array()) {

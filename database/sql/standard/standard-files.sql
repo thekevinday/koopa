@@ -20,6 +20,7 @@ create table s_tables.t_files (
 
   name_machine varchar(128) not null,
   name_human varchar(256) not null,
+  name_extension varchar(64) not null,
 
   is_private boolean default true not null,
   is_locked boolean default false not null,
@@ -27,6 +28,9 @@ create table s_tables.t_files (
   is_system boolean default false not null,
   is_user boolean default false not null,
 
+  field_size bigint not null,
+  field_width bigint,
+  field_height bigint,
   field_data bytea not null,
 
   date_created timestamp with time zone default current_timestamp not null,
@@ -40,6 +44,10 @@ create table s_tables.t_files (
 
   constraint cc_files_id check (id > 0),
   constraint cc_files_name_machine check (name_machine ~ '[A-Za-z]\w*'),
+  constraint cc_files_name_extension check (name_extension ~ '[A-Za-z]\w*'),
+  constraint cc_field_size check (field_size >= 0),
+  constraint cc_field_width check (field_width >= 0),
+  constraint cc_field_height check (field_height >= 0),
 
   constraint cf_files_id_creator foreign key (id_creator) references s_tables.t_users (id) on delete cascade on update cascade,
   constraint cf_files_id_creator_session foreign key (id_creator_session) references s_tables.t_users (id) on delete cascade on update cascade,
@@ -69,11 +77,11 @@ create index i_files_public on s_tables.t_files (id)
 
 create view s_users.v_files with (security_barrier=true) as
   with allowed_groups as (select id from s_users.v_groups_self)
-  select id, id_type, id_group, name_machine, name_human, is_private, date_created, date_changed from s_tables.t_files
+  select id, id_type, id_group, name_machine, name_human, name_extension, is_private, field_size, field_width, field_height, field_data, date_created, date_changed from s_tables.t_files
   where not is_deleted and (not is_locked or id_group in (select * from allowed_groups)) and (not is_private or (is_private and id_group in (select * from allowed_groups)));
 
 create view public.v_files with (security_barrier=true) as
-  select id, id_type, NULL::bigint as id_group, name_machine, name_human, NULL::bool as is_private, NULL::bool as date_created, NULL::bool as date_changed from s_tables.t_files
+  select id, id_type, NULL::bigint as id_group, name_machine, name_human, name_extension, NULL::bool as is_private, field_size, field_width, field_height, field_data, NULL::bool as date_created, NULL::bool as date_changed from s_tables.t_files
   where not is_deleted and not is_locked and not is_private;
 
 

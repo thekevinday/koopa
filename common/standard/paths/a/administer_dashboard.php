@@ -12,8 +12,16 @@ require_once('common/standard/classes/standard_path.php');
 
 require_once('common/theme/classes/theme_html.php');
 
+/**
+ * Provides a path handler for logs administration.
+ *
+ * This listens on: /a/dashboard
+ */
 class c_standard_path_administer_dashboard extends c_standard_path {
   public const PATH_SELF = 'a/dashboard';
+
+  #protected const NAME_MENU_CONTENT    = 'menu_content_administer_dashboard';
+  #protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_administer_dashboard';
 
   /**
    * Implements do_execute().
@@ -50,13 +58,6 @@ class c_standard_path_administer_dashboard extends c_standard_path {
     $this->html->set_header($tag);
 
     unset($tag);
-  }
-
-  /**
-   * Implements pr_get_title().
-   */
-  protected function pr_get_title($arguments = array()) {
-    return $this->pr_get_text(0, $arguments);
   }
 
   /**

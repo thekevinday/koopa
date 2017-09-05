@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the management dashboard.
+ * Provides a language specific class.
  */
 
 /**
- * Implements c_standard_path_management_dashboard().
+ * Implements c_standard_path_administer_logs().
  */
-class c_standard_path_management_dashboard_ja extends c_standard_path_management_dashboard {
+class c_standard_path_administer_logs_ja extends c_standard_path_administer_logs {
 
   /**
    * Implements pr_get_text().
@@ -16,7 +16,7 @@ class c_standard_path_management_dashboard_ja extends c_standard_path_management
     $string = '';
     switch ($code) {
       case 0:
-        $string = '管理ダッシュボード';
+        $string = '管理ログ';
         break;
     }
 

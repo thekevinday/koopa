@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * Provides path handler for the administer dashboard.
+ * Provides a language specific class.
  */
 
 /**
- * Implements c_standard_path_administer_dashboard().
+ * Implements c_standard_path_management_content().
  */
-class c_standard_path_administer_dashboard_ja extends c_standard_path_administer_dashboard {
+class c_standard_path_management_content_ja extends c_standard_path_management_content {
 
   /**
    * Implements pr_get_text().
@@ -16,7 +16,7 @@ class c_standard_path_administer_dashboard_ja extends c_standard_path_administer
     $string = '';
     switch ($code) {
       case 0:
-        $string = 'ダッシュボードの管理';
+        $string = 'コンテンツ管理';
         break;
     }
 

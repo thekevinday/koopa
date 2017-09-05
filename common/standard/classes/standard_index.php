@@ -25,6 +25,11 @@ require_once('common/theme/classes/theme_html.php');
 class c_standard_index extends c_base_return {
   protected const HTTP_RESPONSE_PROTOCOL = 'HTTP/1.1';
 
+  protected const OUTPUT_TYPE_NONE = 0;
+  protected const OUTPUT_TYPE_HTML = 1;
+  protected const OUTPUT_TYPE_AJAX = 2;
+  protected const OUTPUT_TYPE_FILE = 3;
+
   protected $settings;
 
   protected $http;
@@ -35,8 +40,9 @@ class c_standard_index extends c_base_return {
   protected $lanaguages_all;     // all languages used in the document.
 
   protected $paths;
-  protected $processed; // unrenderred output.
-  protected $output;    // renderred output.
+  protected $processed;   // unrenderred output.
+  protected $output;      // renderred output.
+  protected $output_type; // index-specific mime types for output handling.
 
   private $original_output_buffering;
 
@@ -103,6 +109,10 @@ class c_standard_index extends c_base_return {
     // This provides a way to still use <p> tags despite the implementation, usage, and context flaws.
     $this->settings['standards_issue-use_p_tags'] = FALSE;
 
+    // cache/static file paths
+    $this->settings['cache_static'] = ''; // example: '/var/www-static';
+    $this->settings['cache_error']  = ''; // example: '/var/www-error';
+
     $this->http     = new c_base_http();
     $this->session  = new c_base_session();
     $this->database = new c_standard_database();
@@ -110,9 +120,10 @@ class c_standard_index extends c_base_return {
     $this->languages_selected = NULL;
     $this->languages_all      = NULL;
 
-    $this->paths     = NULL;
-    $this->processed = NULL;
-    $this->output    = NULL;
+    $this->paths       = NULL;
+    $this->processed   = NULL;
+    $this->output      = NULL;
+    $this->output_type = static::OUTPUT_TYPE_HTML;
 
     $this->original_output_buffering = NULL;
   }
@@ -136,6 +147,7 @@ class c_standard_index extends c_base_return {
     unset($this->paths);
     unset($this->processed);
     unset($this->output);
+    unset($this->output_type);
 
     unset($this->original_output_buffering);
 
@@ -529,7 +541,7 @@ class c_standard_index extends c_base_return {
       $this->session->set_user_current($user_current);
     }
     else {
-      // @todo: hanle errors.
+      // @todo: handle errors.
     }
     unset($user_current);
 
@@ -538,7 +550,7 @@ class c_standard_index extends c_base_return {
       $this->session->set_user_current($user_session);
     }
     else {
-      // @todo: hanle errors.
+      // @todo: handle errors.
     }
     unset($user_session);
 
@@ -615,12 +627,37 @@ class c_standard_index extends c_base_return {
    */
   protected function pr_do_render_theme() {
     // @fixme: this needs to support more output types than just html.
-    $theme = new c_theme_html();
-    $theme->set_html($this->processed);
-    $theme->set_http($this->http);
-    $theme->render_markup();
+    if ($this->processed instanceof c_base_html) {
+      $theme = new c_theme_html();
+      $theme->set_html($this->processed);
+      $theme->set_http($this->http);
+      $theme->render_markup();
 
-    $this->output = $theme->get_markup()->get_value_exact();
+      $this->output = $theme->get_markup()->get_value_exact();
+      $this->output_type = static::OUTPUT_TYPE_HTML;
+    }
+    elseif ($this->processed instanceof c_base_file) {
+      // @todo: write a class, such as c_theme_file, to handle formatting the file output.
+      $this->output = '';
+      $this->output_type = static::OUTPUT_TYPE_FILE;
+    }
+    elseif ($this->processed instanceof c_base_ajax) {
+      // all ajax needs to respond with is a jsonized string.
+      $this->output = $this->processed->get_items_jsonized()->get_value_exact();
+      if (!is_string($this->output)) {
+        // this happens on error. @todo: handle error.
+        $this->output = '';
+      }
+      $this->output_type = static::OUTPUT_TYPE_AJAX;
+    }
+    else {
+      // nothing to output.
+      $this->output = '';
+      return new c_base_return_false();
+    }
+
+    // clear the processed variable to save resources.
+    $this->processed = NULL;
 
     return new c_base_return_true();
   }
@@ -635,7 +672,6 @@ class c_standard_index extends c_base_return {
   protected function pr_do_build_response() {
     $this->http->set_response_checksum_header(c_base_http::CHECKSUM_ACTION_AUTO);
     $this->http->set_response_content($this->output);
-
 
 
     // send the session cookie if a session id is specified.
@@ -680,16 +716,41 @@ class c_standard_index extends c_base_return {
 
     ob_end_clean();
 
-    $this->http->set_response_date();
-    $this->http->set_response_content_type('text/html');
-    #$this->http->set_response_etag();
-    #$this->http->set_response_last_modified(strtotime('now'));
-    #$this->http->set_response_expires(strtotime('+30 minutes'));
-    $this->http->set_response_pragma('no-cache');
-    $this->http->set_response_vary('Host');
-    $this->http->set_response_vary('User-Agent');
-    $this->http->set_response_vary('Accept');
-    $this->http->set_response_vary('Accept-Language');
+
+    // build the http response headers.
+    if ($this->output_type === static::OUTPUT_TYPE_FILE) {
+      $this->http->set_response_date();
+      $this->http->set_response_vary('Host');
+      $this->http->set_response_vary('User-Agent');
+      $this->http->set_response_vary('Accept');
+      $this->http->set_response_vary('Accept-Language');
+
+      // @todo: assign file-specific headers
+    }
+    elseif ($this->output_type === static::OUTPUT_TYPE_AJAX) {
+      $this->http->set_response_date();
+      $this->http->set_response_pragma('no-cache');
+      $this->http->set_response_vary('Host');
+      $this->http->set_response_vary('User-Agent');
+      $this->http->set_response_vary('Accept');
+      $this->http->set_response_vary('Accept-Language');
+
+      // @todo: assign ajax-related headers
+    }
+    else {
+      // use html output type on request and on fail.
+      $this->http->set_response_date();
+      $this->http->set_response_content_type('text/html');
+      #$this->http->set_response_etag();
+      #$this->http->set_response_last_modified(strtotime('now'));
+      #$this->http->set_response_expires(strtotime('+30 minutes'));
+      $this->http->set_response_pragma('no-cache');
+      $this->http->set_response_vary('Host');
+      $this->http->set_response_vary('User-Agent');
+      $this->http->set_response_vary('Accept');
+      $this->http->set_response_vary('Accept-Language');
+    }
+
     #$this->http->set_response_warning('1234 This site is under active development.');
 
     // finalize the content prior to sending headers to ensure header accuracy.

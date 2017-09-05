@@ -2067,5 +2067,23 @@ class c_standard_path extends c_base_path {
     // if unable to find, fallback to original class
     return new $class();
   }
+
+  /**
+   * Provides a standard argument handler function.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   */
+  protected function pr_process_arguments(&$executed) {
+    $this->arguments = array();
+
+    return TRUE;
+  }
 }
 

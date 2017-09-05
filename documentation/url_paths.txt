@@ -29,7 +29,8 @@ Example /d/ paths:
 Example /f/ paths:
 - /f/i/% - Load file '%' by file id.
 - /f/c/% - Load file '%' by file checksum.
-- /f/s/% - Load checksum for file '%'.
+- /f/s/% - Load checksum for file '%', using file id.
+- /f/m/% - Load checksum for file '%', using file checksum.
 
 Example /m/ paths:
 - /m/dashboard - Dashboard
@@ -39,7 +40,7 @@ Example /m/ paths:
 Example /s/ paths:
 - /s/login - Login form
 - /s/logout - Logout form
-- /s/my_form_id/% - "My_form_id" form with parameter '%'.
+- /s/form_id/% - "form_id" form with parameter '%'.
 
 Example /t/ paths:
 - /t/main/css/all.css - All css file from main theme.
