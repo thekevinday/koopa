@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the administer logs.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -22,7 +23,7 @@ class c_standard_path_administer_logs extends c_standard_path {
   public const PATH_SELF = 'a/logs';
 
   #protected const NAME_MENU_CONTENT    = 'menu_content_administer_logs';
-  #protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_administer_logs';
+  #protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_administer_logs';
 
   /**
    * Implements do_execute().

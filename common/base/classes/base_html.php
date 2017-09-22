@@ -7,6 +7,8 @@
  *
  * @see: https://www.w3.org/TR/html5/
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_markup.php');

@@ -3,6 +3,8 @@
  * @file
  * Provides a class for a path-specific content menu.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_markup.php');
 
 require_once('common/standard/classes/standard_menu.php');
@@ -75,7 +77,13 @@ class c_standard_menu_content_user_view extends c_standard_menu_content {
     $menu->set_tag($item);
     unset($item);
 
-    $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    if ($session->get_user_current() instanceof c_base_users_user) {
+      $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    }
+    else {
+      $roles = new c_base_users_user();
+    }
+
     if (array_key_exists(c_base_roles::MANAGER, $roles) || array_key_exists(c_base_roles::ADMINISTER, $roles)) {
       // @todo: only show lock user if account is unlocked.
       $item = $this->pr_create_html_add_menu_item_link($this->pr_get_text(7), $settings['base_path'] . c_standard_paths::URI_USER_LOCK . $path_id_user);

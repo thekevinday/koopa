@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing PHP warnings.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_return.php');
 
 /**

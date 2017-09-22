@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the management logs.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -22,7 +23,7 @@ class c_standard_path_management_logs extends c_standard_path {
   public const PATH_SELF = 'm/logs';
 
   #protected const NAME_MENU_CONTENT    = 'menu_content_management_logs';
-  #protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_management_logs';
+  #protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_management_logs';
 
   /**
    * Implements do_execute().

@@ -6,6 +6,8 @@
  * A footer menu is a menu that is intended to be displayed in the footer of a page.
  * This is (generally) a global menu that is displayed on most pages.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_markup.php');
 
 require_once('common/standard/classes/standard_menu.php');

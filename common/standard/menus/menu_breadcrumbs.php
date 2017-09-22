@@ -6,6 +6,8 @@
  * This is a menu that shows a navigation history on how to get to the current page via links.
  * This does not have to be a link to every path in the current url.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_markup.php');
 
 require_once('common/standard/classes/standard_menu.php');

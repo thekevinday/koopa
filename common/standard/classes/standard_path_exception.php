@@ -3,6 +3,8 @@
  * @file
  * Provides the standard path handling for exceptional cases.
  */
+namespace n_koopa;
+
 require_once('common/standard/classes/standard_path.php');
 
 /**

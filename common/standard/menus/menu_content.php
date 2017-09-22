@@ -6,6 +6,8 @@
  * This is the navigation menu that is intended to be used for navigating the site.
  * This is (generally) specific to each page or url path.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_markup.php');
 
 require_once('common/standard/classes/standard_menu.php');

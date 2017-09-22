@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the user edit.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -23,7 +24,7 @@ class c_standard_path_user_edit extends c_standard_path_user {
   public const PATH_SELF = 'u/edit';
 
   protected const NAME_MENU_CONTENT    = 'menu_content_user_view';
-  protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_user_view';
+  protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_user_view';
 
   protected const CLASS_USER_EDIT_ACCOUNT  = 'user_settings-account';
   protected const CLASS_USER_EDIT_PERSONAL = 'user_settings-personal';

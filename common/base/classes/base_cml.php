@@ -10,3 +10,4 @@
  *
  * @see: https://www.w3.org/TR/html5/
  */
+namespace n_koopa;

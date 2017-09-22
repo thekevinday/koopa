@@ -3,6 +3,8 @@
  * @file
  * Provides the standard site index class.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_paths.php');
@@ -114,53 +116,53 @@ class c_standard_paths extends c_base_return {
   protected const NAME_USER_UNLOCK    = 'user_unlock';
   protected const NAME_USER_VIEW      = 'user_view';
 
-  protected const HANDLER_ACCESS_DENIED  = 'c_standard_path_access_denied';
-  protected const HANDLER_BAD_METHOD     = 'c_standard_path_bad_method';
-  protected const HANDLER_INDEX          = 'c_standard_path_index';
-  protected const HANDLER_NOT_FOUND      = 'c_standard_path_not_found';
-  protected const HANDLER_OPTIONS_METHOD = 'c_standard_path_options_method';
-  protected const HANDLER_SERVER_ERROR   = 'c_standard_path_server_error';
+  protected const HANDLER_ACCESS_DENIED  = '\n_koopa\c_standard_path_access_denied';
+  protected const HANDLER_BAD_METHOD     = '\n_koopa\c_standard_path_bad_method';
+  protected const HANDLER_INDEX          = '\n_koopa\c_standard_path_index';
+  protected const HANDLER_NOT_FOUND      = '\n_koopa\c_standard_path_not_found';
+  protected const HANDLER_OPTIONS_METHOD = '\n_koopa\c_standard_path_options_method';
+  protected const HANDLER_SERVER_ERROR   = '\n_koopa\c_standard_path_server_error';
 
-  protected const HANDLER_ADMINISTER_DASHBOARD = 'c_standard_administer_dashboard';
-  protected const HANDLER_ADMINISTER_CONTENT   = 'c_standard_administer_content';
-  protected const HANDLER_ADMINISTER_LOGS      = 'c_standard_administer_logs';
+  protected const HANDLER_ADMINISTER_DASHBOARD = '\n_koopa\c_standard_administer_dashboard';
+  protected const HANDLER_ADMINISTER_CONTENT   = '\n_koopa\c_standard_administer_content';
+  protected const HANDLER_ADMINISTER_LOGS      = '\n_koopa\c_standard_administer_logs';
 
-  #protected const HANDLER_AJAX = 'c_standard_ajax';
+  #protected const HANDLER_AJAX = '\n_koopa\c_standard_ajax';
 
-  protected const HANDLER_CACHE_STATIC = 'c_standard_cache_static';
-  protected const HANDLER_CACHE_ERROR  = 'c_standard_cache_error';
+  protected const HANDLER_CACHE_STATIC = '\n_koopa\c_standard_cache_static';
+  protected const HANDLER_CACHE_ERROR  = '\n_koopa\c_standard_cache_error';
 
-  protected const HANDLER_FILE_BY_ID       = 'c_standard_file_by_id';
-  protected const HANDLER_FILE_BY_CHECKSUM = 'c_standard_file_by_checksum';
+  protected const HANDLER_FILE_BY_ID       = '\n_koopa\c_standard_file_by_id';
+  protected const HANDLER_FILE_BY_CHECKSUM = '\n_koopa\c_standard_file_by_checksum';
 
-  protected const HANDLER_FILE_CHECKSUM_BY_ID       = 'c_standard_file_checksum_by_id';
-  protected const HANDLER_FILE_CHECKSUM_BY_CHECKSUM = 'c_standard_file_checksum_by_checksum';
+  protected const HANDLER_FILE_CHECKSUM_BY_ID       = '\n_koopa\c_standard_file_checksum_by_id';
+  protected const HANDLER_FILE_CHECKSUM_BY_CHECKSUM = '\n_koopa\c_standard_file_checksum_by_checksum';
 
-  protected const HANDLER_MANAGEMENT_DASHBOARD = 'c_standard_management_dashboard';
-  protected const HANDLER_MANAGEMENT_CONTENT   = 'c_standard_management_content';
-  protected const HANDLER_MANAGEMENT_LOGS      = 'c_standard_management_logs';
+  protected const HANDLER_MANAGEMENT_DASHBOARD = '\n_koopa\c_standard_management_dashboard';
+  protected const HANDLER_MANAGEMENT_CONTENT   = '\n_koopa\c_standard_management_content';
+  protected const HANDLER_MANAGEMENT_LOGS      = '\n_koopa\c_standard_management_logs';
 
-  protected const HANDLER_SUBMIT_FORM_ID = 'c_standard_submit_form_id';
+  protected const HANDLER_SUBMIT_FORM_ID = '\n_koopa\c_standard_submit_form_id';
 
-  #protected const HANDLER_THEME = 'c_standard_theme';
+  #protected const HANDLER_THEME = '\n_koopa\c_standard_theme';
 
-  protected const HANDLER_USER_CHECK     = 'c_standard_path_user_check';
-  protected const HANDLER_USER_CONTACT   = 'c_standard_path_user_contact';
-  protected const HANDLER_USER_CONTENT   = 'c_standard_path_user_content';
-  protected const HANDLER_USER_CREATE    = 'c_standard_path_user_create';
-  protected const HANDLER_USER_DASHBOARD = 'c_standard_path_user_dashboard';
-  protected const HANDLER_USER_DELETE    = 'c_standard_path_user_delete';
-  protected const HANDLER_USER_EDIT      = 'c_standard_path_user_edit';
-  protected const HANDLER_USER_LOCK      = 'c_standard_path_user_lock';
-  protected const HANDLER_USER_LOGIN     = 'c_standard_path_user_login';
-  protected const HANDLER_USER_LOGOUT    = 'c_standard_path_user_logout';
-  protected const HANDLER_USER_LOGS      = 'c_standard_path_user_logs';
-  protected const HANDLER_USER_REFRESH   = 'c_standard_path_user_refresh';
-  protected const HANDLER_USER_RESET     = 'c_standard_path_user_reset';
-  protected const HANDLER_USER_SESSION   = 'c_standard_path_user_session';
-  protected const HANDLER_USER_SETTINGS  = 'c_standard_path_user_settings';
-  protected const HANDLER_USER_UNLOCK    = 'c_standard_path_user_unlock';
-  protected const HANDLER_USER_VIEW      = 'c_standard_path_user_view';
+  protected const HANDLER_USER_CHECK     = '\n_koopa\c_standard_path_user_check';
+  protected const HANDLER_USER_CONTACT   = '\n_koopa\c_standard_path_user_contact';
+  protected const HANDLER_USER_CONTENT   = '\n_koopa\c_standard_path_user_content';
+  protected const HANDLER_USER_CREATE    = '\n_koopa\c_standard_path_user_create';
+  protected const HANDLER_USER_DASHBOARD = '\n_koopa\c_standard_path_user_dashboard';
+  protected const HANDLER_USER_DELETE    = '\n_koopa\c_standard_path_user_delete';
+  protected const HANDLER_USER_EDIT      = '\n_koopa\c_standard_path_user_edit';
+  protected const HANDLER_USER_LOCK      = '\n_koopa\c_standard_path_user_lock';
+  protected const HANDLER_USER_LOGIN     = '\n_koopa\c_standard_path_user_login';
+  protected const HANDLER_USER_LOGOUT    = '\n_koopa\c_standard_path_user_logout';
+  protected const HANDLER_USER_LOGS      = '\n_koopa\c_standard_path_user_logs';
+  protected const HANDLER_USER_REFRESH   = '\n_koopa\c_standard_path_user_refresh';
+  protected const HANDLER_USER_RESET     = '\n_koopa\c_standard_path_user_reset';
+  protected const HANDLER_USER_SESSION   = '\n_koopa\c_standard_path_user_session';
+  protected const HANDLER_USER_SETTINGS  = '\n_koopa\c_standard_path_user_settings';
+  protected const HANDLER_USER_UNLOCK    = '\n_koopa\c_standard_path_user_unlock';
+  protected const HANDLER_USER_VIEW      = '\n_koopa\c_standard_path_user_view';
 
   protected const SCRIPT_EXTENSION = '.php';
   protected const WILDCARD_PATH    = '/%';

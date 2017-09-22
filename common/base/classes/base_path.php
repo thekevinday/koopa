@@ -15,6 +15,8 @@
  * Then, for very specific cases, users should then be granted the ability to create path aliases.
  * However, aliases should not be able to override pre-define paths or the performance gains are lost by requiring loading of the aliases before each static path.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_utf8.php');

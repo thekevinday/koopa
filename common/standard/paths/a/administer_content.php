@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the administer content.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -22,7 +23,7 @@ class c_standard_path_administer_content extends c_standard_path {
   public const PATH_SELF = 'a/content';
 
   #protected const NAME_MENU_CONTENT    = 'menu_content_administer_content';
-  #protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_administer_content';
+  #protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_administer_content';
 
   /**
    * Implements do_execute().

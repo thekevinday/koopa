@@ -3,7 +3,7 @@
  * @file
  * Provides path handler for the login process.
  */
-
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_user_login().

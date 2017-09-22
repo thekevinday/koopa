@@ -78,6 +78,7 @@
  *     - May only contain the following tags: <tag>.
  *     - example:
  */
+namespace n_koopa;
 
 // include required files.
 require_once('common/base/classes/base_error.php');

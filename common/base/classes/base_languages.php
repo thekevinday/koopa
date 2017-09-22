@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing the different supported languages.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 

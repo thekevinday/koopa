@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing system roles.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_address.php');

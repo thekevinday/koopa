@@ -1,4 +1,6 @@
 <?php
+  namespace n_koopa;
+
   // make sure the class files can be loaded (be sure to customize this as necessary).
   set_include_path('/var/www/koopa');
 
@@ -30,9 +32,9 @@
 
     // test error message handling using english or japanese.
     $supported_languages = array(
-      i_base_languages::ENGLISH_US => 'c_base_error_messages_english',
-      i_base_languages::ENGLISH => 'c_base_error_messages_english',
-      i_base_languages::JAPANESE => 'c_base_error_messages_japanese',
+      i_base_languages::ENGLISH_US => '\n_koopa\c_base_error_messages_english',
+      i_base_languages::ENGLISH => '\n_koopa\c_base_error_messages_english',
+      i_base_languages::JAPANESE => '\n_koopa\c_base_error_messages_japanese',
     );
 
     $stuff['http']->set_response_content_language(i_base_languages::ENGLISH_US);

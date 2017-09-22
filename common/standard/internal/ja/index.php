@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the index page.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_index().

@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing common rfc character testing cases.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_ascii.php');
 require_once('common/base/classes/base_utf8.php');

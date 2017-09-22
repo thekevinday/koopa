@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the access denied pages.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_access_denied().

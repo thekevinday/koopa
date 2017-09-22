@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the user edit.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_user_edit().

@@ -7,6 +7,8 @@
  * This includes dashboard links, profile, links, etc..
  * This is not intended for site navigation.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_markup.php');
 
 require_once('common/standard/classes/standard_menu.php');
@@ -36,7 +38,12 @@ class c_standard_menu_utility extends c_standard_menu {
     }
     unset($result);
 
-    $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    if ($session->get_user_current() instanceof c_base_users_user) {
+      $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    }
+    else {
+      $roles = new c_base_users_user();
+    }
 
     $menu = $this->pr_create_html_create_menu($settings['base_css'] . static::CLASS_NAME, $this->pr_get_text(0));
 

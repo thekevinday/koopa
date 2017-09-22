@@ -3,6 +3,8 @@
  * @file
  * Provides a language specific class.
  */
+namespace n_koopa;
+
 require_once('common/standard/menus/menu_content.php');
 
 /**

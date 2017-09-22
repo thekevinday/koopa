@@ -1,4 +1,7 @@
 <?php
+namespace n_reservation;
+use n_koopa;
+
 // assign custom include path.
 set_include_path('/var/git/koopa');
 
@@ -11,7 +14,7 @@ require_once('common/standard/classes/standard_index.php');
 /**
  * The standard class for use in index.php or equivalent.
  */
-class c_reservation_index extends c_standard_index {
+class c_reservation_index extends \n_koopa\c_standard_index {
 
   /**
    * Class constructor.

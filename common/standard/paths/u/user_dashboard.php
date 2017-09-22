@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the user dashboard.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -74,7 +75,12 @@ class c_standard_path_user_dashboard extends c_standard_path_user {
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
-    $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    if ($session->get_user_current() instanceof c_base_users_user) {
+      $roles = $session->get_user_current()->get_roles()->get_value_exact();
+    }
+    else {
+      $roles = new c_base_users_user();
+    }
 
     $wrapper->set_tag($this->pr_create_tag_text_block($this->pr_get_text(2, array('@{user}' => $session->get_name()->get_value_exact()))));
 

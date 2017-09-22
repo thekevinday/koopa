@@ -3,6 +3,7 @@
  * @file
  * Provides a class for managing system access.
  */
+namespace n_koopa;
 
 // include required files.
 require_once('common/base/classes/base_error.php');

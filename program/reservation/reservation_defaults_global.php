@@ -14,6 +14,7 @@
  *
  * It is recommended to set PHP precision setting to at least 16 for microtime values.
  */
+namespace n_koopa;
 
 
 /**
@@ -34,7 +35,7 @@ class c_base_defaults_global {
   const ERROR_BACKTRACE_ARGUMENTS = FALSE;
 
   // provide a language to fallback to if none is set.
-  const LANGUAGE_CLASS_DEFAULT = 'c_base_languages_limited';
+  const LANGUAGE_CLASS_DEFAULT = '\n_koopa\c_base_languages_limited';
 
   // reserved path groups: array(97, 99, 100, 102, 109, 115, 116, 120, 121).
   const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
@@ -173,7 +174,7 @@ class c_base_defaults_global {
       $now = self::s_get_timestamp_session()->get_value_exact();
       $microseconds = (int) (($now - ((int) $now)) * 1000000);
 
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $now) . '.' . $microseconds . date(' P', (int) $now));
+      $date = new \DateTime(date('Y/m/d h:i:s', (int) $now) . '.' . $microseconds . date(' P', (int) $now));
       unset($now);
     }
     else {
@@ -184,18 +185,18 @@ class c_base_defaults_global {
         $microseconds = 0;
       }
 
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $timestamp) . '.' . $microseconds . date(' P', (int) $timestamp));
+      $date = new \DateTime(date('Y/m/d h:i:s', (int) $timestamp) . '.' . $microseconds . date(' P', (int) $timestamp));
     }
     unset($microseconds);
 
-    if (!($date instanceof DateTime)) {
+    if (!($date instanceof \DateTime)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_null(self::$s_timezone)) {
       date_default_timezone_set(self::$s_timezone);
-      $date->setTimeZone(new DateTimeZone(self::$s_timezone));
+      $date->setTimeZone(new \DateTimeZone(self::$s_timezone));
     }
 
     $formatted = $date->format($string);
@@ -235,9 +236,9 @@ class c_base_defaults_global {
     }
 
     // To ensure support for microseconds (and milliseconds), datetime must be initialized woth microseconds.
-    $date = DateTime::createFromFormat($format, $string);
+    $date = \DateTime::createFromFormat($format, $string);
 
-    if (!($date instanceof DateTime)) {
+    if (!($date instanceof \DateTime)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }

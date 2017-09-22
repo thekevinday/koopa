@@ -3,6 +3,7 @@
  * @file
  * Provides a class for managing common charsets.
  */
+namespace n_koopa;
 
 /**
  * A class for managing common rfc character sets.

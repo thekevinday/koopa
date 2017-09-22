@@ -3,6 +3,8 @@
  * @file
  * Provides a class for managing the menus.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_menu.php');
 
 /**

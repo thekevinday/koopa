@@ -6,6 +6,7 @@
  * This is generally intended to be used to trigger one or more session actions against a user account or related data.
  * This could be a simple reaction as is common with ajax but could also be a page containing forms.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');

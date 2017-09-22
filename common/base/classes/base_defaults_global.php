@@ -14,6 +14,7 @@
  *
  * It is recommended to set PHP precision setting to at least 16 for microtime values.
  */
+namespace n_koopa;
 
 
 /**
@@ -173,7 +174,7 @@ class c_base_defaults_global {
       $now = self::s_get_timestamp_session()->get_value_exact();
       $microseconds = (int) (($now - ((int) $now)) * 1000000);
 
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $now) . '.' . $microseconds . date(' P', (int) $now));
+      $date = new \DateTime(date('Y/m/d h:i:s', (int) $now) . '.' . $microseconds . date(' P', (int) $now));
       unset($now);
     }
     else {
@@ -184,18 +185,18 @@ class c_base_defaults_global {
         $microseconds = 0;
       }
 
-      $date = new DateTime(date('Y/m/d h:i:s', (int) $timestamp) . '.' . $microseconds . date(' P', (int) $timestamp));
+      $date = new \DateTime(date('Y/m/d h:i:s', (int) $timestamp) . '.' . $microseconds . date(' P', (int) $timestamp));
     }
     unset($microseconds);
 
-    if (!($date instanceof DateTime)) {
+    if (!($date instanceof \DateTime)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_null(self::$s_timezone)) {
       date_default_timezone_set(self::$s_timezone);
-      $date->setTimeZone(new DateTimeZone(self::$s_timezone));
+      $date->setTimeZone(new \DateTimeZone(self::$s_timezone));
     }
 
     $formatted = $date->format($string);
@@ -235,9 +236,9 @@ class c_base_defaults_global {
     }
 
     // To ensure support for microseconds (and milliseconds), datetime must be initialized woth microseconds.
-    $date = DateTime::createFromFormat($format, $string);
+    $date = \DateTime::createFromFormat($format, $string);
 
-    if (!($date instanceof DateTime)) {
+    if (!($date instanceof \DateTime)) {
       $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }

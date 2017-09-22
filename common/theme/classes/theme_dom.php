@@ -5,6 +5,7 @@
  *
  * This is currently a draft/brainstorm and is subject to be completely rewritten/redesigned.
  */
+namespace n_koopa;
 
 // include required files.
 require_once('common/base/classes/base_error.php');

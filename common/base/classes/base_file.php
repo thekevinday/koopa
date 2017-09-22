@@ -5,6 +5,8 @@
  *
  * This is primarily intended to be used to store file data (of any format) prior to theme output.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_mime.php');

@@ -8,6 +8,8 @@
  *             I have also noticed that the presence of a period '.' at the end of the string changes translation.
  *             This may require a completely different approach to generating than what works with english.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_languages.php');

@@ -3,6 +3,7 @@
  * @file
  * Provides a language specific class.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_administer_content().

@@ -8,6 +8,8 @@
  * - Only the return values of the core c_base_return_* functions return direct/raw values.
  * - All other functions are expected to return some class or sub-class of c_base_return.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_rfc_string.php');

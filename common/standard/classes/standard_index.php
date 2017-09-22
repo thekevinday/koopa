@@ -3,6 +3,8 @@
  * @file
  * Provides the standard site index class.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_users.php');

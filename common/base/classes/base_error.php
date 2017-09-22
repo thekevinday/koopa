@@ -3,6 +3,7 @@
  * @file
  * Provides a class for managing return values.
  */
+namespace n_koopa;
 
 /**
  * A generic class for managing errors.

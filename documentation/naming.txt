@@ -8,6 +8,7 @@ The following is the naming scheme used to communicate what a particular name is
   - f_: This represent a function.
   - c_: This represents a class name.
   - t_: This represents a class trait.
+  - n_: This represents a namespace name.
 
 Within a class object, special rules apply:
   1) f_ is not prefixed on function names.

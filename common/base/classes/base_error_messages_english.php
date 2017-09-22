@@ -3,6 +3,8 @@
  * @file
  * Implements english language support for common error messages.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_languages.php');

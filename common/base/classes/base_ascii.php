@@ -4,6 +4,8 @@
  * Provides a class for managing ASCII.
  */
 
+namespace n_koopa;
+
 /**
  * A class for managing ASCII.
  */

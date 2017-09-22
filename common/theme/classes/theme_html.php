@@ -5,6 +5,7 @@
  *
  * @see: https://www.w3.org/TR/html5/
  */
+namespace n_koopa;
 
 // include required files.
 require_once('common/base/classes/base_error.php');

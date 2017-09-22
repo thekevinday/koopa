@@ -29,6 +29,8 @@
  *
  * @see: http://php.net/manual/en/features.persistent-connections.php
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_warning.php');
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');

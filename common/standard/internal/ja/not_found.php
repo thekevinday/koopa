@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the not found pages.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_not_found().

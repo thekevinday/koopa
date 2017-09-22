@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the user view.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
@@ -23,7 +24,7 @@ class c_standard_path_user_view extends c_standard_path_user {
   public const PATH_SELF = 'u/view';
 
   protected const NAME_MENU_CONTENT    = 'menu_content_user_view';
-  protected const HANDLER_MENU_CONTENT = 'c_standard_menu_content_user_view';
+  protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_user_view';
 
   protected const CLASS_USER_VIEW_IMAGE       = 'user_view-image';
   protected const CLASS_USER_VIEW_INFORMATION = 'user_view-information';

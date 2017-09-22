@@ -3,6 +3,8 @@
  * @file
  * Provides UTF-8 support.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 

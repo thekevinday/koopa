@@ -7,6 +7,7 @@
  * Such a use is not truly static, but it can be used for some amount of optimization.
  * This could also be used for dynamicly generated CSS and JS aggregation static files (as is done in Drupal).
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');

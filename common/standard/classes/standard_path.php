@@ -3,6 +3,8 @@
  * @file
  * Provides the standard path handling class.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_menu.php');
@@ -84,11 +86,11 @@ class c_standard_path extends c_base_path {
   protected const NAME_MENU_CONTENT     = 'menu_content';
   protected const NAME_MENU_FOOTER      = 'menu_footer';
 
-  protected const HANDLER_MENU_HEADER      = 'c_standard_menu_header';
-  protected const HANDLER_MENU_UTILITY     = 'c_standard_menu_utility';
-  protected const HANDLER_MENU_BREADCRUMBS = 'c_standard_menu_breadcrumbs';
-  protected const HANDLER_MENU_CONTENT     = 'c_standard_menu_content';
-  protected const HANDLER_MENU_FOOTER      = 'c_standard_menu_footer';
+  protected const HANDLER_MENU_HEADER      = '\n_koopa\c_standard_menu_header';
+  protected const HANDLER_MENU_UTILITY     = '\n_koopa\c_standard_menu_utility';
+  protected const HANDLER_MENU_BREADCRUMBS = '\n_koopa\c_standard_menu_breadcrumbs';
+  protected const HANDLER_MENU_CONTENT     = '\n_koopa\c_standard_menu_content';
+  protected const HANDLER_MENU_FOOTER      = '\n_koopa\c_standard_menu_footer';
 
   protected const SCRIPT_EXTENSION = '.php';
 

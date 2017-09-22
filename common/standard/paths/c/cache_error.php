@@ -6,6 +6,7 @@
  * This could be used to load, alter, and sign (such as via PGP/GPG) a static file before output.
  * Such a use is not truly static, but it can be used for some amount of optimization.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');

@@ -17,6 +17,8 @@
  * Functions defined in this class will return the normal TRUE/FALSE and not the class-based TRUE/FALSE as an exception to this rule.
  * - This is done because this class defines those objects.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 
 /**

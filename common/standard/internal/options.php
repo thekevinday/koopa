@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the server rror pages.
  */
+namespace n_koopa;
 
 require_once('common/base/classes/base_return.php');
 

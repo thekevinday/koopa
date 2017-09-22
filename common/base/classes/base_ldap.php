@@ -5,6 +5,8 @@
  *
  * This is initially designed just to select/read from the ldap and not meant to modify or manage ldap databases.
  */
+namespace n_koopa;
+
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 

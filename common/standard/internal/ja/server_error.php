@@ -3,6 +3,7 @@
  * @file
  * Provides path handler for the server error pages.
  */
+namespace n_koopa;
 
 /**
  * Implements c_standard_path_server_error().
