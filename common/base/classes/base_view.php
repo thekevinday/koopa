@@ -76,44 +76,44 @@ class c_base_view extends c_base_array {
    *   FALSE without error bit set is returned if nothing was done.
    *   FALSE with error bit set is returned on error.
    */
-  public function pull(&$database, $query = NULL, $arguments = array(), $conditions = NULL, $limit = NULL, $offset = NULL, $group_by = NULL, $order_by = NULL) {
+  public function pull(&$database, $query = NULL, $arguments = [], $conditions = NULL, $limit = NULL, $offset = NULL, $group_by = NULL, $order_by = NULL) {
     if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($query) && !is_string($query)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($arguments)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'arguments', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'arguments', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($conditions) && !is_string($conditions)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($limit) && !is_string($limit)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($offset) && !is_string($offset)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'offset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'offset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($group_by) && !is_string($group_by)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'group_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'group_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($order_by) && !is_string($order_by)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'order_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'order_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

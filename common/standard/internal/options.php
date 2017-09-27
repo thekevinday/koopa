@@ -19,7 +19,7 @@ final class c_standard_path_options_method extends c_standard_path {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     // the parent function performs validation on the parameters.
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
@@ -46,7 +46,7 @@ final class c_standard_path_options_method extends c_standard_path {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     return '';
   }
 }

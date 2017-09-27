@@ -35,7 +35,7 @@ class c_standard_path_user_view extends c_standard_path_user {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     // the parent function performs validation on the parameters.
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
@@ -49,7 +49,7 @@ class c_standard_path_user_view extends c_standard_path_user {
     // only support HTML output unless otherwise needed.
     // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
     if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
       unset($error);
 
@@ -86,7 +86,7 @@ class c_standard_path_user_view extends c_standard_path_user {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:
@@ -131,7 +131,7 @@ class c_standard_path_user_view extends c_standard_path_user {
   protected function pr_do_execute_view(&$executed) {
     $errors = NULL;
 
-    $arguments = array();
+    $arguments = [];
     $arguments[':{user_name}'] = $this->path_user->get_name_human()->get_first()->get_value_exact() . ' ' . $this->path_user->get_name_human()->get_last()->get_value_exact();
     if (mb_strlen($arguments[':{user_name}']) == 0) {
       unset($arguments[':{user_name}']);
@@ -155,7 +155,7 @@ class c_standard_path_user_view extends c_standard_path_user {
       unset($is_private);
       unset($full_view_access);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
       unset($error);
 
@@ -167,12 +167,12 @@ class c_standard_path_user_view extends c_standard_path_user {
     $this->pr_create_html(TRUE, $arguments);
 
     if (is_int($this->path_user_id)) {
-      $text_id_user = $this->pr_create_tag_text('[id: ' . $this->path_user_id . ']', array(), NULL, static::CLASS_ID_USER);
-      $wrapper = $this->pr_create_tag_section(array(1 => array('text' => 0, 'append-inside' => $text_id_user)), $arguments);
+      $text_id_user = $this->pr_create_tag_text('[id: ' . $this->path_user_id . ']', [], NULL, static::CLASS_ID_USER);
+      $wrapper = $this->pr_create_tag_section([1 => ['text' => 0, 'append-inside' => $text_id_user]], $arguments);
       unset($text_id_user);
     }
     else {
-      $wrapper = $this->pr_create_tag_section(array(1 => 0), $arguments);
+      $wrapper = $this->pr_create_tag_section([1 => 0], $arguments);
     }
 
     $this->html->set_tag($wrapper);
@@ -181,9 +181,9 @@ class c_standard_path_user_view extends c_standard_path_user {
 
 
     // profile picture
-    $fieldset = $this->pr_create_tag_fieldset(1, array(), static::CLASS_USER_VIEW_IMAGE, static::CLASS_USER_VIEW_IMAGE);
+    $fieldset = $this->pr_create_tag_fieldset(1, [], static::CLASS_USER_VIEW_IMAGE, static::CLASS_USER_VIEW_IMAGE);
 
-    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, [static::CSS_AS_FIELD_SET_CONTENT]);
 
     $image = $this->path_user->get_image_cropped()->get_value();
     if (is_int($image)) {
@@ -211,8 +211,8 @@ class c_standard_path_user_view extends c_standard_path_user {
 
 
     // account information
-    $fieldset = $this->pr_create_tag_fieldset(2, array(), static::CLASS_USER_VIEW_INFORMATION, static::CLASS_USER_VIEW_INFORMATION);
-    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, array(static::CSS_AS_FIELD_SET_CONTENT));
+    $fieldset = $this->pr_create_tag_fieldset(2, [], static::CLASS_USER_VIEW_INFORMATION, static::CLASS_USER_VIEW_INFORMATION);
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, [static::CSS_AS_FIELD_SET_CONTENT]);
 
     // @todo: implement basic user profile information.
     $tag = c_theme_html::s_create_tag_text(c_base_markup_tag::TYPE_SPAN, $this->path_user->get_name_human()->get_first()->get_value() . ' ' . $this->path_user->get_name_human()->get_last()->get_value());

@@ -85,11 +85,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: c_base_utf8::s_ordinals_to_string_array()
    */
   protected function pr_rfc_string_prepare($text) {
-    $result = array(
-      'ordinals' => array(),
-      'characters' => array(),
+    $result = [
+      'ordinals' => [],
+      'characters' => [],
       'invalid' => FALSE,
-    );
+    ];
 
     $ordinals = c_base_utf8::s_string_to_ordinals($text);
     if ($ordinals instanceof c_base_return_false) {
@@ -132,11 +132,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: c_base_utf8::s_ordinals_to_string_array()
    */
   protected function pr_rfc_string_prepare_ordinals($text) {
-    $result = array(
-      'ordinals' => array(),
-      'characters' => array(),
+    $result = [
+      'ordinals' => [],
+      'characters' => [],
       'invalid' => FALSE,
-    );
+    ];
 
     $ordinals = c_base_utf8::s_string_to_ordinals($text);
     if ($ordinals instanceof c_base_return_false) {
@@ -181,15 +181,15 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_qtext()
    */
   protected function pr_rfc_string_is_quoted_string($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
-      'comments' => array(
+    $result = [
+      'comments' => [
         'before' => NULL,
         'after' => NULL,
-      ),
+      ],
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -352,11 +352,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    */
   protected function pr_rfc_string_is_entity_tag($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -418,11 +418,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    */
   protected function pr_rfc_string_is_comment($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'comment' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -512,11 +512,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_digit()
    */
   protected function pr_rfc_string_is_digit($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -573,11 +573,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7230#section-3.2.6
    */
   protected function pr_rfc_string_is_token($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -635,11 +635,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7230#section-3.2.6
    */
   protected function pr_rfc_string_is_token68($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -699,11 +699,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7234#section-5.2.3
    */
   protected function pr_rfc_string_is_token_quoted($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -796,12 +796,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7235#appendix-C
    */
   protected function pr_rfc_string_is_credentials($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'scheme' => NULL,
-      'parameters' => array(),
+      'parameters' => [],
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -988,11 +988,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7233#appendix-D
    */
   protected function pr_rfc_string_is_range($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     // @todo: this looks like a lot of work, so deal with this at some point in the future because this is a low to moderate priority function.
     $result['invalid'] = TRUE;
@@ -1055,11 +1055,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_wsp()
    */
   protected function pr_rfc_string_is_basic($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1115,11 +1115,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_text()
    */
   protected function pr_rfc_string_is_text($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1175,11 +1175,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_atext()
    */
   protected function pr_rfc_string_is_atext($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1235,11 +1235,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_dtext()
    */
   protected function pr_rfc_string_is_dtext($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1295,11 +1295,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_qtext()
    */
   protected function pr_rfc_string_is_qtext($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1382,11 +1382,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    *   - 'invalid': a boolean representing whether or not this string is valid or if an error occurred.
    */
   protected function pr_rfc_string_is_negotiation($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
-      'choices' => array(),
+    $result = [
+      'choices' => [],
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1396,10 +1396,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       return $result;
     }
 
-    $choice = array(
+    $choice = [
       'choice' => NULL,
       'weight' => NULL,
-    );
+    ];
     for (; $result['current'] < $stop; $result['current']++) {
       $code = $ordinals[$result['current']];
 
@@ -1552,7 +1552,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         // the weight has been identified, so store its value and prepare for another run.
         $choice['weight'] = $weight;
         if (!isset($result['choices'][$weight])) {
-          $result['choices'][$weight] = array();
+          $result['choices'][$weight] = [];
         }
 
         // strip out leading and trailing whitespace.
@@ -1561,10 +1561,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         $result['choices'][$weight][$choice['choice']] = $choice;
         unset($weight);
 
-        $choice = array(
+        $choice = [
           'choice' => NULL,
           'weight' => NULL,
-        );
+        ];
 
         if ($result['current'] >= $stop) {
           break;
@@ -1598,7 +1598,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
         // this is an unweighted choice.
         $choice['weight'] = NULL;
         if (!isset($result['choices'][NULL])) {
-          $result['choices'][NULL] = array();
+          $result['choices'][NULL] = [];
         }
 
         // strip out leading and trailing whitespace.
@@ -1606,10 +1606,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
         $result['choices'][NULL][$choice['choice']] = $choice;
 
-        $choice = array(
+        $choice = [
           'choice' => NULL,
           'weight' => NULL,
-        );
+        ];
 
         continue;
       }
@@ -1626,7 +1626,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     if ($choice['choice'] != NULL) {
       $choice['weight'] = NULL;
       if (!isset($result['choices'][NULL])) {
-        $result['choices'][NULL] = array();
+        $result['choices'][NULL] = [];
       }
 
       // strip out leading and trailing whitespace.
@@ -1678,12 +1678,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_media_type($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'media' => NULL,
-      'parameters' => array(),
+      'parameters' => [],
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -1957,11 +1957,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_valued_token($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'tokens' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2157,11 +2157,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_valued_token_comma($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'tokens' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2353,11 +2353,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc7230#appendix-B
    */
   protected function pr_rfc_string_is_commad_token($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'tokens' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2455,11 +2455,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc3986#section-3.4
    */
   protected function pr_rfc_string_is_path($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2545,11 +2545,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc3986#section-3.4
    */
   protected function pr_rfc_string_is_query($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2640,12 +2640,12 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc2616#section-3.7
    */
   protected function pr_rfc_string_is_ip_literal($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'address' => NULL,
       'is_future' => FALSE,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2665,10 +2665,10 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     }
 
     if ($result['is_future']) {
-      $result['address'] = array(
+      $result['address'] = [
         'version' => NULL,
         'ip' => NULL,
-      );
+      ];
 
       $result['current']++;
       if ($result['current'] >= $stop) {
@@ -2783,11 +2783,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_digit()
    */
   protected function pr_rfc_string_is_alpha_numeric_dash($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2845,11 +2845,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_digit()
    */
   protected function pr_rfc_string_is_numeric($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -2975,11 +2975,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_hexdigit()
    */
   protected function pr_rfc_string_is_hexanumeric($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -3104,11 +3104,11 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: base_rfc_char::pr_rfc_char_is_vchar()
    */
   protected function pr_rfc_string_is_directive_value($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'text' => NULL,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -3227,7 +3227,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @see: https://tools.ietf.org/html/rfc3986
    */
   protected function pr_rfc_string_is_uri($ordinals, $characters, $start = 0, $stop = NULL) {
-    $result = array(
+    $result = [
       'scheme' => NULL,
       'authority' => NULL,
       'path' => NULL,
@@ -3236,7 +3236,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
       'url' => TRUE,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
 
     if (is_null($stop)) {
       $stop = count($ordinals);
@@ -3778,9 +3778,9 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     $value = $array[$key];
     unset($array[$key]);
 
-    $new_array = array(
+    $new_array = [
       $key => $value,
-    );
+    ];
     unset($value);
 
     foreach ($array as $key => $value) {
@@ -3937,7 +3937,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
     $query_value = NULL;
     $no_value = FALSE;
 
-    $result['query'] = array();
+    $result['query'] = [];
     for (; $result['current'] < $stop; $result['current']++) {
       if (!array_key_exists($result['current'], $ordinals) || !array_key_exists($result['current'], $characters)) {
         unset($code);

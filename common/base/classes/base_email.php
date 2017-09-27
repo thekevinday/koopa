@@ -135,12 +135,12 @@ class c_base_email extends c_base_rfc_string {
    * @see: https://tools.ietf.org/html/rfc7231#section-5.5.1
    */
   private static function p_parse_email_full($email) {
-    $result = array(
-      'emails' => array(),
+    $result = [
+      'emails' => [],
       'invalid' => FALSE,
-    );
+    ];
 
-    $processed = array();
+    $processed = [];
     $group = NULL;
     $group_id = NULL;
     $process_machine_part = FALSE;
@@ -181,11 +181,11 @@ class c_base_email extends c_base_rfc_string {
         // if the proper stop point was reached, then the '<' is a valid opening.
         if ($parsed['stopped_at'] && !$parsed['invalid'] && !empty($parsed['name_machine'])) {
           $name_machine = $parsed['name_machine'] . '@' . $parsed['name_address'];
-          $result['emails'][$name_machine] = array(
+          $result['emails'][$name_machine] = [
             'name_human' => $name_human,
             'name_machine' => $name_machine,
             'name_address' => $parsed['name_address'],
-          );
+          ];
 
           $current_chunk_start = $current + 1;
           $is_named_machine = TRUE;
@@ -325,11 +325,11 @@ class c_base_email extends c_base_rfc_string {
         // if the proper stop point was reached, then a valid machine name was found.
         if ($parsed['stopped_at'] && !$parsed['invalid'] && !empty($parsed['name_machine'])) {
           $name_machine = $parsed['name_machine'] . '@' . $parsed['name_address'];
-          $result['emails'][$name_machine] = array(
+          $result['emails'][$name_machine] = [
             'name_human' => $name_human,
             'name_machine' => $name_machine,
             'name_address' => $parsed['name_address'],
-          );
+          ];
 
           $current_chunk_start = $current + 1;
 
@@ -403,13 +403,13 @@ class c_base_email extends c_base_rfc_string {
    *   - For example, if execution was stopped on an unexpected brace, the location would be the position of that specific brace.
    */
   private static function p_parse_email_machine($email_codes, $email_characters, $start = NULL, $stop = NULL, $stop_at = FALSE) {
-    $result = array(
+    $result = [
       'name_machine' => '',
       'name_address' => '',
       'invalid' => FALSE,
       'current' => 0,
       'stopped_at' => FALSE,
-    );
+    ];
 
     if (!is_null($start)) {
       $result['current'] = $start;

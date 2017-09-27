@@ -115,10 +115,10 @@ class c_theme_tag {
    */
   public function __construct() {
     $this->text = NULL;
-    $this->attributes = array();
+    $this->attributes = [];
     $this->attributes_length = 0;
 
-    $this->tags = array();
+    $this->tags = [];
     $this->tags_length = NULL;
 
     $this->type = static::TYPE_NONE;
@@ -192,17 +192,17 @@ class c_theme_tag {
       return new c_base_return_true();
     }
     elseif ($type === static::TYPE_NONE) {
-      $new_attributes = array();
+      $new_attributes = [];
     }
     elseif ($type === static::TYPE_TITLE) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
     elseif ($type === static::TYPE_HEADING) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
@@ -217,7 +217,7 @@ class c_theme_tag {
       }
     }
     elseif ($type === static::TYPE_FILES) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
@@ -228,14 +228,14 @@ class c_theme_tag {
       }
     }
     elseif ($type === static::TYPE_CONTEXT) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
     elseif ($type === static::TYPE_PRESENTATION) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
@@ -262,7 +262,7 @@ class c_theme_tag {
       }
     }
     elseif ($type === static::TYPE_CONTENT) {
-      $new_attributes = array();
+      $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
@@ -682,7 +682,7 @@ class c_theme_tag {
    */
   public function delete_attributes() {
     unset($this->attributes);
-    $this->attributes = array();
+    $this->attributes = [];
     $this->attributes_length = 0;
 
     return new c_base_return_true();
@@ -784,7 +784,7 @@ class c_theme_tag {
     unset($count);
 
     if ($deleted == $total) {
-      $this->tags = array();
+      $this->tags = [];
       $this->tags_length = 0;
     }
 
@@ -1329,7 +1329,7 @@ class c_theme_tag {
       $this->tags_length = 0;
     }
     else {
-      $tags = array();
+      $tags = [];
       $total = 0;
       foreach ($tags as $tag) {
         if (is_null($tag)) {

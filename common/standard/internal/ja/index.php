@@ -13,7 +13,7 @@ final class c_standard_path_index_ja extends c_standard_path_index {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:

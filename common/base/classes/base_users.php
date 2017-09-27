@@ -125,7 +125,7 @@ class c_base_users_user extends c_base_return_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -140,7 +140,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_id($id) {
     if (!is_int($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -160,7 +160,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_id_external($id_external) {
     if (!is_int($id_external)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_external', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id_external', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -180,7 +180,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_id_sort($id_sort) {
     if (!is_int($id_sort)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_sort', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id_sort', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -200,7 +200,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_name_machine($name_machine) {
     if (!is_string($name_machine)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name_machine', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name_machine', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -220,7 +220,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_name_human($name_human) {
     if (!($name_human instanceof c_base_users_user_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name_human', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name_human', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -240,7 +240,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_address_email($address_email) {
     if (!($address_email instanceof c_base_address_email)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'address_email', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'address_email', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -269,7 +269,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_date_created($date_created) {
     if (!is_int($date_created) && !is_float($date_created)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_created', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_created', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -289,7 +289,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_date_changed($date_changed) {
     if (!is_int($date_changed) && !is_float($date_changed)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_changed', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_changed', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -309,7 +309,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_date_synced($date_synced) {
     if (!is_int($date_synced) && !is_float($date_synced)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_synced', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_synced', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -329,7 +329,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_date_locked($date_locked) {
     if (!is_int($date_locked) && !is_float($date_locked)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -349,7 +349,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_date_deleted($date_deleted) {
     if (!is_int($date_deleted) && !is_float($date_deleted)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -370,7 +370,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_image_original($image_original) {
     if (!is_int($image_original) && !is_null($image_original)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_original', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'image_original', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -391,7 +391,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_image_cropped($image_cropped) {
     if (!is_int($image_cropped) && !is_null($image_cropped)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_cropped', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'image_cropped', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -412,7 +412,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function set_image_icon($image_icon) {
     if (!is_int($image_icon) && !is_null($image_icon)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'image_icon', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'image_icon', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -689,7 +689,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function is_private($is_private = NULL) {
     if (!is_null($is_private) && !is_bool($is_private)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -718,7 +718,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function is_locked($is_locked = NULL) {
     if (!is_null($is_locked) && !is_bool($is_locked)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -747,7 +747,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function is_deleted($is_deleted = NULL) {
     if (!is_null($is_deleted) && !is_bool($is_deleted)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -779,7 +779,7 @@ class c_base_users_user extends c_base_return_array {
    */
   public function is_roler($is_roler = NULL) {
     if (!is_null($is_roler) && !is_bool($is_roler)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_roler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_roler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -876,7 +876,7 @@ class c_base_users_user_name extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -888,7 +888,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_prefix($prefix) {
     if (!is_string($prefix)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'prefix', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'prefix', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -905,7 +905,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_first($first) {
     if (!is_string($first)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'first', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'first', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -922,7 +922,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_middle($middle) {
     if (!is_string($middle)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'middle', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'middle', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -939,7 +939,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_last($last) {
     if (!is_string($last)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'last', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'last', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -956,7 +956,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_suffix($suffix) {
     if (!is_string($suffix)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'suffix', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'suffix', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -973,7 +973,7 @@ class c_base_users_user_name extends c_base_return {
    */
   public function set_complete($complete) {
     if (!is_string($complete)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'complete', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'complete', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

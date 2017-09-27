@@ -16,21 +16,21 @@ class c_standard_database extends c_base_database {
   /**
    * Write a log to the database, associated with the current user.
    */
-  public function do_log_user($log_type, $response_code, $data = array()) {
+  public function do_log_user($log_type, $response_code, $data = []) {
     if (!is_int($log_type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'log_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'log_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($response_code)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $query_string = 'insert into v_log_users_self_insert (log_title, log_type, log_type_sub, log_severity, log_facility, request_client, response_code, log_details)';
     $query_string .= ' values ($1, $2, $3, $4, $5, ($6, $7, $8), $9, $10)';
 
-    $query_parameters = array();
+    $query_parameters = [];
     $query_parameters[5] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
     $query_parameters[6] = isset($_SERVER['REMOTE_PORT']) && is_numeric($_SERVER['REMOTE_PORT']) ? (int) $_SERVER['REMOTE_PORT'] : 0;
     $query_parameters[7] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
@@ -107,7 +107,7 @@ class c_standard_database extends c_base_database {
       unset($query_result);
 
       if (!empty($last_error)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
       }
       unset($last_error);

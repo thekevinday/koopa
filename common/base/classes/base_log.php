@@ -132,7 +132,7 @@ class c_base_log extends c_base_return_array {
    */
   public function set_type($type) {
     if (!is_int($type) || $type < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -152,7 +152,7 @@ class c_base_log extends c_base_return_array {
    */
   public function set_type_sub($type_sub) {
     if (!is_int($type_sub) || $type_sub < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type_sub', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type_sub', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -172,7 +172,7 @@ class c_base_log extends c_base_return_array {
    */
   public function set_severity($severity) {
     if (!is_int($severity) || $severity < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'severity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'severity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -194,7 +194,7 @@ class c_base_log extends c_base_return_array {
    */
   public function set_facility($facility) {
     if (!is_int($facility) || $facility < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'facility', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'facility', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

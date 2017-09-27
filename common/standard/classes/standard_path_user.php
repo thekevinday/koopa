@@ -52,7 +52,7 @@ class c_standard_path_user extends c_standard_path {
   /**
    * Implements pr_get_text_title().
    */
-  protected function pr_get_text_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = []) {
     return $this->pr_get_text(0, $arguments);
   }
 
@@ -103,7 +103,7 @@ class c_standard_path_user extends c_standard_path {
           $this->path_user_id = FALSE;
           unset($argument);
 
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+          $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
           $executed->set_error($error);
           unset($error);
 
@@ -151,7 +151,7 @@ class c_standard_path_user extends c_standard_path {
           unset($argument);
           unset($arguments_total);
 
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+          $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
           $executed->set_error($error);
           unset($error);
 
@@ -186,7 +186,7 @@ class c_standard_path_user extends c_standard_path {
     }
 
     if ($this->path_user_id === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
       unset($error);
 

@@ -123,7 +123,7 @@ class c_base_roles extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -143,12 +143,12 @@ class c_base_roles extends c_base_return {
    */
   public function set_role($role, $value) {
     if (!is_int($role)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -230,7 +230,7 @@ class c_base_roles extends c_base_return {
    */
   public function set_roles($roles) {
     if (!is_array($roles)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'roles', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'roles', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -310,7 +310,7 @@ class c_base_roles extends c_base_return {
    */
   public function get_role($role) {
     if (!is_int($role)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -396,7 +396,7 @@ class c_base_roles extends c_base_return {
    *   An array with error bit set is returned on error.
    */
   public function get_roles() {
-    $roles = array();
+    $roles = [];
 
     if ($this->public) {
       $roles[static::PUBLIC] = static::PUBLIC;

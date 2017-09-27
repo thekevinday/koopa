@@ -37,8 +37,8 @@ class c_base_defaults_global {
   // provide a language to fallback to if none is set.
   const LANGUAGE_CLASS_DEFAULT = '\n_koopa\c_base_languages_limited';
 
-  // reserved path groups: array(97, 99, 100, 102, 109, 115, 116, 120, 121).
-  const RESERVED_PATH_GROUP = array(c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X);
+  // reserved path groups: [97, 99, 100, 102, 109, 115, 116, 120, 121].
+  const RESERVED_PATH_GROUP = [c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X];
 
   // default log facility (17 = c_base_error::FACILITY_LOCAL_0).
   const LOG_FACILITY = 17;
@@ -103,7 +103,7 @@ class c_base_defaults_global {
    */
   public static function s_set_timezone($timezone) {
     if (!($timezone instanceof i_base_languages)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'timezone', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'timezone', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -125,7 +125,7 @@ class c_base_defaults_global {
    */
   public static function s_set_languages($languages) {
     if (!($languages instanceof i_base_languages)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'languages', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'languages', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -156,12 +156,12 @@ class c_base_defaults_global {
    */
   public static function s_get_date($string, $timestamp = NULL) {
     if (!is_string($string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
     if (!is_null($timestamp) && !is_float($timestamp) && !is_int($timestamp)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'timestamp', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'timestamp', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -190,7 +190,7 @@ class c_base_defaults_global {
     unset($microseconds);
 
     if (!($date instanceof \DateTime)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -201,7 +201,7 @@ class c_base_defaults_global {
 
     $formatted = $date->format($string);
     if (!is_string($formatted)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date->format', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'date->format', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value('', 'c_base_return_string', $error);
     }
 
@@ -227,7 +227,7 @@ class c_base_defaults_global {
    */
   public static function s_get_timestamp($string, $format = 'Y/m/d h:i:s.u P') {
     if (!is_string($string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
@@ -239,13 +239,13 @@ class c_base_defaults_global {
     $date = \DateTime::createFromFormat($format, $string);
 
     if (!($date instanceof \DateTime)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 
     $resulting_timestamp = $date->getTimestamp();
     if (!is_int($resulting_timestamp) && !is_float($resulting_timestamp)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'date->get_timestamp', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'date->get_timestamp', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_value(0.0, 'c_base_return_float', $error);
     }
 

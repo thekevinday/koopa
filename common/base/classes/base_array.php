@@ -33,7 +33,7 @@ class c_base_array extends c_base_rfc_string {
   public function __construct() {
     parent::__construct();
 
-    $this->items = array();
+    $this->items = [];
   }
 
   /**
@@ -78,7 +78,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function set_items($array) {
     if (!is_array($array)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -100,12 +100,12 @@ class c_base_array extends c_base_rfc_string {
    */
   public function set_item_at($item, $key) {
     if (!is_int($key) && !is_string($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->items)) {
-      $this->items = array();
+      $this->items = [];
     }
 
     $this->items[$key] = $item;
@@ -125,7 +125,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function set_item_append($item) {
     if (!is_array($this->items)) {
-      $this->items = array();
+      $this->items = [];
     }
 
     $this->items[] = $item;
@@ -147,7 +147,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function set_items_serialized($serialized) {
     if (!is_string($serialized)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'serialized', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'serialized', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -160,7 +160,7 @@ class c_base_array extends c_base_rfc_string {
     }
     unset($unserialized);
 
-    $this->items = array();
+    $this->items = [];
     return new c_base_return_false();
   }
 
@@ -184,22 +184,22 @@ class c_base_array extends c_base_rfc_string {
    */
   public function set_items_jsonized($jsonized, $associative = TRUE, $options = 0, $depth = 512) {
     if (!is_string($jsonized)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'jsonized', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'jsonized', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($associative)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'associative', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'associative', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($depth) || $depth < 1) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -212,7 +212,7 @@ class c_base_array extends c_base_rfc_string {
     }
     unset($decoded);
 
-    $this->items = array();
+    $this->items = [];
     return new c_base_return_false();
   }
 
@@ -225,7 +225,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function get_items() {
     if (!is_null($this->items) && !is_array($this->items)) {
-      return c_base_return_array::s_new(array());
+      return c_base_return_array::s_new([]);
     }
 
     return c_base_return_array::s_new($this->items);
@@ -340,7 +340,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function get_item_at($key) {
     if (!is_string($key) || empty($key)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'key', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -375,7 +375,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function get_items_keys() {
     if (empty($this->items)) {
-      return array();
+      return [];
     }
 
     return array_keys($this->items);
@@ -393,7 +393,7 @@ class c_base_array extends c_base_rfc_string {
    */
   public function get_items_serialized() {
     if (!is_array($this->items)) {
-      return c_base_return_string::s_new(serialize(array()));
+      return c_base_return_string::s_new(serialize([]));
     }
 
     return c_base_return_string::s_new(serialize($this->items));
@@ -416,12 +416,12 @@ class c_base_array extends c_base_rfc_string {
    */
   public function get_items_jsonized($options = 0, $depth = 512) {
     if (!is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($depth)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -437,7 +437,7 @@ class c_base_array extends c_base_rfc_string {
     if ($encoded === FALSE) {
       unset($encoded);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 

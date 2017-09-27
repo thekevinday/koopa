@@ -28,7 +28,7 @@ class c_standard_path_administer_logs extends c_standard_path {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     // the parent function performs validation on the parameters.
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
@@ -42,7 +42,7 @@ class c_standard_path_administer_logs extends c_standard_path {
     // only support HTML output unless otherwise needed.
     // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
     if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
       $executed->set_error($error);
       unset($error);
 
@@ -54,7 +54,7 @@ class c_standard_path_administer_logs extends c_standard_path {
     #$roles_current = $user->get_roles()->get_value_exact();
 
     // @todo: this function is currently disabled, so return a path not found.
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NOT_FOUND_PATH);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
     $executed->set_error($error);
     unset($error);
 
@@ -106,7 +106,7 @@ class c_standard_path_administer_logs extends c_standard_path {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:

@@ -97,22 +97,22 @@ class c_theme_html extends c_base_return {
    */
   public static function s_create_tag($type, $id = NULL, $classes = NULL, $text = NULL) {
     if (!is_null($id) && !is_string($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($classes) && !is_array($classes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'classes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'classes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($text) && !is_string($text)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -120,7 +120,7 @@ class c_theme_html extends c_base_return {
 
     $result = $tag->set_type($type);
     if ($result instanceof c_base_return_false) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -173,7 +173,7 @@ class c_theme_html extends c_base_return {
    */
   public function set_html($html) {
     if (!($html instanceof c_base_html)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -222,7 +222,7 @@ class c_theme_html extends c_base_return {
    */
   public function render_markup() {
     if (!($this->html instanceof c_base_html)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->html', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -246,7 +246,7 @@ class c_theme_html extends c_base_return {
    */
   public function set_http($http) {
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -282,7 +282,7 @@ class c_theme_html extends c_base_return {
    */
   public function set_max_recursion_depth($max_recursion_depth) {
     if (!is_int($max_recursion_depth)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'max_recursion_depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'max_recursion_depth', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1092,7 +1092,7 @@ class c_theme_html extends c_base_return {
 
 
     // attribute: aria-tags
-    $attributes = array(
+    $attributes = [
       // global tags
       c_base_markup_attributes::ATTRIBUTE_ARIA_ATOMIC => 'aria-atomic',
       c_base_markup_attributes::ATTRIBUTE_ARIA_BUSY => 'aria-busy',
@@ -1132,7 +1132,7 @@ class c_theme_html extends c_base_return {
       c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_MINIMIM => 'aria-valuemin',
       c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_NOW => 'aria-valuenow',
       c_base_markup_attributes::ATTRIBUTE_ARIA_VALUE_TEXT => 'aria-valuetext',
-    );
+    ];
 
     if (is_null($tag)) {
       foreach ($attributes as $attribute_id => $attribute_name) {
@@ -1174,7 +1174,7 @@ class c_theme_html extends c_base_return {
   private function p_render_markup_attributes_event_handler($tag = NULL) {
     $markup = '';
 
-    $attributes = array(
+    $attributes = [
       c_base_markup_attributes::ATTRIBUTE_ON_ABORT => 'onabort',
       c_base_markup_attributes::ATTRIBUTE_ON_BLUR => 'onblur',
       c_base_markup_attributes::ATTRIBUTE_ON_CANCEL => 'oncancel',
@@ -1225,7 +1225,7 @@ class c_theme_html extends c_base_return {
       c_base_markup_attributes::ATTRIBUTE_ON_TOGGLE => 'ontoggle',
       c_base_markup_attributes::ATTRIBUTE_ON_VOLUME_CHANGE => 'onvolumechange',
       c_base_markup_attributes::ATTRIBUTE_ON_WAITING => 'onwaiting',
-    );
+    ];
 
     if (is_null($tag)) {
       foreach ($attributes as $attribute_id => $attribute_name) {
@@ -1385,7 +1385,7 @@ class c_theme_html extends c_base_return {
     }
     unset($attribute);
 
-    $attributes = array(
+    $attributes = [
       c_base_markup_attributes::ATTRIBUTE_ON_ABORT => 'onabort',
       c_base_markup_attributes::ATTRIBUTE_ON_BLUR => 'onblur',
       c_base_markup_attributes::ATTRIBUTE_ON_CANCEL => 'oncancel',
@@ -1436,7 +1436,7 @@ class c_theme_html extends c_base_return {
       c_base_markup_attributes::ATTRIBUTE_ON_TOGGLE => 'ontoggle',
       c_base_markup_attributes::ATTRIBUTE_ON_VOLUME_CHANGE => 'onvolumechange',
       c_base_markup_attributes::ATTRIBUTE_ON_WAITING => 'onwaiting',
-    );
+    ];
 
     foreach ($attributes as $attribute_id => $attribute_name) {
       $attribute = $this->html->get_attribute_body($attribute_id)->get_value_exact();

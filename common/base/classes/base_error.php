@@ -76,7 +76,7 @@ class c_base_error {
     $this->limit     = self::DEFAULT_BACKTRACE_LIMIT;
     $this->recovered = FALSE;
 
-    $this->backtrace         = array();
+    $this->backtrace         = [];
     $this->backtrace_perform = FALSE;
     $this->ignore_arguments  = TRUE;
 
@@ -142,7 +142,7 @@ class c_base_error {
       $entry->set_details($details);
     }
     elseif (is_null($details)) {
-      $entry->set_details(array());
+      $entry->set_details([]);
     }
 
     if (is_int($code)) {
@@ -271,7 +271,7 @@ class c_base_error {
       $this->p_backtrace($count + 1);
     }
     elseif ($count === FALSE) {
-      $this->backtrace = array();
+      $this->backtrace = [];
     }
     else {
       return FALSE;
@@ -518,7 +518,7 @@ class c_base_error {
       return;
     }
 
-    $this->backtrace = array();
+    $this->backtrace = [];
 
     // when limit is set to FALSE, backtrace is disabled.
     if ($this->limit === FALSE) {

@@ -46,7 +46,7 @@ class c_standard_menu extends c_base_menu {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -69,10 +69,10 @@ class c_standard_menu extends c_base_menu {
    *   The created markup tag with error bit set on error.
    */
   protected function pr_create_html_create_menu($name_machine = NULL, $name_human = NULL, $depth = 1) {
-    $menu = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_NAVIGATION, $name_machine, array(static::CSS_MENU));
+    $menu = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_NAVIGATION, $name_machine, [static::CSS_MENU]);
 
     if (is_string($name_human)) {
-      $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, array(static::CSS_MENU_HEADER, static::CSS_MENU_HEADER . '-' . $depth));
+      $wrapper = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, [static::CSS_MENU_HEADER, static::CSS_MENU_HEADER . '-' . $depth]);
 
       if ($depth == 1) {
         $type = c_base_markup_tag::TYPE_H1;
@@ -96,7 +96,7 @@ class c_standard_menu extends c_base_menu {
         $type = c_base_markup_tag::TYPE_HX;
       }
 
-      $header = c_theme_html::s_create_tag($type, NULL, array(static::CSS_MENU_HEADER_TEXT, static::CSS_MENU_HEADER_TEXT . '-' . $depth));
+      $header = c_theme_html::s_create_tag($type, NULL, [static::CSS_MENU_HEADER_TEXT, static::CSS_MENU_HEADER_TEXT . '-' . $depth]);
       unset($type);
 
       if ($depth > 6) {
@@ -130,9 +130,9 @@ class c_standard_menu extends c_base_menu {
    *   Markup tag with error bit set on error.
    */
   protected function pr_create_html_add_menu_item_label($label, $tooltip = NULL) {
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, array(static::CSS_MENU_ITEM, static::CSS_ITEM_LABEL));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, [static::CSS_MENU_ITEM, static::CSS_ITEM_LABEL]);
 
-    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, NULL, array(static::CSS_MENU_ITEM_CONTENT));
+    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, NULL, [static::CSS_MENU_ITEM_CONTENT]);
     $tag_content->set_text($label);
 
     if (is_string($tooltip)) {
@@ -164,7 +164,7 @@ class c_standard_menu extends c_base_menu {
    *   Markup tag with error bit set on error.
    */
   protected function pr_create_html_add_menu_item_link($label, $uri, $tooltip = NULL, $local = TRUE) {
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, array(static::CSS_MENU_ITEM, static::CSS_ITEM_LINK));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, [static::CSS_MENU_ITEM, static::CSS_ITEM_LINK]);
 
     if ($local) {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CSS_ITEM_LOCAL);
@@ -173,7 +173,7 @@ class c_standard_menu extends c_base_menu {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, static::CSS_ITEM_REMOTE);
     }
 
-    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, array(static::CSS_MENU_ITEM_CONTENT));
+    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_A, NULL, [static::CSS_MENU_ITEM_CONTENT]);
 
     $tag_content->set_text($label);
     $tag_content->set_attribute(c_base_markup_attributes::ATTRIBUTE_HREF, $uri);
@@ -204,11 +204,11 @@ class c_standard_menu extends c_base_menu {
    *   Markup tag with error bit set on error.
    */
   protected function pr_create_html_add_menu_item_menu($label, $menu, $tooltip = NULL) {
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, array(static::CSS_MENU_ITEM, static::CSS_ITEM_MENU));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, NULL, [static::CSS_MENU_ITEM, static::CSS_ITEM_MENU]);
 
     $tag->set_text($label);
 
-    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, NULL, array(static::CSS_MENU_ITEM_CONTENT));
+    $tag_content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, NULL, [static::CSS_MENU_ITEM_CONTENT]);
     $tag_content->set_tag($menu);
 
     if (is_string($tooltip)) {
@@ -229,7 +229,7 @@ class c_standard_menu extends c_base_menu {
    * @param array $arguments
    *   (optional) An array of arguments to convert into text.
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     return '';
   }
 

@@ -104,7 +104,7 @@ class c_theme_form_tag extends c_base_markup_tag {
   public function __construct() {
     parent::__construct();
 
-    $this->attributes = array();
+    $this->attributes = [];
   }
 
   /**
@@ -303,7 +303,7 @@ class c_theme_form_tag extends c_base_markup_tag {
    */
   public function get_attributes() {
     if (!isset($this->attributes) && !is_array($this->attributes)) {
-      $this->attributes = array();
+      $this->attributes = [];
     }
 
     return new c_base_return_array($this->attributes);
@@ -326,7 +326,7 @@ class c_theme_form_tag extends c_base_markup_tag {
     }
 
     if (!isset($this->attributes) && !is_array($this->attributes)) {
-      $this->attributes = array();
+      $this->attributes = [];
     }
 
     if (array_key_exists($attribute, $this->attributes)) {

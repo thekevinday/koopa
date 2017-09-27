@@ -31,11 +31,11 @@
     $stuff['http']->set_response_content_language();
 
     // test error message handling using english or japanese.
-    $supported_languages = array(
+    $supported_languages = [
       i_base_languages::ENGLISH_US => '\n_koopa\c_base_error_messages_english',
       i_base_languages::ENGLISH => '\n_koopa\c_base_error_messages_english',
       i_base_languages::JAPANESE => '\n_koopa\c_base_error_messages_japanese',
-    );
+    ];
 
     $stuff['http']->set_response_content_language(i_base_languages::ENGLISH_US);
     $stuff['http']->set_response_content_language(i_base_languages::ENGLISH);
@@ -73,11 +73,11 @@
     unset($language_chosen);
   }
 
-  $stuff = array(
-    'resources' => array(
+  $stuff = [
+    'resources' => [
       'time' => microtime(TRUE),
-     ),
-  );
+     ],
+  ];
 
   function send_prepared_headers($stuff) {
     // add headers
@@ -173,13 +173,13 @@
     print("3) Language Test: <br>");
 
     // disclaimer: I used translate.google.com to generate the languages and provided only the default translation (expect translation errors).
-    $test_strings = array(
+    $test_strings = [
       i_base_languages::ENGLISH_US => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
       i_base_languages::ENGLISH => 'This is a test using your browser default language. Currently english (default), spanish, japanese, and russian are tested.',
       i_base_languages::JAPANESE => 'これは、ブラウザのデフォルト言語を使用したテストです。 現在、英語（デフォルト）、スペイン語、日本語、ロシア語がテストされています。',
       i_base_languages::RUSSIAN => 'Это тест с помощью браузера по умолчанию язык. В настоящее время английский (по умолчанию), испанский, японский и русский тестируются.',
       i_base_languages::SPANISH => 'Se trata de una prueba que utiliza el idioma predeterminado de su navegador. Actualmente se ponen a prueba el inglés (predeterminado), el español, el japonés y el ruso.',
-    );
+    ];
 
     $language_chosen = i_base_languages::ENGLISH;
     $languages_accepted = $stuff['http']->get_request(c_base_http::REQUEST_ACCEPT_LANGUAGE)->get_value();
@@ -474,7 +474,7 @@
           $session->set_password($_POST['login_password']);
 
           $is_public = FALSE;
-          $user_data = array();
+          $user_data = [];
 
           // allow direct login as u_reservation_public and assume/require that the u_reservation_public account already exists.
           if ($_POST['login_name'] == 'u_reservation_public') {
@@ -557,10 +557,10 @@
               set_log_user($database, 'login', NULL, $session_expire);
 
               if ($result instanceof c_base_return_true) {
-                $data = array(
+                $data = [
                   'session_id' => $session->get_session_id()->get_value_exact(),
                   'expire' => gmdate("D, d-M-Y H:i:s T", $session_expire), // unnecessary, but provided for debug purposes.
-                );
+                ];
                 $cookie->set_value($data);
                 $stuff['cookie_login']['cookie'] = $cookie;
               }
@@ -725,7 +725,7 @@
     }
 
     // directly check to see if the current user exists in ldap (this is technically not necessary because postgresql will also do this).
-    $stuff_stub = array();
+    $stuff_stub = [];
     $found_username = ldap_get_user($stuff_stub, $username);
     unset($stuff_stub);
 
@@ -806,7 +806,7 @@
     $query_string .= 'insert into v_log_users_self_insert (log_title, log_type, log_severity, request_client, response_code, log_details)';
     $query_string .= ' values ($1, $2, $3, ($4, $5, $6), $7, $8); ';
 
-    $query_parameters = array();
+    $query_parameters = [];
     $query_parameters[3] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
     $query_parameters[4] = isset($_SERVER['REMOTE_PORT']) ? $_SERVER['REMOTE_PORT'] : 0;
     $query_parameters[5] = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '' ;
@@ -876,7 +876,7 @@
       $query_string = '';
       $query_string .= 'insert into v_log_user_activity_self_insert (request_path, request_arguments, request_client, response_code) values ($1, $2, ($3, $4, $5), $6); ';
 
-      $query_parameters = array();
+      $query_parameters = [];
       $query_parameters[] = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
       $query_parameters[] = is_array($_GET) && !empty($_GET) ? print_r(array_keys($_GET), TRUE) : '';
       $query_parameters[] = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
@@ -913,7 +913,7 @@
   }
 
   function get_user_data(&$database, &$stuff, $user_name, $ldap_data = NULL) {
-    $user_data = array();
+    $user_data = [];
     $query_result = $database->do_query('select id, id_external, name_machine, name_human, address_email, is_administer, is_manager, is_auditor, is_publisher, is_financer, is_reviewer, is_editor, is_drafter, is_requester, is_system, is_public, is_locked, is_private, date_created, date_changed, date_synced, date_locked, settings from v_users_self');
 
 
@@ -1024,14 +1024,14 @@
       }
       else {
         $email = explode('@', $ldap_data['mail']);
-        $parameters = array(
+        $parameters = [
           $ldap_data['givenname'],
           $ldap_data['sn'],
           $ldap_data['cn'],
           $email[0],
           $email[1],
           $ldap_data['employeenumber'],
-        );
+        ];
 
         $query_result = $database->do_query('insert into v_users_self_insert (name_human.first, name_human.last, name_human.complete, address_email, id_external) values ($1, $2, $3, ($4, $5, TRUE), $6)', $parameters);
         if ($query_result instanceof c_base_return_false) {
@@ -1103,7 +1103,7 @@
   }
 
   function get_log_activity(&$database) {
-    $values = array();
+    $values = [];
 
     $query_result = $database->do_query('select id, request_path, request_date, request_client, response_code from v_log_user_activity_self order by request_date desc limit 20;');
     if ($query_result instanceof c_base_database_result) {
@@ -1131,7 +1131,7 @@
   }
 
   function get_log_users(&$database) {
-    $values = array();
+    $values = [];
 
     $query_result = $database->do_query('select id, log_title, log_type, log_date, request_client, response_code from v_log_users_self order by log_date desc limit 10;');
     if ($query_result instanceof c_base_database_result) {
@@ -1255,7 +1255,7 @@
 
       @socket_clear_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_create', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_create', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1271,7 +1271,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_connect', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_connect', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1299,7 +1299,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_write', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_write', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1316,7 +1316,7 @@
       @socket_close($socket);
       unset($socket);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_read', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_read', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -1352,7 +1352,7 @@
 
   function ldap_get_user(&$stuff, $username) {
     $stuff['ldap']['markup'] = '';
-    $stuff['ldap']['data'] = array();
+    $stuff['ldap']['data'] = [];
 
     $ldap = new c_base_ldap_get_user();
     $ldap->set_name('ldaps://127.0.0.1:1636/');
@@ -1377,7 +1377,7 @@
     $base_dn = 'ou=users,ou=People';
     $filter = '(uid=' . $username . ')';
 
-    $read = $ldap->do_search($base_dn, $filter, array('mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber'));
+    $read = $ldap->do_search($base_dn, $filter, ['mail', 'gecos', 'givenname', 'cn', 'sn', 'employeenumber']);
     if (c_base_return::s_has_error($read)) {
       $message = $ldap->get_error_message();
       if ($message instanceof c_base_return_string) {
@@ -1399,11 +1399,11 @@
       $entries = $entries->get_value();
     }
     else {
-      $entries = array();
+      $entries = [];
     }
 
     if ($entries['count'] > 0) {
-      $entry = array(
+      $entry = [
         'uid' => $username,
         'mail' => $entries[0]['mail'][0],
         'gecos' => $entries[0]['gecos'][0],
@@ -1411,7 +1411,7 @@
         'cn' => $entries[0]['cn'][0],
         'sn' => $entries[0]['sn'][0],
         'employeenumber' => $entries[0]['employeenumber'][0],
-      );
+      ];
       $stuff['ldap']['data'] = $entry;
 
       $stuff['ldap']['markup'] .= "<ul>\n";
@@ -1475,7 +1475,7 @@
         $validated = "Valid";
       }
 
-      $stuff['cookie_existence'] = array('exists' => array());
+      $stuff['cookie_existence'] = ['exists' => []];
       $stuff['cookie_existence']['exists'] = " - The cookie settings:<br>";
       $stuff['cookie_existence']['exists'] .= " -- Name: '" . $cookie->get_name()->get_value_exact() . "'<br>";
       $stuff['cookie_existence']['exists'] .= " -- Domain: '" . $cookie->get_domain()->get_value_exact() . "'<br>";
@@ -1518,15 +1518,15 @@
       #$max_age_string = c_base_defaults_global::s_get_date("D, d M Y H:i:s T", $cookie->get_max_age()->get_value_exact())->get_value_exact();
       $max_age_string = $cookie->get_max_age()->get_value_exact();
 
-      $data = array(
+      $data = [
         'message' => "Your agent string is: " . $agent_string,
         'expire' => gmdate("D, d-M-Y H:i:s T", $expire_stamp),
-      );
+      ];
       $cookie->set_value($data);
       $cookie->set_expires($expire_stamp);
       $checksum = $cookie->build_checksum()->get_value_exact();
 
-      $stuff['cookie_existence'] = array('new' => array());
+      $stuff['cookie_existence'] = ['new' => []];
       $stuff['cookie_existence']['new'] = " - The following cookie should be generated:<br>";
       $stuff['cookie_existence']['new'] .= " -- Name: '" . $cookie->get_name()->get_value_exact() . "'<br>";
       $stuff['cookie_existence']['new'] .= " -- Domain: '" . $cookie->get_domain()->get_value_exact() . "'<br>";

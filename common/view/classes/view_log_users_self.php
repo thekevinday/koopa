@@ -93,7 +93,7 @@ class c_view_log_users_self extends c_base_view {
    *   FALSE without error bit set is returned if nothing was done.
    *   FALSE with error bit set is returned on error.
    */
-  public function pull(&$database, $query = NULL, $arguments = array(), $conditions = NULL, $limit = NULL, $offset = NULL, $group_by = NULL, $order_by = NULL) {
+  public function pull(&$database, $query = NULL, $arguments = [], $conditions = NULL, $limit = NULL, $offset = NULL, $group_by = NULL, $order_by = NULL) {
     $result = parent::pull($database, $query, $arguments, $conditions, $limit, $offset, $group_by, $order_by);
     if (c_base_return::s_has_error($result)) {
       return $result;
@@ -203,7 +203,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_id($id) {
     if (!is_int($id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -223,7 +223,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_id_user($id_user) {
     if (!is_int($id_user)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id_user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -243,7 +243,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_title($title) {
     if (!is_string($title)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'title', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'title', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -263,7 +263,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_type($type) {
     if (!is_string($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -283,7 +283,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_type_sub($type_sub) {
     if (!is_string($type_sub)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type_sub', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type_sub', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -303,7 +303,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_log_severity($log_severity) {
     if (!is_int($log_severity)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'log_severity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'log_severity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -323,7 +323,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_log_facility($log_facility) {
     if (!is_string($log_facility)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'log_facility', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'log_facility', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -348,7 +348,7 @@ class c_view_log_users_self extends c_base_return {
 
       if (!is_array($log_details_decoded)) {
         unset($log_details_decoded);
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'log_details', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'log_details', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
@@ -359,7 +359,7 @@ class c_view_log_users_self extends c_base_return {
     }
 
     if (!is_array($log_details)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'log_details', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'log_details', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -385,7 +385,7 @@ class c_view_log_users_self extends c_base_return {
     }
 
     if (!is_int($date) && !is_float($date)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -405,7 +405,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_request_client($request_client) {
     if (!is_string($request_client)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'request_client', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'request_client', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -425,7 +425,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function set_response_code($response_code) {
     if (!is_string($response_code)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -547,7 +547,7 @@ class c_view_log_users_self extends c_base_return {
    */
   public function get_log_details() {
     if (!is_array($this->log_details)) {
-      $this->log_details = array();
+      $this->log_details = [];
     }
 
     return c_base_return_array::s_new($this->log_details);

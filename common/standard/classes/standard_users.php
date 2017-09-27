@@ -49,7 +49,7 @@ class c_standard_users_user extends c_base_users_user {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -57,22 +57,22 @@ class c_standard_users_user extends c_base_users_user {
    */
   public function do_load(&$database, $user_name_or_id = NULL, $administrative = FALSE) {
     if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($user_name_or_id) && !is_int($user_name_or_id) && $user_name_or_id !== TRUE && !is_string($user_name_or_id)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'user_name_or_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'user_name_or_id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($administrative)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'administrative', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'administrative', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $query_string = 'select id, id_external, id_sort, name_machine, name_human, address_email, is_public, is_system, is_requester, is_drafter, is_editor, is_reviewer, is_insurer, is_financer, is_publisher, is_auditor, is_manager, is_administer, is_private, is_locked, is_deleted, is_roler, date_created, date_changed, date_synced, date_locked, date_deleted, image_original, image_cropped, image_icon, settings ';
-    $query_arguments = array();
+    $query_arguments = [];
 
     if (is_null($user_name_or_id)) {
       $query_string .= 'from v_users_self';
@@ -110,7 +110,7 @@ class c_standard_users_user extends c_base_users_user {
       $last_error = $database->get_last_error()->get_value_exact();
 
       if (!empty($last_error)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
         unset($error);
       }
@@ -299,7 +299,7 @@ class c_standard_users_user extends c_base_users_user {
         $this->settings = json_decode($columns[30], TRUE);
       }
       else {
-        $this->settings = array();
+        $this->settings = [];
       }
     }
     else {

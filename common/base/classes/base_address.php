@@ -59,7 +59,7 @@ class c_base_address_email extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -74,7 +74,7 @@ class c_base_address_email extends c_base_return {
    */
   public function set_name($name) {
     if (!is_string($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -94,7 +94,7 @@ class c_base_address_email extends c_base_return {
    */
   public function set_domain($domain) {
     if (!is_string($domain)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'domain', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'domain', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -168,7 +168,7 @@ class c_base_address_email extends c_base_return {
    */
   public function is_private($is_private = NULL) {
     if (!is_null($is_private) && !is_bool($is_private)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 

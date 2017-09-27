@@ -32,7 +32,7 @@ class c_base_paths extends c_base_return {
   public function __construct() {
     parent::__construct();
 
-    $this->paths = array();
+    $this->paths = [];
     $this->root  = NULL;
   }
 
@@ -64,7 +64,7 @@ class c_base_paths extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -96,22 +96,22 @@ class c_base_paths extends c_base_return {
    */
   public function add_path($path, $handler, $include_directory = NULL, $include_name = NULL, $allowed_methods = NULL) {
     if (!is_string($path)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($handler)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'handler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'handler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if ((!is_null($include_directory) || (is_null($include_directory) && !is_null($include_name))) && !is_string($include_directory)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'include_directory', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'include_directory', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if ((!is_null($include_name) || (is_null($include_name) && !is_null($include_directory))) && !is_string($include_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'include_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'include_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -121,7 +121,7 @@ class c_base_paths extends c_base_return {
     if (is_null($allowed_methods)) {
       $methods = $path_object->get_allowed_methods()->get_value_exact();
       if (!is_array($methods)) {
-        $methods = array();
+        $methods = [];
       }
     }
     else {
@@ -130,13 +130,13 @@ class c_base_paths extends c_base_return {
 
     if (mb_strlen($path) == 0) {
       unset($path_object);
-      $this->root = array('handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE, 'methods' => $methods);
+      $this->root = ['handler' => $handler, 'include_directory' => $include_directory, 'include_name' => $include_name, 'is_root' => TRUE, 'methods' => $methods];
       return new c_base_return_true();
     }
 
     if (!is_null($allowed_methods) && !is_array($allowed_methods)) {
       unset($path_object);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'allowed_methods', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'allowed_methods', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -145,7 +145,7 @@ class c_base_paths extends c_base_return {
       unset($path_object);
       unset($valid_path);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
     unset($valid_path);
@@ -170,11 +170,11 @@ class c_base_paths extends c_base_return {
     }
 
     if (!is_array($this->paths)) {
-      $this->paths = array();
+      $this->paths = [];
     }
 
     if (!array_key_exists($id_group, $this->paths)) {
-      $this->paths[$id_group] = array();
+      $this->paths[$id_group] = [];
     }
 
     $path_tree = &$this->paths[$id_group];
@@ -186,13 +186,13 @@ class c_base_paths extends c_base_return {
     // note that 'paths' is not populated here, but is later used when being processed by self::find_path().
     $path_part = array_shift($path_parts);
     if (!array_key_exists($path_part, $path_tree)) {
-      $path_tree[$path_part] = array(
-        'paths' => array(),
+      $path_tree[$path_part] = [
+        'paths' => [],
         'include_directory' => NULL,
         'include_name' => NULL,
         'handler' => NULL,
-        'methods' => array(),
-      );
+        'methods' => [],
+      ];
     }
 
     $path_tree = &$path_tree[$path_part];
@@ -205,13 +205,13 @@ class c_base_paths extends c_base_return {
     else {
       foreach ($path_parts as $path_part) {
         if (!isset($path_tree['paths'][$path_part])) {
-          $path_tree['paths'][$path_part] = array(
-            'paths' => array(),
+          $path_tree['paths'][$path_part] = [
+            'paths' => [],
             'include_directory' => NULL,
             'include_name' => NULL,
             'handler' => NULL,
-            'methods' => array(),
-          );
+            'methods' => [],
+          ];
         }
 
         $path_tree = &$path_tree['paths'][$path_part];
@@ -264,7 +264,7 @@ class c_base_paths extends c_base_return {
    */
   public function find_path($path_string) {
     if (!is_null($path_string) && !is_string($path_string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'path_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'path_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -272,7 +272,7 @@ class c_base_paths extends c_base_return {
       if (is_array($this->root)) {
         $root_array = $this->root;
         $root_array['id_group'] = 0;
-        $root_array['path_tree'] = array();
+        $root_array['path_tree'] = [];
 
         return c_base_return_array::s_new($root_array);
       }
@@ -283,7 +283,7 @@ class c_base_paths extends c_base_return {
         'handler' => NULL,
         'methods' => NULL,
         'id_group' => 0,
-        'path_tree' => array(),
+        'path_tree' => [],
       ));
     }
 
@@ -293,7 +293,7 @@ class c_base_paths extends c_base_return {
     if (!$path->set_value($path_string)) {
       unset($path);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{format_name}' => 'path_string', ':{expected_format}' => 'Valid URL path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_FORMAT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{format_name}' => 'path_string', ':{expected_format}' => 'Valid URL path', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_FORMAT);
       return c_base_return_error::s_false($error);
     }
 
@@ -331,7 +331,7 @@ class c_base_paths extends c_base_return {
     $depth_total = count($path_parts);
     $found = NULL;
     $path_tree = &$this->paths[$id_group];
-    $path_tree_history = array();
+    $path_tree_history = [];
 
     if (is_array($this->root)) {
       $path_tree_history[] = $this->root;
@@ -347,23 +347,23 @@ class c_base_paths extends c_base_return {
         $path_tree = &$path_tree['%'];
       }
 
-      $path_tree_history[] = array(
+      $path_tree_history[] = [
         'path' => $path_part,
         'include_directory' => isset($path_tree['include_directory']) ? $path_tree['include_directory'] : NULL,
         'include_name' => isset($path_tree['include_name']) ? $path_tree['include_name'] : NULL,
         'handler' => isset($path_tree['handler']) ? $path_tree['handler'] : NULL,
         'methods' => isset($path_tree['methods']) ? $path_tree['methods'] : NULL,
-      );
+      ];
 
       if ($depth_current == $depth_total) {
-        $found = array(
+        $found = [
           'include_directory' => $path_tree['include_directory'],
           'include_name' => $path_tree['include_name'],
           'handler' => $path_tree['handler'],
           'methods' => $path_tree['methods'],
           'id_group' => $id_group,
           'path_tree' => $path_tree_history,
-        );
+        ];
       }
       else {
         foreach ($path_parts as $path_part) {
@@ -379,23 +379,23 @@ class c_base_paths extends c_base_return {
             break;
           }
 
-          $path_tree_history[] = array(
+          $path_tree_history[] = [
             'path' => $path_part,
             'include_directory' => isset($path_tree['include_directory']) ? $path_tree['include_directory'] : NULL,
             'include_name' => isset($path_tree['include_name']) ? $path_tree['include_name'] : NULL,
             'handler' => isset($path_tree['handler']) ? $path_tree['handler'] : NULL,
             'methods' => isset($path_tree['methods']) ? $path_tree['methods'] : NULL,
-          );
+          ];
 
           if ($depth_current == $depth_total) {
-            $found = array(
+            $found = [
               'include_directory' => $path_tree['include_directory'],
               'include_name' => $path_tree['include_name'],
               'handler' => $path_tree['handler'],
               'methods' => $path_tree['methods'],
               'id_group' => $id_group,
               'path_tree' => $path_tree_history,
-            );
+            ];
             break;
           }
         }

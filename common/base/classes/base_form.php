@@ -59,7 +59,7 @@ class c_base_form_problem extends c_base_return_string {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -115,17 +115,17 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function set_field($field_name) {
     if (is_null($field_name)) {
-      $this->fields = array();
+      $this->fields = [];
       return new c_base_return_true();
     }
 
     if (!is_string($field_name) || empty($field_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->fields)) {
-      $this->fields = array();
+      $this->fields = [];
     }
 
     $this->fields[$field_name] = $field_name;
@@ -147,7 +147,7 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function unset_field($field_name) {
     if (!is_string($field_name) && !empty($field_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -168,7 +168,7 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function get_fields() {
     if (!is_array($this->fields)) {
-      $this->fields = array();
+      $this->fields = [];
     }
 
     return c_base_return_array::s_new($this->fields);
@@ -190,17 +190,17 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function set_argument($index, $value) {
     if (!is_string($index) && !empty($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->arguments)) {
-      $this->arguments = array();
+      $this->arguments = [];
     }
 
     $this->arguments[$index] = $value;
@@ -217,12 +217,12 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function get_argument($index) {
     if (!is_string($index) && !empty($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->arguments)) {
-      $this->arguments = array();
+      $this->arguments = [];
     }
 
     if (!array_key_exists($index, $this->arguments)) {
@@ -241,7 +241,7 @@ class c_base_form_problem extends c_base_return_string {
    */
   public function get_arguments() {
     if (!is_array($this->arguments)) {
-      $this->arguments = array();
+      $this->arguments = [];
     }
 
     return c_base_return_array::s_new($this->arguments);

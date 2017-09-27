@@ -38,7 +38,7 @@ class c_base_menu extends c_base_rfc_string {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -64,23 +64,23 @@ class c_base_menu extends c_base_rfc_string {
    */
   public function do_build(&$http, &$database, &$session, $settings, $items = NULL) {
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
     elseif (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
     elseif (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
     elseif (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
     elseif (!is_null($items) && !is_array($items)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'items', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'items', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -139,7 +139,7 @@ class c_base_menu_item extends c_base_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -155,7 +155,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_text($text) {
     if (!is_int($text) && !is_string($text)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -176,7 +176,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_uri($uri) {
     if (!is_null($uri) && !is_string($uri) && !is_array($uri)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'uri', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'uri', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -198,12 +198,12 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_attribute($attribute, $value) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->attributes)) {
-      $this->attributes = array();
+      $this->attributes = [];
     }
 
     $this->attributes[$attribute] = $value;
@@ -222,7 +222,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_attributes($attributes) {
     if (!is_array($attributes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -246,17 +246,17 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_item($item, $index = NULL) {
     if (!($item instanceof c_base_menu_item)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'item', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'item', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($index) && !is_int($index) && !is_string($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($this->items)) {
-      $this->items = array();
+      $this->items = [];
     }
 
     if (is_null($index)) {
@@ -283,7 +283,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function set_items($items) {
     if (!is_null($items) && !($items instanceof c_base_menu_item)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'items', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'items', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -344,7 +344,7 @@ class c_base_menu_item extends c_base_array {
 
   public function get_attribute($attribute) {
     if (!is_int($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -364,7 +364,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function get_attributes() {
     if (!is_array($this->attributes)) {
-      return c_base_return_array::s_new(array());
+      return c_base_return_array::s_new([]);
     }
 
     return c_base_return_array::s_new($this->attributes);
@@ -383,7 +383,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function get_item($index) {
     if (!is_string($index) || empty($index)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -403,7 +403,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function get_items() {
     if (!is_null($this->items) && !is_array($this->items)) {
-      return c_base_return_array::s_new(array());
+      return c_base_return_array::s_new([]);
     }
 
     return c_base_return_array::s_new($this->items);
@@ -433,7 +433,7 @@ class c_base_menu_item extends c_base_array {
    */
   public function get_items_keys() {
     if (empty($this->items)) {
-      return array();
+      return [];
     }
 
     return array_keys($this->items);

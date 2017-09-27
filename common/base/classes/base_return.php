@@ -238,7 +238,7 @@ class c_base_return {
    * Class constructor.
    */
   public function __construct() {
-    $this->errors = array();
+    $this->errors = [];
   }
 
   /**
@@ -336,12 +336,12 @@ class c_base_return {
     }
 
     if (is_null($error)) {
-      $this->errors = array();
+      $this->errors = [];
       return TRUE;
     }
 
     if (!is_array($this->errors)) {
-      $this->errors = array();
+      $this->errors = [];
     }
 
     if (is_null($delta)) {
@@ -371,7 +371,7 @@ class c_base_return {
    */
   public function get_error($delta = NULL) {
     if (!is_array($this->errors)) {
-      $this->errors = array();
+      $this->errors = [];
     }
 
     if (is_null($delta)) {
@@ -1079,7 +1079,7 @@ class c_base_return_array extends c_base_return_value {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -1293,7 +1293,7 @@ class c_base_return_array extends c_base_return_value {
     }
     unset($unserialized);
 
-    $this->value = array();
+    $this->value = [];
     return FALSE;
   }
 
@@ -1341,7 +1341,7 @@ class c_base_return_array extends c_base_return_value {
     }
     unset($decoded);
 
-    $this->value = array();
+    $this->value = [];
     return FALSE;
   }
 
@@ -1368,7 +1368,7 @@ class c_base_return_array extends c_base_return_value {
    */
   public function get_value_exact() {
     if (!is_array($this->value)) {
-      return array();
+      return [];
     }
 
     return $this->value;
@@ -1417,7 +1417,7 @@ class c_base_return_array extends c_base_return_value {
     }
 
     if (!is_array($this->value)) {
-      $this->value = array();
+      $this->value = [];
     }
 
     if (!array_key_exists($key, $this->value)) {
@@ -1510,7 +1510,7 @@ class c_base_return_array extends c_base_return_value {
    */
   public function get_value_keys() {
     if (empty($this->value)) {
-      return array();
+      return [];
     }
 
     return array_keys($this->value);

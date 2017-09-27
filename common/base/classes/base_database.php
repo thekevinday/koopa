@@ -125,7 +125,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_host($host) {
     if (!is_string($host)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'host', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -160,7 +160,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_host_addr($host_addr) {
     if (!is_string($host_addr)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'host_addr', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'host_addr', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -198,12 +198,12 @@ class c_base_database_connection_string extends c_base_return_string {
       if (is_string($port) && is_numeric($port)) {
         $port = (int) $port;
         if ($port < 0) {
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'port', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'port', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
           return c_base_return_error::s_false($error);
         }
       }
       else {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'port', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'port', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
     }
@@ -239,7 +239,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_database($database) {
     if (!is_string($database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -274,7 +274,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_user($user) {
     if (!is_string($user)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'user', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -309,7 +309,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_password($password) {
     if (!is_null($password) && !is_string($password)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -352,12 +352,12 @@ class c_base_database_connection_string extends c_base_return_string {
       if (is_string($connect_timeout) && is_numeric($connect_timeout)) {
         $connect_timeout = (int) $connect_timeout;
         if ($connect_timeout < 0) {
-          $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'connect_timeout', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+          $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'connect_timeout', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
           return c_base_return_error::s_false($error);
         }
       }
       else {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'connect_timeout', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'connect_timeout', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
     }
@@ -393,7 +393,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_options($options) {
     if (!is_string($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -433,7 +433,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_ssl_mode($ssl_mode) {
     if (!is_string($ssl_mode)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'ssl_mode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'ssl_mode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -468,7 +468,7 @@ class c_base_database_connection_string extends c_base_return_string {
    */
   public function set_service($service) {
     if (!is_string($service)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'service', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'service', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -646,7 +646,7 @@ class c_base_database extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -661,12 +661,12 @@ class c_base_database extends c_base_return {
    */
   public static function s_explode_array($array_string) {
     if (!is_string($array_string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'array_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(array(), 'c_base_return_array', $error);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'array_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_value([], 'c_base_return_array', $error);
     }
 
     if (mb_strlen($array_string) < 2) {
-      return c_base_return_array::s_new(array());
+      return c_base_return_array::s_new([]);
     }
 
     $processed_string = mb_substr($array_string, 1);
@@ -689,7 +689,7 @@ class c_base_database extends c_base_return {
    */
   public function set_session($session) {
     if (!is_object($session) || !($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -725,7 +725,7 @@ class c_base_database extends c_base_return {
    */
   public function set_connection_string($connection_string) {
     if (!is_object($connection_string) || !($connection_string instanceof c_base_database_connection_string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'connection_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'connection_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -772,7 +772,7 @@ class c_base_database extends c_base_return {
    */
   public function set_persistent($persistent) {
     if (!is_bool($persistent)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'persistent', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'persistent', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -812,7 +812,7 @@ class c_base_database extends c_base_return {
    */
   public function set_asynchronous($asynchronous) {
     if (!is_bool($asynchronous)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'asynchronous', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'asynchronous', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -857,17 +857,17 @@ class c_base_database extends c_base_return {
    */
   public function do_connect($force = FALSE) {
     if (!is_bool($force)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'force', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'force', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (is_null($this->connection_string)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'connection_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'connection_string', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (is_resource($this->database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_UNECESSARY);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_UNECESSARY);
       return c_base_return_error::s_true($error);
     }
 
@@ -908,13 +908,13 @@ class c_base_database extends c_base_return {
       $warnings = $handle_warnings->get_warnings();
       unset($handle_warnings);
 
-      $failure_reasons = array();
+      $failure_reasons = [];
       if ($warnings instanceof c_base_return_array) {
         $failure_reasons = $warnings->get_value_exact();
       }
       unset($warnings);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $this->connection_string->get_database()->get_value_exact(), ':{failure_reasons}' => $failure_reasons, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $this->connection_string->get_database()->get_value_exact(), ':{failure_reasons}' => $failure_reasons, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
       unset($failure_reasons);
 
       return c_base_return_error::s_false($error);
@@ -947,7 +947,7 @@ class c_base_database extends c_base_return {
   public function do_disconnect() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -957,7 +957,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_close', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_close', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -973,7 +973,7 @@ class c_base_database extends c_base_return {
   public function do_flush() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -984,7 +984,7 @@ class c_base_database extends c_base_return {
     }
 
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_flush', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_flush', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1019,7 +1019,7 @@ class c_base_database extends c_base_return {
    */
   public function is_busy() {
     if (!$this->asynchronous) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->asynchronous', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->asynchronous', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1044,14 +1044,14 @@ class c_base_database extends c_base_return {
    */
   public function get_parameter_status($name) {
     if (!is_string($name) || empty($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_parameter_status($this->database, $name);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_parameter_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_parameter_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1072,7 +1072,7 @@ class c_base_database extends c_base_return {
    */
   public function do_poll() {
     if (!$this->asynchronous) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1091,7 +1091,7 @@ class c_base_database extends c_base_return {
   public function do_reset() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1100,7 +1100,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_connection_reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_connection_reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1133,7 +1133,7 @@ class c_base_database extends c_base_return {
   public function do_ping() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1146,7 +1146,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_false();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::FUNCTION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::FUNCTION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1167,13 +1167,13 @@ class c_base_database extends c_base_return {
    */
   public function escape_literal($literal) {
     if (!is_string($literal)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'literal', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'literal', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1198,13 +1198,13 @@ class c_base_database extends c_base_return {
    */
   public function escape_bytea($bytea) {
     if (!is_string($bytea)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'bytea', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'bytea', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1229,13 +1229,13 @@ class c_base_database extends c_base_return {
    */
   public function escape_identifier($identifier) {
     if (!is_string($identifier)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'identifier', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'identifier', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1260,13 +1260,13 @@ class c_base_database extends c_base_return {
    */
   public function unescape_bytea($bytea) {
     if (!is_string($bytea)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'bytea', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'bytea', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1288,13 +1288,13 @@ class c_base_database extends c_base_return {
    */
   public function set_client_encoding($encoding) {
     if (!is_string($encoding)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1305,7 +1305,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_set_client_encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_set_client_encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1321,7 +1321,7 @@ class c_base_database extends c_base_return {
   public function get_client_encoding() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1330,7 +1330,7 @@ class c_base_database extends c_base_return {
     if ($encoding === FALSE) {
       unset($encoding);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_client_encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_client_encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1354,7 +1354,7 @@ class c_base_database extends c_base_return {
   public function consume_input() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1363,7 +1363,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_consume_input', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_consume_input', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1387,23 +1387,23 @@ class c_base_database extends c_base_return {
    */
   public function do_convert($table, $array, $options = 0) {
     if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($array)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1411,7 +1411,7 @@ class c_base_database extends c_base_return {
     $converted = pg_connect_status($this->database, $table, $array, $options);
     if ($converted === FALSE) {
       unset($converted);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_connect_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_connect_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1443,20 +1443,20 @@ class c_base_database extends c_base_return {
    * @see: pg_prepare()
    * @see: pg_send_prepare()
    */
-  public function do_execute($name, $parameters = array()) {
+  public function do_execute($name, $parameters = []) {
     if (!is_string($name) || empty($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($parameters)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1473,7 +1473,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => ($this->asynchronous ? 'pg_send_execute' : 'pg_execute'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => ($this->asynchronous ? 'pg_send_execute' : 'pg_execute'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1506,9 +1506,9 @@ class c_base_database extends c_base_return {
    * @see: pg_prepare()
    * @see: pg_send_prepare()
    */
-  public function do_query($query, $parameters = array()) {
+  public function do_query($query, $parameters = []) {
     if (!is_string($query) || empty($query)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
 
       $result = new c_base_database_result();
       $result->set_error($error);
@@ -1518,7 +1518,7 @@ class c_base_database extends c_base_return {
     }
 
     if (!is_array($parameters)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
 
       $result = new c_base_database_result();
       $result->set_error($error);
@@ -1529,7 +1529,7 @@ class c_base_database extends c_base_return {
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
 
       $result = new c_base_database_result();
       $result->set_error($error);
@@ -1561,18 +1561,18 @@ class c_base_database extends c_base_return {
 
     if ($this->asynchronous) {
       if (empty($parameters)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_send_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_send_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       }
       else {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_send_query_params', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_send_query_params', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       }
     }
     else {
       if (empty($parameters)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       }
       else {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_query_params', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_query_params', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       }
     }
 
@@ -1606,7 +1606,7 @@ class c_base_database extends c_base_return {
    */
   public function do_prepare($name, $query) {
     if (!is_string($name) || empty($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
 
       $result = new c_base_database_result();
       $result->set_error($error);
@@ -1616,7 +1616,7 @@ class c_base_database extends c_base_return {
     }
 
     if (!is_string($query) || empty($query)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
 
       $result = new c_base_database_result();
       $result->set_error($error);
@@ -1627,7 +1627,7 @@ class c_base_database extends c_base_return {
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
 
       $result = new c_base_database_result();
@@ -1649,7 +1649,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => ($this->asynchronous ? 'pg_send_prepare' :'pg_prepare'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => ($this->asynchronous ? 'pg_send_prepare' :'pg_prepare'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
 
     $result = new c_base_database_result();
     $result->set_error($error);
@@ -1670,7 +1670,7 @@ class c_base_database extends c_base_return {
   public function get_result() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
 
       $result = new c_base_database_result();
@@ -1690,7 +1690,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_get_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_get_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
 
     $result = new c_base_database_result();
     $result->set_error($error);
@@ -1733,7 +1733,7 @@ class c_base_database extends c_base_return {
   public function do_cancel() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1746,7 +1746,7 @@ class c_base_database extends c_base_return {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_cancel_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_cancel_query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1793,23 +1793,23 @@ class c_base_database extends c_base_return {
    */
   public function do_insert($table, $values, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($values)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'values', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'values', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($options) && !is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1834,7 +1834,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_insert', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_insert', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1877,28 +1877,28 @@ class c_base_database extends c_base_return {
    */
   function do_update($table, $values, $conditions, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($values)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'values', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'values', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($options) && !is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -1923,7 +1923,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_update', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_update', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -1967,23 +1967,23 @@ class c_base_database extends c_base_return {
    */
   function do_select($table, $conditions, $options = NULL) {
     if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($options) && !is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2011,7 +2011,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_select', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_select', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -2051,23 +2051,23 @@ class c_base_database extends c_base_return {
    */
   function do_delete($table, $conditions, $options = NULL) {
         if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($conditions)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'conditions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($options) && !is_int($options)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2092,7 +2092,7 @@ class c_base_database extends c_base_return {
     }
     unset($result);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_select', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_select', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -2114,18 +2114,18 @@ class c_base_database extends c_base_return {
    */
   public function get_meta_data($table, $extended = FALSE) {
     if (!is_string($table) || empty($table)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($extended)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'extended', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'extended', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2134,7 +2134,7 @@ class c_base_database extends c_base_return {
     if ($result === FALSE) {
       unset($result);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_meta_data', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_meta_data', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2158,13 +2158,13 @@ class c_base_database extends c_base_return {
   public function set_error_verbosity($verbosity) {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($verbosity)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'verbosity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'verbosity', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2183,7 +2183,7 @@ class c_base_database extends c_base_return {
   public function get_last_error() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2192,7 +2192,7 @@ class c_base_database extends c_base_return {
     if ($result === FALSE) {
       unset($result);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_last_error', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_last_error', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2211,7 +2211,7 @@ class c_base_database extends c_base_return {
   public function get_last_notice() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2220,7 +2220,7 @@ class c_base_database extends c_base_return {
     if ($result === FALSE) {
       unset($result);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_last_notice', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_last_notice', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2246,7 +2246,7 @@ class c_base_database extends c_base_return {
   public function get_transaction_status() {
     if (!is_resource($this->database)) {
       $database = ($this->connection_string instanceof c_base_database_connection_string) ? $this->connection_string->get_database()->get_value_exact() : '';
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $database, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_CONNECTION);
       unset($database);
       return c_base_return_error::s_false($error);
     }
@@ -2255,7 +2255,7 @@ class c_base_database extends c_base_return {
     if ($result === FALSE) {
       unset($result);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_transaction_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_transaction_status', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2364,18 +2364,18 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_all_columns($column) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_fetch_all_columns($this->value, $column);
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_all_columns', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_all_columns', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2392,13 +2392,13 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_all() {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_fetch_all($this->value);
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_all', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_all', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2424,23 +2424,23 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_array($row = NULL, $type = PGSQL_ASSOC) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_fetch_array($this->value, $row, $type);
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_array', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2469,22 +2469,22 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_object($row = NULL, $class = NULL, $parameters = NULL) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($class) && !is_string($class)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'class', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'class', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($parameters) && !is_array($parameters)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameters', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2496,7 +2496,7 @@ class c_base_database_result extends c_base_return_resource {
     }
 
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_object', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_object', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2519,17 +2519,17 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_result($row, $column) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) && !is_string($column) || is_int($column) && $column < 0 || is_string($column) && empty($column)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2542,7 +2542,7 @@ class c_base_database_result extends c_base_return_resource {
 
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2564,12 +2564,12 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function fetch_row($row = NULL) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2581,7 +2581,7 @@ class c_base_database_result extends c_base_return_resource {
     }
 
     if ($result === FALSE) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_fetch_row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_fetch_row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2615,12 +2615,12 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function error($code = NULL) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($code) && !is_int($code)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2650,7 +2650,7 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function affected_rows() {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2668,13 +2668,13 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function number_of_rows() {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_num_rows($this->value);
     if ($result < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_num_rows', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_num_rows', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2692,13 +2692,13 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function number_of_columns() {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_num_fields($this->value);
     if ($result < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_num_fields', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_num_fields', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2719,19 +2719,19 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_name($number) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($number) || $number < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_name($this->value, $number);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2752,12 +2752,12 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_number($name) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($name) || mb_strlen($name) == 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2765,7 +2765,7 @@ class c_base_database_result extends c_base_return_resource {
     $result = pg_field_number($this->value, $name);
     if ($result < 0) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2794,17 +2794,17 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_length($row, $name_or_number) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($row) && (!is_int($row) || $row < 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'row', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($name_or_number) && !(is_string($name_or_number) && mb_strlen($name) > 0)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name_or_number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name_or_number', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -2817,7 +2817,7 @@ class c_base_database_result extends c_base_return_resource {
 
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_prtlen', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_prtlen', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2840,19 +2840,19 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_bytes($column) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_size($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_size', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_size', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2881,24 +2881,24 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_table($column, $oid = FALSE) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($oid)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_table($this->value, $column, $oid);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_table', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2924,19 +2924,19 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_type_oid($column) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_type_oid($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_type_oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_type_oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2959,14 +2959,14 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function last_oid() {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_last_oid($this->database);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_last_oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_last_oid', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -2987,19 +2987,19 @@ class c_base_database_result extends c_base_return_resource {
    */
   public function field_type($column) {
     if (!is_resource($this->value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_NO_RESOURCE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_RESOURCE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($column) || $column < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $result = pg_field_type($this->value, $column);
     if ($result === FALSE) {
       unset($result);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'pg_field_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'pg_field_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -3024,7 +3024,7 @@ class c_base_database_result extends c_base_return_resource {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::FUNCTION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::FUNCTION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 }
@@ -3076,7 +3076,7 @@ class c_base_database_query extends c_base_return_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -3094,13 +3094,13 @@ class c_base_database_query extends c_base_return_array {
    */
   public function import($import) {
     if (!is_string($import) || empty($import)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'import', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'import', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $decoded = json_decode($import, TRUE);
     if (!is_array($decoded) || empty($decoded)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_decode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'json_decode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -3128,7 +3128,7 @@ class c_base_database_query extends c_base_return_array {
     // everything else has to be re-created on import for security reasons.
     $encoded = json_encode($this->value);
     if (!is_string($encoded)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'json_encode', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -3140,6 +3140,6 @@ class c_base_database_query extends c_base_return_array {
    */
   private function p_initialize() {
     unset($this->value);
-    $this->value = array();
+    $this->value = [];
   }
 }

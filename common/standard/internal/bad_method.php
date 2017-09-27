@@ -17,7 +17,7 @@ class c_standard_path_bad_method extends c_standard_path_exception {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     // @todo: This needs to return the HTTP invalid method response status.
 
     // the parent function performs validation on the parameters.
@@ -51,14 +51,14 @@ class c_standard_path_bad_method extends c_standard_path_exception {
   /**
    * Implements pr_get_text_title().
    */
-  protected function pr_get_text_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = []) {
     return $this->pr_get_text(0, $arguments);
   }
 
   /**
    * Implements pr_get_text_breadcrumbs().
    */
-  protected function pr_get_text_breadcrumbs($code, $arguments = array()) {
+  protected function pr_get_text_breadcrumbs($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:
@@ -76,7 +76,7 @@ class c_standard_path_bad_method extends c_standard_path_exception {
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:

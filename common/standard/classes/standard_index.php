@@ -54,7 +54,7 @@ class c_standard_index extends c_base_return {
   public function __construct() {
     parent::__construct();
 
-    $this->settings = array();
+    $this->settings = [];
 
     // database information
     $this->settings['database_host']                = '127.0.0.1';
@@ -84,7 +84,7 @@ class c_standard_index extends c_base_return {
     $this->settings['ldap_bind_name']     = NULL;
     $this->settings['ldap_bind_password'] = NULL;
     $this->settings['ldap_base_dn']       = '';
-    $this->settings['ldap_fields']        = array();
+    $this->settings['ldap_fields']        = [];
 
     // base settings
     $this->settings['base_scheme']       = 'https';
@@ -174,7 +174,7 @@ class c_standard_index extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -189,7 +189,7 @@ class c_standard_index extends c_base_return {
    */
   public static function s_do_initialize_database(&$database) {
     if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -314,7 +314,7 @@ class c_standard_index extends c_base_return {
     }
     else {
       $this->languages_selected = i_base_languages::ENGLISH_US;
-      $this->languages_all = array(i_base_languages::ENGLISH_US => i_base_languages::ENGLISH_US, i_base_languages::ENGLISH => i_base_languages::ENGLISH);
+      $this->languages_all = [i_base_languages::ENGLISH_US => i_base_languages::ENGLISH_US, i_base_languages::ENGLISH => i_base_languages::ENGLISH];
     }
 
     // select the primary language.
@@ -382,7 +382,7 @@ class c_standard_index extends c_base_return {
       unset($cookie_login);
       unset($no_session);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{session_name}' => $this->settings['cookie_name'], ':{function_name}' => __FUNCTION__)), i_base_error_messages::NO_SESSION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{session_name}' => $this->settings['cookie_name'], ':{function_name}' => __FUNCTION__]], i_base_error_messages::NO_SESSION);
       return c_base_return_error::s_true($error);
     }
     unset($no_session);
@@ -395,7 +395,7 @@ class c_standard_index extends c_base_return {
       unset($cookie_login);
 
       // cookie_login failed validation or the cookie contains no session id.
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{session_name}' => $this->settings['cookie_name'], ':{function_name}' => __FUNCTION__)), i_base_error_messages::SESSION_INVALID);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{session_name}' => $this->settings['cookie_name'], ':{function_name}' => __FUNCTION__]], i_base_error_messages::SESSION_INVALID);
 
       // also set the error on the session object.
       $this->session->set_error($error);
@@ -836,7 +836,7 @@ class c_standard_index extends c_base_return {
     $query_string = 'insert into v_log_user_activity_self_insert (request_path, request_arguments, request_client, request_headers, response_headers, response_code)';
     $query_string .= ' values ($1, $2, ($3, $4, $5), $6, $7, $8)';
 
-    $query_parameters = array();
+    $query_parameters = [];
     $query_parameters[0] = $this->http->get_request_uri_relative($this->settings['base_path'])->get_value_exact();
     $query_parameters[1] = $this->http->get_request_uri_query($this->settings['base_path'])->get_value_exact();
 
@@ -857,7 +857,7 @@ class c_standard_index extends c_base_return {
       unset($query_result);
 
       if (!empty($last_error)) {
-        $error = c_base_error::s_log(NULL, array('arguments' => array(':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::POSTGRESQL_ERROR);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{database_error_message}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_ERROR);
         $false->set_error($error);
       }
       unset($last_error);

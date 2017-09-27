@@ -186,7 +186,7 @@ class c_standard_paths extends c_base_return {
     parent::__construct();
 
     $this->handler = NULL;
-    $this->paths   = array();
+    $this->paths   = [];
 
     $this->http     = NULL;
     $this->database = NULL;
@@ -235,7 +235,7 @@ class c_standard_paths extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -339,27 +339,27 @@ class c_standard_paths extends c_base_return {
   public function do_process_path(&$http, &$database, &$session, $settings) {
     // @todo: these parameter errors might need a custom service unavailable and system log support.
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
     if (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_return('c_base_path_executed', $error);
     }
 
@@ -379,7 +379,7 @@ class c_standard_paths extends c_base_return {
 
       $path_tree = new c_base_path_tree();
       $path_tree->set_id_group(0);
-      $path_tree->set_items(array());
+      $path_tree->set_items([]);
 
       $path_not_found->set_path_tree($path_tree);
       unset($path_tree);
@@ -481,7 +481,7 @@ class c_standard_paths extends c_base_return {
         }
       }
       else {
-        $path_tree->set_items(array());
+        $path_tree->set_items([]);
 
         $handler_settings_index = $this->paths->find_path('')->get_value();
         if (isset($handler_settings_index['handler'])) {
@@ -503,7 +503,7 @@ class c_standard_paths extends c_base_return {
       $path_tree->set_items($handler_settings['path_tree']);
     }
     else {
-      $path_tree->set_items(array());
+      $path_tree->set_items([]);
     }
 
     if (isset($handler_settings['id_group'])) {
@@ -537,7 +537,7 @@ class c_standard_paths extends c_base_return {
         $options_method_path->set_allowed_methods($handler_settings['methods']);
       }
       else {
-        $options_method_path->set_allowed_methods(array());
+        $options_method_path->set_allowed_methods([]);
       }
 
       $options_method_path->set_path_tree($path_tree);
@@ -1033,7 +1033,7 @@ class c_standard_paths extends c_base_return {
    * Load and save the current preferred language alias.
    */
   protected function pr_get_language_alias() {
-    $aliases = array();
+    $aliases = [];
     $languages = $this->http->get_response_content_language()->get_value_exact();
     if (is_array($languages) && !empty($languages)) {
       $language = reset($languages);

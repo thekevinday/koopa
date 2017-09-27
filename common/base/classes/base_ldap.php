@@ -79,7 +79,7 @@ class c_base_ldap extends c_base_return {
    */
   public function set_name($name) {
     if (!is_string($name) || empty($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -87,7 +87,7 @@ class c_base_ldap extends c_base_return {
     $parsed = parse_url($name, PHP_URL_HOST);
     if ($parsed === FALSE) {
       unset($parsed);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'parse_url', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'parse_url', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -119,7 +119,7 @@ class c_base_ldap extends c_base_return {
    */
   public function set_bind_name($name) {
     if (!is_null($name) && (!is_string($name) || empty($name))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -149,7 +149,7 @@ class c_base_ldap extends c_base_return {
    */
   public function set_bind_password($password) {
     if (!is_null($password) && (!is_string($password) || empty($password))) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'password', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -181,7 +181,7 @@ class c_base_ldap extends c_base_return {
    */
   public function do_connect() {
     if (is_null($this->name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -194,7 +194,7 @@ class c_base_ldap extends c_base_return {
     if (!is_resource($this->ldap)) {
       $this->ldap = NULL;
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_connect', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_connect', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -205,7 +205,7 @@ class c_base_ldap extends c_base_return {
     }
     unset($bound);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::FUNCTION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::FUNCTION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -232,7 +232,7 @@ class c_base_ldap extends c_base_return {
     }
     unset($unbound);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_unbind', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_unbind', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -266,32 +266,32 @@ class c_base_ldap extends c_base_return {
    */
   public function do_search($directory_name, $filter, $attributes, $attributes_only = FALSE, $entry_limit = 0, $time_limit = 0, $dereference = LDAP_DEREF_NEVER) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($directory_name) || !is_string($filter)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($attributes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($entry_limit) || $entry_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($time_limit) || $time_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($dereference)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -307,7 +307,7 @@ class c_base_ldap extends c_base_return {
     }
     unset($found);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_search', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_search', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -341,37 +341,37 @@ class c_base_ldap extends c_base_return {
    */
   public function do_list($directory_name, $filter, $attributes, $attributes_only = FALSE, $entry_limit = 0, $time_limit = 0, $dereference = LDAP_DEREF_NEVER) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($directory_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($filter)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'filter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'filter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($attributes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($entry_limit) || $entry_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($time_limit) || $time_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($dereference)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -387,7 +387,7 @@ class c_base_ldap extends c_base_return {
     }
     unset($found);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_list', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_list', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -421,37 +421,37 @@ class c_base_ldap extends c_base_return {
    */
   public function do_read($directory_name, $filter, $attributes, $attributes_only = FALSE, $entry_limit = 0, $time_limit = 0, $dereference = LDAP_DEREF_NEVER) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($directory_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($filter)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'filter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'filter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($attributes)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($entry_limit) || $entry_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'entry_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($time_limit) || $time_limit < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'time_limit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($dereference)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'dereference', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -467,7 +467,7 @@ class c_base_ldap extends c_base_return {
     }
     unset($found);
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_read', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_read', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 
@@ -490,22 +490,22 @@ class c_base_ldap extends c_base_return {
    */
   public function do_compare($directory_name, $attribute, $value) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($directory_name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'directory_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attibute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attibute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($value)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -513,7 +513,7 @@ class c_base_ldap extends c_base_return {
     if ($result === -1) {
       unset($result);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_compare', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_compare', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -536,7 +536,7 @@ class c_base_ldap extends c_base_return {
    */
   public function get_error_message() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
@@ -556,7 +556,7 @@ class c_base_ldap extends c_base_return {
    */
   public function get_error_number() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
@@ -592,19 +592,19 @@ class c_base_ldap extends c_base_return {
    */
   public function get_option($option) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_int($option)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     $value = NULL;
     if (ldap_get_option($this->ldap, $option, $value) === FALSE) {
       unset($value);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_get_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_get_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -693,7 +693,7 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function set_ldap($ldap) {
     if (!is_resource($ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -714,14 +714,14 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_count() {
     if (!is_resource($ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     $total = ldap_count_entries($this->ldap, $this->value);
     if ($total === FALSE) {
       unset($total);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_count_entries', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_count_entries', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -738,14 +738,14 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function load_entry_first() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     $first = ldap_first_entry($this->ldap, $this->value);
     if ($first === FALSE) {
       unset($first);
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_first_entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_first_entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -769,7 +769,7 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function load_entry_next() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
@@ -780,7 +780,7 @@ class c_base_ldap_result extends c_base_return_resource {
 
     // the entry must first be loaded by self::load_entry_first().
     if (!is_null($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -807,7 +807,7 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_entry_all() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
@@ -815,7 +815,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($entries === FALSE) {
       unset($entries);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_get_entries', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_get_entries', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -837,12 +837,12 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_attribute_first() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -850,7 +850,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($attribute === FALSE) {
       unset($attribute);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_first_attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_first_attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -873,12 +873,12 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_attribute_next() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -886,7 +886,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($attribute === FALSE) {
       unset($attribute);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_next_attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_next_attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -909,12 +909,12 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_attribute_all() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -922,7 +922,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($attributes === FALSE) {
       unset($attributes);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_get_attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_get_attributes', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -945,12 +945,12 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_directory_name() {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
@@ -958,7 +958,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($directory_name === FALSE) {
       unset($directory_name);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_get_dn', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_get_dn', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -981,22 +981,22 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function get_values($attribute, $binary = FALSE) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_resource($this->entry)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->entry', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($binary)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'binary', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'binary', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1010,7 +1010,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if (!is_array($values)) {
       unset($values);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => ($binary ? 'ldap_get_values_len' : 'ldap_get_values'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => ($binary ? 'ldap_get_values_len' : 'ldap_get_values'), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -1027,12 +1027,12 @@ class c_base_ldap_result extends c_base_return_resource {
    */
   public function do_sort($attribute) {
     if (!is_resource($this->ldap)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::NO_CONNECTION);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{resource_name}' => 'this->ldap', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NO_CONNECTION);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_string($attribute)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attribute', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1040,7 +1040,7 @@ class c_base_ldap_result extends c_base_return_resource {
     if ($status === FALSE) {
       unset($status);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_sort', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_sort', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
     unset($status);
@@ -1066,7 +1066,7 @@ class c_base_ldap_result extends c_base_return_resource {
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'ldap_free_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'ldap_free_result', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
     return c_base_return_error::s_false($error);
   }
 }

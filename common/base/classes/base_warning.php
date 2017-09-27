@@ -130,16 +130,16 @@ class c_base_warning_handler {
     }
 
     if (!is_array($this->warnings)) {
-      $this->warnings = array();
+      $this->warnings = [];
     }
 
-    $this->warnings[] = array(
+    $this->warnings[] = [
       'code' => (int) $code,
       'message' => (string) $message,
       'file_name' => (is_null($file_name) ? NULL : (string) $file_name),
       'line_number' => (is_null($line_number) ? NULL : (int) $line_number),
       'context' => (is_null($context) ? NULL : (array) $context),
-    );
+    ];
 
     return TRUE;
   }

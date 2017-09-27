@@ -13,7 +13,7 @@ class c_standard_path_administer_content_ja extends c_standard_path_administer_c
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:

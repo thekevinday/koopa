@@ -35,7 +35,7 @@ class c_standard_path_user_login extends c_standard_path {
   /**
    * Implements do_execute().
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     // the parent function performs validation on the parameters.
     $executed = parent::do_execute($http, $database, $session, $settings);
     if (c_base_return::s_has_error($executed)) {
@@ -67,7 +67,7 @@ class c_standard_path_user_login extends c_standard_path {
 
         // Content
         $wrapper = $this->pr_create_tag_section(array(1 => 3));
-        $wrapper->set_tag($this->pr_create_tag_text_block(4, array('@{user}' => $session->get_name()->get_value_exact())));
+        $wrapper->set_tag($this->pr_create_tag_text_block(4, ['@{user}' => $session->get_name()->get_value_exact()]));
 
         $wrapper->set_tag($this->pr_create_tag_break());
 
@@ -103,8 +103,8 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // handle any resulting errors.
-    $problem_fields = array();
-    $problem_messages = array();
+    $problem_fields = [];
+    $problem_messages = [];
 
     // perform login if session information is provided.
     if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -138,12 +138,12 @@ class c_standard_path_user_login extends c_standard_path {
       unset($login_result);
 
       if (!empty($problem_messages)) {
-        $messages = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems', array('form_problems'));
+        $messages = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems', ['form_problems']);
         foreach ($problem_messages as $problem_delta => $problem_message) {
-          $class = array(
+          $class = [
             'form_problems-problem',
             'form_problems-problem-' . $problem_delta,
-          );
+          ];
 
           $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, 'form_problems-problem-' . $problem_delta, $class);
           $tag->set_text($problem_message);
@@ -161,26 +161,26 @@ class c_standard_path_user_login extends c_standard_path {
       unset($problem_messages);
     }
     else {
-      $form_defaults = array();
+      $form_defaults = [];
     }
     unset($logged_in);
 
     // login form
-    $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', array('login_form'));
+    $form = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_FORM, 'login_form', ['login_form']);
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_METHOD, 'post');
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ROLE, 'form');
     $form->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACCEPT_CHARACTER_SET, c_base_charset::UTF_8);
 
 
     // form id: represents the form.
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id', array('form-id', 'login_form-id'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id', ['form-id', 'login_form-id']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, 'login_form');
     $form->set_tag($tag);
     unset($tag);
 
     // form unique id: uniquely identifies the form.
     $unique_id = mt_rand(1, 16);
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id-unique', array('form-id_unique', 'login_form-id_unique'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_HIDDEN, 'form_id-unique', ['form-id_unique', 'login_form-id_unique']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, '' . $unique_id);
     $form->set_tag($tag);
     unset($tag);
@@ -194,7 +194,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // label: username
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-user_name'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, ['login_form-label-user_name']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-user_name');
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-label-user_name');
     $tag->set_text($this->pr_get_text(1));
@@ -203,9 +203,9 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // field: username
-    $class = array(
+    $class = [
       'login_form-input-user_name',
-    );
+    ];
     if (array_key_exists('login_form-user_name', $problem_fields)) {
       $class[] = 'field_has_problem';
     }
@@ -221,7 +221,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // label: password
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, array('login_form-label-password'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LABEL, NULL, ['login_form-label-password']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_FOR, 'login_form-password');
     $tag->set_text($this->pr_get_text(2));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-label-password');
@@ -230,9 +230,9 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // field: password
-    $class = array(
+    $class = [
       'login_form-input-password',
-    );
+    ];
     if (array_key_exists('login_form-password', $problem_fields)) {
       $class[] = 'field_has_problem';
     }
@@ -248,7 +248,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // button: reset
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', array('login_form-button-reset'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_RESET, 'login_form-reset', ['login_form-button-reset']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(11));
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-button-reset');
     $form->set_tag($tag);
@@ -256,7 +256,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     // button: submit
-    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', array('login_form-button-login'));
+    $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUBMIT, 'login_form-login', ['login_form-button-login']);
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_VALUE, $this->pr_get_text(12));
     #$tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_ACTION, $settings['base_path'] . 's/u/login'); // custom submit destination, but would require /s/u/login to redirect back to here.
     $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_CLASS, 'field-button-submit');
@@ -324,7 +324,7 @@ class c_standard_path_user_login extends c_standard_path {
    *   An array of problems on failure.
    */
   protected function pr_do_login(&$http, &$database, &$session, $settings) {
-    $problems = array();
+    $problems = [];
     if (empty($_POST['login_form-user_name']) || !is_string($_POST['login_form-user_name'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
@@ -355,7 +355,7 @@ class c_standard_path_user_login extends c_standard_path {
 
 
     $access_denied = FALSE;
-    $error_messages = array();
+    $error_messages = [];
 
     $connected = $database->do_connect();
     if (c_base_return::s_has_error($connected)) {
@@ -414,7 +414,7 @@ class c_standard_path_user_login extends c_standard_path {
               c_standard_index::s_do_initialize_database($database);
 
               if ($database instanceof c_standard_database) {
-                $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, array('user_name' => $_POST['login_form-user_name']));
+                $database->do_log_user(c_base_log::TYPE_CREATE, c_base_http_status::OK, ['user_name' => $_POST['login_form-user_name']]);
               }
             }
           }
@@ -467,7 +467,7 @@ class c_standard_path_user_login extends c_standard_path {
           if ($connected instanceof c_base_return_true) {
             c_standard_index::s_do_initialize_database($database);
 
-            $result = $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::FORBIDDEN, array('user_name' => $_POST['login_form-user_name']));
+            $result = $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::FORBIDDEN, ['user_name' => $_POST['login_form-user_name']]);
             $database->do_disconnect();
 
             $connected = new c_base_return_false();
@@ -583,10 +583,10 @@ class c_standard_path_user_login extends c_standard_path {
         $cookie_login->set_expires($session_expire);
         $cookie_login->set_max_age(NULL);
 
-        $data = array(
+        $data = [
           'session_id' => $session->get_session_id()->get_value_exact(),
           'expire' => gmdate(static::SESSION_DATE_FORMAT, $session_expire), // unnecessary, but provided for debug purposes.
-        );
+        ];
 
         $cookie_login->set_value($data);
         $session->set_cookie($cookie_login);
@@ -600,7 +600,7 @@ class c_standard_path_user_login extends c_standard_path {
 
     // now that any session/cookie information is loaded and processed, log any login connections.
     if ($connected instanceof c_base_return_true && $database instanceof c_standard_database) {
-      $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, array('expires' => $session->get_timeout_expire()->get_value_exact()));
+      $database->do_log_user(c_base_log::TYPE_CONNECT, c_base_http_status::OK, ['expires' => $session->get_timeout_expire()->get_value_exact()]);
     }
     unset($connected);
 
@@ -644,7 +644,7 @@ class c_standard_path_user_login extends c_standard_path {
     }
     unset($request_uri);
 
-    return array(
+    return [
       'scheme' => NULL,
       'authority' => NULL,
       'path' => $this->settings['base_path'] . c_standard_paths::URI_USER_DASHBOARD,
@@ -653,7 +653,7 @@ class c_standard_path_user_login extends c_standard_path {
       'url' => TRUE,
       'current' => $start,
       'invalid' => FALSE,
-    );
+    ];
   }
 
   /**
@@ -673,12 +673,12 @@ class c_standard_path_user_login extends c_standard_path {
    *     'data': Any ldap data found for the given user name.
    */
   protected function pr_load_ldap_data($settings, $user_name) {
-    $return_data = array(
+    $return_data = [
       'title' => NULL,
       'message' => NULL,
       'status' => TRUE,
       'data' => NULL,
-    );
+    ];
 
 
     // ldap support is disabled if ldap_server is set to NULL (or is not a string).
@@ -729,13 +729,13 @@ class c_standard_path_user_login extends c_standard_path {
       $entries = $entries->get_value();
     }
     else {
-      $entries = array();
+      $entries = [];
     }
 
     if ($entries['count'] > 0) {
-      $return_data['data'] = array(
+      $return_data['data'] = [
         'uid' => $user_name,
-      );
+      ];
 
       foreach ($settings['ldap_fields'] as $ldap_field) {
         $return_data['data'][$ldap_field] = $entries[0][$ldap_field][0];
@@ -772,7 +772,7 @@ class c_standard_path_user_login extends c_standard_path {
       $socket_error = @socket_last_error();
       @socket_clear_error();
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_create', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_create', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -788,7 +788,7 @@ class c_standard_path_user_login extends c_standard_path {
       unset($socket);
       unset($connected);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_connect', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_connect', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -827,7 +827,7 @@ class c_standard_path_user_login extends c_standard_path {
       unset($socket);
       unset($connected);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_write', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_write', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -847,7 +847,7 @@ class c_standard_path_user_login extends c_standard_path {
       unset($socket);
       unset($connected);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_read', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::SOCKET_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_read', ':{socket_error}' => $socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       unset($socket_error);
 
       return c_base_return_error::s_false($error);
@@ -860,7 +860,7 @@ class c_standard_path_user_login extends c_standard_path {
     if (!is_string($response) || strlen($response) == 0) {
       unset($response);
 
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{operation_name}' => 'socket_read', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::OPERATION_FAILURE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_read', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
       return c_base_return_error::s_false($error);
     }
 
@@ -902,7 +902,7 @@ class c_standard_path_user_login extends c_standard_path {
     $query_result = $database->do_query('select id from v_users_self_exists');
     if ($query_result instanceof c_base_database_result) {
       if (is_array($ldap)) {
-        $query_arguments = array();
+        $query_arguments = [];
 
         $email = explode('@', $ldap['data']['mail']);
         if (count($email) != 2) {
@@ -955,14 +955,14 @@ class c_standard_path_user_login extends c_standard_path {
   /**
    * Implements pr_get_text_title().
    */
-  protected function pr_get_text_title($arguments = array()) {
+  protected function pr_get_text_title($arguments = []) {
     return self::pr_get_text(0, $arguments);
   }
 
   /**
    * Implements pr_get_text().
    */
-  protected function pr_get_text($code, $arguments = array()) {
+  protected function pr_get_text($code, $arguments = []) {
     $string = '';
     switch ($code) {
       case 0:

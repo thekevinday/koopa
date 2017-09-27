@@ -65,17 +65,17 @@ require_once('common/base/classes/base_array.php');
 class c_base_path extends c_base_rfc_string {
   use t_base_return_value_exact;
 
-  private const DEFAULT_ALLOWED_METHODS = array(
+  private const DEFAULT_ALLOWED_METHODS = [
     c_base_http::HTTP_METHOD_GET => c_base_http::HTTP_METHOD_GET,
     c_base_http::HTTP_METHOD_POST => c_base_http::HTTP_METHOD_POST,
     c_base_http::HTTP_METHOD_HEAD => c_base_http::HTTP_METHOD_HEAD,
     c_base_http::HTTP_METHOD_OPTIONS => c_base_http::HTTP_METHOD_OPTIONS,
-  );
+  ];
 
-  private const DEFAULT_SANITIZE_HTML = array(
+  private const DEFAULT_SANITIZE_HTML = [
     'flags' => ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE,
     'encoding' => 'UTF-8',
-  );
+  ];
 
   protected $id_group;
 
@@ -188,7 +188,7 @@ class c_base_path extends c_base_rfc_string {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -214,7 +214,7 @@ class c_base_path extends c_base_rfc_string {
     unset($class);
 
     // @todo: store all errors on return.
-    $errors = array();
+    $errors = [];
 
     $path->set_id_group($id_group);
     $path->set_value($field_path);
@@ -264,7 +264,7 @@ class c_base_path extends c_base_rfc_string {
     unset($class);
 
     // @todo: store all errors on return.
-    $errors = array();
+    $errors = [];
 
     $path->set_id_group($id_group);
     $path->set_value($field_path);
@@ -320,7 +320,7 @@ class c_base_path extends c_base_rfc_string {
     unset($class);
 
     // @todo: store all errors on return.
-    $errors = array();
+    $errors = [];
 
     $path->set_field_destination($field_destination);
     $path->set_field_response_code($field_response_code);
@@ -412,7 +412,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_id_group($id_group) {
     if (!is_int($id_group) || $id_group < 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_group', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id_group', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -433,7 +433,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_field_destination($field_destination) {
     if (!is_string($field_destination) && !is_array($field_destination)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_destination', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'field_destination', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -453,7 +453,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_field_response_code($field_response_code) {
     if (!is_int($field_response_code)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'field_response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'field_response_code', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -473,7 +473,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_date_created($date_created) {
     if (!is_float($date_created) && !is_int($date_created)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_created', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_created', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -493,7 +493,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_date_changed($date_changed) {
     if (!is_float($date_changed) && !is_int($date_changed)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_changed', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_changed', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -513,7 +513,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_date_synced($date_synced) {
     if (!is_float($date_synced) && !is_int($date_synced)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_synced', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_synced', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -533,7 +533,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_date_locked($date_locked) {
     if (!is_float($date_locked) && !is_int($date_locked)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -553,7 +553,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_date_deleted($date_deleted) {
     if (!is_float($date_deleted) && !is_int($date_deleted)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'date_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'date_deleted', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -575,7 +575,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_include_directory($directory) {
     if (!is_string($directory) && !is_null($directory)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':argument_directory' => 'directory', ':function_directory' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'directory', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -597,7 +597,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_include_name($name) {
     if (!is_string($name) && !is_null($name)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -620,17 +620,17 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_allowed_method($method, $append = TRUE) {
     if (!is_int($method)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'method', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'method', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!$append) {
-      $this->allowed_methods = array();
+      $this->allowed_methods = [];
     }
 
     $this->allowed_methods[$method] = $method;
@@ -649,11 +649,11 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_allowed_methods($methods) {
     if (!is_array($methods)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'methods', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'methods', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->allowed_methods = array();
+    $this->allowed_methods = [];
     foreach ($methods as $method) {
       if (is_int($method)) {
         $this->allowed_methods[$method] = $method;
@@ -680,12 +680,12 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_sanitize_html($flags = NULL, $encoding = NULL) {
     if (!is_null($flags) && !is_int($flags)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'flags', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'flags', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_null($encoding) && !is_string($encoding)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'encoding', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -720,7 +720,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_path_tree($path_tree) {
     if (!is_null($path_tree) && !($path_tree instanceof c_base_path_tree)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'path_tree', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'path_tree', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -996,7 +996,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_content($is_content = NULL) {
     if (!is_null($is_content) && !is_bool($is_content)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_content', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_content', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1029,7 +1029,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_alias($is_alias = NULL) {
     if (!is_null($is_alias) && !is_bool($is_alias)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_alias', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_alias', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1062,7 +1062,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_redirect($is_redirect = NULL) {
     if (!is_null($is_redirect) && !is_bool($is_redirect)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_redirect', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_redirect', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1095,7 +1095,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_private($is_private = NULL) {
     if (!is_null($is_private) && !is_bool($is_private)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_private', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1128,7 +1128,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_locked($is_locked = NULL) {
     if (!is_null($is_locked) && !is_bool($is_locked)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_locked', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1161,7 +1161,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function is_root($is_root = NULL) {
     if (!is_null($is_root) && !is_bool($is_root)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'is_root', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'is_root', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1197,7 +1197,7 @@ class c_base_path extends c_base_rfc_string {
    *   An executed array object is returned on success.
    *   An executed array object with error bit set is returned on error.
    */
-  public function do_execute(&$http, &$database, &$session, $settings = array()) {
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
     $executed = new c_base_path_executed();
 
     if ($this->is_redirect) {
@@ -1238,22 +1238,22 @@ class c_base_path extends c_base_rfc_string {
    */
   public function set_parameters(&$http, &$database, &$session, $settings) {
     if (!($http instanceof c_base_http)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!($database instanceof c_base_database)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!($session instanceof c_base_session)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_array($settings)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1271,14 +1271,14 @@ class c_base_path extends c_base_rfc_string {
       $this->request_uri = $request_uri;
     }
     else {
-      $this->request_uri = array(
+      $this->request_uri = [
         'scheme' => $this->settings['base_scheme'],
         'authority' => $this->settings['base_host'],
         'path' => $this->settings['base_path'],
         'query' => NULL,
         'fragment' => NULL,
         'url' => TRUE,
-      );
+      ];
     }
     unset($request_uri);
 
@@ -1339,12 +1339,12 @@ class c_base_path extends c_base_rfc_string {
    */
   protected function pr_sanitize($id, $type, $type_sub = NULL) {
     if (!is_string($id) && mb_strlen($id) > 0) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
     }
 
     if (!is_int($type)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
     }
 
@@ -1480,7 +1480,7 @@ class c_base_path_executed extends c_base_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -1498,17 +1498,17 @@ class c_base_path_executed extends c_base_array {
    */
   public function set_cookies($cookie, $append = TRUE) {
     if (!($cookie instanceof c_base_cookie)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'cookie', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'cookie', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
     if (!$append || !is_array($this->cookies)) {
-      $this->cookies = array();
+      $this->cookies = [];
     }
 
     $this->cookies[] = $cookie;
@@ -1528,7 +1528,7 @@ class c_base_path_executed extends c_base_array {
    */
   public function set_output($output) {
     if (!is_null($output) && !($output instanceof c_base_return)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'output', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'output', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -1597,7 +1597,7 @@ class c_base_path_tree extends c_base_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, array());
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 
   /**
@@ -1612,7 +1612,7 @@ class c_base_path_tree extends c_base_array {
    */
   public function set_id_group($id_group) {
     if (!is_int($id_group)) {
-      $error = c_base_error::s_log(NULL, array('arguments' => array(':{argument_name}' => 'id_group', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__)), i_base_error_messages::INVALID_ARGUMENT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id_group', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
