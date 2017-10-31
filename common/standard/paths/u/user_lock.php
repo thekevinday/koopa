@@ -27,42 +27,6 @@ class c_standard_path_user_lock extends c_standard_path_user {
   protected const HANDLER_MENU_CONTENT = '\n_koopa\c_standard_menu_content_user_view';
 
   /**
-   * Implements do_execute().
-   */
-  public function do_execute(&$http, &$database, &$session, $settings = []) {
-    // the parent function performs validation on the parameters.
-    $executed = parent::do_execute($http, $database, $session, $settings);
-    if (c_base_return::s_has_error($executed)) {
-      return $executed;
-    }
-
-    if (!$this->pr_process_arguments($executed)) {
-      return $executed;
-    }
-
-    // only support HTML output unless otherwise needed.
-    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
-    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
-      $executed->set_error($error);
-      unset($error);
-
-      return $executed;
-    }
-
-    // @todo: this function needs to check to see if the user has administer (or manager?) roles (c_base_roles::MANAGER, c_base_roles::ADMINISTER) and if they do, set administrative to TRUE when calling do_load().
-    #$user = $this->session->get_user_current();
-    #$roles_current = $user->get_roles()->get_value_exact();
-
-    // @todo: this function is currently disabled, so return a path not found.
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
-    $executed->set_error($error);
-    unset($error);
-
-    return $executed;
-  }
-
-  /**
    * Implementation of pr_build_breadcrumbs().
    */
   protected function pr_build_breadcrumbs() {
@@ -125,5 +89,50 @@ class c_standard_path_user_lock extends c_standard_path_user {
     }
 
     return $string;
+  }
+
+  /**
+   * Execution of the view path.
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution results to be returned.
+   *
+   * @return null|array
+   *   NULL is returned if no errors are found.
+   *   An array of errors are returned if found.
+   */
+  protected function pr_do_execute_build_content(&$executed) {
+    $errors = NULL;
+
+
+    // initialize the content as HTML.
+    $this->pr_create_html(TRUE, $this->arguments);
+
+
+    // main content.
+    $content = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DIVIDER, static::CSS_AS_FIELD_SET_CONTENT, [static::CSS_AS_FIELD_SET_CONTENT]);
+
+    $tag = c_theme_html::s_create_tag_text(c_base_markup_tag::TYPE_SPAN, 'Not Yet Implemented.');
+    $content->set_tag($tag);
+    unset($tag);
+
+
+    // build main section.
+    $wrapper = $this->pr_create_tag_section(array(1 => 0));
+    $wrapper->set_tag($content);
+    unset($content);
+
+    $this->html->set_tag($wrapper);
+    unset($content);
+
+
+    // remaining additions
+    $this->pr_add_menus();
+
+
+    $executed->set_output($this->html);
+    unset($this->html);
+
+    return $errors;
   }
 }

@@ -55,6 +55,15 @@ class c_standard_path_user_login_ja extends c_standard_path_user_login {
       case 12:
         $string = 'ログイン';
         break;
+      case 13:
+        $string = 'セッションの有効期限は';
+        break;
+      case 14:
+        $string = 'アクティビティがない場合';
+        break;
+      case 15:
+        $string = 'アクティビティに関係なく';
+        break;
     }
 
     if (!empty($arguments)) {

@@ -485,7 +485,7 @@ class c_base_markup_tag extends c_base_rfc_string {
   const TYPE_POLYLINE                   = 107;
   const TYPE_PREFORMATTED               = 108;
   const TYPE_PROGRESS                   = 109;
-  const TYPE_Q                          = 110;
+  const TYPE_QUOTE                      = 110;
   const TYPE_RADIAL_GRADIENT            = 111;
   const TYPE_RADIO                      = 112;
   const TYPE_RANGE                      = 113;

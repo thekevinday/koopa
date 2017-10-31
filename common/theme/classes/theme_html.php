@@ -677,7 +677,7 @@ class c_theme_html extends c_base_return {
       $class_1 = 'format';
       $class_2 = 'format-preformatted';
     }
-    elseif ($type === c_base_markup_tag::TYPE_Q) {
+    elseif ($type === c_base_markup_tag::TYPE_QUOTE) {
       $class_1 = 'text';
       $class_2 = 'text-quote';
     }
@@ -2224,7 +2224,7 @@ class c_theme_html extends c_base_return {
       $markup .= $child_markup;
       $markup .= '</progress>';
     }
-    elseif ($type === c_base_markup_tag::TYPE_Q) {
+    elseif ($type === c_base_markup_tag::TYPE_QUOTE) {
       $markup .= '<q' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_q($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
       $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
       $markup .= $child_markup;

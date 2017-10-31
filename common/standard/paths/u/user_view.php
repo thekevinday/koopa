@@ -33,35 +33,6 @@ class c_standard_path_user_view extends c_standard_path_user {
   protected const IMAGE_CROPPED_WIDTH  = '192';
 
   /**
-   * Implements do_execute().
-   */
-  public function do_execute(&$http, &$database, &$session, $settings = []) {
-    // the parent function performs validation on the parameters.
-    $executed = parent::do_execute($http, $database, $session, $settings);
-    if (c_base_return::s_has_error($executed)) {
-      return $executed;
-    }
-
-    if (!$this->pr_process_arguments($executed)) {
-      return $executed;
-    }
-
-    // only support HTML output unless otherwise needed.
-    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
-    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
-      $executed->set_error($error);
-      unset($error);
-
-      return $executed;
-    }
-
-    $this->pr_do_execute_view($executed);
-
-    return $executed;
-  }
-
-  /**
    * Implementation of pr_build_breadcrumbs().
    */
   protected function pr_build_breadcrumbs() {
@@ -128,7 +99,7 @@ class c_standard_path_user_view extends c_standard_path_user {
    *   NULL is returned if no errors are found.
    *   An array of errors are returned if found.
    */
-  protected function pr_do_execute_view(&$executed) {
+  protected function pr_do_execute_build_content(&$executed) {
     $errors = NULL;
 
     $arguments = [];
@@ -164,7 +135,7 @@ class c_standard_path_user_view extends c_standard_path_user {
 
 
     // initialize the content as HTML.
-    $this->pr_create_html(TRUE, $arguments);
+    $this->pr_create_html(TRUE, $this->arguments);
 
     if (is_int($this->path_user_id)) {
       $text_id_user = $this->pr_create_tag_text('[id: ' . $this->path_user_id . ']', [], NULL, static::CLASS_ID_USER);

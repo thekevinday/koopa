@@ -50,6 +50,33 @@ class c_standard_path_user extends c_standard_path {
   }
 
   /**
+   * Implements do_execute().
+   */
+  public function do_execute(&$http, &$database, &$session, $settings = []) {
+    // the parent function performs validation on the parameters.
+    $executed = parent::do_execute($http, $database, $session, $settings);
+    if (c_base_return::s_has_error($executed)) {
+      return $executed;
+    }
+
+    if (!$this->pr_process_arguments($executed)) {
+      return $executed;
+    }
+
+    if ($this->pr_process_output_format_denied($executed)) {
+      return $executed;
+    }
+
+    if ($this->pr_process_access_denied($executed)) {
+      return $executed;
+    }
+
+    $this->pr_do_execute_build_content($executed);
+
+    return $executed;
+  }
+
+  /**
    * Implements pr_get_text_title().
    */
   protected function pr_get_text_title($arguments = []) {
@@ -194,5 +221,162 @@ class c_standard_path_user extends c_standard_path {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Provides a standard access check handler function for manager or administer access only.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *   This often may have the output settings altered by this class implementation.
+   *
+   * @return bool
+   *   FALSE on access granted, TRUE on access denied.
+   */
+  protected function pr_process_access_denied_only_power(&$executed) {
+    $roles_current = $this->session->get_user_current()->get_roles()->get_value_exact();
+    if (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
+      unset($roles_current);
+      return FALSE;
+    }
+    unset($roles_current);
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
+    $executed->set_error($error);
+    unset($error);
+
+    return TRUE;
+  }
+
+  /**
+   * Provides a standard access check handler function for administer access only.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *   This often may have the output settings altered by this class implementation.
+   *
+   * @return bool
+   *   FALSE on access granted, TRUE on access denied.
+   */
+  protected function pr_process_access_denied_only_administer(&$executed) {
+    $roles_current = $this->session->get_user_current()->get_roles()->get_value_exact();
+    if (isset($roles_current[c_base_roles::ADMINISTER])) {
+      unset($roles_current);
+      return FALSE;
+    }
+    unset($roles_current);
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
+    $executed->set_error($error);
+    unset($error);
+
+    return TRUE;
+  }
+
+  /**
+   * Provides a standard access check handler function for manager access only.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *   This often may have the output settings altered by this class implementation.
+   *
+   * @return bool
+   *   FALSE on access granted, TRUE on access denied.
+   */
+  protected function pr_process_access_denied_only_manager(&$executed) {
+    $roles_current = $this->session->get_user_current()->get_roles()->get_value_exact();
+    if (isset($roles_current[c_base_roles::MANAGER])) {
+      unset($roles_current);
+      return FALSE;
+    }
+    unset($roles_current);
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
+    $executed->set_error($error);
+    unset($error);
+
+    return TRUE;
+  }
+
+  /**
+   * Provides a standard access check handler function, specific for output format.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *   This often may have the output settings altered by this class implementation.
+   *
+   * @return bool
+   *   FALSE on access granted, TRUE on access denied.
+   */
+  protected function pr_process_output_format_denied(&$executed) {
+
+    // only support HTML output unless otherwise needed.
+    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
+    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
+      $executed->set_error($error);
+      unset($error);
+
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Execution of the view path.
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution results to be returned.
+   *
+   * @return null|array
+   *   NULL is returned if no errors are found.
+   *   An array of errors are returned if found.
+   */
+  protected function pr_do_execute_build_content(&$executed) {
+    return NULL;
+  }
+
+  /**
+   * Implementation of pr_process_access_denied().
+   */
+  protected function pr_process_access_denied(&$executed) {
+    $user = $this->session->get_user_current();
+    $roles_current = $user->get_roles()->get_value_exact();
+
+    $deny_access = TRUE;
+    if ($this->path_user_id === $user->get_id()->get_value_exact()) {
+      $deny_access = FALSE;
+    }
+    elseif (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
+      $deny_access = FALSE;
+    }
+    unset($user);
+    unset($roles_current);
+
+    if ($deny_access) {
+      unset($deny_access);
+
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
+      $executed->set_error($error);
+      unset($error);
+
+      return TRUE;
+    }
+    unset($deny_access);
+
+    return FALSE;
   }
 }

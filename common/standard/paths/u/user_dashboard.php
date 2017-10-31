@@ -23,28 +23,6 @@ class c_standard_path_user_dashboard extends c_standard_path_user {
   public const PATH_SELF = 'u/dashboard';
 
   /**
-   * Implementation of pr_build_breadcrumbs().
-   */
-  protected function pr_build_breadcrumbs() {
-    $result = parent::pr_build_breadcrumbs();
-    if ($result instanceof c_base_return_false) {
-      unset($result);
-      return new c_base_return_false();
-    }
-    unset($result);
-
-    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
-      $this->breadcrumbs = new c_base_menu_item();
-    }
-
-    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), self::PATH_SELF);
-    $this->breadcrumbs->set_item($item);
-    unset($item);
-
-    return new c_base_return_true();
-  }
-
-  /**
    * Implements do_execute().
    */
   public function do_execute(&$http, &$database, &$session, $settings = []) {
@@ -58,19 +36,13 @@ class c_standard_path_user_dashboard extends c_standard_path_user {
       return $executed;
     }
 
-    // only support HTML output unless otherwise needed.
-    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
-    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
-      $executed->set_error($error);
-      unset($error);
-
+    if ($this->pr_process_output_format_denied($executed)) {
       return $executed;
     }
 
-    // @todo: this function needs to check to see if the user has administer (or manager?) roles (c_base_roles::MANAGER, c_base_roles::ADMINISTER) and if they do, set administrative to TRUE when calling do_load().
-    #$user = $this->session->get_user_current();
-    #$roles_current = $user->get_roles()->get_value_exact();
+    if ($this->pr_process_access_denied($executed)) {
+      return $executed;
+    }
 
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
@@ -153,6 +125,28 @@ class c_standard_path_user_dashboard extends c_standard_path_user {
     unset($this->html);
 
     return $executed;
+  }
+
+  /**
+   * Implementation of pr_build_breadcrumbs().
+   */
+  protected function pr_build_breadcrumbs() {
+    $result = parent::pr_build_breadcrumbs();
+    if ($result instanceof c_base_return_false) {
+      unset($result);
+      return new c_base_return_false();
+    }
+    unset($result);
+
+    if (!($this->breadcrumbs instanceof c_base_menu_item)) {
+      $this->breadcrumbs = new c_base_menu_item();
+    }
+
+    $item = $this->pr_create_breadcrumbs_item($this->pr_get_text(0), self::PATH_SELF);
+    $this->breadcrumbs->set_item($item);
+    unset($item);
+
+    return new c_base_return_true();
   }
 
   /**

@@ -19,32 +19,39 @@ require_once('common/base/classes/base_mime.php');
 class c_standard_path extends c_base_path {
   public const PATH_SELF = '';
 
-  protected const CSS_AS_SECTION                = 'as-section';
-  protected const CSS_AS_SECTION_HEADERS        = 'as-section-headers';
-  protected const CSS_AS_WRAPPER                = 'as-wrapper';
+  protected const CSS_AS_BOLD                   = 'as-bold';
   protected const CSS_AS_BREAK                  = 'as-break';
-  protected const CSS_AS_TITLE                  = 'as-title';
-  protected const CSS_AS_TEXT                   = 'as-text';
-  protected const CSS_AS_TEXT_BLOCK             = 'as-text-block';
-  protected const CSS_AS_PARAGRAPH              = 'as-paragraph';
-  protected const CSS_AS_PARAGRAPH_BLOCK        = 'as-paragraph-block';
-  protected const CSS_AS_LINK_BLOCK             = 'as-link_block';
-  protected const CSS_AS_LINK_BLOCK_NAME        = 'as-link_block-name';
-  protected const CSS_AS_LINK_BLOCK_LINK        = 'as-link_block-link';
-  protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
-  protected const CSS_AS_HEADER                 = 'as-header';
-  protected const CSS_AS_HEADER_TEXT            = 'as-header-text';
-  protected const CSS_AS_HEADERS                = 'as-headers';
+  protected const CSS_AS_CITATION               = 'as-citation';
+  protected const CSS_AS_CODE                   = 'as-code';
+  protected const CSS_AS_DELETE                 = 'as-delete';
   protected const CSS_AS_FIELD_SET              = 'as-field_set';
   protected const CSS_AS_FIELD_SET_LEGEND       = 'as-field_set-legend';
   protected const CSS_AS_FIELD_SET_CONTENT      = 'as-field_set-content';
   protected const CSS_AS_FIELD_ROW              = 'as-field_row';
   protected const CSS_AS_FIELD_ROW_NAME         = 'as-field_row-name';
   protected const CSS_AS_FIELD_ROW_VALUE        = 'as-field_row-value';
+  protected const CSS_AS_HEADER                 = 'as-header';
+  protected const CSS_AS_HEADER_TEXT            = 'as-header-text';
+  protected const CSS_AS_HEADERS                = 'as-headers';
+  protected const CSS_AS_INSERT                 = 'as-insert';
+  protected const CSS_AS_ITALICS                = 'as-italics';
+  protected const CSS_AS_LINK_BLOCK             = 'as-link_block';
+  protected const CSS_AS_LINK_BLOCK_NAME        = 'as-link_block-name';
+  protected const CSS_AS_LINK_BLOCK_LINK        = 'as-link_block-link';
+  protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
+  protected const CSS_AS_MARK                   = 'as-mark';
+  protected const CSS_AS_PARAGRAPH              = 'as-paragraph';
+  protected const CSS_AS_PARAGRAPH_BLOCK        = 'as-paragraph-block';
+  protected const CSS_AS_PREFORMATTED           = 'as-preformatted';
   protected const CSS_AS_ROW                    = 'as-row';
   protected const CSS_AS_ROW_EVEN               = 'as-row-even';
   protected const CSS_AS_ROW_ODD                = 'as-row-odd';
   protected const CSS_AS_ROW_VALUE              = 'as-row-value';
+  protected const CSS_AS_SAMPLE                 = 'as-sample';
+  protected const CSS_AS_SCRIPT_SUB             = 'as-script_sub';
+  protected const CSS_AS_SCRIPT_SUPER           = 'as-script_super';
+  protected const CSS_AS_SECTION                = 'as-section';
+  protected const CSS_AS_SECTION_HEADERS        = 'as-section-headers';
   protected const CSS_AS_SPACER                 = 'as-spacer';
   protected const CSS_AS_TABLE                  = 'as-table';
   protected const CSS_AS_TABLE_CAPTION          = 'as-table-caption';
@@ -56,9 +63,17 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_TABLE_ROW              = 'as-table-row';
   protected const CSS_AS_TABLE_CELL             = 'as-table-cell';
   protected const CSS_AS_TABLE_FOOTER           = 'as-table-footer';
+  protected const CSS_AS_TITLE                  = 'as-title';
+  protected const CSS_AS_TEXT                   = 'as-text';
+  protected const CSS_AS_TEXT_BLOCK             = 'as-text-block';
+  protected const CSS_AS_QUOTE_BLOCK            = 'as-quote_block';
+  protected const CSS_AS_QUOTE_INLINE           = 'as-quote_inline';
+  protected const CSS_AS_UNDERLINE              = 'as-underline';
+  protected const CSS_AS_WRAPPER                = 'as-wrapper';
 
   protected const CSS_IS_JAVASCRIPT_ENABLED  = 'javascript-enabled';
   protected const CSS_IS_JAVASCRIPT_DISABLED = 'javascript-disabled';
+
   protected const CSS_IS_CONTENT_TYPE        = 'is-html_5';
 
   protected const CSS_SYSTEM_PREFIX = 'system-';
@@ -476,6 +491,561 @@ class c_standard_path extends c_base_path {
     }
 
     return c_theme_html::s_create_tag($this->text_type, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard text, explicitly using span.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_text_span($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_TEXT, static::CSS_AS_TEXT];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SPAN, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard bold.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_bold($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_BOLD, static::CSS_AS_BOLD];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BOLD, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BOLD, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard italics.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_italics($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_ITALICS, static::CSS_AS_ITALICS];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_ITALICS, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_ITALICS, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard subscript.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_script_sub($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_SCRIPT_SUB, static::CSS_AS_SCRIPT_SUB];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUB_SCRIPT, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUB_SCRIPT, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard superscript.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_text_script_super($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_SCRIPT_SUPER, static::CSS_AS_SCRIPT_SUPER];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUPER_SCRIPT, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SUPER_SCRIPT, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard inline quote.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_quote_inline($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_QUOTE_INLINE, static::CSS_AS_QUOTE_INLINE];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_QUOTE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_QUOTE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard underline.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_underline($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_UNDERLINE, static::CSS_AS_UNDERLINE];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNDERLINE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNDERLINE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard sample.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_sample($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_SAMPLE, static::CSS_AS_SAMPLE];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SAMPLE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_SAMPLE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard block quote.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_quote_block($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_QUOTE_BLOCK, static::CSS_AS_QUOTE_BLOCK];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BLOCKQUOTE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_BLOCKQUOTE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard citation.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_citation($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_CITATION, static::CSS_AS_CITATION];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CITE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CITE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard code.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_code($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_CODE, static::CSS_AS_CODE];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CODE, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_CODE, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard delete.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_delete($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_DELETE, static::CSS_AS_DELETE];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DEL, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_DEL, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard insert.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_insert($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_INSERT, static::CSS_AS_INSERT];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_INS, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_INS, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard mark.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_mark($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_MARK, static::CSS_AS_MARK];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_MARK, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_MARK, $id, $classes, $text);
+  }
+
+  /**
+   * Creates the standard preformatted.
+   *
+   * @param int|string $text
+   *   The text or the text code to use.
+   * @param array $arguments
+   *   (optional) An array of arguments to convert into text.
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_preformatted($text, $arguments = [], $id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_PREFORMATTED, static::CSS_AS_PREFORMATTED];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_int($text)) {
+      return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_PREFORMATTED, $id, $classes, $this->pr_get_text($text, $arguments));
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_PREFORMATTED, $id, $classes, $text);
   }
 
   /**
@@ -2086,6 +2656,23 @@ class c_standard_path extends c_base_path {
     $this->arguments = [];
 
     return TRUE;
+  }
+
+  /**
+   * Provides a standard access check handler function.
+   *
+   * This is generally intended to be called by do_execute().
+   *
+   * @param c_base_path_executed &$executed
+   *   The execution array for making changes to.
+   *   Any detected errors are assigned to this.
+   *   This often may have the output settings altered by this class implementation.
+   *
+   * @return bool
+   *   FALSE on access granted, TRUE on access denied.
+   */
+  protected function pr_process_access_denied(&$executed) {
+    return FALSE;
   }
 }
 

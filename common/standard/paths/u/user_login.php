@@ -28,6 +28,7 @@ require_once('common/theme/classes/theme_html.php');
  */
 class c_standard_path_user_login extends c_standard_path {
   public const SESSION_DATE_FORMAT = 'D, d-M-Y H:i:s T';
+  public const EXPIRE_DATE_FORMAT  = 'D, F j, Y, h:i:sa T';
   public const PATH_SELF           = 'u/login';
 
   protected const USER_PUBLIC = 'u_standard_public';
@@ -71,7 +72,22 @@ class c_standard_path_user_login extends c_standard_path {
 
         $wrapper->set_tag($this->pr_create_tag_break());
 
-        $wrapper->set_tag($this->pr_create_tag_text_block(9));
+        $text_block = $this->pr_create_tag_text_block(NULL);
+
+        $text_block->set_tag($this->pr_create_tag_text(13));
+        $text_block->set_tag($this->pr_create_tag_italics(date(self::EXPIRE_DATE_FORMAT, $session->get_timeout_expire()->get_value_exact())));
+        $text_block->set_tag($this->pr_create_tag_text(14));
+
+        $text_block->set_tag($this->pr_create_tag_break());
+
+        $text_block->set_tag($this->pr_create_tag_text(13));
+        $text_block->set_tag($this->pr_create_tag_italics(date(self::EXPIRE_DATE_FORMAT, $session->get_timeout_max()->get_value_exact())));
+        $text_block->set_tag($this->pr_create_tag_text(15));
+
+        $wrapper->set_tag($text_block);
+        unset($text_block);
+
+        $wrapper->set_tag($this->pr_create_tag_break());
 
         $block = $this->pr_create_tag_text_block(NULL);
         $block->set_tag($this->pr_create_tag_text(5));
@@ -1003,6 +1019,15 @@ class c_standard_path_user_login extends c_standard_path {
         break;
       case 12:
         $string = 'Login';
+        break;
+      case 13:
+        $string = 'Your session will expire on ';
+        break;
+      case 14:
+        $string = ' if no activity.';
+        break;
+      case 15:
+        $string = ' regardless of activity.';
         break;
     }
 

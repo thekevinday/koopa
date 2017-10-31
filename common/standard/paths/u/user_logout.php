@@ -34,6 +34,10 @@ class c_standard_path_user_logout extends c_standard_path {
       return $executed;
     }
 
+    if ($this->pr_process_output_format_denied($executed)) {
+      return $executed;
+    }
+
     $this->pr_do_logout($http, $database, $session, $settings);
 
     $wrapper = $this->pr_create_tag_section(array(1 => 0));
