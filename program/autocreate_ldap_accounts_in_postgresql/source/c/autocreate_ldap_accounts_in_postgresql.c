@@ -27,6 +27,9 @@
  *
  * Copyright Kevin Day, lgpl v2.1 or later.
  */
+#define _GNU_SOURCE
+#define LDAP_DEPRECATED 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
