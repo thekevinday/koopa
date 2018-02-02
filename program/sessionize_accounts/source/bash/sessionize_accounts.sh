@@ -30,6 +30,8 @@ main() {
   local path_pids="/programs/run/sessionize_accounts/"
   local path_socket_directory="/programs/sockets/sessionize_accounts/"
   local path_socket_name="sessions.socket"
+  local path_socket_directory_mask="u+rwx,g+rx,o-rwx"
+  local path_socket_name_mask="ugo+rw-x"
   local parameter_system=$2
   local sa_systems=
   local i=
@@ -270,7 +272,7 @@ start_command() {
 
   # guarantee that the '$process_group' has read and execute only access to the directory, deny world access.
   chgrp $process_group $path_socket_directory/$sa_system/
-  chmod u+rwx,g+rx,o-rwx $path_socket_directory/$sa_system/
+  chmod $path_socket_directory_mask $path_socket_directory/$sa_system/
 
   # make sure no session socket already exists before starting.
   # this assumes that the pid file has already been checked and therefore no existing process is using the socket file (aka: assume this is a stale socket file).
@@ -286,9 +288,9 @@ start_command() {
     result=$?
   fi
 
-  # make sure the socket can be written to.
+  # make sure the socket has the desired permissions.
   if [[ -e $path_socket_directory/$sa_system/$path_socket_name ]] ; then
-    chmod ugo+w $path_socket_directory/$sa_system/$path_socket_name
+    chmod $path_socket_name_mask $path_socket_directory/$sa_system/$path_socket_name
   fi
 
   if [[ $result -ne 0 ]] ; then
