@@ -190,8 +190,19 @@ class c_standard_path_user extends c_standard_path {
     }
 
     if (is_null($this->path_user_id)) {
-      $this->path_user = $this->session->get_user_current();
-      $this->path_user_id = $this->path_user->get_id()->get_value_exact();
+      $path_user = $this->session->get_user_current();
+      if ($path_user instanceof c_base_users_user) {
+        $this->path_user = $path_user;
+        $this->path_user_id = $this->path_user->get_id()->get_value_exact();
+      }
+      else {
+        if ($path_user->has_error()) {
+          $executed->set_error($path_user->get_error());
+        }
+
+        $this->path_user = FALSE;
+      }
+      unset($path_user);
 
       // do not allow view access to reserved/special accounts.
       if ($this->path_user_id < static::ID_USER_MINIMUM) {
