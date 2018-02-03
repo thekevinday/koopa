@@ -545,7 +545,17 @@ class c_standard_index extends c_base_return {
       $this->session->set_user_current($user_current);
     }
     else {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{account_name}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+      $account_name = $user_current->get_name_machine();
+      if ($account_name instanceof c_base_return_string) {
+        $account_name = $account_name->get_value_exact();
+      }
+      else {
+        $account_name = '';
+      }
+
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{account_name}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+      unset($account_name);
+
       return c_base_return_error::s_false($error);
     }
     unset($user_current);
