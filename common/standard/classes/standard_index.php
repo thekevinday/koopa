@@ -532,6 +532,14 @@ class c_standard_index extends c_base_return {
     // open a database connection
     $result = $this->database->do_connect();
     if (c_base_return::s_has_error($result)) {
+      if ($user_name == $this->settings['database_user_public']) {
+        $error_message = $result->get_error(0)->get_message();
+        if ($error_message == 'pg_connect(): Unable to connect to PostgreSQL server: fe_sendauth: no password supplied') {
+          $error = c_base_error::s_log('Unable to connect to database with public account (message = ' . $error_message . ').', ['arguments' => [':{database_account}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+          return c_base_return_error::s_false($error);
+        }
+        unset($error_message);
+      }
       return c_base_return_error::s_false($result->get_error());
     }
     unset($result);
@@ -553,7 +561,7 @@ class c_standard_index extends c_base_return {
         $account_name = '';
       }
 
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{account_name}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_account}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
       unset($account_name);
 
       return c_base_return_error::s_false($error);
