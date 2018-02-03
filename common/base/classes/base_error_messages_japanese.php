@@ -260,6 +260,14 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('データベースに接続できませんでした。');
       }
     }
+    elseif ($code === static::POSTGRESQL_NO_ACCOUNT) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('データベースアクセスが拒否されました：アカウント：{database_account}が存在しないか、必要なアクセス権' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');
+      }
+      else {
+        return c_base_return_string::s_new('データベースアクセスが拒否されました：アカウントが存在しないか、必要なアクセス権がありません ');
+      }
+    }
     elseif ($code === static::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('データベース :{database_name} は接続されていません' . (is_null($function_name_string) ? '' : '、') . $function_name_string . '。');

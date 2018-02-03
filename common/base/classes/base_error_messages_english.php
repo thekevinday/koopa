@@ -255,6 +255,14 @@ final class c_base_error_messages_english implements i_base_error_messages {
         return c_base_return_string::s_new('Failed to connect to the database.');
       }
     }
+    elseif ($code === static::POSTGRESQL_NO_ACCOUNT) {
+      if ($arguments === TRUE) {
+        return c_base_return_string::s_new('Database access denied: the account :{database_account} does not exist or does not have the required access' . $function_name_string . '.');
+      }
+      else {
+        return c_base_return_string::s_new('Database access denied: the account does not exist or does not have the required access.');
+      }
+    }
     elseif ($code === static::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('The database, :{database_name}, is not connected' . $function_name_string . '.');

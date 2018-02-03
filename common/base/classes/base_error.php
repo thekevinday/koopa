@@ -592,15 +592,16 @@ interface i_base_error_messages {
   const NO_SESSION                    = 15;
   const NO_SUPPORT                    = 16;
   const POSTGRESQL_CONNECTION_FAILURE = 17;
-  const POSTGRESQL_NO_CONNECTION      = 18;
-  const POSTGRESQL_NO_RESOURCE        = 19;
-  const POSTGRESQL_ERROR              = 20;
-  const SOCKET_FAILURE                = 21;
-  const ACCESS_DENIED                 = 22;
-  const ACCESS_DENIED_UNAVAILABLE     = 23;
-  const ACCESS_DENIED_USER            = 24;
-  const ACCESS_DENIED_ADMINISTRATION  = 25;
-  const SERVER_ERROR                  = 26;
+  const POSTGRESQL_NO_ACCOUNT         = 18;
+  const POSTGRESQL_NO_CONNECTION      = 19;
+  const POSTGRESQL_NO_RESOURCE        = 20;
+  const POSTGRESQL_ERROR              = 21;
+  const SOCKET_FAILURE                = 22;
+  const ACCESS_DENIED                 = 23;
+  const ACCESS_DENIED_UNAVAILABLE     = 24;
+  const ACCESS_DENIED_USER            = 25;
+  const ACCESS_DENIED_ADMINISTRATION  = 26;
+  const SERVER_ERROR                  = 27;
 
 
   /**

@@ -545,7 +545,8 @@ class c_standard_index extends c_base_return {
       $this->session->set_user_current($user_current);
     }
     else {
-      // @todo: handle errors.
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{account_name}' => $last_error, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+      return c_base_return_error::s_false($error);
     }
     unset($user_current);
 
@@ -601,9 +602,11 @@ class c_standard_index extends c_base_return {
     }
 
     if (c_base_return::s_has_error($connected)) {
+      $this->session->set_error($connected->get_error());
       unset($connected);
-
-      $executed = $paths->get_handler_server_error($this->http, $this->database, $this->session, $this->settings);
+      $error_page = $paths->get_handler_server_error($this->http, $this->database, $this->session, $this->settings);
+      $executed = $error_page->do_execute($this->http, $this->database, $this->session, $this->settings);
+      unset($error_page);
     }
     else {
       unset($connected);
