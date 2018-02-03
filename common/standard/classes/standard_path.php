@@ -2135,7 +2135,6 @@ class c_standard_path extends c_base_path {
     return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LIST_ITEM, $id, $classes);
   }
 
-
   /**
    * Create a new HTML markup class with default settings populated.
    *
@@ -2643,6 +2642,38 @@ class c_standard_path extends c_base_path {
    */
   protected function pr_get_text_title($arguments = []) {
     return NULL;
+  }
+
+  /**
+   * Converts a given error message into a processed string.
+   *
+   * @param c_base_error $code
+   *   The error message code.
+   * @param bool $arguments
+   *   (optional) When TRUE, argument placeholders are added.
+   *   When FALSE, no placeholders are provided.
+   *   All placeholders should begin with a single colon ':' and be wrapped within '{}', such that 'example' placeholder is ':{example}'.
+   * @param bool $function_name
+   *   (optional) When TRUE, the function name is included with the message.
+   *   When FALSE, no funciton name is provided.
+   * @param null|string $additional_message
+   *   (optional) Any additional messages to display.
+   * @param bool $use_html
+   *   (optional) When TRUE, the message is escaped and then wrapped in HTML.
+   *   When FALSE, no HTML wrapping or escaping is peformed.
+   *
+   * @return c_base_return_string
+   *   A processed string is returned on success.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: s_get_message()
+   */
+  protected function pr_get_error_text($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
+    if (!($error instanceof c_base_error)) {
+      return new c_base_return_false();
+    }
+
+    return c_base_return_string::s_new('');
   }
 
   /**

@@ -28,6 +28,40 @@ class c_standard_path_server_error extends c_standard_path_exception {
     $wrapper->set_tag($this->pr_create_tag_text_block(1));
 
 
+    // append any error messages to the page.
+    $errors = $this->session->get_error();
+    if (is_array($errors) && !empty($errors)) {
+      $error_wrapper = $this->pr_create_tag_wrapper('error-block');
+      $error_wrapper->set_tag($this->pr_create_tag_header(2, 2, 'error-block-title'));
+
+      $error_list = $this->pr_create_tag_list();
+      foreach ($errors as $error) {
+        $error_text = $this->pr_get_error_text($error);
+        if (!($error_text instanceof c_base_return_string)) {
+          unset($error_text);
+          continue;
+        }
+
+        $text = $this->pr_create_tag_text($error_text->get_value_exact());
+        unset($error_text);
+
+        $list_item = $this->pr_create_tag_list_item();
+        $list_item->set_tag($text);
+        unset($text);
+
+        $error_list->set_tag($list_item);
+        unset($list_item);
+      }
+      unset($error);
+
+      $error_wrapper->set_tag($error_list);
+      unset($error_list);
+
+      $wrapper->set_tag($error_wrapper);
+      unset($error_wrapper);
+    }
+
+
     // initialize the content as HTML.
     $this->pr_create_html(FALSE);
     $this->html->set_tag($wrapper);
@@ -72,6 +106,18 @@ class c_standard_path_server_error extends c_standard_path_exception {
   }
 
   /**
+   * Implements pr_get_error_text().
+   */
+  protected function pr_get_error_text($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
+    if (!($error instanceof c_base_error)) {
+      return new c_base_return_false();
+    }
+
+    require_once('common/base/classes/base_error_messages_english.php');
+    return c_base_error_messages_english::s_render_error_message($error, $arguments, $function_name, $additional_message, $html);
+  }
+
+  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = []) {
@@ -82,6 +128,9 @@ class c_standard_path_server_error extends c_standard_path_exception {
         break;
       case 1:
         $string = 'Something went wrong while processing your request, please try again later.';
+        break;
+      case 2:
+        $string = 'Error Messages';
         break;
     }
 
