@@ -529,6 +529,7 @@ class c_standard_path_user_login extends c_standard_path {
         unset($details);
       }
       unset($access_denied);
+      unset($error_message);
 
       // connection was established but errors have occured.
       if ($connected instanceof c_base_return_true && $database instanceof c_standard_database) {
