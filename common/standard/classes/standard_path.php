@@ -39,6 +39,10 @@ class c_standard_path extends c_base_path {
   protected const CSS_AS_LINK_BLOCK_NAME        = 'as-link_block-name';
   protected const CSS_AS_LINK_BLOCK_LINK        = 'as-link_block-link';
   protected const CSS_AS_LINK_BLOCK_DESCRIPTION = 'as-link_block-description';
+  protected const CSS_AS_LIST                   = 'as-list';
+  protected const CSS_AS_LIST_ITEM              = 'as-list-item';
+  protected const CSS_AS_LIST_ORDERED           = 'as-list-ordered';
+  protected const CSS_AS_LIST_UNORDERED         = 'as-list-unordered';
   protected const CSS_AS_MARK                   = 'as-mark';
   protected const CSS_AS_PARAGRAPH              = 'as-paragraph';
   protected const CSS_AS_PARAGRAPH_BLOCK        = 'as-paragraph-block';
@@ -2040,6 +2044,97 @@ class c_standard_path extends c_base_path {
 
     return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_TABLE_FOOTER, $id, $classes);
   }
+
+  /**
+   * Creates the standard ordered or unordered list.
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   * @param string|null $type
+   *   (optional) The list type to use.
+   *   If NULL, this value is ignored.
+   *   This is may have different values depending on if this is an ordered or an unordered list.
+   * @param string|null $start
+   *   (optional) The starting number for an ordered list.
+   *   If NULL, then an unordered list is used.
+   *   If an empty string, then this is an ordered list, but the start attribute is not set.
+   * @param string|null $reversed
+   *   (optional) The reversed attribute value for an ordered list.
+   *   If NULL, then this value is ignored.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_list($id = NULL, $extra_class = NULL, $type = NULL, $start = NULL, $reversed = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_LIST, static::CSS_AS_LIST];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    if (is_string($start)) {
+      $classes[] = static::CSS_AS_LIST_ORDERED;
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_ORDERED_LIST, $id, $classes);
+
+      if (is_numeric($start)) {
+        $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_START, $start);
+      }
+
+      if (is_string($reversed)) {
+        $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_REVERSED, $reversed);
+      }
+    }
+    else {
+      $classes[] = static::CSS_AS_LIST_UNORDERED;
+      $tag = c_theme_html::s_create_tag(c_base_markup_tag::TYPE_UNORDERED_LIST, $id, $classes);
+    }
+
+    if (is_string($type)) {
+      $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_TYPE, $type);
+    }
+
+    return $tag;
+  }
+
+  /**
+   * Creates the standard "list item".
+   *
+   * @param string|null $id
+   *   (optional) An ID attribute to assign.
+   *   If NULL, then this is not assigned.
+   * @param string|null $extra_class
+   *   (optional) An additional css class to append to the wrapping block.
+   *   May be an array of classes to append.
+   *   If NULL, then this is not assigned.
+   *
+   * @return c_base_markup_tag
+   *   The generated markup tag.
+   */
+  protected function pr_create_tag_list_item($id = NULL, $extra_class = NULL) {
+    $classes = [$this->settings['base_css'] . static::CSS_AS_LIST_ITEM, static::CSS_AS_LIST_ITEM];
+    if (is_string($extra_class)) {
+      $classes[] = $extra_class;
+    }
+    elseif (is_array($extra_class)) {
+      foreach ($extra_class as $class) {
+        $classes[] = $class;
+      }
+      unset($class);
+    }
+
+    return c_theme_html::s_create_tag(c_base_markup_tag::TYPE_LIST_ITEM, $id, $classes);
+  }
+
 
   /**
    * Create a new HTML markup class with default settings populated.

@@ -1,0 +1,29 @@
+# autocreate ldap accounts in postgresql systemd service
+[Unit]
+Description=Autocreate LDAP accounts in Postgresql.
+#After=local-fs.target
+ConditionPathExists=/programs/settings/autocreate_ldap_accounts_in_postgresql/system.settings
+
+[Service]
+#Type=oneshot
+#Type=simple
+#Type=notify
+#Type=forking
+ExecStart=/etc/init.d/autocreate_ldap_accounts_in_postgresql
+ExecReload=/etc/init.d/autocreate_ldap_accounts_in_postgresql
+ExecStop=/etc/init.d/autocreate_ldap_accounts_in_postgresql
+#PIDFile=/run/nginx.pid
+
+#Restart=no
+#StandardOutput=syslog
+
+#RemainAfterExit=yes
+#IgnoreSIGPIPE=false
+#TimeoutStopSec=5
+#KillMode=mixed
+#KillMode=process
+
+#ProtectSystem=yes
+#CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+#RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+#RestrictNamespaces=yes
