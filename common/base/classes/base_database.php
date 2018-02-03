@@ -908,19 +908,21 @@ class c_base_database extends c_base_return {
       $warnings = $handle_warnings->get_warnings();
       unset($handle_warnings);
 
-      $failure_reasons = [];
+      $false = c_base_return_error::s_false();
       if ($warnings instanceof c_base_return_array) {
         $failure_reasons = $warnings->get_value_exact();
+        foreach ($failure_reasons as $key => $failure_reason) {
+          $failure = c_base_error::s_log($failure_reason['message'], ['arguments' => [':{database_name}' => $this->connection_string->get_database()->get_value_exact(), ':{error_message}' => $failure_reason['message'], ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
+          $false->set_error($failure);
+        }
+        unset($failure);
+        unset($failure_reason);
       }
       unset($warnings);
 
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_name}' => $this->connection_string->get_database()->get_value_exact(), ':{failure_reasons}' => $failure_reasons, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_CONNECTION_FAILURE);
-      unset($failure_reasons);
-
-      return c_base_return_error::s_false($error);
+      return $false;
     }
     unset($handle_warnings);
-    unset($warnings);
 
     $this->database = $database;
     unset($database);

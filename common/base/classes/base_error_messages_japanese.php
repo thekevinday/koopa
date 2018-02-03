@@ -76,21 +76,30 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
       return c_base_return_string::s_new($message);
     }
 
+    // replace the reserved ':{error_message}', with the message assigned to the error object.
+    $error_message = $error->get_message();
+    if (!is_string($error_message)) {
+      $error_message = '';
+    }
+
+    if ($html) {
+      $processed_message = preg_replace('/:{error_message}/i', '<div class="error_message-error_message">' . htmlspecialchars($error_message, ENT_HTML5 | ENT_COMPAT | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</div>', $message);
+    }
+    else {
+      $processed_message = preg_replace('/:{error_message}/i', $error_message, $message);
+    }
+    unset($error_message);
+
+    if (is_string($processed_message)) {
+      $message = $processed_message;
+    }
+    unset($processed_message);
+
     $details = $error->get_details();
     if (isset($details['arguments']) && is_array($details['arguments'])) {
       if ($html) {
         foreach ($details['arguments'] as $detail_name => $detail_value) {
-          if (is_array($detail_value)) {
-            // @fixme: re-write as necessary to handle multiple values.
-            $detail_value = reset($detail_value);
-            if (isset($detail_value['message']) && is_string($detail_value['message'])) {
-              $detail_value = $detail_value['message'];
-            }
-            else {
-              $detail_value = '';
-            }
-          }
-          else if (!is_string($detail_value)) {
+          if (!is_string($detail_value)) {
             $detail_value = '';
           }
 
@@ -105,17 +114,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
       }
       else {
         foreach ($details['arguments'] as $detail_name => $detail_value) {
-          if (is_array($detail_value)) {
-            // @fixme: re-write as necessary to handle multiple values.
-            $detail_value = reset($detail_value);
-            if (isset($detail_value['message']) && is_string($detail_value['message'])) {
-              $detail_value = $detail_value['message'];
-            }
-            else {
-              $detail_value = '';
-            }
-          }
-          else if (!is_string($detail_value)) {
+          if (!is_string($detail_value)) {
             $detail_value = '';
           }
 

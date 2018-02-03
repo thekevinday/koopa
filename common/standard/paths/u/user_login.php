@@ -383,38 +383,32 @@ class c_standard_path_user_login extends c_standard_path {
       $error = reset($errors);
       unset($errors);
 
-      $details = $error->get_details();
+      $error_messsage = $error->get_message();
       unset($error);
 
-      if (isset($details['arguments'][':{failure_reasons}'][0]['message'])) {
+      if (is_string($error_message)) {
         // in the case where the database cannot be connected to, do not attempt to ensure user account.
-        if (preg_match('/could not connect to server: connection refused/i', $details['arguments'][':{failure_reasons}'][0]['message']) > 0) {
+        if (preg_match('/could not connect to server: connection refused/i', $error_message) > 0) {
           // @todo: separate messages for admin users and public users.
-          #foreach ($details['arguments'][':{failure_reasons}'] as $error_message) {
-          #  $error_messages[] = $error_message;
-          #}
-          #unset($error_message);
-          unset($details);
 
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, cannot connect to the database.');
           return $problems;
         }
-        elseif (preg_match('/no pg_hba\.conf entry for host/i', $details['arguments'][':{failure_reasons}'][0]['message']) > 0) {
+        elseif (preg_match('/no pg_hba\.conf entry for host/i', $error_message) > 0) {
           // the account either does note exist or is not authorized.
           // it is a pity that postgresql doesn't differentiate the two.
           $access_denied = TRUE;
         }
-        elseif (preg_match('/password authentication failed for user /i', $details['arguments'][':{failure_reasons}'][0]['message']) > 0) {
+        elseif (preg_match('/password authentication failed for user /i', $error_message) > 0) {
           $access_denied = TRUE;
         }
         else {
-          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, reason: ' . $details['arguments'][':{failure_reasons}'][0]['message'] . '.');
-          unset($details);
+          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, reason: ' . $error_message . '.');
 
           return $problems;
         }
       }
-      unset($details);
+      unset($error_message);
 
       if ($access_denied) {
         // it is possible the user name might not exist, so try to auto-create the username if the username does not exist.
@@ -521,8 +515,8 @@ class c_standard_path_user_login extends c_standard_path {
         unset($error);
 
         // @todo: not just database errors, but also session create errors need to be checked.
-        if (isset($details['arguments'][':{failure_reasons}'][0]['message']) && is_string($details['arguments'][':{failure_reasons}'][0]['message'])) {
-          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, ' . $details['arguments'][':{failure_reasons}'][0]['message']);
+        if (isset($details['arguments'][':{error_message}'][0]['message']) && is_string($details['arguments'][':{error_message}'][0]['message'])) {
+          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, ' . $details['arguments'][':{error_message}'][0]['message']);
         }
         else {
           // here the reason for failure is unknown.

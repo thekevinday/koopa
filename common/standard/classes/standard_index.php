@@ -534,7 +534,7 @@ class c_standard_index extends c_base_return {
     if (c_base_return::s_has_error($result)) {
       if ($user_name == $this->settings['database_user_public']) {
         $error_message = $result->get_error(0)->get_message();
-        if ($error_message == 'pg_connect(): Unable to connect to PostgreSQL server: fe_sendauth: no password supplied') {
+        if (preg_match('/fe_sendauth: no password supplied/i', $error_message) > 0) {
           $error = c_base_error::s_log('Unable to connect to database with public account (message = ' . $error_message . ').', ['arguments' => [':{database_account}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
           return c_base_return_error::s_false($error);
         }
