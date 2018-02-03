@@ -75,7 +75,17 @@ final class c_base_error_messages_english implements i_base_error_messages {
     if (isset($details['arguments']) && is_array($details['arguments'])) {
       if ($html) {
         foreach ($details['arguments'] as $detail_name => $detail_value) {
-          if (!is_string($detail_value)) {
+          if (is_array($detail_value)) {
+            // @fixme: re-write as necessary to handle multiple values.
+            $detail_value = reset($detail_value);
+            if (isset($detail_value['message']) && is_string($detail_value['message'])) {
+              $detail_value = $detail_value['message'];
+            }
+            else {
+              $detail_value = '';
+            }
+          }
+          else if (!is_string($detail_value)) {
             $detail_value = '';
           }
 
@@ -90,7 +100,17 @@ final class c_base_error_messages_english implements i_base_error_messages {
       }
       else {
         foreach ($details['arguments'] as $detail_name => $detail_value) {
-          if (!is_string($detail_value)) {
+          if (is_array($detail_value)) {
+            // @fixme: re-write as necessary to handle multiple values.
+            $detail_value = reset($detail_value);
+            if (isset($detail_value['message']) && is_string($detail_value['message'])) {
+              $detail_value = $detail_value['message'];
+            }
+            else {
+              $detail_value = '';
+            }
+          }
+          else if (!is_string($detail_value)) {
             $detail_value = '';
           }
 
