@@ -319,34 +319,6 @@ class c_standard_path_user extends c_standard_path {
   }
 
   /**
-   * Provides a standard access check handler function, specific for output format.
-   *
-   * This is generally intended to be called by do_execute().
-   *
-   * @param c_base_path_executed &$executed
-   *   The execution array for making changes to.
-   *   Any detected errors are assigned to this.
-   *   This often may have the output settings altered by this class implementation.
-   *
-   * @return bool
-   *   FALSE on access granted, TRUE on access denied.
-   */
-  protected function pr_process_output_format_denied(&$executed) {
-
-    // only support HTML output unless otherwise needed.
-    // @todo: eventually all HTML output will be expected to support at least print and PDF formats (with print being the string 'print').
-    if ($this->output_format !== c_base_mime::TYPE_TEXT_HTML) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{path_name}' => static::PATH_SELF . '/' . implode('/', $this->arguments), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::NOT_FOUND_PATH);
-      $executed->set_error($error);
-      unset($error);
-
-      return TRUE;
-    }
-
-    return FALSE;
-  }
-
-  /**
    * Execution of the view path.
    *
    * @param c_base_path_executed &$executed
