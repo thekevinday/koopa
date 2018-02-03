@@ -522,6 +522,9 @@ class c_standard_path_user_login extends c_standard_path {
         else if (preg_match('/Peer authentication failed for user/i', $error_message) > 0) {
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, access is denied.');
         }
+        else if (preg_match('/password authentication failed for user/i', $error_message) > 0) {
+          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, access is denied.');
+        }
         else {
           // here the reason for failure is unknown.
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login.');
