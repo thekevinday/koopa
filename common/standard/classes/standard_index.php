@@ -61,6 +61,7 @@ class c_standard_index extends c_base_return {
     $this->settings['database_port']                = 5432;
     $this->settings['database_name']                = NULL;
     $this->settings['database_user_public']         = NULL;
+    $this->settings['database_user_public_default'] = TRUE; // when TRUE, auto-login as public account by default, when FALSE do not attempt anonymous database connection.
     $this->settings['database_timeout']             = 4;
     $this->settings['database_ssl_mode']            = 'disable';
     $this->settings['database_create_account_host'] = '127.0.0.1';
@@ -504,6 +505,11 @@ class c_standard_index extends c_base_return {
     else {
       $user_name = $this->settings['database_user_public'];
       $password = NULL;
+
+      // do not login with public/anoynmous account if default is disabled.
+      if (!$this->settings['database_user_public_default']) {
+        return new c_base_return_false();
+      }
     }
 
     if (!is_string($user_name) || strlen($user_name) < 0) {
