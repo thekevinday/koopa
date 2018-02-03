@@ -512,11 +512,15 @@ class c_standard_path_user_login extends c_standard_path {
         unset($errors);
 
         $details = $error->get_details();
+        $error_message = $error->get_message();
         unset($error);
 
         // @todo: not just database errors, but also session create errors need to be checked.
         if (isset($details['arguments'][':{error_message}'][0]['message']) && is_string($details['arguments'][':{error_message}'][0]['message'])) {
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, ' . $details['arguments'][':{error_message}'][0]['message']);
+        }
+        else if (preg_match('/Peer authentication failed for user/i', $error_message) > 0) {
+          $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, access is denied.');
         }
         else {
           // here the reason for failure is unknown.
