@@ -320,10 +320,11 @@ class c_base_return {
   /**
    * Assign the error code.
    *
-   * @param null|c_base_error $error
+   * @param null|c_base_error|array $error
    *   The error code class defining what the error is.
    *   Setting this to NULL will clear all errors.
-   * @param null|int $delta
+   *   May be an array of c_base_error objects, in which case $delta is ignored.
+   * @param null|int|bool $delta
    *   (optional) When an integer, the error is assigned an explicit position in the errors array.
    *   When NULL, the error is appended to the errors array.
    *
@@ -331,7 +332,7 @@ class c_base_return {
    *   TRUE on success, FALSE otherwise.
    */
   public function set_error($error, $delta = NULL) {
-    if (!is_null($error) && !($error instanceof c_base_error)) {
+    if (!is_null($error) && !($error instanceof c_base_error || is_array($error))) {
       return FALSE;
     }
 
@@ -344,7 +345,15 @@ class c_base_return {
       $this->errors = [];
     }
 
-    if (is_null($delta)) {
+    if (is_array($error)) {
+      foreach ($error as $error_object) {
+        if ($error_object instanceof c_base_error) {
+          $this->errors[] = $error_object;
+        }
+      }
+      unset($error_object);
+    }
+    elseif (is_null($delta)) {
       $this->errors[] = $error;
     }
     elseif (is_int($delta) && $delta >= 0) {
