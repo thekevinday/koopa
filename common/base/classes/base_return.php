@@ -1810,9 +1810,7 @@ class c_base_return_error {
     $object_return = new c_base_return_true();
 
     if (is_null($error)) {
-      $object_error = new c_base_error();
-      $object_return->set_error($object_error);
-      unset($object_error);
+      $object_return->set_error(NULL);
     }
     elseif (is_array($error)) {
       foreach ($error as $delta => $value) {
@@ -1843,9 +1841,7 @@ class c_base_return_error {
     $object_return = new c_base_return_false();
 
     if (is_null($error)) {
-      $object_error = new c_base_error();
-      $object_return->set_error($object_error);
-      unset($object_error);
+      $object_return->set_error(null);
     }
     elseif (is_array($error)) {
       foreach ($error as $delta => $value) {
