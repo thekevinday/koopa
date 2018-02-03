@@ -80,15 +80,31 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
     if (isset($details['arguments']) && is_array($details['arguments'])) {
       if ($html) {
         foreach ($details['arguments'] as $detail_name => $detail_value) {
+          if (!is_string($detail_value)) {
+            $detail_value = '';
+          }
+
           $detail_name_css = 'error_message-argument-' . preg_replace('/[^[:word:]-]/i', '', $detail_name);
-          $message = preg_replace('/' . preg_quote($detail_name, '/') . '\b/i', '<div class="error_message-argument ' . $detail_name_css . '">' . htmlspecialchars($detail_value, ENT_HTML5 | ENT_COMPAT | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</div>', $message);
+          $processed_message = preg_replace('/' . preg_quote($detail_name, '/') . '/i', '<div class="error_message-argument ' . $detail_name_css . '">' . htmlspecialchars($detail_value, ENT_HTML5 | ENT_COMPAT | ENT_DISALLOWED | ENT_SUBSTITUTE, 'UTF-8') . '</div>', $message);
+          if (is_string($processed_message)) {
+            $message = $processed_message;
+          }
         }
+        unset($processed_message);
         unset($detail_name_css);
       }
       else {
-        foreach ($details as $detail_name => $detail_value) {
-          $message = preg_replace('/' . preg_quote($detail_name, '/') . '\b/i', $detail_value, $message);
+        foreach ($details['arguments'] as $detail_name => $detail_value) {
+          if (!is_string($detail_value)) {
+            $detail_value = '';
+          }
+
+          $processed_message = preg_replace('/' . preg_quote($detail_name, '/') . '/i', $detail_value, $message);
+          if (is_string($processed_message)) {
+            $message = $processed_message;
+          }
         }
+        unset($processed_message);
       }
       unset($detail_name);
       unset($detail_value);
