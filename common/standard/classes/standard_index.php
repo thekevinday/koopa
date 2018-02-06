@@ -417,7 +417,7 @@ class c_standard_index extends c_base_return {
       //        some errors the cookie should be deleted and others it should remain untouched.
 
       // also set the error on the session object.
-      $errror = $session_connection->get_error();
+      $error = $session_connection->get_error();
       $this->session->set_error($error);
       unset($session_connection);
 
