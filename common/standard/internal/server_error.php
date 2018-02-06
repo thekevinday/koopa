@@ -106,18 +106,6 @@ class c_standard_path_server_error extends c_standard_path_exception {
   }
 
   /**
-   * Implements pr_get_error_text().
-   */
-  protected function pr_get_error_text($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
-    if (!($error instanceof c_base_error)) {
-      return new c_base_return_false();
-    }
-
-    require_once('common/base/classes/base_error_messages_english.php');
-    return c_base_error_messages_english::s_render_error_message($error, $arguments, $function_name, $additional_message, $html);
-  }
-
-  /**
    * Implements pr_get_text().
    */
   protected function pr_get_text($code, $arguments = []) {

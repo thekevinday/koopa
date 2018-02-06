@@ -611,8 +611,13 @@ interface i_base_error_messages {
    *   The error message code.
    * @param bool $arguments
    *   (optional) When TRUE, argument placeholders are added.
-   *   When FALSE, no placeholders are provided.
+   *   When FALSE, no placeholders are added.
    *   All placeholders should begin with a single colon ':' and be wrapped within '{}', such that 'example' placeholder is ':{example}'.
+   * @param bool $error_message
+   *   (optional) When TRUE, a reserved ':{error_message}' placeholder is added.
+   *   This placeholder is processed independent of the $arguments parameter.
+   *   When FALSE, the reserved placeholder is not added.
+   *   If NULL, then error_message is auto-added depending on the existance of an attached error message.
    * @param bool $function_name
    *   (optional) When TRUE, the function name is included with the message.
    *   When FALSE, no funciton name is provided.
@@ -628,7 +633,7 @@ interface i_base_error_messages {
    *
    * @see: s_get_message()
    */
-  static function s_render_error_message($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = TRUE);
+  static function s_render_error_message($error, $arguments = TRUE, $error_message = NULL, $function_name = FALSE, $additional_message = NULL, $html = TRUE);
 
   /**
    * Returns a standard error message associated with the given code.
@@ -637,12 +642,19 @@ interface i_base_error_messages {
    *   The error message code.
    * @param bool $arguments
    *   (optional) When TRUE, argument placeholders are added.
-   *   When FALSE, no placeholders are provided.
-   *   All placeholders should begin with a single colon ':'.
+   *   When FALSE, no placeholders are added.
+   *   All placeholders should begin with a single colon ':' and be wrapped within '{}', such that 'example' placeholder is ':{example}'.
+   * @param bool $error_message
+   *   (optional) When TRUE, a reserved ':{error_message}' placeholder is added.
+   *   This placeholder is processed independent of the $arguments parameter.
+   *   When FALSE, the reserved placeholder is not added.
+   * @param bool $function_name
+   *   (optional) When TRUE, the function name is included with the message.
+   *   When FALSE, no funciton name is provided.
    *
    * @return string
    *   An error message associated with the error code.
    *   An empty sting is returned for unsupported or unknown codes.
    */
-  static function s_get_message($code);
+  static function s_get_message($code, $arguments = TRUE, $error_message = TRUE, $function_name = FALSE);
 }

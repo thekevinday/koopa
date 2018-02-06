@@ -208,6 +208,10 @@ trait t_base_return_message {
    * Assign the message.
    */
   public function set_message($message) {
+    if (!is_string($message)) {
+      return;
+    }
+
     $this->message = $message;
   }
 

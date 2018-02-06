@@ -383,7 +383,7 @@ class c_standard_path_user_login extends c_standard_path {
       $error = reset($errors);
       unset($errors);
 
-      $error_messsage = $error->get_message();
+      $error_message = $error->get_message();
       unset($error);
 
       if (is_string($error_message)) {

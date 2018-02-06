@@ -555,10 +555,21 @@ class c_standard_index extends c_base_return {
 
     // load database session information.
     $user_current = new c_standard_users_user();
-    if ($user_current->do_load($this->database) instanceof c_base_return_true) {
+    $database_loaded = $user_current->do_load($this->database);
+    if ($database_loaded instanceof c_base_return_true) {
+      unset($database_loaded);
+
       $this->session->set_user_current($user_current);
     }
     else {
+      if (c_base_return::s_has_error($database_loaded)) {
+        $error_message = $database_loaded->get_error(0);
+      }
+      else {
+        $error_message = NULL;
+      }
+      unset($database_loaded);
+
       $account_name = $user_current->get_name_machine();
       if ($account_name instanceof c_base_return_string) {
         $account_name = $account_name->get_value_exact();
@@ -567,8 +578,9 @@ class c_standard_index extends c_base_return {
         $account_name = '';
       }
 
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{database_account}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
+      $error = c_base_error::s_log($error_message, ['arguments' => [':{database_account}' => $account_name, ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::POSTGRESQL_NO_ACCOUNT);
       unset($account_name);
+      unset($error_message);
 
       return c_base_return_error::s_false($error);
     }

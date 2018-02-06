@@ -9,17 +9,17 @@ namespace n_koopa;
  * Implements c_standard_path_server_error().
  */
 final class c_standard_path_server_error_ja extends c_standard_path_server_error {
-
   /**
    * Implements pr_get_error_text().
    */
-  protected function pr_get_error_text($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
+  protected function pr_get_error_text($error, $arguments = TRUE, $error_message = NULL, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
     if (!($error instanceof c_base_error)) {
       return new c_base_return_false();
     }
 
     require_once('common/base/classes/base_error_messages_japanese.php');
-    return c_base_error_messages_japanese::s_render_error_message($error, $arguments, $function_name, $additional_message, $html);
+
+    return c_base_error_messages_japanese::s_render_error_message($error, $arguments, $error_message, $function_name, $additional_message, $html);
   }
 
   /**

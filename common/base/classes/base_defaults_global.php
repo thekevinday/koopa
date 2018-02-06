@@ -16,13 +16,12 @@
  */
 namespace n_koopa;
 
-
 /**
  * A collection of global settings for use by the entire project.
  *
  * This is intended to be modified by the developers or site developers of a project.
  *
- * Warning: Any variables defined here (due to being global) must be considered not thread-safe.
+ * Warning: Any variables defined here (due to being global) must be considered non-thread-safe.
  *          Be sure to handle carefully when using threads.
  *          It is recommended to process and pre-set as much of this as possible before starting threads.
  */
@@ -35,7 +34,13 @@ class c_base_defaults_global {
   const ERROR_BACKTRACE_ARGUMENTS = FALSE;
 
   // provide a language to fallback to if none is set.
-  const LANGUAGE_CLASS_DEFAULT = 'c_base_languages_us_only';
+  const LANGUAGE_CLASS_DEFAULT = '\n_koopa\c_base_languages_us_only';
+
+  // provide an error message handler to fallback to if none is set.
+  const ERROR_MESSAGE_HANDLER_CLASS_DEFAULT = '\n_koopa\c_base_error_messages_english';
+
+  // provide the include path for the default/fallback error message handler class.
+  const ERROR_MESSAGE_HANDLER_PATH_DEFAULT = 'common/base/classes/base_error_messages_english.php';
 
   // reserved path groups: [97, 99, 100, 102, 109, 115, 116, 120, 121].
   const RESERVED_PATH_GROUP = [c_base_ascii::LOWER_A, c_base_ascii::LOWER_C, c_base_ascii::LOWER_D, c_base_ascii::LOWER_F, c_base_ascii::LOWER_M, c_base_ascii::LOWER_S, c_base_ascii::LOWER_T, c_base_ascii::LOWER_U, c_base_ascii::LOWER_X];
@@ -90,6 +95,10 @@ class c_base_defaults_global {
   // In most cases, this should be expected to be defined.
   private static $s_languages = NULL;
 
+  // Represents a language-specific error message handler static class.
+  // This assists in providing language-specific error messages.
+  private static $s_error_message_handler = NULL;
+
 
   /**
    * Set the default timezone.
@@ -130,6 +139,28 @@ class c_base_defaults_global {
     }
 
     self::$s_languages = $languages;
+    return new c_base_return_true();
+  }
+
+  /**
+   * Assign an error message handler.
+   *
+   * @param i_base_error_messages $error_message_handler
+   *   An error message handler to assign.
+   *
+   * @return c_base_return_status
+   *   TRUE on success.
+   *   FALSE with error bit set is returned on error.
+   *
+   * @see: i_base_error_messages
+   */
+  public static function s_set_error_message_handler($error_message_handler) {
+    if (!($error_message_handler instanceof i_base_error_messages)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'languages', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    self::$s_error_message_handler = $error_message_handler;
     return new c_base_return_true();
   }
 
@@ -349,6 +380,47 @@ class c_base_defaults_global {
     }
 
     $class = get_class($this->s_languages);
+    return c_base_return_string::s_new($class);
+  }
+
+  /**
+   * Get the currently assigned error message handler class.
+   *
+   * @return i_base_error_messages
+   *   A class that implements i_base_error_messages.
+   *
+   * @see: i_base_error_messages
+   */
+  public static function s_get_error_message_handler() {
+    if (is_null(self::$s_error_message_handler)) {
+      require_once(self::ERROR_MESSAGE_HANDLER_PATH_DEFAULT);
+
+      $class = self::ERROR_MESSAGE_HANDLER_CLASS_DEFAULT;
+      self::$s_error_message_handler = new $class();
+      unset($class);
+    }
+
+    return self::$s_error_message_handler;
+  }
+
+  /**
+   * Get the assigned error message handler.
+   *
+   * @return i_base_error_messages
+   *   The assigned error message or NULL if unassigned.
+   *
+   * @see: i_base_error_messages
+   */
+  public static function s_get_error_message_handler_class() {
+    if (is_null(self::$s_error_message_handler)) {
+      require_once(self::ERROR_MESSAGE_HANDLER_PATH_DEFAULT);
+
+      $class = self::ERROR_MESSAGE_HANDLER_CLASS_DEFAULT;
+      self::$s_error_message_handler = new $class();
+      return c_base_return_string::s_new($class);
+    }
+
+    $class = get_class(self::$s_error_message_handler);
     return c_base_return_string::s_new($class);
   }
 }

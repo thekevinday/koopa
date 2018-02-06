@@ -2651,8 +2651,13 @@ class c_standard_path extends c_base_path {
    *   The error message code.
    * @param bool $arguments
    *   (optional) When TRUE, argument placeholders are added.
-   *   When FALSE, no placeholders are provided.
+   *   When FALSE, no placeholders are added.
    *   All placeholders should begin with a single colon ':' and be wrapped within '{}', such that 'example' placeholder is ':{example}'.
+   * @param bool $error_message
+   *   (optional) When TRUE, a reserved ':{error_message}' placeholder is added.
+   *   This placeholder is processed independent of the $arguments parameter.
+   *   When FALSE, the reserved placeholder is not added.
+   *   If NULL, then error_message is auto-added depending on the existance of an attached error message.
    * @param bool $function_name
    *   (optional) When TRUE, the function name is included with the message.
    *   When FALSE, no funciton name is provided.
@@ -2668,12 +2673,12 @@ class c_standard_path extends c_base_path {
    *
    * @see: s_get_message()
    */
-  protected function pr_get_error_text($error, $arguments = TRUE, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
+  protected function pr_get_error_text($error, $arguments = TRUE, $error_message = NULL, $function_name = FALSE, $additional_message = NULL, $html = FALSE) {
     if (!($error instanceof c_base_error)) {
       return new c_base_return_false();
     }
 
-    return c_base_return_string::s_new('');
+    return c_base_defaults_global::s_get_error_message_handler()::s_render_error_message($error, $arguments, $error_message, $function_name, $additional_message, $html);
   }
 
   /**
