@@ -28,6 +28,12 @@ require_once('common/base/classes/base_mime.php');
 class c_theme_html extends c_base_return {
   const DEFAULT_MAX_RECURSION_DEPTH = 16384;
 
+  private const DEFAULT_SANITIZE_HTML = [
+    'flags' => ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE,
+    'encoding' => 'UTF-8',
+    'double_encode' => FALSE,
+  ];
+
   private $html;
   private $markup;
   private $http;
@@ -1596,103 +1602,103 @@ class c_theme_html extends c_base_return {
 
     if ($type === c_base_markup_tag::TYPE_A) {
       $markup .= '<a' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_a($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</a>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ABBR) {
       $markup .= '<abbr' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</abbr>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ADDRESS) {
       $markup .= '<address' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</address>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ALTERNATE_GLYPH) {
       $markup .= '<altglyph' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_alternate_glyph($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</altglyph>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ALTERNATE_GLYPH_DEFINITION) {
       $markup .= '<altglyphdef' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</altglyphdef>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ALTERNATE_GLYPH_ITEM) {
       $markup .= '<altglyphitem' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</altglyphitem>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ANIMATE) {
       $markup .= '<animate' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_animate($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</animate>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ANIMATE_MOTION) {
       $markup .= '<animatemotion' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_animate_motion($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</animatemotion>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ANIMATE_TRANSFORM) {
       $markup .= '<animatetransform' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_animate_transform($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</animatetransform>';
     }
     elseif ($type === c_base_markup_tag::TYPE_AREA) {
       $markup .= '<area' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_area($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</area>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ARTICLE) {
       $markup .= '<article' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</article>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ASIDE) {
       $markup .= '<aside' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</aside>';
     }
     elseif ($type === c_base_markup_tag::TYPE_AUDIO) {
       $markup .= '<audio' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_audio($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</audio>';
     }
     elseif ($type === c_base_markup_tag::TYPE_BOLD) {
       $markup .= '<b' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</b>';
     }
     elseif ($type === c_base_markup_tag::TYPE_BDI) {
       $markup .= '<bdi' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</bdi>';
     }
     elseif ($type === c_base_markup_tag::TYPE_BDO) {
       $markup .= '<bdo' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</bdo>';
     }
     elseif ($type === c_base_markup_tag::TYPE_BLOCKQUOTE) {
       $markup .= '<blockquote' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_blockquote($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</blockquote>';
     }
@@ -1701,259 +1707,259 @@ class c_theme_html extends c_base_return {
     }
     elseif ($type === c_base_markup_tag::TYPE_BUTTON) {
       $markup .= '<button' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_button($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</button>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CANVAS) {
       $markup .= '<canvas' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_canvas($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</canvas>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CAPTION) {
       $markup .= '<caption' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</caption>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CHECKBOX) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'checkbox') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CIRCLE) {
       $markup .= '<circle' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_circle($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</circle>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CITE) {
       $markup .= '<cite' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</a>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CLIP_PATH) {
       $markup .= '<clippath' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_clip_path($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</clippath>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CODE) {
       $markup .= '<code' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</code>';
     }
     elseif ($type === c_base_markup_tag::TYPE_COLUMN) {
       $markup .= '<col' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_col($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</col>';
     }
     elseif ($type === c_base_markup_tag::TYPE_COLUMN_GROUP) {
       $markup .= '<colgroup' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_colgroup($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</colgroup>';
     }
     elseif ($type === c_base_markup_tag::TYPE_COLOR) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'color') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_COLOR_PROFILE) {
       $markup .= '<colorprofile' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_color_profile($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</colorprofile>';
     }
     elseif ($type === c_base_markup_tag::TYPE_CURSOR) {
       $markup .= '<cursor' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_cursor($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</cursor>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATA) {
       $markup .= '<data' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_data($tag)  . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</data>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATA_LIST) {
       $markup .= '<datalist' . $this->p_render_markup_attributes_global($tag)  . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</datalist>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATE) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'date') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DATE_TIME_LOCAL) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'datetime-local') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TERM_DESCRIPTION) {
       $markup .= '<dd' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</dd>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DEFS) {
       $markup .= '<defs' . $this->p_render_markup_attributes_global($tag)  . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</defs>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DEL) {
       $markup .= '<del' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_del($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</del>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DESCRIPTION) {
       $markup .= '<description' . $this->p_render_markup_attributes_global($tag)  . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</description>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DETAILS) {
       $markup .= '<details' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_details($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</details>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DFN) {
       $markup .= '<dfn' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</dfn>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DIALOG) {
       $markup .= '<dialog' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_dialog($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</dialog>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DIVIDER) {
       $markup .= '<div' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</div>';
     }
     elseif ($type === c_base_markup_tag::TYPE_DEFINITION_LIST) {
       $markup .= '<dl' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</dl>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TERM_NAME) {
       $markup .= '<dt' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</dt>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ELLIPSE) {
       $markup .= '<ellipse' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_ellipse($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</ellipse>';
     }
     elseif ($type === c_base_markup_tag::TYPE_EM) {
       $markup .= '<em' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</em>';
     }
     elseif ($type === c_base_markup_tag::TYPE_EMAIL) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'email') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_EMBED) {
       $markup .= '<embed' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_embed($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</embed>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FE_BLEND) {
       $markup .= '<feblend' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_fe_blend($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</feblend>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIELD_SET) {
       $markup .= '<fieldset' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_fieldset($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</fieldset>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIGURE) {
       $markup .= '<figure' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</figure>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FIGURE_CAPTION) {
       $markup .= '<figcaption' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</figcaption>';
     }
     elseif ($type === c_base_markup_tag::TYPE_GROUP) {
       $markup .= '<g' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_group($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</g>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FILE) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'file') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FOOTER) {
       $markup .= '<footer' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</footer>';
     }
     elseif ($type === c_base_markup_tag::TYPE_FORM) {
       $markup .= '<form' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_form($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</form>';
     }
     elseif ($type === c_base_markup_tag::TYPE_H1) {
       $markup .= '<h1' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</h1>';
     }
     elseif ($type === c_base_markup_tag::TYPE_H2) {
       $markup .= '<h2' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</h2>';
     }
     elseif ($type === c_base_markup_tag::TYPE_H3) {
       $markup .= '<h3' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</h3>';
     }
     elseif ($type === c_base_markup_tag::TYPE_H4) {
       $markup .= '<h4' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</h4>';
     }
@@ -1965,25 +1971,25 @@ class c_theme_html extends c_base_return {
     }
     elseif ($type === c_base_markup_tag::TYPE_H6) {
       $markup .= '<h6' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</h6>';
     }
     elseif ($type === c_base_markup_tag::TYPE_HX) {
       $markup .= '<div' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</div>';
     }
     elseif ($type === c_base_markup_tag::TYPE_HEADER) {
       $markup .= '<header' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</header>';
     }
     elseif ($type === c_base_markup_tag::TYPE_HIDDEN) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'hidden') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
@@ -1992,499 +1998,499 @@ class c_theme_html extends c_base_return {
     }
     elseif ($type === c_base_markup_tag::TYPE_ITALICS) {
       $markup .= '<i' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</i>';
     }
     elseif ($type === c_base_markup_tag::TYPE_INLINE_FRAME) {
       $markup .= '<iframe' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_iframe($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</iframe>';
     }
     elseif ($type === c_base_markup_tag::TYPE_IMAGE) {
       $markup .= '<img' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_image($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</img>';
     }
     elseif ($type === c_base_markup_tag::TYPE_IMAGE_SVG) {
       $markup .= '<image' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_image_svg($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</image>';
     }
     elseif ($type === c_base_markup_tag::TYPE_INPUT) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_INS) {
       $markup .= '<ins' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_ins($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</ins>';
     }
     elseif ($type === c_base_markup_tag::TYPE_KEYBOARD) {
       $markup .= '<kbd' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</kbd>';
     }
     elseif ($type === c_base_markup_tag::TYPE_KEY_GEN) {
       $markup .= '<keygen' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_key_gen($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</keygen>';
     }
     elseif ($type === c_base_markup_tag::TYPE_LABEL) {
       $markup .= '<label' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_label($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</label>';
     }
     elseif ($type === c_base_markup_tag::TYPE_LEGEND) {
       $markup .= '<legend' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</legend>';
     }
     elseif ($type === c_base_markup_tag::TYPE_LIST_ITEM) {
       $markup .= '<li' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_li($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</li>';
     }
     elseif ($type === c_base_markup_tag::TYPE_LINE) {
       $markup .= '<line' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_line($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</line>';
     }
     elseif ($type === c_base_markup_tag::TYPE_LINEAR_GRADIENT) {
       $markup .= '<lineargradient' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_linear_gradient($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</lineargradient>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MAIN) {
       $markup .= '<main' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</main>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MAP) {
       $markup .= '<map' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_map($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</map>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MARK) {
       $markup .= '<mark' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</mark>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MARKER) {
       $markup .= '<marker' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_marker($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</marker>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MASK) {
       $markup .= '<mask' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_mask($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</mask>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MENU) {
       $markup .= '<menu' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_menu($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</menu>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MENU_ITEM) {
       $markup .= '<menuitem' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_menuitem($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</menuitem>';
     }
     elseif ($type === c_base_markup_tag::TYPE_METER) {
       $markup .= '<meter' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_meter($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</meter>';
     }
     elseif ($type === c_base_markup_tag::TYPE_MONTH) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'month') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_NAVIGATION) {
       $markup .= '<nav' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</nav>';
     }
     elseif ($type === c_base_markup_tag::TYPE_NUMBER) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'number') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_OBJECT) {
       $markup .= '<object' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_object($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</object>';
     }
     elseif ($type === c_base_markup_tag::TYPE_ORDERED_LIST) {
       $markup .= '<ol' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_ol($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</ol>';
     }
     elseif ($type === c_base_markup_tag::TYPE_OPTIONS_GROUP) {
       $markup .= '<opt_group' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_opt_group($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</opt_group>';
     }
     elseif ($type === c_base_markup_tag::TYPE_OPTION) {
       $markup .= '<option' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_option($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</option>';
     }
     elseif ($type === c_base_markup_tag::TYPE_OUTPUT) {
       $markup .= '<output' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_output($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</output>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PARAGRAPH) {
       $markup .= '<p' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</p>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PARAM) {
       $markup .= '<param' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_param($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</param>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PASSWORD) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'password') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PATH) {
       $markup .= '<path' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_path($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</path>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PATTERN) {
       $markup .= '<pattern' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_pattern($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</pattern>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PICTURE) {
       $markup .= '<picture' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</picture>';
     }
     elseif ($type === c_base_markup_tag::TYPE_POLYGON) {
       $markup .= '<polygon' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_polygon($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</polygon>';
     }
     elseif ($type === c_base_markup_tag::TYPE_POLYLINE) {
       $markup .= '<polyline' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_polyline($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</polyline>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PREFORMATTED) {
       $markup .= '<pre' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</pre>';
     }
     elseif ($type === c_base_markup_tag::TYPE_PROGRESS) {
       $markup .= '<progress' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_progress($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</progress>';
     }
     elseif ($type === c_base_markup_tag::TYPE_QUOTE) {
       $markup .= '<q' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_q($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</q>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RADIAL_GRADIENT) {
       $markup .= '<radialgradient' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_radial_gradient($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</radialgradient>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RADIO) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'radio') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RANGE) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'range') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RECTANGLE) {
       $markup .= '<rect' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_rectangle($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</rect>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RESET) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'reset') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY_PARENTHESIS) {
       $markup .= '<rp' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</rp>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY_PRONUNCIATION) {
       $markup .= '<rt' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</rt>';
     }
     elseif ($type === c_base_markup_tag::TYPE_RUBY) {
       $markup .= '<ruby' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</ruby>';
     }
     elseif ($type === c_base_markup_tag::TYPE_STRIKE_THROUGH) {
       $markup .= '<s' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</s>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SAMPLE) {
       $markup .= '<samp' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</samp>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SEARCH) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'search') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SECTION) {
       $markup .= '<section' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</section>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SELECT) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'select') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SMALL) {
       $markup .= '<small' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</small>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SOURCE) {
       $markup .= '<source' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_source($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</source>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SPAN) {
       $markup .= '<span' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</span>';
     }
     elseif ($type === c_base_markup_tag::TYPE_STOP) {
       $markup .= '<stop' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_stop($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</stop>';
     }
     elseif ($type === c_base_markup_tag::TYPE_STRONG) {
       $markup .= '<strong' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</strong>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SUB_SCRIPT) {
       $markup .= '<sub' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</sub>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SUBMIT) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'submit') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_SVG) {
       $markup .= '<svg' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_svg($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</svg>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE) {
       $markup .= '<table' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_table($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</table>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_BODY) {
       $markup .= '<tbody' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</tbody>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_CELL) {
       $markup .= '<td' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</td>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_FOOTER) {
       $markup .= '<tfoot' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</tfoot>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_HEADER) {
       $markup .= '<thead' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</thead>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_HEADER_CELL) {
       $markup .= '<th' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_table_header_cell($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</th>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TABLE_ROW) {
       $markup .= '<tr' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</tr>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'text') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT_AREA) {
       $markup .= '<textarea' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_text_area($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</textarea>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT_REFERENCE) {
       $markup .= '<tref' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</tref>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT_SPAN) {
       $markup .= '<tspan' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</tspan>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TEXT_SVG) {
       $markup .= '<text' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_text_svg($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</text>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TIME) {
       $markup .= '<time' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_time($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</time>';
     }
     elseif ($type === c_base_markup_tag::TYPE_TRACK) {
       $markup .= '<track' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_track($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</track>';
     }
     elseif ($type === c_base_markup_tag::TYPE_UNDERLINE) {
       $markup .= '<u' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</u>';
     }
     elseif ($type === c_base_markup_tag::TYPE_UNORDERED_LIST) {
       $markup .= '<ul' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</ul>';
     }
     elseif ($type === c_base_markup_tag::TYPE_URL) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'url') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_USE) {
       $markup .= '<use' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_use($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</use>';
     }
     elseif ($type === c_base_markup_tag::TYPE_VARIABLE) {
       $markup .= '<var' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</var>';
     }
     elseif ($type === c_base_markup_tag::TYPE_VIDEO) {
       $markup .= '<video' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_video($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</video>';
     }
     elseif ($type === c_base_markup_tag::TYPE_WEEK) {
       $markup .= '<input' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_input($tag, 'week') . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</input>';
     }
     elseif ($type === c_base_markup_tag::TYPE_WIDE_BREAK) {
       $markup .= '<wbr' . $this->p_render_markup_attributes_global($tag) . $this->p_render_markup_attributes_event_handler($tag) . '>';
-      $markup .= $this->p_html_entities($tag->get_text()->get_value_exact());
+      $markup .= $this->p_html_entities_tag($tag);
       $markup .= $child_markup;
       $markup .= '</wbr>';
     }
@@ -6464,17 +6470,22 @@ class c_theme_html extends c_base_return {
   }
 
   /**
-   * Deocodes all HTML entities, effectively sanitizing plain text to be displayed in HTML.
+   * Deocodes all HTML entities for a given tag, effectively sanitizing plain text to be displayed in HTML.
    *
-   * @param string $text
-   *   The text to sanitize.
+   * @param c_base_markuo $tag
+   *   The tag to have its text sanitized.
    *
    * @return string
    *   The sanitized text.
    *
    * @see: htmlentities()
    */
-  private function p_html_entities($text) {
-    return htmlentities($text);
+  private function p_html_entities_tag($tag) {
+    $text = $tag->get_text()->get_value_exact();
+    if ($tag->get_encode_text()->get_value_exact()) {
+      return htmlentities($text, self::DEFAULT_SANITIZE_HTML['flags'], self::DEFAULT_SANITIZE_HTML['encoding'], self::DEFAULT_SANITIZE_HTML['double_encode']);
+    }
+
+    return $text;
   }
 }

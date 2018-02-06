@@ -543,6 +543,7 @@ class c_base_markup_tag extends c_base_rfc_string {
   protected $tags_total;
   protected $text;
   protected $type;
+  protected $encode_text;
 
   /**
    * Class constructor.
@@ -555,6 +556,7 @@ class c_base_markup_tag extends c_base_rfc_string {
     $this->tags_total = 0;
     $this->text = NULL;
     $this->type = static::TYPE_TEXT;
+    $this->encode_text = TRUE;
   }
 
   /**
@@ -566,6 +568,7 @@ class c_base_markup_tag extends c_base_rfc_string {
     unset($this->tags_total);
     unset($this->text);
     unset($this->type);
+    unset($this->encode_text);
 
     parent::__destruct();
   }
@@ -1778,6 +1781,45 @@ class c_base_markup_tag extends c_base_rfc_string {
     }
 
     return c_base_return_int::s_new($this->type);
+  }
+
+  /**
+   * Assign the specified encode tag text option.
+   *
+   * When enabled, the text will be auto-encoding prior to output.
+   * When disabled, the text will not be auto-encoded prior to output.
+   *
+   * This is generally disabled for text that is already known to be encoded.
+   *
+   * @param int $type
+   *   The tag type to assign.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_encode_text($encode_text) {
+    if (!is_bool($encode_text)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'encode_text', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->encode_text = $encode_text;
+  }
+
+  /**
+   * Get the encode text value assigned to this object.
+   *
+   * @return c_base_return_bool
+   *   The tag type assigned to this class.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_encode_text() {
+    if (!isset($this->encode_text)) {
+      $this->encode_text = TRUE;
+    }
+
+    return c_base_return_bool::s_new($this->encode_text);
   }
 
   /**
