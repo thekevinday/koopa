@@ -3,6 +3,8 @@
  *
  * This was written originally using sockets, but it makes more sense to run this on the database server (for security reasons).
  * - The original socket code is left alone, but is not used.
+ * - The socket code is designed to run on the same system as the PHP client making the requests.
+ * - The network code allows for the PHP client to connect to this via an ip address and port number.
  *
  * The program expects the following parameters: [user_name] [group_name] [database_name] [listen_port].
  *

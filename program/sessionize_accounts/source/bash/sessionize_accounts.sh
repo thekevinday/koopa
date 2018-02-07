@@ -15,14 +15,23 @@
 # Description: Provides session storage of usernames and passwords on a per ip-address basis.
 ### END INIT INFO
 
-# Source function library.
-if [[ -f /etc/rc.d/init.d/functions ]] ; then
-  . /etc/rc.d/init.d/functions
-fi
+# Source function library, found on some sysvinit systems.
+load_sysvinit() {
+  if [[ -e /etc/rc.d/init.d/functions ]] ; then
+    . /etc/rc.d/init.d/functions
+  fi
+}
+
+# Source function library, found on some systemd systems.
+load_systemd() {
+  if [[ -e /lib/lsb/init-functions ]] ; then
+    . /lib/lsb/init-functions
+  fi
+}
 
 main() {
   local process_owner=
-  local process_group="apache"
+  local process_group=
   local path_programs="/programs/"
   local path_service="/usr/local/bin/php ${path_programs}bin/sessionize_accounts-server.php"
   local path_settings="${path_programs}settings/sessionize_accounts/"
@@ -30,8 +39,8 @@ main() {
   local path_pids="/programs/run/sessionize_accounts/"
   local path_socket_directory="/programs/sockets/sessionize_accounts/"
   local path_socket_name="sessions.socket"
-  local path_socket_directory_mask="u+rwx,g+rx,o-rwx"
-  local path_socket_name_mask="ugo+rw-x"
+  local path_socket_mask_directory="u+rwx,g+rx,o-rwx"
+  local path_socket_mask_name="ugo+rw-x"
   local parameter_system=$2
   local sa_systems=
   local i=
@@ -93,16 +102,16 @@ main() {
 
   case "$1" in
     start)
-      start
+      do_start
       ;;
     stop)
-      stop
+      do_stop
       ;;
     restart)
-      restart
+      do_restart
       ;;
     status)
-      status
+      do_status
       ;;
     *)
       echo "Usage: sessionize_accounts {start|stop|restart|status}"
@@ -112,7 +121,7 @@ main() {
   return $?
 }
 
-start() {
+do_start() {
   local sa_system=
   local result=
   local any_success=0
@@ -153,7 +162,7 @@ start() {
   return 0
 }
 
-stop() {
+do_stop() {
   local sa_system=
   local result=
   local any_success=0
@@ -182,7 +191,7 @@ stop() {
   return 0
 }
 
-restart() {
+do_restart() {
   local sa_system=
   local result=
   local any_success=0
@@ -237,7 +246,7 @@ restart() {
   return 0
 }
 
-status() {
+do_status() {
   local sa_system=
   local pid_file=
   local pid=
@@ -267,12 +276,20 @@ start_command() {
   # guarantee that all directories in the socket file's path exist.
   if [[ ! -d $path_socket_directory/$sa_system/ ]] ; then
     mkdir -p $path_socket_directory/$sa_system/
-    chown $process_owner $path_socket_directory/$sa_system/
+
+    if [[ $process_owner != "" ]] ; then
+      chown $process_owner $path_socket_directory/$sa_system/
+    fi
   fi
 
   # guarantee that the '$process_group' has read and execute only access to the directory, deny world access.
-  chgrp $process_group $path_socket_directory/$sa_system/
-  chmod $path_socket_directory_mask $path_socket_directory/$sa_system/
+  if [[ $process_group != "" ]] ; then
+    chgrp $process_group $path_socket_directory/$sa_system/
+  fi
+
+  if [[ $path_socket_mask_directory != "" ]] ; then
+    chmod $path_socket_mask_directory $path_socket_directory/$sa_system/
+  fi
 
   # make sure no session socket already exists before starting.
   # this assumes that the pid file has already been checked and therefore no existing process is using the socket file (aka: assume this is a stale socket file).
@@ -289,8 +306,8 @@ start_command() {
   fi
 
   # make sure the socket has the desired permissions.
-  if [[ -e $path_socket_directory/$sa_system/$path_socket_name ]] ; then
-    chmod $path_socket_name_mask $path_socket_directory/$sa_system/$path_socket_name
+  if [[ -e $path_socket_directory/$sa_system/$path_socket_name && $path_socket_mask_name != "" ]] ; then
+    chmod $path_socket_mask_name $path_socket_directory/$sa_system/$path_socket_name
   fi
 
   if [[ $result -ne 0 ]] ; then

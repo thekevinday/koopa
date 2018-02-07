@@ -15,8 +15,19 @@
 # Description: Provide a per-database/per-role way to auto-create ldap accounts and auto assign a single role.
 ### END INIT INFO
 
-# Source function library.
-. /etc/rc.d/init.d/functions
+# Source function library, found on some sysvinit systems.
+load_sysvinit() {
+  if [[ -e /etc/rc.d/init.d/functions ]] ; then
+    . /etc/rc.d/init.d/functions
+  fi
+}
+
+# Source function library, found on some systemd systems.
+load_systemd() {
+  if [[ -e /lib/lsb/init-functions ]] ; then
+    . /lib/lsb/init-functions
+  fi
+}
 
 main() {
   local process_owner="alap"
@@ -89,16 +100,16 @@ main() {
 
   case "$1" in
     start)
-      start
+      do_start
       ;;
     stop)
-      stop
+      do_stop
       ;;
     restart)
-      restart
+      do_restart
       ;;
     status)
-      status
+      do_status
       ;;
     *)
       echo "Usage: autocreate_ldap_accounts_in_postgresql {start|stop|restart|status}"
@@ -108,7 +119,7 @@ main() {
   return $?
 }
 
-start() {
+do_start() {
   local alap_name_system=
   local alap_name_group=
   local alap_name_database=
@@ -155,7 +166,7 @@ start() {
   return 0
 }
 
-stop() {
+do_stop() {
   local alap_name_system=
   local alap_name_group=
   local alap_name_database=
@@ -195,7 +206,7 @@ stop() {
   return 0
 }
 
-restart() {
+do_restart() {
   local alap_name_system=
   local alap_name_group=
   local alap_name_database=
@@ -254,7 +265,7 @@ restart() {
   return 0
 }
 
-status() {
+do_status() {
   local alap_name_system=
   local alap_name_group=
   local alap_name_database=
@@ -468,4 +479,6 @@ check_pid() {
   return 0
 }
 
+load_sysvinit
+load_systemd
 main "$1" "$2"
