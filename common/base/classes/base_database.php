@@ -496,7 +496,7 @@ class c_base_database_connection_string extends c_base_return_string {
    *
    * The built string is stored inside of this objects 'value' parameter.
    */
-  public function build() {
+  public function do_build() {
     $this->value = '';
 
     if (!empty($this->host)) {
@@ -730,7 +730,7 @@ class c_base_database extends c_base_return {
     }
 
     $this->connection_string = clone($connection_string);
-    $this->connection_string->build();
+    $this->connection_string->do_build();
 
     return new c_base_return_true();
   }
@@ -881,7 +881,7 @@ class c_base_database extends c_base_return {
     }
 
     // make sure the connection string is built before using.
-    $this->connection_string->build();
+    $this->connection_string->do_build();
 
     // PHP's default error handle does not handle warnings.
     // postgresql does not return the connection failure errors and instead prints a warning.
