@@ -216,13 +216,18 @@ trait t_base_return_message {
   }
 
   /**
-   * Return the value.
+   * Return the message.
    *
-   * @return $value
-   *   This can be anything that is to be considered a return value.
+   * @return string
+   *   A message string is returned.
+   *   If no message is assigned, an empty string is returned.
    */
   public function get_message() {
-    return $this->value;
+    if (is_string($this->message)) {
+      return $this->message;
+    }
+
+    return '';
   }
 }
 
