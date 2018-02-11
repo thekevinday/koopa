@@ -37,6 +37,8 @@ trait t_base_return_value {
   /**
    * Assign the value.
    *
+   * If the value is an object, then this should create a copy of the object (a clone).
+   *
    * @param $value
    *   This can be anything that is to be considered a return value.
    *
@@ -44,7 +46,13 @@ trait t_base_return_value {
    *   TRUE on success, FALSE otherwise.
    */
   public function set_value($value) {
-    $this->value = $value;
+    if (is_object($value)) {
+      $this->value = clone($value);
+    }
+    else {
+      $this->value = $value;
+    }
+
     return TRUE;
   }
 
@@ -229,6 +237,68 @@ trait t_base_return_message {
 
     return '';
   }
+}
+
+/**
+ * A trait for a return value that may be assigned an object via reference.
+ */
+trait t_base_return_reference_set {
+  /**
+   * Assign the value, using reference instead of a copy.
+   *
+   * If the value is an object, then this should contain a reference to the object.
+   *
+   * @param $value
+   *   This can be anything that is to be considered a return value.
+   *
+   * @return bool
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE is returned when $value is not an object.
+   */
+  public function set_value_reference($value) {
+    if (is_object($value)) {
+      $this->value = $value;
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+}
+
+/**
+ * A trait for a return value that may return an object via reference.
+ */
+trait t_base_return_reference_get {
+
+  /**
+   * Return the value, by reference.
+   *
+   * @return null|object $value
+   *   A reference to the value within this class.
+   *   NULL is returned if no reference can be returned.
+   */
+  public function get_value_reference() {
+    if (is_object($this->value)) {
+      return $this->value;
+    }
+
+    return NULL;
+  }
+}
+
+/**
+ * A trait for a return value that may return an object via reference of the expected type.
+ */
+trait t_base_return_reference_get_exact {
+
+  /**
+   * Return the value, by reference, of the expected type.
+   *
+   * @return object $value
+   *   A reference to the value within this class.
+   *   A new object is created and returned if a reference would otherwise be unreturnable.
+   */
+  public abstract function get_value_reference_exact();
 }
 
 /**
@@ -1581,6 +1651,7 @@ class c_base_return_array extends c_base_return_value {
  * All specific object types should extend this class so that instanceof tests against c_base_return_object are always accurate.
  */
 class c_base_return_object extends c_base_return_value {
+
   /**
    * @see: t_base_return_value::p_s_new()
    */
@@ -1640,6 +1711,7 @@ class c_base_return_object extends c_base_return_value {
  * All specific resource types should extend this class so that instanceof tests against c_base_return_resource are always accurate.
  */
 class c_base_return_resource extends c_base_return_value {
+
   /**
    * @see: t_base_return_value::p_s_new()
    */
@@ -1693,6 +1765,7 @@ class c_base_return_resource extends c_base_return_value {
  * A return class whose value is represented as a stream resource.
  */
 class c_base_return_resource_stream extends c_base_return_resource {
+
   /**
    * @see: t_base_return_value::p_s_new()
    */
@@ -1746,6 +1819,7 @@ class c_base_return_resource_stream extends c_base_return_resource {
  * A return class whose value is represented as a socket resource.
  */
 class c_base_return_resource_socket extends c_base_return_resource {
+
   /**
    * @see: t_base_return_value::p_s_new()
    */

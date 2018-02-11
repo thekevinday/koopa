@@ -1541,7 +1541,7 @@ class c_theme_return_tag extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -1556,7 +1556,7 @@ class c_theme_return_tag extends c_base_return_value {
       $this->value = NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -1570,7 +1570,7 @@ class c_theme_return_tag extends c_base_return_value {
       $this->value = new c_theme_tag();
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 }
 
@@ -1907,7 +1907,6 @@ class c_theme_markup {
  */
 class c_theme_return_markup extends c_base_return_value {
   use t_base_return_value_exact;
-
   /**
    * @see: t_base_return_value::p_s_new()
    */
@@ -1944,7 +1943,7 @@ class c_theme_return_markup extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -1959,7 +1958,7 @@ class c_theme_return_markup extends c_base_return_value {
       $this->value = NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -1973,6 +1972,6 @@ class c_theme_return_markup extends c_base_return_value {
       $this->value = new c_theme_tag();
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 }

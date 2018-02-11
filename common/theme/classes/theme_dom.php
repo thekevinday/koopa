@@ -470,7 +470,7 @@ class c_theme_return_c_theme_dom extends c_base_return_value {
       return NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -484,7 +484,7 @@ class c_theme_return_c_theme_dom extends c_base_return_value {
       return new c_theme_dom();
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 }
 
@@ -533,7 +533,7 @@ class c_theme_return_dom_node extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -548,7 +548,7 @@ class c_theme_return_dom_node extends c_base_return_value {
       return NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -562,7 +562,39 @@ class c_theme_return_dom_node extends c_base_return_value {
       return new DOMNode();
     }
 
+    return clone($this->value);
+  }
+
+  /**
+   * Return the value.
+   *
+   * This returns a reference instead of a copy.
+   *
+   * @return string|null $value
+   *   The value array stored within this class.
+   */
+  public function get_value_reference() {
+    if (!is_null($this->value) && !($this->value instanceof DOMNode)) {
+      return NULL;
+    }
+
     return $this->value;
+  }
+
+  /**
+   * Return the value of the expected type.
+   *
+   * This returns a reference instead of a copy.
+   *
+   * @return DOMNode $value
+   *   The value DOMNode stored within this class.
+   */
+  public function get_value_reference_exact() {
+    if (!($this->value instanceof DOMNode)) {
+      return new DOMNode();
+    }
+
+    return clone($this->value);
   }
 }
 
@@ -611,7 +643,7 @@ class c_theme_return_dom_comment extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -626,7 +658,7 @@ class c_theme_return_dom_comment extends c_base_return_value {
       return NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -640,7 +672,7 @@ class c_theme_return_dom_comment extends c_base_return_value {
       return new DOMComment();
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 }
 
@@ -689,7 +721,7 @@ class c_theme_return_dom_element extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -704,7 +736,7 @@ class c_theme_return_dom_element extends c_base_return_value {
       return NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -767,7 +799,7 @@ class c_theme_return_dom_text extends c_base_return_value {
       return FALSE;
     }
 
-    $this->value = $value;
+    $this->value = clone($value);
     return TRUE;
   }
 
@@ -782,7 +814,7 @@ class c_theme_return_dom_text extends c_base_return_value {
       return NULL;
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 
   /**
@@ -796,6 +828,6 @@ class c_theme_return_dom_text extends c_base_return_value {
       return new DOMText();
     }
 
-    return $this->value;
+    return clone($this->value);
   }
 }
