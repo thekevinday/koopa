@@ -65,14 +65,14 @@ require_once('common/base/classes/base_array.php');
 class c_base_path extends c_base_rfc_string {
   use t_base_return_value_exact;
 
-  private const DEFAULT_ALLOWED_METHODS = [
+  private const p_DEFAULT_ALLOWED_METHODS = [
     c_base_http::HTTP_METHOD_GET => c_base_http::HTTP_METHOD_GET,
     c_base_http::HTTP_METHOD_POST => c_base_http::HTTP_METHOD_POST,
     c_base_http::HTTP_METHOD_HEAD => c_base_http::HTTP_METHOD_HEAD,
     c_base_http::HTTP_METHOD_OPTIONS => c_base_http::HTTP_METHOD_OPTIONS,
   ];
 
-  private const DEFAULT_SANITIZE_HTML = [
+  private const p_DEFAULT_SANITIZE_HTML = [
     'flags' => ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE,
     'encoding' => 'UTF-8',
   ];
@@ -131,8 +131,8 @@ class c_base_path extends c_base_rfc_string {
     $this->include_directory = NULL;
     $this->include_name      = NULL;
 
-    $this->allowed_methods = self::DEFAULT_ALLOWED_METHODS;
-    $this->sanitize_html   = self::DEFAULT_SANITIZE_HTML;
+    $this->allowed_methods = self::p_DEFAULT_ALLOWED_METHODS;
+    $this->sanitize_html   = self::p_DEFAULT_SANITIZE_HTML;
 
     $this->path_tree = NULL;
   }
@@ -690,7 +690,7 @@ class c_base_path extends c_base_rfc_string {
     }
 
     if (!is_array($this->sanitize_html)) {
-      $this->sanitize_html = static::DEFAULT_SANITIZE_HTML;
+      $this->sanitize_html = static::p_DEFAULT_SANITIZE_HTML;
     }
 
     if (!is_null($flags)) {
@@ -941,7 +941,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function get_allowed_methods() {
     if (!is_array($this->allowed_methods)) {
-      $this->allowed_methods = static::DEFAULT_ALLOWED_METHODS;
+      $this->allowed_methods = static::p_DEFAULT_ALLOWED_METHODS;
     }
 
     return c_base_return_array::s_new($this->allowed_methods);
@@ -958,7 +958,7 @@ class c_base_path extends c_base_rfc_string {
    */
   public function get_sanitize_html() {
     if (!is_array($this->sanitize_html)) {
-      $this->sanitize_html = static::DEFAULT_SANITIZE_HTML;
+      $this->sanitize_html = static::p_DEFAULT_SANITIZE_HTML;
     }
 
     return c_base_return_array::s_new($this->sanitize_html);

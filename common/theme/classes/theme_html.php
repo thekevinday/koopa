@@ -28,7 +28,7 @@ require_once('common/base/classes/base_mime.php');
 class c_theme_html extends c_base_return {
   const DEFAULT_MAX_RECURSION_DEPTH = 16384;
 
-  private const DEFAULT_SANITIZE_HTML = [
+  private const p_DEFAULT_SANITIZE_HTML = [
     'flags' => ENT_HTML5 | ENT_NOQUOTES | ENT_DISALLOWED | ENT_SUBSTITUTE,
     'encoding' => 'UTF-8',
     'double_encode' => FALSE,
@@ -6483,7 +6483,7 @@ class c_theme_html extends c_base_return {
   private function p_html_entities_tag($tag) {
     $text = $tag->get_text()->get_value_exact();
     if ($tag->get_encode_text()->get_value_exact()) {
-      return htmlentities($text, self::DEFAULT_SANITIZE_HTML['flags'], self::DEFAULT_SANITIZE_HTML['encoding'], self::DEFAULT_SANITIZE_HTML['double_encode']);
+      return htmlentities($text, self::p_DEFAULT_SANITIZE_HTML['flags'], self::p_DEFAULT_SANITIZE_HTML['encoding'], self::p_DEFAULT_SANITIZE_HTML['double_encode']);
     }
 
     return $text;
