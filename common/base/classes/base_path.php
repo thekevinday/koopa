@@ -1340,12 +1340,12 @@ class c_base_path extends c_base_rfc_string {
   protected function pr_sanitize($id, $type, $type_sub = NULL) {
     if (!is_string($id) && mb_strlen($id) > 0) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'id', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
+      return c_base_return_error::s_null($error);
     }
 
     if (!is_int($type)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_value(NULL, 'c_base_return_null', $error);
+      return c_base_return_error::s_null($error);
     }
 
     if (!is_array($_POST) || !array_key_exists($id, $_POST)) {

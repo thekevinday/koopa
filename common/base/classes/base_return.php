@@ -1663,6 +1663,37 @@ class c_base_return_error {
   }
 
   /**
+   * Creates a return NULL with the error value populated.
+   *
+   * @param c_base_error|array|null $error
+   *   (optional) a custom error setting.
+   *   Can be an array of c_base_error for returning multiple errors.
+   *   When NULL, no errors are defined.
+   *
+   * @return c_base_return_false
+   *   A c_base_return_null object with the error value populated.
+   */
+  public static function s_null($error = NULL) {
+    $object_return = new c_base_return_null();
+
+    if (is_null($error)) {
+      $object_return->set_error(null);
+    }
+    elseif (is_array($error)) {
+      foreach ($error as $delta => $value) {
+        $object_return->set_error($error, $delta);
+      }
+      unset($delta);
+      unset($value);
+    }
+    else {
+      $object_return->set_error($error);
+    }
+
+    return $object_return;
+  }
+
+  /**
    * Creates a return boolean TRUE with the error value populated.
    *
    * This will assign a value to the class.
