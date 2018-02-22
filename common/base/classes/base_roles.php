@@ -123,7 +123,7 @@ class c_base_roles extends c_base_return {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, []);
+    return self::p_s_value_exact($return, __CLASS__, NULL);
   }
 
   /**

@@ -34,6 +34,6 @@ class c_base_ajax extends c_base_array {
    * @see: t_base_return_value_exact::p_s_value_exact()
    */
   public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, '');
+    return self::p_s_value_exact($return, __CLASS__, []);
   }
 }
