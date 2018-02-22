@@ -918,79 +918,17 @@ class c_base_return_array extends c_base_return_value {
    *   Any value to be assigned at the specified position in the array.
    * @param int|string $key
    *   A key to assign a specific value to.
-   * @param string $type
-   *   (optional) When key is not NULL, a specific known type to assign.
-   *   This does nothing if $key is not provided.
-   *   This is used for validation purposes.
-   *
-   *   Supported known types:
-   *     'bool': a boolean value.
-   *     'int': an integer value.
-   *     'string': a string value.
-   *     'array': an array value.
-   *     'object': an object value.
-   *     'resource': a generic resource value.
-   *     'stream': a stream resource value.
-   *     'socket': a socket resource value.
-   *     'numeric': a string value that represents either an int or float.
-   *     'null': A null value.
-   *     NULL: no specific type requirements.
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_value_at($value, $key, $type = NULL) {
+  public function set_value_at($value, $key) {
     if (!is_int($key) && !is_string($key)) {
       return FALSE;
     }
 
-    // when type is not supplied, return a generic type.
-    if (is_null($type)) {
-      $this->value[$key] = $value;
-      return TRUE;
-    }
-
-    // if type is supplied, it must be string.
-    if (!is_string($type) || empty($type)) {
-      return FALSE;
-    }
-
-    if ($type == 'bool' && !is_bool($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'int' && !is_int($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'float' && !is_float($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'numeric' && !is_numeric($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'string' && !is_string($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'array' && !is_array($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'object' && !is_object($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'resource' && !is_resource($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'stream') {
-      if (!is_resource($value) || get_resource_type($value) != 'stream') {
-        return FALSE;
-      }
-    }
-    elseif ($type == 'socket') {
-      if (!is_resource($value) || get_resource_type($value) != 'socket') {
-        return FALSE;
-      }
-    }
-    elseif ($type == 'null' && !is_null($value)) {
-      return FALSE;
+    if (!is_array($this->value)) {
+      $this->value = [];
     }
 
     $this->value[$key] = $value;
@@ -1002,75 +940,13 @@ class c_base_return_array extends c_base_return_value {
    *
    * @param $value
    *   Any value to be appended in the array.
-   * @param string $type
-   *   (optional) When key is not NULL, a specific known type to assign.
-   *   This does nothing if $key is not provided.
-   *   This is used for validation purposes.
-   *
-   *   Supported known types:
-   *     'bool': a boolean value.
-   *     'int': an integer value.
-   *     'string': a string value.
-   *     'array': an array value.
-   *     'object': an object value.
-   *     'resource': a generic resource value.
-   *     'stream': a stream resource value.
-   *     'socket': a socket resource value.
-   *     'numeric': a string value that represents either an int or float.
-   *     'null': A null value.
-   *     NULL: no specific type requirements.
    *
    * @return bool
    *   TRUE on success, FALSE otherwise.
    */
-  public function set_value_append($value, $type = NULL) {
-    // when type is not supplied, return a generic type.
-    if (is_null($type)) {
-      $this->value[] = $value;
-      return TRUE;
-    }
-
-    // if type is supplied, it must be string.
-    if (!is_string($type) || empty($type)) {
-      return FALSE;
-    }
-
-    if ($type == 'bool' && !is_bool($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'int' && !is_int($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'float' && !is_float($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'numeric' && !is_numeric($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'string' && !is_string($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'array' && !is_array($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'object' && !is_object($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'resource' && !is_resource($value)) {
-      return FALSE;
-    }
-    elseif ($type == 'stream') {
-      if (!is_resource($value) || get_resource_type($value) != 'stream') {
-        return FALSE;
-      }
-    }
-    elseif ($type == 'socket') {
-      if (!is_resource($value) || get_resource_type($value) != 'socket') {
-        return FALSE;
-      }
-    }
-    elseif ($type == 'null' && !is_null($value)) {
-      return FALSE;
+  public function set_value_append($value) {
+    if (!is_array($this->value)) {
+      $this->value = [];
     }
 
     $this->value[] = $value;
@@ -1163,7 +1039,7 @@ class c_base_return_array extends c_base_return_value {
    *   NULL may be returned if there is no defined valid array.
    */
   public function get_value() {
-    if (!is_null($this->value) && !is_array($this->value)) {
+    if (!is_array($this->value)) {
       return NULL;
     }
 
@@ -1194,108 +1070,108 @@ class c_base_return_array extends c_base_return_value {
    *
    * @param int|string $key
    *   A key to assign a specific value to.
-   * @param string $type
-   *   (optional) When key is not NULL, a specific known type to assign.
-   *   This does nothing if $key is not provided.
-   *   This is used for validation purposes.
-   *
-   *   Supported known types:
-   *     'bool': a boolean value.
-   *     'int': an integer value.
-   *     'string': a string value.
-   *     'array': an array value.
-   *     'object': an object value.
-   *     'resource': a generic resource value.
-   *     'stream': a stream resource value.
-   *     'socket': a socket resource value.
-   *     'numeric': a string value that represents either an int or float.
-   *     'null': A null value.
-   *     NULL: no specific type requirements.
    *
    * @return
-   *   Value on success, FALSE otherwise.
-   *   Warning: There is no way to distinguish a return value of FALSE for an error to a valid FALSE when $type is set to 'bool'.
+   *   Value on success, NULL otherwise.
    */
-  public function get_value_at($key, $type = NULL) {
+  public function get_value_at($key) {
     if (!is_int($key) && !is_string($key)) {
-      return FALSE;
-    }
-
-    // if type is supplied, it must be string.
-    if (!is_null($type) && (!is_string($type) || empty($type))) {
-      return FALSE;
+      return NULL;
     }
 
     if (!is_array($this->value)) {
-      $this->value = [];
+      return NULL;
     }
 
     if (!array_key_exists($key, $this->value)) {
-      return FALSE;
-    }
-
-    if (!is_null($type)) {
-      if ($type == 'bool') {
-        if (!is_bool($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'int') {
-        if (!is_int($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'float') {
-        if (!is_float($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'numeric') {
-        if (!is_numeric($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'string') {
-        if (!is_string($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'array') {
-        if (!is_array($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'object') {
-        if (!is_object($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'resource') {
-        if (!is_resource($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'stream') {
-        if (!is_resource($this->value[$key]) || get_resource_type($this->value[$key]) != 'stream') {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'socket') {
-        if (!is_resource($this->value[$key]) || get_resource_type($this->value[$key]) != 'socket') {
-          return FALSE;
-        }
-      }
-      elseif ($type == 'null') {
-        if (!is_null($this->value[$key])) {
-          return FALSE;
-        }
-      }
-      else {
-        return FALSE;
-      }
+      return NULL;
     }
 
     return $this->value[$key];
+  }
+
+  /**
+   * Return the first value in the array after calling reset().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_value_reset() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return reset($this->value);
+  }
+
+  /**
+   * Return the first value in the array after calling current().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_value_current() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return $this->value;
+  }
+
+  /**
+   * Return the first item in the array after calling each().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_value_each() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return each($this->value);
+  }
+
+  /**
+   * Return the first value in the array after calling next().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_value_next() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return next($this->value);
+  }
+
+  /**
+   * Return the first value in the array after calling prev().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_item_previous() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return prev($this->value);
+  }
+
+  /**
+   * Return the first value in the array after calling end().
+   *
+   * @return
+   *   Value on success, NULL otherwise.
+   */
+  public function get_value_end() {
+    if (!is_array($this->value) || empty($this->value)) {
+      return NULL;
+    }
+
+    return end($this->value);
   }
 
   /**
