@@ -24,6 +24,8 @@ require_once('common/base/classes/base_http.php');
 require_once('common/base/classes/base_cookie.php');
 require_once('common/base/classes/base_array.php');
 
+require_once('common/base/traits/base_rfc_string.php');
+
 /**
  * A generic class for managing paths information.
  *
@@ -62,8 +64,8 @@ require_once('common/base/classes/base_array.php');
  *
  * // c_base_utf8::s_substring($path_string, 0, 1);
  */
-class c_base_path extends c_base_rfc_string {
-  use t_base_return_value_exact;
+class c_base_path extends c_base_return_string {
+  use t_base_rfc_string;
 
   private const p_DEFAULT_ALLOWED_METHODS = [
     c_base_http::HTTP_METHOD_GET => c_base_http::HTTP_METHOD_GET,

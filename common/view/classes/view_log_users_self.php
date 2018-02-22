@@ -13,8 +13,6 @@ require_once('common/base/classes/base_view.php');
 
 /**
  * A specific class for processing view results: v_log_users_self.
- *
- * @require class c_base_rfc_string
  */
 class c_view_log_users_self extends c_base_view {
 

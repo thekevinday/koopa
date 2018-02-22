@@ -12,7 +12,8 @@ namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-require_once('common/base/classes/base_rfc_string.php');
+
+require_once('common/base/traits/base_rfc_string.php');
 
 /**
  * A generic class for providing classes that support a single array value.
@@ -22,9 +23,11 @@ require_once('common/base/classes/base_rfc_string.php');
  *
  * This does not use the traits t_base_return_value_exact or t_base_return_value because this is non-confirming to those traits.
  *
- * @require class c_base_rfc_string
+ * @require class c_base_return_array
  */
-class c_base_array extends c_base_rfc_string {
+class c_base_array extends c_base_return {
+  use t_base_rfc_string;
+
   protected $items;
 
   /**
@@ -43,27 +46,6 @@ class c_base_array extends c_base_rfc_string {
     unset($this->items);
 
     parent::__destruct();
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**

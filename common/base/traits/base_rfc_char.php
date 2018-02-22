@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides a class for managing common rfc character testing cases.
+ * Provides a trait for managing common rfc character testing cases.
  */
 namespace n_koopa;
 
@@ -11,7 +11,7 @@ require_once('common/base/classes/base_utf8.php');
 
 
 /**
- * A class for managing common rfc character testing cases.
+ * A trait for managing common rfc character testing cases.
  *
  * This currently utilizes some of the rules defined in the following rfcs:
  * - rfc 4234
@@ -42,28 +42,7 @@ require_once('common/base/classes/base_utf8.php');
  * @require class c_base_ascii
  * @require class c_base_utf8
  */
-abstract class c_base_rfc_char extends c_base_return {
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, NULL);
-  }
+trait t_base_rfc_char {
 
   /**
    * Check to see if character is: text.

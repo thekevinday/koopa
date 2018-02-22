@@ -9,7 +9,8 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_mime.php');
 require_once('common/base/classes/base_charset.php');
-require_once('common/base/classes/base_rfc_string.php');
+
+require_once('common/base/traits/base_rfc_string.php');
 
 /**
  * A generic class for html attribute types.
@@ -374,7 +375,9 @@ class c_base_markup_filters {
  *
  * @todo: add support for non-standard tag attributes, which will just be a string or NULL.
  */
-class c_base_markup_tag extends c_base_rfc_string {
+class c_base_markup_tag extends c_base_return {
+  use t_base_rfc_string;
+
   const TYPE_NONE                       = 0;
   const TYPE_A                          = 1;
   const TYPE_ABBR                       = 2;
@@ -571,27 +574,6 @@ class c_base_markup_tag extends c_base_rfc_string {
     unset($this->encode_text);
 
     parent::__destruct();
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**

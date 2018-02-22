@@ -8,7 +8,8 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_ascii.php');
-require_once('common/base/classes/base_rfc_string.php');
+
+require_once('common/base/traits/base_rfc_string.php');
 
 /**
  * A generic class for managing the e-mail related functionality.
@@ -23,12 +24,11 @@ require_once('common/base/classes/base_rfc_string.php');
  * @see: https://tools.ietf.org/html/rfc6854
  * @see: https://tools.ietf.org/html/rfc7231#section-5.5.1
  *
- * @require class c_base_rfc_string
  * @require class c_base_ascii
  * @require class c_base_utf8
  */
-class c_base_email extends c_base_rfc_string {
-  use t_base_return_value_exact;
+class c_base_email extends c_base_return_string {
+  use t_base_rfc_string;
 
   const LINE_LENGTH_LIMIT_SOFT = 78;
   const LINE_LENGTH_LIMIT_HARD = 998;
@@ -53,54 +53,6 @@ class c_base_email extends c_base_rfc_string {
    */
   public static function s_value_exact($return) {
     return self::p_s_value_exact($return, __CLASS__, '');
-  }
-
-  /**
-   * Assign the value.
-   *
-   * @param DOMNode $value
-   *   Any value so long as it is a DOMNode.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function set_value($value) {
-    if (!is_string($value)) {
-      return FALSE;
-    }
-
-    $this->value = $value;
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return string|null $value
-   *   The value array stored within this class.
-   */
-  public function get_value() {
-    if (!is_string($this->value)) {
-      return NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return DOMNode $value
-   *   The value DOMNode stored within this class.
-   */
-  public function get_value_exact() {
-    if (!is_string($this->value)) {
-      return '';
-    }
-
-    return $this->value;
   }
 
   /**

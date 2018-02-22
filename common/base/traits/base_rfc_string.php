@@ -1,17 +1,18 @@
 <?php
 /**
  * @file
- * Provides a class for managing common rfc string testing cases.
+ * Provides a trait for managing common rfc string testing cases.
  */
 namespace n_koopa;
 
 require_once('common/base/classes/base_return.php');
 require_once('common/base/classes/base_ascii.php');
 require_once('common/base/classes/base_utf8.php');
-require_once('common/base/classes/base_rfc_char.php');
+
+require_once('common/base/traits/base_rfc_char.php');
 
 /**
- * A class for managing common rfc string testing cases.
+ * A trait for managing common rfc string testing cases.
  *
  * This checks a a string of characters.
  * The c_base_rf_string_is_* functions that require specific characters to start, such as DQUOTE, assume that the start position is after the initial special character, such as DQUOTE.
@@ -40,31 +41,9 @@ require_once('common/base/classes/base_rfc_char.php');
  *
  * @require class c_base_ascii
  * @require class c_base_utf8
- * @require class c_base_rfc_char
  */
-abstract class c_base_rfc_string extends c_base_rfc_char {
-  const STOP_AT_CLOSING_CHARACTER = -1;
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, NULL);
-  }
+trait t_base_rfc_string {
+  use t_base_rfc_char;
 
   /**
    * Converts a string into a ordinals array and a characters array.
@@ -169,7 +148,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
    * @param int|null $stop
    *   (optional) The position in the arrays to stop checking.
    *   If NULL, then the entire string is processed.
-   *   If self::STOP_AT_CLOSING_CHARACTER, then stop at the end of a double quote and do no further processing.
+   *   If -1, then stop at the end of a double quote and do no further processing.
    *
    * @return array
    *   The processed information, with comments separated:
@@ -197,7 +176,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
 
     $stop_at_closing_quote = FALSE;
     if ($stop < 0) {
-      if ($stop == static::STOP_AT_CLOSING_CHARACTER) {
+      if ($stop == -1) {
         $stop_at_closing_quote = TRUE;
       }
 
@@ -736,7 +715,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], -1);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -909,7 +888,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           return $result;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], -1);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -1788,7 +1767,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
                 break;
               }
 
-              $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
+              $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], -1);
               $result['current'] = $parsed['current'];
 
               if ($parsed['invalid']) {
@@ -2071,7 +2050,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], -1);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {
@@ -2271,7 +2250,7 @@ abstract class c_base_rfc_string extends c_base_rfc_char {
           break;
         }
 
-        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], static::STOP_AT_CLOSING_CHARACTER);
+        $parsed = $this->pr_rfc_string_is_quoted_string($ordinals, $characters, $result['current'], -1);
         $result['current'] = $parsed['current'];
 
         if ($parsed['invalid']) {

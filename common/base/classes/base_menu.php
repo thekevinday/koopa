@@ -7,39 +7,20 @@ namespace n_koopa;
 
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
-require_once('common/base/classes/base_rfc_string.php');
 require_once('common/base/classes/base_http.php');
 require_once('common/base/classes/base_database.php');
 require_once('common/base/classes/base_session.php');
 require_once('common/base/classes/base_array.php');
+
+require_once('common/base/traits/base_rfc_string.php');
 
 /**
  * A generic class for managing a menu.
  *
  * This can be converted to HTML <nav>, <menu>, or even breadcrumbs.
  */
-class c_base_menu extends c_base_rfc_string {
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, '');
-  }
+class c_base_menu extends c_base_return {
+  use t_base_rfc_string;
 
   /**
    * Build the menu structure.
