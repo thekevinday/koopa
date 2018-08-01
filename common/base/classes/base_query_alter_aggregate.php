@@ -90,7 +90,7 @@ class c_base_query_alter_aggregate extends c_base_query {
    *   When NULL, this will remove all aggregate signatures regardless of the $append parameter.
    * @param bool $append
    *   (optional) When TRUE, the aggregate signatures will be appended.
-   *   When FALSE, any existing aggregate signatures will be cleared with this value assigned.
+   *   When FALSE, any existing aggregate signatures will be cleared before appending the aggregate signature.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -135,7 +135,7 @@ class c_base_query_alter_aggregate extends c_base_query {
    *   When NULL, this will remove all modes regardless of the $append parameter.
    * @param bool $append
    *   (optional) When TRUE, the argument mode will be appended.
-   *   When FALSE, any existing modes will be cleared with this value assigned.
+   *   When FALSE, any existing aggregate signatures will be cleared before appending the aggregate signature.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -178,7 +178,7 @@ class c_base_query_alter_aggregate extends c_base_query {
    *   (optional) Get the argument signature at the specified index.
    *   When NULL, all argument signatures are returned.
    *
-   * @return c_base_query_argument_aggregate_signature|c_base_return_null
+   * @return c_base_query_argument_aggregate_signature|c_base_return_array|c_base_return_null
    *   An array of aggregate signatures or NULL if not defined.
    *   A single aggregate signature is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
@@ -190,7 +190,7 @@ class c_base_query_alter_aggregate extends c_base_query {
 
     if (is_null($index)) {
       if (is_array($this->aggregate_signatures)) {
-        return $this->aggregate_signatures;
+        return c_base_return_array::s_new($this->aggregate_signatures);
       }
     }
     else {
@@ -213,7 +213,7 @@ class c_base_query_alter_aggregate extends c_base_query {
    *   (optional) Get the argument signature at the specified index.
    *   When NULL, all argument signatures are returned.
    *
-   * @return c_base_query_argument_aggregate_signature|c_base_return_null
+   * @return c_base_query_argument_aggregate_signature|c_base_return_array|c_base_return_null
    *   An array of order by aggregate signatures or NULL if not defined.
    *   A single order by aggregate signature is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
@@ -225,7 +225,7 @@ class c_base_query_alter_aggregate extends c_base_query {
 
     if (is_null($index)) {
       if (is_array($this->order_by_signatures)) {
-        return $this->order_by_signatures;
+        return c_base_return_array::s_new($this->order_by_signatures);
       }
     }
     else {
@@ -268,11 +268,8 @@ class c_base_query_alter_aggregate extends c_base_query {
             $aggregate_signatures .= ', ';
           }
 
-          $signature = $aggregate_signature->do_build_argument();
-          if ($signature instanceof c_base_return_string) {
-            $aggregate_signatures .= $signature->get_value_exact();
-          }
-          unset($signature);
+          $aggregate_signature->do_build_argument();
+          $aggregate_signatures .= $aggregate_signature->get_value_exact();
         }
       }
       unset($aggregate_signature);
@@ -288,11 +285,8 @@ class c_base_query_alter_aggregate extends c_base_query {
             $order_by_signatures .= ', ';
           }
 
-          $signature = $order_by_signature->do_build_argument();
-          if ($signature instanceof c_base_return_string) {
-            $aggregate_signatures .= $signature->get_value_exact();
-          }
-          unset($signature);
+          $order_by_signature->do_build_argument();
+          $aggregate_signatures .= $order_by_signature->get_value_exact();
         }
       }
       unset($order_by_signature);
@@ -300,7 +294,7 @@ class c_base_query_alter_aggregate extends c_base_query {
       if (is_string($aggregate_signatures)) {
         $aggregate_signatures = ' (' . $aggregate_signatures;
         if (is_string($order_by_signatures)) {
-          $order_by_signatures = ' ' . c_base_query_string::ORDER_BY . ' ' . $order_by_signatures . '';
+          $aggregate_signatures = ' ' . c_base_query_string::ORDER_BY . ' ' . $order_by_signatures . '';
         }
         $aggregate_signatures .= ')';
       }

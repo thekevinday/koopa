@@ -10,7 +10,7 @@ namespace n_koopa;
 /**
  * Codes associated with postgresql user/session information.
  */
-static class c_base_query_code_user {
+class c_base_query_code_user {
   public const NONE    = 0;
   public const CURRENT = 1;
   public const SESSION = 2;
@@ -20,7 +20,7 @@ static class c_base_query_code_user {
 /**
  * Codes associated with GROUP BY, ORDER BY, and related queries.
  */
-static class c_base_query_code_direction {
+class c_base_query_code_direction {
   public const NONE    = 0;
   public const ASCEND  = 1;
   public const DESCEND = 2;
@@ -29,7 +29,7 @@ static class c_base_query_code_direction {
 /**
  * Codes associated with SET and related queries.
  */
-static class c_base_query_code_set {
+class c_base_query_code_set {
   public const NONE         = 0;
   public const TO           = 1;
   public const EQUAL        = 2;
@@ -39,7 +39,7 @@ static class c_base_query_code_set {
 /**
  * Codes associated with RESET and related queries.
  */
-static class c_base_query_code_reset {
+class c_base_query_code_reset {
   public const NONE      = 0;
   public const ALL       = 1;
   public const PARAMETER = 2;

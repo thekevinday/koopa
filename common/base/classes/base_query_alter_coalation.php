@@ -133,7 +133,9 @@ class c_base_query_alter_coalation extends c_base_query {
     $this->value .= ' ' . $this->query_name;
 
     if (is_bool($this->refresh_version)) {
-      $this->value .= ' ' . c_base_query_string::REFRESH_VERSION;
+      if ($this->refresh_version) {
+        $this->value .= ' ' . c_base_query_string::REFRESH_VERSION;
+      }
     }
     elseif (is_string($this->query_rename_to)) {
       $this->value .= ' ' . $this->pr_QUERY_RENAME_TO . ' (' . $this->query_rename_to . ')';

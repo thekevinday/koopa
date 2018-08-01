@@ -16,13 +16,14 @@ interface i_base_query {
    * Build the Postgresql query string.
    *
    * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
+   *   TRUE on success.
+   *   FALSE without error bit set is returned if there is nothing to build.
    *   FALSE with the error bit set is returned on error.
    */
   public function do_build();
 
   /**
-   * Reset all values in this class.
+   * Reset all query values in this class.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -37,12 +38,21 @@ interface i_base_query {
 interface i_base_query_argument {
 
   /**
-   * Return a processed argument.
+   * Build the Postgresql query argument.
    *
-   * @return c_base_return_string|c_base_return_false
-   *   An SQL string representing the built argument.
+   * @return c_base_return_bool
+   *   TRUE is returned on success.
    *   FALSE without error bit set is returned if there is nothing to build.
    *   FALSE with the error bit set is returned on error.
    */
   public function do_build_argument();
+
+  /**
+   * Reset all argument values in this class.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function do_reset_argument();
 }

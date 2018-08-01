@@ -94,7 +94,6 @@ class c_base_query_alter_database extends c_base_query {
    * @param c_base_query_argument_database_option|null $option
    *   The database options to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all modes regardless of the $append parameter.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -148,11 +147,8 @@ class c_base_query_alter_database extends c_base_query {
     $this->value .= ' ' . $this->query_name;
 
     if ($this->option instanceof c_base_query_argument_database_option) {
-      $built = $this->option->do_build_argument();
-      if ($built instanceof c_base_return_string) {
-        $this->value .= ' ' . $built->get_value_exact();
-      }
-      unset($built);
+      $this->option->do_build_argument();
+      $this->value .= ' ' . $this->option->get_value_exact();
     }
     elseif (is_string($this->query_rename_to)) {
       $this->value .= ' ' . c_base_query_string::RENAME_TO . ' (' . $this->query_rename_to . ')';
