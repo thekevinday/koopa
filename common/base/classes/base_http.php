@@ -2193,7 +2193,7 @@ class c_base_http extends c_base_return {
       $content_type_string = array_shift($result);
       unset($result);
     }
-    elseif (!is_string($content_type)) {
+    else if (!is_string($content_type)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'content_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -2401,7 +2401,7 @@ class c_base_http extends c_base_return {
         $response['tag'] = hash('sha256', $this->content, FALSE);
       }
     }
-    elseif ($entity_tag !== FALSE) {
+    else if ($entity_tag !== FALSE) {
       $response['tag'] = $entity_tag;
     }
 
@@ -3415,7 +3415,7 @@ class c_base_http extends c_base_return {
       // static:: cannot be used as a default function parameter because it may be used in compile-time constants (which is what default parameters are).
       $action = static::CHECKSUM_ACTION_AUTO;
     }
-    elseif (!is_int($action)) {
+    else if (!is_int($action)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'action', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -5377,52 +5377,52 @@ class c_base_http extends c_base_return {
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_CHUNKED] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'compress') {
+          else if ($lowercase == 'compress') {
             $c['encoding'] = static::ENCODING_COMPRESS;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_COMPRESS] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'deflate') {
+          else if ($lowercase == 'deflate') {
             $c['encoding'] = static::ENCODING_DEFLATE;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_DEFLATE] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'gzip') {
+          else if ($lowercase == 'gzip') {
             $c['encoding'] = static::ENCODING_GZIP;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_GZIP] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'bzip') {
+          else if ($lowercase == 'bzip') {
             $c['encoding'] = static::ENCODING_BZIP;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_BZIP] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'lzo') {
+          else if ($lowercase == 'lzo') {
             $c['encoding'] = static::ENCODING_LZO;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_LZO] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'xz') {
+          else if ($lowercase == 'xz') {
             $c['encoding'] = static::ENCODING_XZ;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_XZ] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'exit') {
+          else if ($lowercase == 'exit') {
             $c['encoding'] = static::ENCODING_EXI;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_EXI] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'identity') {
+          else if ($lowercase == 'identity') {
             $c['encoding'] = static::ENCODING_IDENTITY;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_IDENTITY] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'sdch') {
+          else if ($lowercase == 'sdch') {
             $c['encoding'] = static::ENCODING_SDCH;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_SDCH] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'pg') {
+          else if ($lowercase == 'pg') {
             $c['encoding'] = static::ENCODING_PG;
             $this->request[static::REQUEST_ACCEPT_ENCODING]['data']['weight'][$weight][static::ENCODING_PG] = $lowercase;
             unset($c['choice']);
@@ -5488,97 +5488,97 @@ class c_base_http extends c_base_return {
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ASCII] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'utf-8') {
+          else if ($lowercase == 'utf-8') {
             $c['charset'] = c_base_charset::UTF_8;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::UTF_8] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'utf-16') {
+          else if ($lowercase == 'utf-16') {
             $c['charset'] = c_base_charset::UTF_16;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::UTF_16] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'utf-32') {
+          else if ($lowercase == 'utf-32') {
             $c['charset'] = c_base_charset::UTF_32;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::UTF_32] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-1') {
+          else if ($lowercase == 'iso-8859-1') {
             $c['charset'] = c_base_charset::ISO_8859_1;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_1] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-2') {
+          else if ($lowercase == 'iso-8859-2') {
             $c['charset'] = c_base_charset::ISO_8859_2;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_2] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-3') {
+          else if ($lowercase == 'iso-8859-3') {
             $c['charset'] = c_base_charset::ISO_8859_3;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_3] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-4') {
+          else if ($lowercase == 'iso-8859-4') {
             $c['charset'] = c_base_charset::ISO_8859_4;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_4] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-5') {
+          else if ($lowercase == 'iso-8859-5') {
             $c['charset'] = c_base_charset::ISO_8859_5;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_5] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-6') {
+          else if ($lowercase == 'iso-8859-6') {
             $c['charset'] = c_base_charset::ISO_8859_6;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_6] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-7') {
+          else if ($lowercase == 'iso-8859-7') {
             $c['charset'] = c_base_charset::ISO_8859_7;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_7] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-8') {
+          else if ($lowercase == 'iso-8859-8') {
             $c['charset'] = c_base_charset::ISO_8859_8;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_8] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-9') {
+          else if ($lowercase == 'iso-8859-9') {
             $c['charset'] = c_base_charset::ISO_8859_9;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_9] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-10') {
+          else if ($lowercase == 'iso-8859-10') {
             $c['charset'] = c_base_charset::ISO_8859_10;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_10] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-11') {
+          else if ($lowercase == 'iso-8859-11') {
             $c['charset'] = c_base_charset::ISO_8859_11;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_11] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-12') {
+          else if ($lowercase == 'iso-8859-12') {
             $c['charset'] = c_base_charset::ISO_8859_12;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_12] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-13') {
+          else if ($lowercase == 'iso-8859-13') {
             $c['charset'] = c_base_charset::ISO_8859_13;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_13] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-14') {
+          else if ($lowercase == 'iso-8859-14') {
             $c['charset'] = c_base_charset::ISO_8859_14;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_14] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-15') {
+          else if ($lowercase == 'iso-8859-15') {
             $c['charset'] = c_base_charset::ISO_8859_15;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_15] = $lowercase;
             unset($c['choice']);
           }
-          elseif ($lowercase == 'iso-8859-16') {
+          else if ($lowercase == 'iso-8859-16') {
             $c['charset'] = c_base_charset::ISO_8859_16;
             $this->request[static::REQUEST_ACCEPT_CHARSET]['data']['weight'][$weight][c_base_charset::ISO_8859_16] = $lowercase;
             unset($c['choice']);
@@ -5821,15 +5821,15 @@ class c_base_http extends c_base_return {
         $this->request[static::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
         $this->request[static::REQUEST_CACHE_CONTROL]['data']['methods'][SELF::CACHE_CONTROL_NO_CACHE] = SELF::CACHE_CONTROL_NO_CACHE;
       }
-      elseif ($cleaned_up == 'no-store') {
+      else if ($cleaned_up == 'no-store') {
         $this->request[static::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
         $this->request[static::REQUEST_CACHE_CONTROL]['data']['methods'][SELF::CACHE_CONTROL_NO_STORE] = SELF::CACHE_CONTROL_NO_STORE;
       }
-      elseif ($cleaned_up == 'no-transform') {
+      else if ($cleaned_up == 'no-transform') {
         $this->request[static::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
         $this->request[static::REQUEST_CACHE_CONTROL]['data']['methods'][SELF::CACHE_CONTROL_NO_TRANSFORM] = SELF::CACHE_CONTROL_NO_TRANSFORM;
       }
-      elseif ($cleaned_up == 'only-if-cached') {
+      else if ($cleaned_up == 'only-if-cached') {
         $this->request[static::REQUEST_CACHE_CONTROL]['defined'] = TRUE;
         $this->request[static::REQUEST_CACHE_CONTROL]['data']['methods'][SELF::CACHE_CONTROL_ONLY_IF_CACHED] = SELF::CACHE_CONTROL_ONLY_IF_CACHED;
       }
@@ -6379,34 +6379,34 @@ class c_base_http extends c_base_return {
     if ($method_string == 'get') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_GET;
     }
-    elseif ($method_string == 'head') {
+    else if ($method_string == 'head') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_HEAD;
     }
-    elseif ($method_string == 'post') {
+    else if ($method_string == 'post') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_POST;
     }
-    elseif ($method_string == 'put') {
+    else if ($method_string == 'put') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_PUT;
     }
-    elseif ($method_string == 'delete') {
+    else if ($method_string == 'delete') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_DELETE;
     }
-    elseif ($method_string == 'trace') {
+    else if ($method_string == 'trace') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_TRACE;
     }
-    elseif ($method_string == 'options') {
+    else if ($method_string == 'options') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_OPTIONS;
     }
-    elseif ($method_string == 'connect') {
+    else if ($method_string == 'connect') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_CONNECT;
     }
-    elseif ($method_string == 'patch') {
+    else if ($method_string == 'patch') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_PATCH;
     }
-    elseif ($method_string == 'track') {
+    else if ($method_string == 'track') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_TRACK;
     }
-    elseif ($method_string == 'debug') {
+    else if ($method_string == 'debug') {
       $this->request[static::REQUEST_METHOD]['data'] = static::HTTP_METHOD_DEBUG;
     }
     else {
@@ -6559,31 +6559,31 @@ class c_base_http extends c_base_return {
           if ($c['choice'] == 'compress') {
             $c['encoding'] = static::ENCODING_COMPRESS;
           }
-          elseif ($c['choice'] == 'deflate') {
+          else if ($c['choice'] == 'deflate') {
             $c['encoding'] = static::ENCODING_DEFLATE;
           }
-          elseif ($c['choice'] == 'gzip') {
+          else if ($c['choice'] == 'gzip') {
             $c['encoding'] = static::ENCODING_GZIP;
           }
-          elseif ($c['choice'] == 'bzip') {
+          else if ($c['choice'] == 'bzip') {
             $c['encoding'] = static::ENCODING_BZIP;
           }
-          elseif ($c['choice'] == 'lzo') {
+          else if ($c['choice'] == 'lzo') {
             $c['encoding'] = static::ENCODING_LZO;
           }
-          elseif ($c['choice'] == 'xz') {
+          else if ($c['choice'] == 'xz') {
             $c['encoding'] = static::ENCODING_XZ;
           }
-          elseif ($c['choice'] == 'exit') {
+          else if ($c['choice'] == 'exit') {
             $c['encoding'] = static::ENCODING_EXI;
           }
-          elseif ($c['choice'] == 'identity') {
+          else if ($c['choice'] == 'identity') {
             $c['encoding'] = static::ENCODING_IDENTITY;
           }
-          elseif ($c['choice'] == 'sdch') {
+          else if ($c['choice'] == 'sdch') {
             $c['encoding'] = static::ENCODING_SDCH;
           }
-          elseif ($c['choice'] == 'pg') {
+          else if ($c['choice'] == 'pg') {
             $c['encoding'] = static::ENCODING_PG;
           }
           else {
@@ -7363,7 +7363,7 @@ class c_base_http extends c_base_return {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($text['ordinals'][$current] == c_base_ascii::QUOTE_DOUBLE) {
+      else if ($text['ordinals'][$current] == c_base_ascii::QUOTE_DOUBLE) {
         $current++;
         if ($current >= $stop) {
           $result['invalid'] = TRUE;
@@ -7512,12 +7512,12 @@ class c_base_http extends c_base_return {
           $result['name_machine'] = 'ie';
           $result['name_human'] = 'Internet Explorer';
         }
-        elseif ($lower_piece_1 == 'gecko') {
+        else if ($lower_piece_1 == 'gecko') {
           $result['engine_name_machine'] = 'gecko';
           $result['engine_name_human'] = 'Gecko';
           $result['version_engine'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
         }
-        elseif ($lower_piece_1 == 'presto') {
+        else if ($lower_piece_1 == 'presto') {
           $result['engine_name_machine'] = 'presto';
           $result['engine_name_human'] = 'Presto';
           $result['version_engine'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
@@ -7526,7 +7526,7 @@ class c_base_http extends c_base_return {
         unset($lower_piece_1);
         unset($lower_piece_2);
       }
-      elseif (isset($pieces[0])) {
+      else if (isset($pieces[0])) {
         $lower_cased = c_base_utf8::s_lowercase($pieces[0])->get_value_exact();
         $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
         unset($lower_cased);
@@ -7542,7 +7542,7 @@ class c_base_http extends c_base_return {
               $result['version_major'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
             }
           }
-          elseif (strpos($lower_piece_1, 'midori')) {
+          else if (strpos($lower_piece_1, 'midori')) {
             $result['name_machine'] = 'midori';
             $result['name_human'] = 'Midori';
             $result['engine_name_machine'] = 'webkit';
@@ -7597,7 +7597,7 @@ class c_base_http extends c_base_return {
                 $result['version_major'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
               }
             }
-            elseif ($lower_piece_1 == 'safari') {
+            else if ($lower_piece_1 == 'safari') {
               // safari is used in a lot of places that is not safari, so use safari only if it is the only agent detected.
               if (is_null($result['name_machine'])) {
                 $result['name_machine'] = 'safari';
@@ -7613,7 +7613,7 @@ class c_base_http extends c_base_return {
                 }
               }
             }
-            elseif ($lower_piece_1 == 'firefox') {
+            else if ($lower_piece_1 == 'firefox') {
               $result['name_machine'] = 'firefox';
               $result['name_human'] = 'Firefox';
 
@@ -7624,7 +7624,7 @@ class c_base_http extends c_base_return {
               $result['engine_name_machine'] = 'gecko';
               $result['engine_name_human'] = 'Gecko';
             }
-            elseif ($lower_piece_1 == 'seamonkey') {
+            else if ($lower_piece_1 == 'seamonkey') {
               $result['name_machine'] = 'seamonkey';
               $result['name_human'] = 'Seamonkey';
 
@@ -7635,14 +7635,14 @@ class c_base_http extends c_base_return {
               $result['engine_name_machine'] = 'gecko';
               $result['engine_name_human'] = 'Gecko';
             }
-            elseif ($lower_piece_1 == 'gecko') {
+            else if ($lower_piece_1 == 'gecko') {
               if (is_null($result['version_engine']) && (is_null($result['engine_name_machine']) || $result['engine_name_machine'] == 'gecko')) {
                 $result['version_engine'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
                 $result['engine_name_machine'] = 'gecko';
                 $result['engine_name_human'] = 'Gecko';
               }
             }
-            elseif ($lower_piece_1 == 'chrome') {
+            else if ($lower_piece_1 == 'chrome') {
               // the newer internet explorer uses safari/webkit based agent names, assign chrome conditionally.
               if (is_null($result['name_machine']) || $result['name_machine'] == 'safari') {
                 $result['name_machine'] = 'chrome';
@@ -7653,7 +7653,7 @@ class c_base_http extends c_base_return {
                 }
               }
             }
-            elseif ($lower_piece_1 == 'chromium') {
+            else if ($lower_piece_1 == 'chromium') {
               $result['name_machine'] = 'chrome';
               $result['name_human'] = 'Google Chrome';
 
@@ -7661,7 +7661,7 @@ class c_base_http extends c_base_return {
                 $result['version_major'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
               }
             }
-            elseif ($lower_piece_1 == 'epiphany') {
+            else if ($lower_piece_1 == 'epiphany') {
               $result['name_machine'] = 'epiphany';
               $result['name_human'] = 'Ephiphany';
 
@@ -7674,7 +7674,7 @@ class c_base_http extends c_base_return {
                 $result['engine_name_human'] = 'Gecko';
               }
             }
-            elseif ($lower_piece_1 == 'konqueror') {
+            else if ($lower_piece_1 == 'konqueror') {
               $result['name_machine'] = 'konqueror';
               $result['name_human'] = 'Konqueror';
 
@@ -7687,7 +7687,7 @@ class c_base_http extends c_base_return {
                 $result['engine_name_human'] = 'Gecko';
               }
             }
-            elseif ($lower_piece_1 == 'khtml') {
+            else if ($lower_piece_1 == 'khtml') {
               $result['name_machine'] = 'konqueror';
               $result['name_human'] = 'Konqueror';
 
@@ -7695,7 +7695,7 @@ class c_base_http extends c_base_return {
                 $result['version_major'] = (int) preg_replace('/\..*$/iu', '', $lower_piece_2);
               }
             }
-            elseif ($lower_piece_1 == 'opr') {
+            else if ($lower_piece_1 == 'opr') {
               $result['name_machine'] = 'opera';
               $result['name_human'] = 'Opera';
 
@@ -7708,7 +7708,7 @@ class c_base_http extends c_base_return {
                 $result['engine_name_human'] = 'Presto';
               }
             }
-            elseif ($lower_piece_1 == 'edge') {
+            else if ($lower_piece_1 == 'edge') {
               $result['name_machine'] = 'ie';
               $result['name_human'] = 'Internet Explorer';
 
@@ -7718,7 +7718,7 @@ class c_base_http extends c_base_return {
 
               $result['is_ie_edge'] = TRUE;
             }
-            elseif ($lower_piece_1 == 'midori') {
+            else if ($lower_piece_1 == 'midori') {
               $result['name_machine'] = 'midori';
               $result['name_human'] = 'Midori';
 
@@ -7730,7 +7730,7 @@ class c_base_http extends c_base_return {
             unset($lower_piece_1);
             unset($lower_piece_2);
           }
-          elseif (isset($pieces[0])) {
+          else if (isset($pieces[0])) {
             $lower_cased = c_base_utf8::s_lowercase($pieces[0])->get_value_exact();
             $lower_piece_1 = preg_replace('/(^\s+)|(\s+$)/us', '', $lower_cased);
             unset($lower_cased);
@@ -7744,7 +7744,7 @@ class c_base_http extends c_base_return {
                 $result['engine_name_human'] = 'Presto';
               }
             }
-            elseif ($lower_piece_1 == '(khtml,') {
+            else if ($lower_piece_1 == '(khtml,') {
               // khtml is used in a lot of places that is not safari, so use only when necessary.
               if (is_null($result['engine_name_machine']) || $result['name_machine'] == 'epiphany' || $result['name_machine'] == 'konqueror') {
                 $result['engine_name_machine'] = 'webkit';
@@ -7774,16 +7774,16 @@ class c_base_http extends c_base_return {
       if (isset($result['is_ie_edge'])) {
         $result['version_major'] = 12;
       }
-      elseif ($result['version_engine'] == 7) {
+      else if ($result['version_engine'] == 7) {
         $result['version_major'] = 11;
       }
-      elseif ($result['version_engine'] == 6) {
+      else if ($result['version_engine'] == 6) {
         $result['version_major'] = 10;
       }
-      elseif ($result['version_engine'] == 5) {
+      else if ($result['version_engine'] == 5) {
         $result['version_major'] = 9;
       }
-      elseif ($result['version_engine'] == 4) {
+      else if ($result['version_engine'] == 4) {
         $result['version_major'] = 8;
       }
     }
@@ -7804,19 +7804,19 @@ class c_base_http extends c_base_return {
         if (isset($result['is_ie_edge'])) {
           $result['version_major'] = 12;
         }
-        elseif ($result['version_engine'] == 7) {
+        else if ($result['version_engine'] == 7) {
           $result['version_major'] = 11;
         }
-        elseif ($result['version_engine'] == 6) {
+        else if ($result['version_engine'] == 6) {
           $result['version_major'] = 10;
         }
-        elseif ($result['version_engine'] == 5) {
+        else if ($result['version_engine'] == 5) {
           $result['version_major'] = 9;
         }
-        elseif ($result['version_engine'] == 4) {
+        else if ($result['version_engine'] == 4) {
           $result['version_major'] = 8;
         }
-        elseif (preg_match("/; EIE10;/iu", $agent) > 0) {
+        else if (preg_match("/; EIE10;/iu", $agent) > 0) {
           $result['version_major'] = 10;
         }
       }
@@ -7854,7 +7854,7 @@ class c_base_http extends c_base_return {
             $result['human_name'] = 'Curl';
             $result['version_major'] = (int) $lower_piece_2;
           }
-          elseif ($lower_piece_1 == 'wget') {
+          else if ($lower_piece_1 == 'wget') {
             $result['engine_name_machine'] = 'wget';
             $result['engine_name_human'] = 'WGet';
 
@@ -7869,7 +7869,7 @@ class c_base_http extends c_base_return {
             $result['human_name'] = 'WGet';
             $result['version_major'] = (int) $lower_piece_2;
           }
-          elseif ($lower_piece_1 == 'elinks') {
+          else if ($lower_piece_1 == 'elinks') {
             $result['engine_name_machine'] = 'elinks';
             $result['engine_name_human'] = 'Elimks';
 
@@ -7884,7 +7884,7 @@ class c_base_http extends c_base_return {
             $result['human_name'] = 'Elimks';
             $result['version_major'] = (int) $lower_piece_2;
           }
-          elseif ($lower_piece_1 == 'lynx') {
+          else if ($lower_piece_1 == 'lynx') {
             $result['engine_name_machine'] = 'lynx';
             $result['engine_name_human'] = 'Lynx';
 
@@ -7903,7 +7903,7 @@ class c_base_http extends c_base_return {
           unset($lower_piece_1);
           unset($lower_piece_2);
         }
-        elseif ($total_pieces == 1) {
+        else if ($total_pieces == 1) {
           $lower_piece = preg_replace('/(^\s+)|(\s+$)/us', '', c_base_utf8::s_lowercase($pieces[0])->get_value_exact());
 
           if ($lower_piece == 'links') {
@@ -7992,7 +7992,7 @@ class c_base_http extends c_base_return {
     if ($parsed['text'] == 'partial') {
       $result['what'] = static::CHECKSUM_WHAT_FULL;
     }
-    elseif ($parsed['text'] == 'complete') {
+    else if ($parsed['text'] == 'complete') {
       $result['what'] = static::CHECKSUM_WHAT_COMPLETE;
     }
     else {
@@ -8026,31 +8026,31 @@ class c_base_http extends c_base_return {
     if ($parsed['text'] == 'md2') {
       $result['type'] = static::CHECKSUM_MD2;
     }
-    elseif ($parsed['text'] == 'md4') {
+    else if ($parsed['text'] == 'md4') {
       $result['type'] = static::CHECKSUM_MD4;
     }
-    elseif ($parsed['text'] == 'md5') {
+    else if ($parsed['text'] == 'md5') {
       $result['type'] = static::CHECKSUM_MD5;
     }
-    elseif ($parsed['text'] == 'sha1') {
+    else if ($parsed['text'] == 'sha1') {
       $result['type'] = static::CHECKSUM_SHA1;
     }
-    elseif ($parsed['text'] == 'sha224') {
+    else if ($parsed['text'] == 'sha224') {
       $result['type'] = static::CHECKSUM_SHA224;
     }
-    elseif ($parsed['text'] == 'sha256') {
+    else if ($parsed['text'] == 'sha256') {
       $result['type'] = static::CHECKSUM_SHA256;
     }
-    elseif ($parsed['text'] == 'sha384') {
+    else if ($parsed['text'] == 'sha384') {
       $result['type'] = static::CHECKSUM_SHA384;
     }
-    elseif ($parsed['text'] == 'sha512') {
+    else if ($parsed['text'] == 'sha512') {
       $result['type'] = static::CHECKSUM_SHA512;
     }
-    elseif ($parsed['text'] == 'crc32') {
+    else if ($parsed['text'] == 'crc32') {
       $result['type'] = static::CHECKSUM_CRC32;
     }
-    elseif ($parsed['text'] == 'crc32b') {
+    else if ($parsed['text'] == 'crc32b') {
       $result['type'] = static::CHECKSUM_CRC32B;
     }
     else {
@@ -9684,13 +9684,13 @@ class c_base_http extends c_base_return {
     if ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_FULL) {
       $what = 'full';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_PARTIAL) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_PARTIAL) {
       $what = 'partial';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_SIGNED) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_SIGNED) {
       $what = 'signed';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_UNSIGNED) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['what'] == static::CHECKSUM_WHAT_UNSIGNED) {
       $what = 'unsigned';
     }
 
@@ -9800,7 +9800,7 @@ class c_base_http extends c_base_return {
         }
       }
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['action'] == static::CHECKSUM_ACTION_MANUAL) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_CONTENT]['action'] == static::CHECKSUM_ACTION_MANUAL) {
       if (!is_null($this->response[static::RESPONSE_CHECKSUM_CONTENT]['checksum'])) {
         $header_output[static::RESPONSE_CHECKSUM_CONTENT] = 'Checksum_Content: ' . $what . ':' . $algorithm . ':' . $this->response[static::RESPONSE_CHECKSUM_CONTENT]['checksum'];
       }
@@ -9936,40 +9936,40 @@ class c_base_http extends c_base_return {
       if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD2) {
         $checkum_header = hash('md2', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD4) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD4) {
         $checkum_header = hash('md4', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD5) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD5) {
         $checkum_header = hash('md5', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA1) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA1) {
         $checkum_header = hash('sha1', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA224) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA224) {
         $checkum_header = hash('sha224', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA256) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA256) {
         $checkum_header = hash('sha256', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA384) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA384) {
         $checkum_header = hash('sha384', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA512) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA512) {
         $checkum_header = hash('sha512', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32) {
         $checkum_header = hash('crc32', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32B) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32B) {
         $checkum_header = hash('crc32b', $header_string);
       }
-      elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_PG) {
+      else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_PG) {
         // @todo:
         #$checkum_header = ;
       }
       unset($header_string);
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['action'] == static::CHECKSUM_ACTION_MANUAL) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['action'] == static::CHECKSUM_ACTION_MANUAL) {
       $checkum_header = $this->response[static::RESPONSE_CHECKSUM_HEADER]['checksum'];
     }
     else {
@@ -9982,15 +9982,15 @@ class c_base_http extends c_base_return {
     if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_FULL) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'full:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_PARTIAL) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_PARTIAL) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'partial:';
       $checkum_header = mt_substr($checkum_header, 0, static::CHECKSUM_LENGTH_SHORTSUM);
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_SIGNED) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_SIGNED) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'signed:';
       // @todo
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_UNSIGNED) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['what'] === static::CHECKSUM_WHAT_UNSIGNED) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'unsigned:';
       // @todo
     }
@@ -9998,34 +9998,34 @@ class c_base_http extends c_base_return {
     if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD2) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'md2:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD4) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD4) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'md4:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD5) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_MD5) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'md5:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA1) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA1) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'sha1:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA224) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA224) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'sha224:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA256) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA256) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'sha256:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA384) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA384) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'sha384:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA512) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_SHA512) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'sha512:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'crc32:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32B) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_CRC32B) {
       $header_output[static::RESPONSE_CHECKSUM_HEADER] .= 'crc32b:';
     }
-    elseif ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_PG) {
+    else if ($this->response[static::RESPONSE_CHECKSUM_HEADER]['type'] === static::CHECKSUM_PG) {
       // @todo:
       #$checkum_header = ;
     }
@@ -10177,7 +10177,7 @@ class c_base_http extends c_base_return {
       if (is_null($compression) || $compression < -1) {
         $compression = -1;
       }
-      elseif ($compression > 9) {
+      else if ($compression > 9) {
         $compression = 9;
       }
 
@@ -10191,11 +10191,11 @@ class c_base_http extends c_base_return {
 
       return TRUE;
     }
-    elseif ($encoding == static::ENCODING_DEFLATE) {
+    else if ($encoding == static::ENCODING_DEFLATE) {
       if (is_null($compression) || $compression < -1) {
         $compression = -1;
       }
-      elseif ($compression > 9) {
+      else if ($compression > 9) {
         $compression = 9;
       }
 
@@ -10209,11 +10209,11 @@ class c_base_http extends c_base_return {
 
       return TRUE;
     }
-    elseif ($encoding == static::ENCODING_BZIP) {
+    else if ($encoding == static::ENCODING_BZIP) {
       if (is_null($compression) || $compression < -1) {
         $compression = 4;
       }
-      elseif ($compression > 9) {
+      else if ($compression > 9) {
         $compression = 9;
       }
 
@@ -10227,7 +10227,7 @@ class c_base_http extends c_base_return {
 
       return TRUE;
     }
-    elseif ($encoding == static::ENCODING_LZO) {
+    else if ($encoding == static::ENCODING_LZO) {
       switch ($compression) {
         case LZO1X_1:
         case LZO1_1:
@@ -10282,19 +10282,19 @@ class c_base_http extends c_base_return {
 
       return TRUE;
     }
-    elseif ($encoding == static::ENCODING_XZ) {
+    else if ($encoding == static::ENCODING_XZ) {
       // @fixme: php-xz module is currently not working.
     }
-    elseif ($encoding == static::ENCODING_EXI) {
+    else if ($encoding == static::ENCODING_EXI) {
       // @todo, maybe? (cannot seem to find a php library at this time)
     }
-    elseif ($encoding == static::ENCODING_IDENTITY) {
+    else if ($encoding == static::ENCODING_IDENTITY) {
       // @todo, maybe? (cannot seem to find a php library at this time)
     }
-    elseif ($encoding == static::ENCODING_SDCH) {
+    else if ($encoding == static::ENCODING_SDCH) {
       // @todo, maybe? (cannot seem to find a php library at this time)
     }
-    elseif ($encoding == static::ENCODING_PG) {
+    else if ($encoding == static::ENCODING_PG) {
       // @todo, using ascii armor on entire body.
       //        should be a header field containing the public key.
     }

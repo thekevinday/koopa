@@ -160,7 +160,7 @@ class c_theme_tag {
     if ($this->tags_length > 0) {
       return new c_base_return_false();
     }
-    elseif (!is_null($this->tags_length)) {
+    else if (!is_null($this->tags_length)) {
       $this->tags_length = NULL;
     }
 
@@ -191,17 +191,17 @@ class c_theme_tag {
     if ($this->type === $type) {
       return new c_base_return_true();
     }
-    elseif ($type === static::TYPE_NONE) {
+    else if ($type === static::TYPE_NONE) {
       $new_attributes = [];
     }
-    elseif ($type === static::TYPE_TITLE) {
+    else if ($type === static::TYPE_TITLE) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
-    elseif ($type === static::TYPE_HEADING) {
+    else if ($type === static::TYPE_HEADING) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
@@ -216,7 +216,7 @@ class c_theme_tag {
         $new_attributes['name'] = $this->attributes['name'];
       }
     }
-    elseif ($type === static::TYPE_FILES) {
+    else if ($type === static::TYPE_FILES) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
@@ -227,14 +227,14 @@ class c_theme_tag {
         $new_attributes['type'] = $this->attributes['type'];
       }
     }
-    elseif ($type === static::TYPE_CONTEXT) {
+    else if ($type === static::TYPE_CONTEXT) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
         $new_attributes['id'] = $this->attributes['id'];
       }
     }
-    elseif ($type === static::TYPE_PRESENTATION) {
+    else if ($type === static::TYPE_PRESENTATION) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
@@ -261,7 +261,7 @@ class c_theme_tag {
         $new_attributes['file'] = $this->attributes['file'];
       }
     }
-    elseif ($type === static::TYPE_CONTENT) {
+    else if ($type === static::TYPE_CONTENT) {
       $new_attributes = [];
 
       if (array_key_exists('id', $this->attributes)) {
@@ -843,7 +843,7 @@ class c_theme_tag {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
     }
-    elseif ($this->type === static::TYPE_HEADING) {
+    else if ($this->type === static::TYPE_HEADING) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -856,7 +856,7 @@ class c_theme_tag {
         $markup .= ' name="' . $this->attributes['name'] . '"';
       }
     }
-    elseif ($this->type === static::TYPE_FILES) {
+    else if ($this->type === static::TYPE_FILES) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -865,12 +865,12 @@ class c_theme_tag {
         $markup .= ' type="' . $this->attributes['type'] . '"';
       }
     }
-    elseif ($this->type === static::TYPE_CONTEXT) {
+    else if ($this->type === static::TYPE_CONTEXT) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
     }
-    elseif ($this->type === static::TYPE_PRESENTATION) {
+    else if ($this->type === static::TYPE_PRESENTATION) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -895,7 +895,7 @@ class c_theme_tag {
         $markup .= ' file="' . $this->attributes['file'] . '"';
       }
     }
-    elseif ($this->type === static::TYPE_CONTENT) {
+    else if ($this->type === static::TYPE_CONTENT) {
       if (isset($this->attributes['id'])) {
         $markup .= ' id="' . $this->attributes['id'] . '"';
       }
@@ -997,7 +997,7 @@ class c_theme_tag {
       // @todo: does this need to be sanitized, or would that result in double-sanitization?
       $this->text = $node->textContent;
     }
-    elseif ($this->type === static::TYPE_TAGS && $node->hasChildNodes()) {
+    else if ($this->type === static::TYPE_TAGS && $node->hasChildNodes()) {
       foreach ($node->childNodes as $child_node) {
         if (!($child_node instanceof DOMNode)) {
           continue;
@@ -1018,7 +1018,7 @@ class c_theme_tag {
           $this->set_tag($child_tag);
           unset($child_tag);
         }
-        elseif ($child_node->nodeName == 'tags') {
+        else if ($child_node->nodeName == 'tags') {
           $child_tag = new c_theme_tag();
           if ($child_node->hasAttributes()) {
             foreach ($child_node->attributes as $child_attribute) {
@@ -1091,7 +1091,7 @@ class c_theme_tag {
       unset($allowed);
       return c_base_return_error::s_false();
     }
-    elseif ($allowed) {
+    else if ($allowed) {
       unset($allowed);
     }
     else {
@@ -1138,7 +1138,7 @@ class c_theme_tag {
       unset($allowed);
       return c_base_return_error::s_false();
     }
-    elseif ($allowed) {
+    else if ($allowed) {
       unset($allowed);
     }
     else {
@@ -1179,7 +1179,7 @@ class c_theme_tag {
       unset($allowed);
       return c_base_return_error::s_false();
     }
-    elseif ($allowed) {
+    else if ($allowed) {
       unset($allowed);
     }
     else {
@@ -1215,7 +1215,7 @@ class c_theme_tag {
       unset($allowed);
       return c_base_return_error::s_false();
     }
-    elseif ($allowed) {
+    else if ($allowed) {
       unset($allowed);
     }
     else {
@@ -1261,7 +1261,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === static::TYPE_HEADING) {
+    else if ($this->type === static::TYPE_HEADING) {
       switch ($attribute_name) {
         case 'id':
         case 'type':
@@ -1271,7 +1271,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === static::TYPE_FILES) {
+    else if ($this->type === static::TYPE_FILES) {
       switch ($attribute_name) {
         case 'id':
         case 'type':
@@ -1280,7 +1280,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === static::TYPE_CONTEXT) {
+    else if ($this->type === static::TYPE_CONTEXT) {
       switch ($attribute_name) {
         case 'id':
           return TRUE;
@@ -1288,7 +1288,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === static::TYPE_PRESENTATION) {
+    else if ($this->type === static::TYPE_PRESENTATION) {
       switch ($attribute_name) {
         case 'id':
         case 'class':
@@ -1301,7 +1301,7 @@ class c_theme_tag {
           return FALSE;
       }
     }
-    elseif ($this->type === static::TYPE_CONTENT) {
+    else if ($this->type === static::TYPE_CONTENT) {
       switch ($attribute_name) {
         case 'id':
         case 'context':
@@ -1368,7 +1368,7 @@ class c_theme_tag {
         $this->type = static::TYPE_TAGS;
       }
     }
-    elseif (!is_null($this->text)) {
+    else if (!is_null($this->text)) {
       if ($this->type !== static::TYPE_TAG) {
         $this->type = static::TYPE_TAG;
       }
@@ -1427,7 +1427,7 @@ class c_theme_tag {
         $element->setAttribute('id', $this->attributes['id']);
       }
     }
-    elseif ($this->type === static::TYPE_HEADING) {
+    else if ($this->type === static::TYPE_HEADING) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1440,7 +1440,7 @@ class c_theme_tag {
         $element->setAttribute('name', $this->attributes['name']);
       }
     }
-    elseif ($this->type === static::TYPE_FILES) {
+    else if ($this->type === static::TYPE_FILES) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1449,12 +1449,12 @@ class c_theme_tag {
         $element->setAttribute('type', $this->attributes['type']);
       }
     }
-    elseif ($this->type === static::TYPE_CONTEXT) {
+    else if ($this->type === static::TYPE_CONTEXT) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
     }
-    elseif ($this->type === static::TYPE_PRESENTATION) {
+    else if ($this->type === static::TYPE_PRESENTATION) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1479,7 +1479,7 @@ class c_theme_tag {
         $element->setAttribute('file', $this->attributes['file']);
       }
     }
-    elseif ($this->type === static::TYPE_CONTENT) {
+    else if ($this->type === static::TYPE_CONTENT) {
       if (isset($this->attributes['id'])) {
         $element->setAttribute('id', $this->attributes['id']);
       }
@@ -1657,23 +1657,23 @@ class c_theme_markup {
       unset($type);
       return $this->title->set_tag($tag, $index);
     }
-    elseif ($type === c_theme_tag::TYPE_HEADING) {
+    else if ($type === c_theme_tag::TYPE_HEADING) {
       unset($type);
       return $this->heading->set_tag($tag, $index);
     }
-    elseif ($type === c_theme_tag::TYPE_FILES) {
+    else if ($type === c_theme_tag::TYPE_FILES) {
       unset($type);
       return $this->files->set_tag($tag, $index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTEXT) {
+    else if ($type === c_theme_tag::TYPE_CONTEXT) {
       unset($type);
       return $this->context->set_tag($tag, $index);
     }
-    elseif ($type === c_theme_tag::TYPE_PRESENTATION) {
+    else if ($type === c_theme_tag::TYPE_PRESENTATION) {
       unset($type);
       return $this->presentation->set_tag($tag, $index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTENT) {
+    else if ($type === c_theme_tag::TYPE_CONTENT) {
       unset($type);
       return $this->content->set_tag($tag, $index);
     }
@@ -1723,19 +1723,19 @@ class c_theme_markup {
           if ($type === c_theme_tag::TYPE_TITLE) {
             $result = $this->title->set_tag($tag, $index);
           }
-          elseif ($type === c_theme_tag::TYPE_HEADING) {
+          else if ($type === c_theme_tag::TYPE_HEADING) {
             $result = $this->heading->set_tag($tag, $index);
           }
-          elseif ($type === c_theme_tag::TYPE_FILES) {
+          else if ($type === c_theme_tag::TYPE_FILES) {
             $result = $this->files->set_tag($tag, $index);
           }
-          elseif ($type === c_theme_tag::TYPE_CONTEXT) {
+          else if ($type === c_theme_tag::TYPE_CONTEXT) {
             $result = $this->context->set_tag($tag, $index);
           }
-          elseif ($type === c_theme_tag::TYPE_PRESENTATION) {
+          else if ($type === c_theme_tag::TYPE_PRESENTATION) {
             $result = $this->presentation->set_tag($tag, $index);
           }
-          elseif ($type === c_theme_tag::TYPE_CONTENT) {
+          else if ($type === c_theme_tag::TYPE_CONTENT) {
             $result = $this->content->set_tag($tag, $index);
           }
           else {
@@ -1793,19 +1793,19 @@ class c_theme_markup {
     if ($type === c_theme_tag::TYPE_TITLE) {
       return $this->title->get_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_HEADING) {
+    else if ($type === c_theme_tag::TYPE_HEADING) {
       return $this->heading->get_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_FILES) {
+    else if ($type === c_theme_tag::TYPE_FILES) {
       return $this->files->get_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTEXT) {
+    else if ($type === c_theme_tag::TYPE_CONTEXT) {
       return $this->context->get_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_PRESENTATION) {
+    else if ($type === c_theme_tag::TYPE_PRESENTATION) {
       return $this->presentation->get_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTENT) {
+    else if ($type === c_theme_tag::TYPE_CONTENT) {
       return $this->content->get_tag($index);
     }
 
@@ -1840,19 +1840,19 @@ class c_theme_markup {
     if ($type === c_theme_tag::TYPE_TITLE) {
       return $this->title->delete_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_HEADING) {
+    else if ($type === c_theme_tag::TYPE_HEADING) {
       return $this->heading->delete_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_FILES) {
+    else if ($type === c_theme_tag::TYPE_FILES) {
       return $this->files->delete_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTEXT) {
+    else if ($type === c_theme_tag::TYPE_CONTEXT) {
       return $this->context->delete_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_PRESENTATION) {
+    else if ($type === c_theme_tag::TYPE_PRESENTATION) {
       return $this->presentation->delete_tag($index);
     }
-    elseif ($type === c_theme_tag::TYPE_CONTENT) {
+    else if ($type === c_theme_tag::TYPE_CONTENT) {
       return $this->content->delete_tag($index);
     }
 

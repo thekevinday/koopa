@@ -153,25 +153,25 @@ class c_standard_path_user extends c_standard_path {
         if ($argument == 'print') {
           $this->output_format = 'print';
         }
-        elseif ($argument == 'html') {
+        else if ($argument == 'html') {
           $this->output_format = c_base_mime::TYPE_TEXT_HTML;
         }
-        elseif ($argument == 'pdf') {
+        else if ($argument == 'pdf') {
           $this->output_format = c_base_mime::TYPE_DOCUMENT_PDF;
         }
-        elseif ($argument == 'ps') {
+        else if ($argument == 'ps') {
           $this->output_format = c_base_mime::TYPE_TEXT_PS;
         }
-        elseif ($argument == 'rss') {
+        else if ($argument == 'rss') {
           $this->output_format = c_base_mime::TYPE_TEXT_RSS;
         }
-        elseif ($argument == 'ical') {
+        else if ($argument == 'ical') {
           $this->output_format = c_base_mime::TYPE_TEXT_ICAL;
         }
-        elseif ($argument == 'text') {
+        else if ($argument == 'text') {
           $this->output_format = c_base_mime::TYPE_TEXT_PLAIN;
         }
-        elseif ($argument == 'json') {
+        else if ($argument == 'json') {
           $this->output_format = c_base_mime::TYPE_TEXT_JSON;
         }
         else {
@@ -343,7 +343,7 @@ class c_standard_path_user extends c_standard_path {
     if ($this->path_user_id === $user->get_id()->get_value_exact()) {
       $deny_access = FALSE;
     }
-    elseif (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
+    else if (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
       $deny_access = FALSE;
     }
     unset($user);

@@ -136,28 +136,28 @@ class c_base_error {
     if (is_string($message)) {
       $entry->set_message($message);
     }
-    elseif (is_null($message)) {
+    else if (is_null($message)) {
       $entry->set_message('');
     }
 
     if (is_array($details)) {
       $entry->set_details($details);
     }
-    elseif (is_null($details)) {
+    else if (is_null($details)) {
       $entry->set_details([]);
     }
 
     if (is_int($code)) {
       $entry->set_code($code);
     }
-    elseif (is_null($code)) {
+    else if (is_null($code)) {
       $entry->set_code(0);
     }
 
     if (is_int($severity) && $severity >= static::SEVERITY_EMERGENCY && $severity < static::SEVERITY_UNKNOWN) {
       $entry->set_severity($severity);
     }
-    elseif (is_null($severity)) {
+    else if (is_null($severity)) {
       $entry->set_severity(static::SEVERITY_ERROR);
     }
 
@@ -269,10 +269,10 @@ class c_base_error {
     if (is_null($count)) {
       $this->p_backtrace(1);
     }
-    elseif (is_int($count)) {
+    else if (is_int($count)) {
       $this->p_backtrace($count + 1);
     }
-    elseif ($count === FALSE) {
+    else if ($count === FALSE) {
       $this->backtrace = [];
     }
     else {

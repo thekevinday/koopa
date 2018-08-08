@@ -1830,7 +1830,7 @@ class c_base_database extends c_base_return {
         return c_base_return_string::s_new($result);
       }
     }
-    elseif ($result === TRUE) {
+    else if ($result === TRUE) {
       unset($result);
       return new c_base_return_true();
     }
@@ -1919,7 +1919,7 @@ class c_base_database extends c_base_return {
         return c_base_return_string::s_new($result);
       }
     }
-    elseif ($result === TRUE) {
+    else if ($result === TRUE) {
       unset($result);
       return new c_base_return_true();
     }
@@ -2004,10 +2004,10 @@ class c_base_database extends c_base_return {
         return c_base_return_string::s_new($result);
       }
     }
-    elseif (is_array($result)) {
+    else if (is_array($result)) {
       return c_base_return_array::s_new($result);
     }
-    elseif ($result === TRUE) {
+    else if ($result === TRUE) {
       unset($result);
       return new c_base_return_true();
     }
@@ -2088,7 +2088,7 @@ class c_base_database extends c_base_return {
         return c_base_return_string::s_new($result);
       }
     }
-    elseif ($result === TRUE) {
+    else if ($result === TRUE) {
       unset($result);
       return new c_base_return_true();
     }

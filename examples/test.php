@@ -62,7 +62,7 @@
     if ($language_chosen === i_base_languages::ENGLISH || $language_chosen === i_base_languages::ENGLISH_US) {
       require_once('common/base/classes/base_error_messages_english.php');
     }
-    elseif ($language_chosen === i_base_languages::JAPANESE) {
+    else if ($language_chosen === i_base_languages::JAPANESE) {
       require_once('common/base/classes/base_error_messages_japanese.php');
       $stuff['http']->set_response_content_language(i_base_languages::JAPANESE);
     }
@@ -233,7 +233,7 @@
       print("4) A new existence cookie has been created.<br>");
       print($stuff['cookie_existence']['new']);
     }
-    elseif (isset($stuff['cookie_existence']['exists'])) {
+    else if (isset($stuff['cookie_existence']['exists'])) {
       print("4) The existence cookie has been loaded.<br>");
       print($stuff['cookie_existence']['exists']);
     }
@@ -818,19 +818,19 @@
       $query_parameters[2] = 1;
       $query_parameters[7] = json_encode(array('expires' => $expires));
     }
-    elseif ($type == 'logout') {
+    else if ($type == 'logout') {
       $query_parameters[0] = "Logging out of the system.";
       $query_parameters[1] = 18;
       $query_parameters[2] = 1;
       $query_parameters[7] = NULL;
     }
-    elseif ($type == 'create') {
+    else if ($type == 'create') {
       $query_parameters[0] = "Created the user account.";
       $query_parameters[1] = 27;
       $query_parameters[2] = 1;
       $query_parameters[7] = NULL;
     }
-    elseif ($type == 'login_failure') {
+    else if ($type == 'login_failure') {
       $query_parameters[0] = "Failed to login as the user '" . $user_name . "'.";
       $query_parameters[1] = 17;
       $query_parameters[2] = 2;

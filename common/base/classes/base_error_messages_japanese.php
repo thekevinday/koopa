@@ -158,7 +158,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('無効な引数が指定されています' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::INVALID_FORMAT) {
+    else if ($code === static::INVALID_FORMAT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('引数 :{format_name} の形式が無効です' . $function_name_prepend . $function_name_string . $error_message_string . '。:{expected_format}');
       }
@@ -166,7 +166,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('無効な形式が指定されています' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::INVALID_SESSION) {
+    else if ($code === static::INVALID_SESSION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('要求されたセッションは無効です' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -174,7 +174,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('要求されたセッションは無効です' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::INVALID_VARIABLE) {
+    else if ($code === static::INVALID_VARIABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('変数 :{variable_name} は無効です' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -182,7 +182,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('無効な変数が指定されています' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::OPERATION_FAILURE) {
+    else if ($code === static::OPERATION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('操作の実行に失敗しました :{operation_name}' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -190,7 +190,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('操作を実行できませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::OPERATION_UNECESSARY) {
+    else if ($code === static::OPERATION_UNECESSARY) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('不要な操作を実行しませんでした :{operation_name}' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -198,7 +198,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('不要な操作を実行しませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::FUNCTION_FAILURE) {
+    else if ($code === static::FUNCTION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('関数 :{function_name} は実行に失敗しました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -206,7 +206,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('関数の実行に失敗しました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_FOUND) {
+    else if ($code === static::NOT_FOUND) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('見つかりません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -214,7 +214,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('見つかりません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_FOUND_ARRAY_INDEX) {
+    else if ($code === static::NOT_FOUND_ARRAY_INDEX) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('配列 :{index_name} に索引 :{array_name} が見つかりませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -222,7 +222,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('指定された配列内のインデックスの検索に失敗しました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_FOUND_FILE) {
+    else if ($code === static::NOT_FOUND_FILE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('ファイル :{file_name} が見つかりませんでした、またはアクセスできません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -230,7 +230,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_FOUND_DIRECTORY) {
+    else if ($code === static::NOT_FOUND_DIRECTORY) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('ディレクトリ :{directory_name} が見つかりませんでした、またはアクセスできません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -238,7 +238,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('ファイルが見つからないか、アクセスできません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_FOUND_FILE) {
+    else if ($code === static::NOT_FOUND_FILE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('パス ：{path_name} が見つかりませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -246,7 +246,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('パスが見つかりません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NOT_DEFINED) {
+    else if ($code === static::NOT_DEFINED) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('要求されたデータ：{data_name}は定義されていません' . $function_name_string . $error_message_string . '.');
       }
@@ -254,7 +254,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('要求されたデータは定義されていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NO_CONNECTION) {
+    else if ($code === static::NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('リソース :{resource_name} は接続されていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -262,7 +262,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('リソースが接続されていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::NO_SUPPORT) {
+    else if ($code === static::NO_SUPPORT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('機能 :{functionality_name} は現在サポートされていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -270,7 +270,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('要求された機能はサポートされていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::POSTGRESQL_CONNECTION_FAILURE) {
+    else if ($code === static::POSTGRESQL_CONNECTION_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('データベースへの接続に失敗しました。 :{database_name}' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -278,7 +278,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('データベースに接続できませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::POSTGRESQL_NO_ACCOUNT) {
+    else if ($code === static::POSTGRESQL_NO_ACCOUNT) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('データベースアクセスが拒否されました：アカウント：{database_account}が存在しないか、必要なアクセス権' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -286,7 +286,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('データベースアクセスが拒否されました：アカウントが存在しないか、必要なアクセス権がありません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::POSTGRESQL_NO_CONNECTION) {
+    else if ($code === static::POSTGRESQL_NO_CONNECTION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('データベース :{database_name} は接続されていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -294,7 +294,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('データベースが接続されていません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::POSTGRESQL_NO_RESOURCE) {
+    else if ($code === static::POSTGRESQL_NO_RESOURCE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('データベースリソースがありません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -302,7 +302,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('データベースリソースは使用できません' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::SOCKET_FAILURE) {
+    else if ($code === static::SOCKET_FAILURE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('ソケット操作の実行に失敗しました。 :{operation_name} 、ソケットエラー（:{socket_error} \':{socket_error_message}\'' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -310,7 +310,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('ソケット操作を実行できませんでした' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::ACCESS_DENIED) {
+    else if ($code === static::ACCESS_DENIED) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('アクセスが拒否されました。 :{operation_name}' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -318,7 +318,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('アクセスは拒否されました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::ACCESS_DENIED_UNAVAILABLE) {
+    else if ($code === static::ACCESS_DENIED_UNAVAILABLE) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('利用できないためアクセスが拒否されましたが、 :{operation_name} ' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -326,7 +326,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('利用できないためアクセスが拒否されました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::ACCESS_DENIED_USER) {
+    else if ($code === static::ACCESS_DENIED_USER) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('ユーザーのアクセスが拒否されました :name_machine_user (:{id_user}), :{operation_name} ' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -334,7 +334,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('ユーザーのアクセスが拒否されました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::ACCESS_DENIED_ADMINISTRATION) {
+    else if ($code === static::ACCESS_DENIED_ADMINISTRATION) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('管理上の理由でアクセスが拒否されました, :{operation_name} ' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
@@ -342,7 +342,7 @@ final class c_base_error_messages_japanese implements i_base_error_messages {
         return c_base_return_string::s_new('管理上の理由からアクセスが拒否されました' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }
     }
-    elseif ($code === static::SERVER_ERROR) {
+    else if ($code === static::SERVER_ERROR) {
       if ($arguments === TRUE) {
         return c_base_return_string::s_new('サーバーエラーが発生しました, :{operation_name} ' . $function_name_prepend . $function_name_string . $error_message_string . '。');
       }

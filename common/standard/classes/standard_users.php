@@ -77,7 +77,7 @@ class c_standard_users_user extends c_base_users_user {
     if (is_null($user_name_or_id)) {
       $query_string .= 'from v_users_self';
     }
-    elseif ($user_name_or_id === TRUE) {
+    else if ($user_name_or_id === TRUE) {
       $query_string .= 'from v_users_self_session';
     }
     else {

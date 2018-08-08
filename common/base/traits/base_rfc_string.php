@@ -226,7 +226,7 @@ trait t_base_rfc_string {
 
         $result['current']--;
       }
-      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
+      else if ($code === c_base_ascii::QUOTE_DOUBLE) {
         if ($quote_closed) {
           // double quote may be supplied only once.
           $result['invalid'] = TRUE;
@@ -240,7 +240,7 @@ trait t_base_rfc_string {
         $quote_closed = TRUE;
         continue;
       }
-      elseif ($code === c_base_ascii::PARENTHESIS_OPEN) {
+      else if ($code === c_base_ascii::PARENTHESIS_OPEN) {
         if ($comment_first || $comment_last) {
           // there may be only 1 comment at the start and only 1 comment at the end.
           $result['invalid'] = TRUE;
@@ -266,12 +266,12 @@ trait t_base_rfc_string {
         }
         unset($parsed);
       }
-      elseif ($code === c_base_ascii::PARENTHESIS_CLOSE) {
+      else if ($code === c_base_ascii::PARENTHESIS_CLOSE) {
         // an isolated parenthesis is invald.
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($quote_closed) {
+      else if ($quote_closed) {
         if ($this->pr_rfc_char_is_fws($code)) {
           continue;
         }
@@ -357,7 +357,7 @@ trait t_base_rfc_string {
       if ($code === c_base_ascii::QUOTE_DOUBLE) {
         break;
       }
-      elseif (!$this->pr_rfc_char_is_vchar($code)) {
+      else if (!$this->pr_rfc_char_is_vchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -433,11 +433,11 @@ trait t_base_rfc_string {
 
         $result['current']--;
       }
-      elseif ($code === c_base_ascii::PARENTHESIS_OPEN) {
+      else if ($code === c_base_ascii::PARENTHESIS_OPEN) {
         // look for open-parenthesis to handle comments within a comment.
         $comment_depth++;
       }
-      elseif ($code === c_base_ascii::PARENTHESIS_CLOSE) {
+      else if ($code === c_base_ascii::PARENTHESIS_CLOSE) {
         // handle end of comment.
         if ($comment_depth == 0) {
           // the current position will remain on the closing ')'.
@@ -449,7 +449,7 @@ trait t_base_rfc_string {
           $comment_depth--;
         }
       }
-      elseif (!$this->pr_rfc_char_is_ctext($code) && !$this->pr_rfc_char_is_fws($code)) {
+      else if (!$this->pr_rfc_char_is_ctext($code) && !$this->pr_rfc_char_is_fws($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -734,7 +734,7 @@ trait t_base_rfc_string {
 
         break;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($code)) {
+      else if (!$this->pr_rfc_char_is_tchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -810,7 +810,7 @@ trait t_base_rfc_string {
 
         break;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
+      else if (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
         $result['invalid'] = TRUE;
         return $result;
       }
@@ -846,7 +846,7 @@ trait t_base_rfc_string {
           return $result;
         }
 
-        elseif (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
+        else if (!$this->pr_rfc_char_is_tchar($ordinals[$result['current']])) {
           $result['invalid'] = TRUE;
           return $result;
         }
@@ -1573,7 +1573,7 @@ trait t_base_rfc_string {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code === c_base_ascii::COMMA) {
+      else if ($code === c_base_ascii::COMMA) {
         // this is an unweighted choice.
         $choice['weight'] = NULL;
         if (!isset($result['choices'][NULL])) {
@@ -1592,7 +1592,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif (!$this->pr_rfc_char_is_atext($code) && !$this->pr_rfc_char_is_wsp($code)) {
+      else if (!$this->pr_rfc_char_is_atext($code) && !$this->pr_rfc_char_is_wsp($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -1689,7 +1689,7 @@ trait t_base_rfc_string {
           continue;
         }
       }
-      elseif ($code === c_base_ascii::COLON_SEMI || $found_slash && $this->pr_rfc_char_is_wsp($code)) {
+      else if ($code === c_base_ascii::COLON_SEMI || $found_slash && $this->pr_rfc_char_is_wsp($code)) {
         if ($found_slash && $this->pr_rfc_char_is_wsp($code)) {
           // in this case, the semi-colon has yet to be found, so seek until a semi-colon is found.
           // any and all non-semi-colon and non-whitespace means that the string is invalid.
@@ -1733,7 +1733,7 @@ trait t_base_rfc_string {
             $processed_token = TRUE;
             continue;
           }
-          elseif ($subcode === c_base_ascii::EQUAL) {
+          else if ($subcode === c_base_ascii::EQUAL) {
             if ($found_equal || $process_whitespace) {
               // it cannot start with an equal sign, so if $process_whitespace is TRUE, then this is an invalid equal sign.
               $result['invalid'] = TRUE;
@@ -1828,7 +1828,7 @@ trait t_base_rfc_string {
 
             continue;
           }
-          elseif (!$this->pr_rfc_char_is_tchar($subcode)) {
+          else if (!$this->pr_rfc_char_is_tchar($subcode)) {
             if ($found_equal) {
               if ($subcode === c_base_ascii::COLON_SEMI) {
                 // save parameter and value and continue.
@@ -1846,7 +1846,7 @@ trait t_base_rfc_string {
             $result['invalid'] = TRUE;
             break;
           }
-          elseif ($processed_token) {
+          else if ($processed_token) {
             // processed token is set to TRUE after the first space following the token is found.
             // spaces are not allowed inside an unqouted token and is therefore invalid.
             $result['invalid'] = TRUE;
@@ -1885,7 +1885,7 @@ trait t_base_rfc_string {
 
         break;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($code)) {
+      else if (!$this->pr_rfc_char_is_tchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -1995,7 +1995,7 @@ trait t_base_rfc_string {
 
           continue;
         }
-        elseif ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
+        else if ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
           $processed_name = TRUE;
 
           // skip past all whitespace following the equal.
@@ -2016,7 +2016,7 @@ trait t_base_rfc_string {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code === c_base_ascii::COLON_SEMI) {
+      else if ($code === c_base_ascii::COLON_SEMI) {
         $result['tokens'][$token_name] = $token_value;
         $token_name = NULL;
         $token_value = NULL;
@@ -2036,7 +2036,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
+      else if ($code === c_base_ascii::QUOTE_DOUBLE) {
         if (!$processed_name) {
           // the token name is not allowed to be a quoted string.
           $result['invalid'] = TRUE;
@@ -2073,7 +2073,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($code)) {
+      else if (!$this->pr_rfc_char_is_tchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -2195,7 +2195,7 @@ trait t_base_rfc_string {
 
           continue;
         }
-        elseif ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
+        else if ($ordinals[$result['current']] === c_base_ascii::EQUAL && !$processed_name) {
           $processed_name = TRUE;
 
           // skip past all whitespace following the equal.
@@ -2216,7 +2216,7 @@ trait t_base_rfc_string {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code === c_base_ascii::COMMA) {
+      else if ($code === c_base_ascii::COMMA) {
         $result['tokens'][$token_name] = $token_value;
         $token_name = NULL;
         $token_value = NULL;
@@ -2236,7 +2236,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif ($code === c_base_ascii::QUOTE_DOUBLE) {
+      else if ($code === c_base_ascii::QUOTE_DOUBLE) {
         if (!$processed_name) {
           // the token name is not allowed to be a quoted string.
           $result['invalid'] = TRUE;
@@ -2273,7 +2273,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($code)) {
+      else if (!$this->pr_rfc_char_is_tchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -2381,7 +2381,7 @@ trait t_base_rfc_string {
         $result['invalid'] = TRUE;
         break;
       }
-      elseif ($code === c_base_ascii::COMMA) {
+      else if ($code === c_base_ascii::COMMA) {
         if (is_null($token_value)) {
           // empty values separated by commas are to be ignored.
           continue;
@@ -2391,7 +2391,7 @@ trait t_base_rfc_string {
         $tokan_value = NULL;
         continue;
       }
-      elseif (!$this->pr_rfc_char_is_tchar($code)) {
+      else if (!$this->pr_rfc_char_is_tchar($code)) {
         $result['invalid'] = TRUE;
         break;
       }
@@ -2479,10 +2479,10 @@ trait t_base_rfc_string {
           break;
         }
       }
-      elseif (self::pr_rfc_char_is_pchar($code)) {
+      else if (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code === c_base_ascii::SLASH_FORWARD) {
+      else if ($code === c_base_ascii::SLASH_FORWARD) {
         // do nothing, valid.
       }
       else {
@@ -2569,10 +2569,10 @@ trait t_base_rfc_string {
           break;
         }
       }
-      elseif (self::pr_rfc_char_is_pchar($code)) {
+      else if (self::pr_rfc_char_is_pchar($code)) {
         // do nothing, valid.
       }
-      elseif ($code === c_base_ascii::SLASH_FORWARD || $code === c_base_ascii::QUESTION_MARK) {
+      else if ($code === c_base_ascii::SLASH_FORWARD || $code === c_base_ascii::QUESTION_MARK) {
         // do nothing, valid.
       }
       else {
@@ -2638,7 +2638,7 @@ trait t_base_rfc_string {
     if ($ordinals[$result['current']] === c_base_ascii::LOWER_V || $ordinals[$result['current']] === c_base_ascii::UPPER_V) {
       $result['is_future'] = TRUE;
     }
-    elseif (!self::pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+    else if (!self::pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
       $result['invalid'] = TRUE;
       return $result;
     }
@@ -2690,13 +2690,13 @@ trait t_base_rfc_string {
         if (self::pr_rfc_char_is_unreserved($code)) {
           // do nothing, valid.
         }
-        elseif (self::pr_rfc_char_is_sub_delims($code)) {
+        else if (self::pr_rfc_char_is_sub_delims($code)) {
           // do nothing, valid.
         }
-        elseif ($code === c_base_ascii::COLON) {
+        else if ($code === c_base_ascii::COLON) {
           // do nothing, valid.
         }
-        elseif ($code === c_base_ascii::BRACKET_CLOSE) {
+        else if ($code === c_base_ascii::BRACKET_CLOSE) {
           break;
         }
         else {
@@ -2715,10 +2715,10 @@ trait t_base_rfc_string {
         if (self::pr_rfc_char_is_hexdigit($code)) {
           $result['address'] .= $characters[$result['current']];
         }
-        elseif ($code === c_base_ascii::COLON) {
+        else if ($code === c_base_ascii::COLON) {
           $result['address'] .= $characters[$result['current']];
         }
-        elseif ($code === c_base_ascii::BRACKET_CLOSE) {
+        else if ($code === c_base_ascii::BRACKET_CLOSE) {
           break;
         }
         else {
@@ -2894,7 +2894,7 @@ trait t_base_rfc_string {
 
         $found_period = TRUE;
       }
-      elseif (!$this->pr_rfc_char_is_digit($ordinals[$result['current']])) {
+      else if (!$this->pr_rfc_char_is_digit($ordinals[$result['current']])) {
         // ignore trailing whitespaces
         if ($this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
           $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
@@ -3025,7 +3025,7 @@ trait t_base_rfc_string {
 
         $found_period = TRUE;
       }
-      elseif (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
+      else if (!$this->pr_rfc_char_is_hexdigit($ordinals[$result['current']])) {
         // ignore trailing whitespaces
         if ($this->pr_rfc_char_is_wsp($ordinals[$result['current']])) {
           $result = $this->p_rfc_string_skip_past_whitespace($ordinals, $characters, $stop, $result);
@@ -3334,10 +3334,10 @@ trait t_base_rfc_string {
       if ($this->pr_rfc_char_is_alpha($code)) {
         // allowed in: scheme, authority, path
       }
-      elseif ($this->pr_rfc_char_is_digit($code)) {
+      else if ($this->pr_rfc_char_is_digit($code)) {
         // allowed in: scheme, authority, path
       }
-      elseif ($code === c_base_ascii::COLON) {
+      else if ($code === c_base_ascii::COLON) {
         $not_path = TRUE;
 
         if ($not_scheme) {
@@ -3357,15 +3357,15 @@ trait t_base_rfc_string {
           $not_authority = TRUE;
         }
       }
-      elseif ($code === c_base_ascii::PLUS || $code === c_base_ascii::MINUS || $code === c_base_ascii::PERIOD) {
+      else if ($code === c_base_ascii::PLUS || $code === c_base_ascii::MINUS || $code === c_base_ascii::PERIOD) {
         // allowed in: scheme, authority, path
       }
-      elseif ($code === c_base_ascii::AT) {
+      else if ($code === c_base_ascii::AT) {
         // allowed in: authority, path
 
         $not_scheme = TRUE;
       }
-      elseif ($code === c_base_ascii::SLASH_FORWARD) {
+      else if ($code === c_base_ascii::SLASH_FORWARD) {
         // allowed in: path
 
         $not_scheme = TRUE;
@@ -3374,12 +3374,12 @@ trait t_base_rfc_string {
         // the slash is part of the path.
         $processed_string .= $characters[$result['current']];
       }
-      elseif ($this->pr_rfc_char_is_unreserved($code)) {
+      else if ($this->pr_rfc_char_is_unreserved($code)) {
         // allowed in: authority, path
 
         $not_scheme = TRUE;
       }
-      elseif ($code === c_base_ascii::BRACKET_OPEN) {
+      else if ($code === c_base_ascii::BRACKET_OPEN) {
         // allowed in: authority
 
         $not_scheme = TRUE;
@@ -3510,10 +3510,10 @@ trait t_base_rfc_string {
           $result['url'] = TRUE;
           break;
         }
-        elseif ($code === c_base_ascii::COLON) {
+        else if ($code === c_base_ascii::COLON) {
           $result['url'] = FALSE;
         }
-        elseif (!$this->pr_rfc_char_is_pchar($code)) {
+        else if (!$this->pr_rfc_char_is_pchar($code)) {
           unset($code);
 
           $result['invalid'] = TRUE;
@@ -3558,7 +3558,7 @@ trait t_base_rfc_string {
 
       return $result;
     }
-    elseif ($not_scheme && $not_path) {
+    else if ($not_scheme && $not_path) {
       unset($not_scheme);
       unset($not_authority);
       unset($not_path);
@@ -3611,7 +3611,7 @@ trait t_base_rfc_string {
         }
       }
     }
-    elseif ($not_scheme && $not_authority) {
+    else if ($not_scheme && $not_authority) {
       unset($not_scheme);
       unset($not_authority);
       unset($not_path);
@@ -3726,7 +3726,7 @@ trait t_base_rfc_string {
       if (is_string($uri_array['query'])) {
         $combined .= '?' . $uri_array['query'];
       }
-      elseif (is_array($uri_array['query'])) {
+      else if (is_array($uri_array['query'])) {
         $combined .= '?' . http_build_query($uri_array['query'], '', '&', PHP_QUERY_RFC3986);
       }
     }
@@ -3800,7 +3800,7 @@ trait t_base_rfc_string {
         // the slash designates the end of the authority.
         break;
       }
-      elseif ($code === c_base_ascii::PERCENT) {
+      else if ($code === c_base_ascii::PERCENT) {
         // valid only if two hex digits immediately follow.
         $result['current']++;
         if ($result['current'] >= $stop) {
@@ -3828,16 +3828,16 @@ trait t_base_rfc_string {
           break;
         }
       }
-      elseif ($code === c_base_ascii::AT || $code === c_base_ascii::COLON) {
+      else if ($code === c_base_ascii::AT || $code === c_base_ascii::COLON) {
         // this is valid.
       }
-      elseif ($code === c_base_ascii::BRACKET_OPEN || $code === c_base_ascii::BRACKET_CLOSE) {
+      else if ($code === c_base_ascii::BRACKET_OPEN || $code === c_base_ascii::BRACKET_CLOSE) {
         // this is valid.
       }
-      elseif ($this->pr_rfc_char_is_unreserved($code)) {
+      else if ($this->pr_rfc_char_is_unreserved($code)) {
         // this is valid.
       }
-      elseif ($this->pr_rfc_char_is_sub_delims($code)) {
+      else if ($this->pr_rfc_char_is_sub_delims($code)) {
         // this is valid.
       }
       else {
@@ -3882,10 +3882,10 @@ trait t_base_rfc_string {
         // found possible query or fragment.
         break;
       }
-      elseif ($code === c_base_ascii::SLASH_FORWARD) {
+      else if ($code === c_base_ascii::SLASH_FORWARD) {
         // this is valid.
       }
-      elseif (!$this->pr_rfc_char_is_pchar($code)) {
+      else if (!$this->pr_rfc_char_is_pchar($code)) {
         unset($code);
 
         $result['invalid'] = TRUE;
@@ -3935,7 +3935,7 @@ trait t_base_rfc_string {
         // hash is not part of the query but does mark the end of the query as it is the start of the fragment.
         break;
       }
-      elseif ($code === c_base_ascii::AMPERSAND) {
+      else if ($code === c_base_ascii::AMPERSAND) {
         // The '&' designates a new name and value, separate each individual value inside the array.
         $result['query'][$query_name] = $query_value;
 
@@ -3945,7 +3945,7 @@ trait t_base_rfc_string {
 
         continue;
       }
-      elseif ($code === c_base_ascii::EQUAL) {
+      else if ($code === c_base_ascii::EQUAL) {
         // The '=' designates a value for the current name.
         if ($no_value || is_null($query_name)) {
           $query_name .= $characters[$result['current']];
@@ -3956,7 +3956,7 @@ trait t_base_rfc_string {
         $query_value = '';
         continue;
       }
-      elseif (!$this->pr_rfc_char_is_query($code)) {
+      else if (!$this->pr_rfc_char_is_query($code)) {
         unset($code);
         unset($query_name);
         unset($query_value);

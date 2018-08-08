@@ -1337,7 +1337,7 @@ class c_base_markup_tag extends c_base_return {
           if (is_int($this->attributes[$attribute])) {
             return c_base_return_int::s_new($this->attributes[$attribute]);
           }
-          elseif (is_null($this->attributes[$attribute])) {
+          else if (is_null($this->attributes[$attribute])) {
             return new c_base_return_null();
           }
           break;
@@ -1555,7 +1555,7 @@ class c_base_markup_tag extends c_base_return {
     if ($type === c_base_markup_filters::FILTER_TEXT) {
       return $this->pr_check_attribute_as_text($sanitize);
     }
-    elseif ($type === c_base_markup_filters::FILTER_NUMERIC) {
+    else if ($type === c_base_markup_filters::FILTER_NUMERIC) {
       return $this->pr_check_attribute_as_numeric($sanitize);
     }
 
@@ -1952,7 +1952,7 @@ class c_base_markup_tag extends c_base_return {
     if (is_string($this->attributes[$attribute])) {
       $value = $this->attributes[$attribute];
     }
-    elseif (is_numeric($this->attributes[$attribute])) {
+    else if (is_numeric($this->attributes[$attribute])) {
       $value = (string) $this->attributes[$attribute];
     }
     else {

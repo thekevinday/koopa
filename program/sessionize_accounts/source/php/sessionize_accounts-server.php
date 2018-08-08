@@ -468,7 +468,7 @@ function main($argc, $argv) {
       continue;
     }
     // store password.
-    elseif (array_key_exists('password', $decoded_packet) && (is_null($decoded_packet['password']) || is_string($decoded_packet['password']))) {
+    else if (array_key_exists('password', $decoded_packet) && (is_null($decoded_packet['password']) || is_string($decoded_packet['password']))) {
       if (!isset($decoded_packet['name']) || strlen($decoded_packet['name']) == 0 || preg_match('/^(\w|-)+$/i', $decoded_packet['name']) != 1) {
         $response['error'] = array(
           'target' => 'decoded_packet[name]',

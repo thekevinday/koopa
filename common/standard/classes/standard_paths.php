@@ -417,28 +417,28 @@ class c_standard_paths extends c_base_return {
     if ($id_group === c_base_ascii::LOWER_A) {
       $this->pr_paths_create_administer();
     }
-    elseif ($id_group === c_base_ascii::LOWER_C) {
+    else if ($id_group === c_base_ascii::LOWER_C) {
       $this->pr_paths_create_cache();
     }
-    elseif ($id_group === c_base_ascii::LOWER_D) {
+    else if ($id_group === c_base_ascii::LOWER_D) {
       $this->pr_paths_create_data();
     }
-    elseif ($id_group === c_base_ascii::LOWER_F) {
+    else if ($id_group === c_base_ascii::LOWER_F) {
       $this->pr_paths_create_file();
     }
-    elseif ($id_group === c_base_ascii::LOWER_M) {
+    else if ($id_group === c_base_ascii::LOWER_M) {
       $this->pr_paths_create_management();
     }
-    elseif ($id_group === c_base_ascii::LOWER_S) {
+    else if ($id_group === c_base_ascii::LOWER_S) {
       $this->pr_paths_create_submit();
     }
-    elseif ($id_group === c_base_ascii::LOWER_T) {
+    else if ($id_group === c_base_ascii::LOWER_T) {
       $this->pr_paths_create_theme();
     }
-    elseif ($id_group === c_base_ascii::LOWER_U) {
+    else if ($id_group === c_base_ascii::LOWER_U) {
       $this->pr_paths_create_user();
     }
-    elseif ($id_group === c_base_ascii::LOWER_X) {
+    else if ($id_group === c_base_ascii::LOWER_X) {
       $this->pr_paths_create_ajax();
     }
     else {
@@ -602,7 +602,7 @@ class c_standard_paths extends c_base_return {
 
         return $path_server_error;
       }
-      elseif (is_string($this->language_alias)) {
+      else if (is_string($this->language_alias)) {
         @include_once($handler_settings['include_directory'] . $this->language_alias . '/' . $handler_settings['include_name'] . static::SCRIPT_EXTENSION);
 
         $handler_class = $handler_settings['handler'] . '_' . $this->language_alias;
@@ -908,7 +908,7 @@ class c_standard_paths extends c_base_return {
         unset($id_group);
         return $this->p_handle_execution_errors($this->handler->do_execute($this->http, $this->database, $this->session, $this->settings));
       }
-      elseif ($this->handler->is_root()->get_value_exact()) {
+      else if ($this->handler->is_root()->get_value_exact()) {
         unset($id_group);
 
         $this->http->set_response_status(c_base_http_status::FORBIDDEN);
@@ -972,7 +972,7 @@ class c_standard_paths extends c_base_return {
       // these always return not found for these paths.
       $path_failsafe = $this->get_handler_not_found();
     }
-    elseif ($this->handler->is_private()->get_value_exact() && $id_group !== c_base_ascii::NULL) {
+    else if ($this->handler->is_private()->get_value_exact() && $id_group !== c_base_ascii::NULL) {
       // non private, and non-special case paths should return access denied as per normal behavior.
       $path_failsafe = $this->get_handler_access_denied();
     }
@@ -1132,7 +1132,7 @@ class c_standard_paths extends c_base_return {
     if ($error_code === i_base_error_messages::NOT_FOUND_PATH || $error_code === i_base_error_messages::INVALID_ARGUMENT) {
       $handler_error = $this->get_handler_not_found();
     }
-    elseif ($error_code === i_base_error_messages::ACCESS_DENIED) {
+    else if ($error_code === i_base_error_messages::ACCESS_DENIED) {
       $handler_error = $this->get_handler_access_denied();
     }
     else {

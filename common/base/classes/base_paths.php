@@ -371,7 +371,7 @@ class c_base_paths extends c_base_return {
             $path_tree = &$path_tree['paths'][$path_part];
             $depth_current++;
           }
-          elseif (array_key_exists('%', $path_tree['paths'])) {
+          else if (array_key_exists('%', $path_tree['paths'])) {
             $path_tree = &$path_tree['paths']['%'];
             $depth_current++;
           }

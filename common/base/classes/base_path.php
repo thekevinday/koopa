@@ -1409,7 +1409,7 @@ class c_base_path extends c_base_return_string {
       if ($type == ':') {
         $sanitized = $replacement;
       }
-      elseif ($type == '@') {
+      else if ($type == '@') {
         $sanitized = htmlspecialchars($replacement, $this->sanitize_html['flags'], $this->sanitize_html['encoding']);
       }
       else {

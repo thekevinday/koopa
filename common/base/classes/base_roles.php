@@ -169,43 +169,43 @@ class c_base_roles extends c_base_return {
         $this->administer = FALSE;
       }
     }
-    elseif ($role === static::PUBLIC) {
+    else if ($role === static::PUBLIC) {
       $this->public = $value;
     }
-    elseif ($role === static::SYSTEM) {
+    else if ($role === static::SYSTEM) {
       $this->system = $value;
     }
-    elseif ($role === static::USER) {
+    else if ($role === static::USER) {
       $this->user = $value;
     }
-    elseif ($role === static::REQUESTER) {
+    else if ($role === static::REQUESTER) {
       $this->requester = $value;
     }
-    elseif ($role === static::DRAFTER) {
+    else if ($role === static::DRAFTER) {
       $this->drafter = $value;
     }
-    elseif ($role === static::EDITOR) {
+    else if ($role === static::EDITOR) {
       $this->editer = $value;
     }
-    elseif ($role === static::REVIEWER) {
+    else if ($role === static::REVIEWER) {
       $this->reviewer = $value;
     }
-    elseif ($role === static::INSURER) {
+    else if ($role === static::INSURER) {
       $this->insurer = $value;
     }
-    elseif ($role === static::FINANCER) {
+    else if ($role === static::FINANCER) {
       $this->financer = $value;
     }
-    elseif ($role === static::PUBLISHER) {
+    else if ($role === static::PUBLISHER) {
       $this->publisher = $value;
     }
-    elseif ($role === static::AUDITOR) {
+    else if ($role === static::AUDITOR) {
       $this->auditor = $value;
     }
-    elseif ($role === static::MANAGER) {
+    else if ($role === static::MANAGER) {
       $this->manager = $value;
     }
-    elseif ($role === static::ADMINISTER) {
+    else if ($role === static::ADMINISTER) {
       $this->administer = $value;
     }
     else {
@@ -252,40 +252,40 @@ class c_base_roles extends c_base_return {
       if ($role === static::PUBLIC) {
         $this->public = TRUE;
       }
-      elseif ($role === static::SYSTEM) {
+      else if ($role === static::SYSTEM) {
         $this->system = TRUE;
       }
-      elseif ($role === static::USER) {
+      else if ($role === static::USER) {
         $this->user = TRUE;
       }
-      elseif ($role === static::REQUESTER) {
+      else if ($role === static::REQUESTER) {
         $this->requester = TRUE;
       }
-      elseif ($role === static::DRAFTER) {
+      else if ($role === static::DRAFTER) {
         $this->drafter = TRUE;
       }
-      elseif ($role === static::EDITOR) {
+      else if ($role === static::EDITOR) {
         $this->editer = TRUE;
       }
-      elseif ($role === static::REVIEWER) {
+      else if ($role === static::REVIEWER) {
         $this->reviewer = TRUE;
       }
-      elseif ($role === static::INSURER) {
+      else if ($role === static::INSURER) {
         $this->insurer = TRUE;
       }
-      elseif ($role === static::FINANCER) {
+      else if ($role === static::FINANCER) {
         $this->financer = TRUE;
       }
-      elseif ($role === static::PUBLISHER) {
+      else if ($role === static::PUBLISHER) {
         $this->publisher = TRUE;
       }
-      elseif ($role === static::AUDITOR) {
+      else if ($role === static::AUDITOR) {
         $this->auditor = TRUE;
       }
-      elseif ($role === static::MANAGER) {
+      else if ($role === static::MANAGER) {
         $this->manager = TRUE;
       }
-      elseif ($role === static::ADMINISTER) {
+      else if ($role === static::ADMINISTER) {
         $this->administer = TRUE;
       }
     }
@@ -319,67 +319,67 @@ class c_base_roles extends c_base_return {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::PUBLIC) {
+    else if ($role === static::PUBLIC) {
       if ($this->public) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::SYSTEM) {
+    else if ($role === static::SYSTEM) {
       if ($this->system) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::USER) {
+    else if ($role === static::USER) {
       if ($this->user) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::REQUESTER) {
+    else if ($role === static::REQUESTER) {
       if ($this->requester) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::DRAFTER) {
+    else if ($role === static::DRAFTER) {
       if ($this->drafter) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::EDITOR) {
+    else if ($role === static::EDITOR) {
       if ($this->editer) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::REVIEWER) {
+    else if ($role === static::REVIEWER) {
       if ($this->reviewer) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::FINANCER) {
+    else if ($role === static::FINANCER) {
       if ($this->financer) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::INSURER) {
+    else if ($role === static::INSURER) {
       if ($this->insurer) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::PUBLISHER) {
+    else if ($role === static::PUBLISHER) {
       if ($this->publisher) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::AUDITOR) {
+    else if ($role === static::AUDITOR) {
       if ($this->auditor) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::MANAGER) {
+    else if ($role === static::MANAGER) {
       if ($this->manager) {
         return new c_base_return_true();
       }
     }
-    elseif ($role === static::ADMINISTER) {
+    else if ($role === static::ADMINISTER) {
       if ($this->administer) {
         return new c_base_return_true();
       }

@@ -48,19 +48,19 @@ class c_base_menu extends c_base_return {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'http', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
-    elseif (!($database instanceof c_base_database)) {
+    else if (!($database instanceof c_base_database)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'database', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
-    elseif (!($session instanceof c_base_session)) {
+    else if (!($session instanceof c_base_session)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'session', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
-    elseif (!is_array($settings)) {
+    else if (!is_array($settings)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'settings', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
-    elseif (!is_null($items) && !is_array($items)) {
+    else if (!is_null($items) && !is_array($items)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'items', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }

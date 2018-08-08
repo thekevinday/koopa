@@ -1,0 +1,67 @@
+<?php
+/**
+ * @file
+ * Provides traits for specific Postgesql Queries.
+ *
+ * These traits are associated with actions.
+ *
+ * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
+ */
+namespace n_koopa;
+
+require_once('common/base/classes/base_error.php');
+require_once('common/base/classes/base_return.php');
+
+/**
+ * Provide the sql NAME functionality.
+ */
+trait t_database_name {
+  protected $query_name;
+
+  /**
+   * Set the NAME settings.
+   *
+   * @param string|null $name
+   *   The name to use.
+   *   Set to NULL to disable.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with the error bit set is returned on error.
+   */
+  public function set_query_name($name) {
+    if (is_null($name)) {
+      $this->query_name = NULL;
+      return new c_base_return_true();
+    }
+
+    if (is_string($name)) {
+      $this->query_name = $name;
+      return new c_base_return_true();
+    }
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    return c_base_return_error::s_false($error);
+  }
+
+  /**
+   * Get the currently assigned name.
+   *
+   * @return c_base_return_string|c_base_return_null
+   *   A name on success.
+   *   NULL is returned if not set.
+   *   NULL with the error bit set is returned on error.
+   */
+  public function get_query_name() {
+    if (is_null($this->query_name)) {
+      return new c_base_return_null();
+    }
+
+    if (is_string($this->query_name)) {
+      return c_base_return_string::s_new($this->query_name);
+    }
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    return c_base_return_error::s_null($error);
+  }
+}

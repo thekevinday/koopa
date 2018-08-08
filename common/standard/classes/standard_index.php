@@ -679,12 +679,12 @@ class c_standard_index extends c_base_return {
       $this->output = $theme->get_markup()->get_value_exact();
       $this->output_type = static::OUTPUT_TYPE_HTML;
     }
-    elseif ($this->processed instanceof c_base_file) {
+    else if ($this->processed instanceof c_base_file) {
       // @todo: write a class, such as c_theme_file, to handle formatting the file output.
       $this->output = '';
       $this->output_type = static::OUTPUT_TYPE_FILE;
     }
-    elseif ($this->processed instanceof c_base_ajax) {
+    else if ($this->processed instanceof c_base_ajax) {
       // all ajax needs to respond with is a jsonized string.
       $this->output = $this->processed->get_items_jsonized()->get_value_exact();
       if (!is_string($this->output)) {
@@ -770,7 +770,7 @@ class c_standard_index extends c_base_return {
 
       // @todo: assign file-specific headers
     }
-    elseif ($this->output_type === static::OUTPUT_TYPE_AJAX) {
+    else if ($this->output_type === static::OUTPUT_TYPE_AJAX) {
       $this->http->set_response_date();
       $this->http->set_response_pragma('no-cache');
       $this->http->set_response_vary('Host');

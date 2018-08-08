@@ -115,7 +115,7 @@ class c_standard_path_user_view extends c_standard_path_user {
     if ($this->path_user_id === $this->session->get_user_current()->get_id()->get_value_exact()) {
       $full_view_access = TRUE;
     }
-    elseif (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
+    else if (isset($roles_current[c_base_roles::MANAGER]) || isset($roles_current[c_base_roles::ADMINISTER])) {
       $full_view_access = TRUE;
     }
     unset($roles_current);

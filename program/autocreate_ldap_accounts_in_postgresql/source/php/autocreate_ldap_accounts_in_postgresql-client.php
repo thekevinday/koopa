@@ -61,7 +61,7 @@
     socket_close($socket);
     return;
   }
-  elseif ($written == 0) {
+  else if ($written == 0) {
     print("Nothing was written to the socket using socket_write().\n");
     socket_close($socket);
     return;

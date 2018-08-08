@@ -383,7 +383,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -421,7 +421,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -450,7 +450,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -483,7 +483,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -520,7 +520,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -557,7 +557,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -594,7 +594,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -631,7 +631,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -668,7 +668,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -705,7 +705,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -742,7 +742,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -779,7 +779,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -816,7 +816,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -853,7 +853,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -890,7 +890,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -927,7 +927,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -964,7 +964,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1001,7 +1001,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1038,7 +1038,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1080,7 +1080,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1090,19 +1090,19 @@ class c_standard_path extends c_base_path {
     if ($header == 1) {
       $type = c_base_markup_tag::TYPE_H1;
     }
-    elseif ($header == 2) {
+    else if ($header == 2) {
       $type = c_base_markup_tag::TYPE_H2;
     }
-    elseif ($header == 3) {
+    else if ($header == 3) {
       $type = c_base_markup_tag::TYPE_H3;
     }
-    elseif ($header == 4) {
+    else if ($header == 4) {
       $type = c_base_markup_tag::TYPE_H4;
     }
-    elseif ($header == 5) {
+    else if ($header == 5) {
       $type = c_base_markup_tag::TYPE_H5;
     }
-    elseif ($header == 6) {
+    else if ($header == 6) {
       $type = c_base_markup_tag::TYPE_H6;
     }
     else {
@@ -1162,7 +1162,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1239,7 +1239,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1277,7 +1277,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1328,7 +1328,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1384,7 +1384,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1416,7 +1416,7 @@ class c_standard_path extends c_base_path {
     if (is_int($tooltip)) {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_TITLE, $this->pr_get_text($tooltip, $arguments));
     }
-    elseif (is_string($tooltip)) {
+    else if (is_string($tooltip)) {
       $tag->set_attribute(c_base_markup_attributes::ATTRIBUTE_TITLE, $tooltip);
     }
   }
@@ -1460,7 +1460,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1480,19 +1480,19 @@ class c_standard_path extends c_base_path {
         if ($header == 1) {
           $type = c_base_markup_tag::TYPE_H1;
         }
-        elseif ($header == 2) {
+        else if ($header == 2) {
           $type = c_base_markup_tag::TYPE_H2;
         }
-        elseif ($header == 3) {
+        else if ($header == 3) {
           $type = c_base_markup_tag::TYPE_H3;
         }
-        elseif ($header == 4) {
+        else if ($header == 4) {
           $type = c_base_markup_tag::TYPE_H4;
         }
-        elseif ($header == 5) {
+        else if ($header == 5) {
           $type = c_base_markup_tag::TYPE_H5;
         }
-        elseif ($header == 6) {
+        else if ($header == 6) {
           $type = c_base_markup_tag::TYPE_H6;
         }
         else {
@@ -1554,7 +1554,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1606,7 +1606,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1662,7 +1662,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1718,7 +1718,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1767,7 +1767,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1804,7 +1804,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1833,7 +1833,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1862,7 +1862,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1897,7 +1897,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1934,7 +1934,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1963,7 +1963,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -1998,7 +1998,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -2035,7 +2035,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -2075,7 +2075,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }
@@ -2125,7 +2125,7 @@ class c_standard_path extends c_base_path {
     if (is_string($extra_class)) {
       $classes[] = $extra_class;
     }
-    elseif (is_array($extra_class)) {
+    else if (is_array($extra_class)) {
       foreach ($extra_class as $class) {
         $classes[] = $class;
       }

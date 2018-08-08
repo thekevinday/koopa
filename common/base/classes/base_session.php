@@ -1234,7 +1234,7 @@ class c_base_session extends c_base_return {
 
       return c_base_return_error::s_false($error);
     }
-    elseif (empty($response['result']) || !is_array($response['result'])) {
+    else if (empty($response['result']) || !is_array($response['result'])) {
       unset($response);
 
       $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'this->p_transfer', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::OPERATION_FAILURE);
@@ -1375,7 +1375,7 @@ class c_base_session extends c_base_return {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_write', ':{socket_error}' => $this->socket_error, ':{socket_error_message}' => @socket_strerror($this->socket_error), ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);
       return c_base_return_error::s_false($error);
     }
-    elseif ($written == 0) {
+    else if ($written == 0) {
       unset($written);
 
       $error = c_base_error::s_log(NULL, ['arguments' => [':{operation_name}' => 'socket_write', ':{socket_error}' => NULL, ':{socket_error_message}' => 'No bytes written.', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::SOCKET_FAILURE);

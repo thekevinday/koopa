@@ -329,7 +329,7 @@ class c_base_defaults_global {
         if (array_key_exists('REQUEST_TIME_FLOAT', $_SERVER)) {
           self::$s_timestamp_session = $_SERVER['REQUEST_TIME_FLOAT'];
         }
-        elseif (array_key_exists('REQUEST_TIME', $_SERVER)) {
+        else if (array_key_exists('REQUEST_TIME', $_SERVER)) {
           self::$s_timestamp_session = $_SERVER['REQUEST_TIME'];
         }
       }

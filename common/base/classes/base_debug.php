@@ -249,7 +249,7 @@ class c_base_debug extends c_base_return {
 
       return c_base_return_int::s_new($this->memory_usage_peak);
     }
-    elseif ($option == 2) {
+    else if ($option == 2) {
       if (is_null($this->time_stop)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'this->time_stop', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
         return c_base_return_error::s_false($error);

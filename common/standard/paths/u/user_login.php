@@ -141,7 +141,7 @@ class c_standard_path_user_login extends c_standard_path {
         }
         unset($problem);
       }
-      elseif ($login_result === TRUE) {
+      else if ($login_result === TRUE) {
         // successfully logged in.
         $destination = $this->pr_do_login_redirect();
 
@@ -344,11 +344,11 @@ class c_standard_path_user_login extends c_standard_path {
     if (empty($_POST['login_form-user_name']) || !is_string($_POST['login_form-user_name'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
-    elseif ($_POST['login_form-user_name'] == static::USER_PUBLIC) {
+    else if ($_POST['login_form-user_name'] == static::USER_PUBLIC) {
       // explicitly deny access to internal user accounts
       $problems[] = c_base_form_problem::s_create_error('login_form-user_name', self::pr_get_text(10));
     }
-    elseif (empty($_POST['login_form-password']) || !is_string($_POST['login_form-user_name'])) {
+    else if (empty($_POST['login_form-password']) || !is_string($_POST['login_form-user_name'])) {
       $problems[] = c_base_form_problem::s_create_error('login_form-password', self::pr_get_text(10));
     }
 
@@ -394,12 +394,12 @@ class c_standard_path_user_login extends c_standard_path {
           $problems[] = c_base_form_problem::s_create_error(NULL, 'Unable to login, cannot connect to the database.');
           return $problems;
         }
-        elseif (preg_match('/no pg_hba\.conf entry for host/i', $error_message) > 0) {
+        else if (preg_match('/no pg_hba\.conf entry for host/i', $error_message) > 0) {
           // the account either does note exist or is not authorized.
           // it is a pity that postgresql doesn't differentiate the two.
           $access_denied = TRUE;
         }
-        elseif (preg_match('/password authentication failed for user /i', $error_message) > 0) {
+        else if (preg_match('/password authentication failed for user /i', $error_message) > 0) {
           $access_denied = TRUE;
         }
         else {
@@ -428,37 +428,37 @@ class c_standard_path_user_login extends c_standard_path {
               }
             }
           }
-          elseif ($ensure_result === 1) {
+          else if ($ensure_result === 1) {
             // invalid user name, bad characters, or name too long.
           }
-          elseif ($ensure_result === 2) {
+          else if ($ensure_result === 2) {
             // failed to connect to the ldap server and could not query the ldap name.
           }
-          elseif ($ensure_result === 3) {
+          else if ($ensure_result === 3) {
             // user name not found in ldap database.
           }
-          elseif ($ensure_result === 4) {
+          else if ($ensure_result === 4) {
             // failed to connect to the database.
           }
-          elseif ($ensure_result === 5) {
+          else if ($ensure_result === 5) {
             // error returned while executing the SQL command.
           }
-          elseif ($ensure_result === 6) {
+          else if ($ensure_result === 6) {
             // error occured while reading input from the user (such as via recv()).
           }
-          elseif ($ensure_result === 7) {
+          else if ($ensure_result === 7) {
             // error occured while writing input from the user (such as via send()).
           }
-          elseif ($ensure_result === 8) {
+          else if ($ensure_result === 8) {
             // the received packet is invalid, such as wrong length.
           }
-          elseif ($ensure_result === 9) {
+          else if ($ensure_result === 9) {
             // connection timed out when reading or writing.
           }
-          elseif ($ensure_result === 10) {
+          else if ($ensure_result === 10) {
             // the connection is being forced closed.
           }
-          elseif ($ensure_result === 11) {
+          else if ($ensure_result === 11) {
             // the connection is closing because the service is quitting.
           }
         }

@@ -62,7 +62,7 @@ class c_standard_database extends c_base_database {
         unset($expires);
       }
     }
-    elseif ($log_type === c_base_log::TYPE_DISCONNECT) {
+    else if ($log_type === c_base_log::TYPE_DISCONNECT) {
       $query_parameters[0] = "Logging out of the system.";
       $query_parameters[1] = c_base_log::TYPE_SESSION;
       $query_parameters[2] = c_base_log::TYPE_DISCONNECT;
@@ -70,7 +70,7 @@ class c_standard_database extends c_base_database {
       $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
       $query_parameters[9] = NULL;
     }
-    elseif ($log_type === c_base_log::TYPE_CREATE) {
+    else if ($log_type === c_base_log::TYPE_CREATE) {
       $query_parameters[0] = "Created the user account.";
       $query_parameters[1] = c_base_log::TYPE_CREATE;
       $query_parameters[2] = c_base_log::TYPE_NONE;
@@ -78,7 +78,7 @@ class c_standard_database extends c_base_database {
       $query_parameters[4] = c_base_defaults_global::LOG_FACILITY;
       $query_parameters[9] = NULL;
     }
-    elseif ($log_type === c_base_log::TYPE_FAILURE) {
+    else if ($log_type === c_base_log::TYPE_FAILURE) {
       $user_name = NULL;
       if (isset($data['user_name']) && is_string($data['user_name'])) {
         $user_name = $data['user_name'];

@@ -10,6 +10,8 @@ require_once('program/reservation/reservation_defaults_global.php');
 
 require_once('common/standard/classes/standard_index.php');
 
+// @todo: add documentation that accounts with login access need either u_reservation_public or u_reservation role to properly login.
+
 
 /**
  * The standard class for use in index.php or equivalent.

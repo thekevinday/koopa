@@ -77,19 +77,19 @@ class c_standard_menu extends c_base_menu {
       if ($depth == 1) {
         $type = c_base_markup_tag::TYPE_H1;
       }
-      elseif ($depth == 2) {
+      else if ($depth == 2) {
         $type = c_base_markup_tag::TYPE_H2;
       }
-      elseif ($depth == 3) {
+      else if ($depth == 3) {
         $type = c_base_markup_tag::TYPE_H3;
       }
-      elseif ($depth == 4) {
+      else if ($depth == 4) {
         $type = c_base_markup_tag::TYPE_H4;
       }
-      elseif ($depth == 5) {
+      else if ($depth == 5) {
         $type = c_base_markup_tag::TYPE_H5;
       }
-      elseif ($depth == 6) {
+      else if ($depth == 6) {
         $type = c_base_markup_tag::TYPE_H6;
       }
       else {
@@ -261,7 +261,7 @@ class c_standard_menu extends c_base_menu {
       if ($type == ':') {
         $sanitized = $replacement;
       }
-      elseif ($type == '@') {
+      else if ($type == '@') {
         $sanitized = htmlspecialchars($replacement, $this->sanitize_html['flags'], $this->sanitize_html['encoding']);
       }
       else {

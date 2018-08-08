@@ -1353,7 +1353,7 @@ class c_base_html extends c_base_return {
           if (is_int($this->attributes_body[$attribute])) {
             return c_base_return_int::s_new($this->attributes_body[$attribute]);
           }
-          elseif (is_null($this->attributes_body[$attribute])) {
+          else if (is_null($this->attributes_body[$attribute])) {
             return new c_base_return_null();
           }
         }
@@ -1361,7 +1361,7 @@ class c_base_html extends c_base_return {
           if (is_int($this->attributes[$attribute])) {
             return c_base_return_int::s_new($this->attributes[$attribute]);
           }
-          elseif (is_null($this->attributes[$attribute])) {
+          else if (is_null($this->attributes[$attribute])) {
             return new c_base_return_null();
           }
         }

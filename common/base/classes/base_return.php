@@ -154,10 +154,10 @@ class c_base_return {
       }
       unset($error_object);
     }
-    elseif (is_null($delta)) {
+    else if (is_null($delta)) {
       $this->errors[] = $error;
     }
-    elseif (is_int($delta) && $delta >= 0) {
+    else if (is_int($delta) && $delta >= 0) {
       $this->errors[$delta] = $error;
     }
     else {
@@ -1493,7 +1493,7 @@ class c_base_return_error {
     if (is_null($error)) {
       $object_return->set_error(NULL);
     }
-    elseif (is_array($error)) {
+    else if (is_array($error)) {
       foreach ($error as $delta => $value) {
         $object_return->set_error($error, $delta);
       }
@@ -1524,7 +1524,7 @@ class c_base_return_error {
     if (is_null($error)) {
       $object_return->set_error(null);
     }
-    elseif (is_array($error)) {
+    else if (is_array($error)) {
       foreach ($error as $delta => $value) {
         $object_return->set_error($error, $delta);
       }
@@ -1555,7 +1555,7 @@ class c_base_return_error {
     if (is_null($error)) {
       $object_return->set_error(null);
     }
-    elseif (is_array($error)) {
+    else if (is_array($error)) {
       foreach ($error as $delta => $value) {
         $object_return->set_error($error, $delta);
       }
@@ -1601,7 +1601,7 @@ class c_base_return_error {
       $object_return->set_error($object_error);
       unset($object_error);
     }
-    elseif (is_array($error)) {
+    else if (is_array($error)) {
       foreach ($error as $delta => $value) {
         $object_return->set_error($error, $delta);
       }
@@ -1646,7 +1646,7 @@ class c_base_return_error {
       $object_return->set_error($object_error);
       unset($object_error);
     }
-    elseif (is_array($error)) {
+    else if (is_array($error)) {
       foreach ($error as $delta => $value) {
         $object_return->set_error($error, $delta);
       }

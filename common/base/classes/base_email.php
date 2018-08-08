@@ -150,7 +150,7 @@ class c_base_email extends c_base_return_string {
         unset($parsed);
         break;
       }
-      elseif ($email_text['codepoints'][$current] == c_base_ascii::QUOTE_DOUBLE) {
+      else if ($email_text['codepoints'][$current] == c_base_ascii::QUOTE_DOUBLE) {
         if ($is_quoted || $is_named_human || $is_named_machine) {
           // cannot have more than one quoted or unquoted string and human names cannot follow machine names.
           $result['invalid'] = TRUE;
@@ -179,11 +179,11 @@ class c_base_email extends c_base_return_string {
               break;
             }
           }
-          elseif ($email_text['codepoints'][$current] == c_base_ascii::QUOTE_DOUBLE) {
+          else if ($email_text['codepoints'][$current] == c_base_ascii::QUOTE_DOUBLE) {
             $closing_quote = TRUE;
             break;
           }
-          elseif ($this->pr_rfc_char_is_crlf($email_text['codepoints'][$current])) {
+          else if ($this->pr_rfc_char_is_crlf($email_text['codepoints'][$current])) {
             // not allowed inside a quoted string.
             $result['invalid'] = TRUE;
             break;
@@ -204,13 +204,13 @@ class c_base_email extends c_base_return_string {
 
         continue;
       }
-      elseif ($this->pr_rfc_char_is_fws($email_text['codepoints'][$current])) {
+      else if ($this->pr_rfc_char_is_fws($email_text['codepoints'][$current])) {
         // though unusual, starting with whitespace appears to be technically allowed unless I am misunderstanding or overlooking something.
         if (!$is_named_human && !$is_named_machine && is_null($current_string)) {
           continue;
         }
       }
-      elseif ($email_text['codepoints'][$current] == c_base_ascii::PARENTHESIS_OPEN) {
+      else if ($email_text['codepoints'][$current] == c_base_ascii::PARENTHESIS_OPEN) {
         if ($has_found_comment) {
           // there may be only one comment between non-comments.
           $result['invalid'] = TRUE;
@@ -236,7 +236,7 @@ class c_base_email extends c_base_return_string {
         unset($parsed);
         continue;
       }
-      elseif ($email_text['codepoints'][$current] == c_base_ascii::COLON) {
+      else if ($email_text['codepoints'][$current] == c_base_ascii::COLON) {
         if ($is_named_human || $is_named_machine) {
           // A colon may not be specified following human or machine names.
           $result['invalid'] = TRUE;
@@ -253,7 +253,7 @@ class c_base_email extends c_base_return_string {
         //        do not nullify $current_string because it is needed to define/provide the name of the group.
         // @todo: if the colon is supplied, but double quotes were used, then does this mean it is a double quoted group name? (in which case the test against $is_named_human is invalid.)
       }
-      elseif ($email_text['codepoints'][$current] == c_base_ascii::AT) {
+      else if ($email_text['codepoints'][$current] == c_base_ascii::AT) {
         if ($is_named_human || $is_named_machine) {
           // when a human name is supplied, then the e-mail address must be inside of '<' and '>'.
           // multiple machine names may not be specified.
@@ -395,7 +395,7 @@ class c_base_email extends c_base_return_string {
 
         // there may be multiple comments, so do not break at this point.
       }
-      elseif (!$this->pr_rfc_char_is_fws($code)) {
+      else if (!$this->pr_rfc_char_is_fws($code)) {
         // the first non-comment, non-fws char should be the start of the [name_machine].
         break;
       }
@@ -445,7 +445,7 @@ class c_base_email extends c_base_return_string {
 
         continue;
       }
-      elseif ($this->pr_rfc_char_is_fws($code)) {
+      else if ($this->pr_rfc_char_is_fws($code)) {
         if (!$started || $stopped) {
           // ignore leading/trailing whitespace.
           continue;
@@ -456,7 +456,7 @@ class c_base_email extends c_base_return_string {
         $stopped = TRUE;
         $comments = FALSE;
       }
-      elseif ($code != c_base_ascii::PERIOD && !$this->pr_rfc_char_is_atext($code)) {
+      else if ($code != c_base_ascii::PERIOD && !$this->pr_rfc_char_is_atext($code)) {
         if ($code != c_base_ascii::AT) {
           $result['invalid'] = TRUE;
           break;
@@ -465,12 +465,12 @@ class c_base_email extends c_base_return_string {
         $result['current']++;
         break;
       }
-      elseif ($stopped) {
+      else if ($stopped) {
         // comments or whitespace may not appear between text.
         $result['invalid'] = TRUE;
         break;
       }
-      elseif (!$started) {
+      else if (!$started) {
         $comments = FALSE;
         $started = TRUE;
       }
@@ -514,7 +514,7 @@ class c_base_email extends c_base_return_string {
 
         // there may be multiple comments, so do not break at this point.
       }
-      elseif (!$this->pr_rfc_char_is_fws($code)) {
+      else if (!$this->pr_rfc_char_is_fws($code)) {
         // the first non-comment, non-fws char should be the start of the [ip_address].
         break;
       }
@@ -609,7 +609,7 @@ class c_base_email extends c_base_return_string {
 
         // there may be multiple comments, so do not break at this point.
       }
-      elseif (!$this->pr_rfc_char_is_fws($code)) {
+      else if (!$this->pr_rfc_char_is_fws($code)) {
         // the first non-comment, non-fws char should be the start of the [ip_address].
         break;
       }
