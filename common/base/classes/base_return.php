@@ -327,6 +327,16 @@ class c_base_return {
   public function get_value_exact() {
     return NULL;
   }
+
+  /**
+   * Determine if this class has a value assigned to it.
+   *
+   * @return bool
+   *   TRUE if a value is assigned, FALSE otherwise.
+   */
+  public function has_value() {
+    return FALSE;
+  }
 }
 
 /**
@@ -536,6 +546,16 @@ class c_base_return_value extends c_base_return {
     }
 
     return $this->value;
+  }
+
+  /**
+   * Determine if this class has a value assigned to it.
+   *
+   * @return bool
+   *   TRUE if a value is assigned, FALSE otherwise.
+   */
+  public function has_value() {
+    return !is_null($this->value);
   }
 }
 

@@ -13,6 +13,9 @@ namespace n_koopa;
  *
  * Most return classes will use this trait.
  *
+ * This does not define has_value(), get_value(), and get_value_exact().
+ * Those functions are always gauranteed by the class c_base_return.
+ *
  * @require class base_error
  */
 trait t_base_return_value {
@@ -38,16 +41,6 @@ trait t_base_return_value {
     }
 
     return TRUE;
-  }
-
-  /**
-   * Determine if this class has a value assigned to it.
-   *
-   * @return bool
-   *   TRUE if a value is assigned, FALSE otherwise.
-   */
-  public function has_value() {
-    return !is_null($this->value);
   }
 
   /**
