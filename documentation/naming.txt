@@ -9,18 +9,23 @@ The following is the naming scheme used to communicate what a particular name is
   - c_: This represents a class name.
   - t_: This represents a class trait.
   - n_: This represents a namespace name.
+  - e_: This represent a class whose sole purpose is to provide an enumeration set.
 
 Within a class object, special rules apply:
   1) f_ is not prefixed on function names.
-  2) p_ is prefixed for private classes and protected classes that are intended to be private (via the use of final in the final class).
-  3) s_ is prefixed for static class function names.
-  4) All non-private and protected classes intended to be public must not be prefixed with p_.
-  5) Common operations will have the following prefixes:
+  2) p_ is prefixed for private functions that are intended to be private.
+  3) pr_ is prefixed for protected functions that are intended to be protected.
+  4) s_ is prefixed for static function names.
+  5) s_p_ is prefixed for private static function names.
+  6) s_pr_ is prefixed for protected static function names.
+  7) All non-private and non-protected functions (aka: public functions) must not be prefixed with p_.
+  8) All non-statc functions must not be prefixed with s_.
+  9) Common operations will have the following prefixes:
     - get_: To load, return, or otherwise obtain some data, such as the value of a variable defined within a class.
     - set_: To save, edit, other otherwise alter some data, such as a vlaue of a variable defined within a class.
     - push_: Is used to send or write to something that might be remote and is not a variable in this class.
     - pull_: Is used to retrieve or load something that might be remote and is not a variable in this class.
-  6) Initialization and de-initialization should be used. (This note needs to be moved elsewhere, but was written down here while my mind was on the topic.)
+  10) Initialization and de-initialization should be used. (This note needs to be moved elsewhere, but was written down here while my mind was on the topic.)
     - All classes must unset() all variables during de-initialization.
       - This is done to help encourage the freeing of memory for when a garbage collection is performed.
 
