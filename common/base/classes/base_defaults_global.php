@@ -379,7 +379,7 @@ class c_base_defaults_global {
       return c_base_return_string::s_new($class);
     }
 
-    $class = get_class($this->s_languages);
+    $class = get_class(self::$s_languages);
     return c_base_return_string::s_new($class);
   }
 
