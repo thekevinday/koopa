@@ -12,6 +12,8 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_reset.php');
+
 require_once('common/database/classes/database_code.php');
 
 /**
@@ -26,7 +28,7 @@ trait t_database_reset {
    *
    * @param int|null $reset
    *   The reset code to assign.
-   *   Should be one of: c_database_code_reset.
+   *   Should be one of: e_database_reset.
    *   Set to NULL to disable.
    * @param string|null $parameter
    *   (optional) When non-NULL this is the configuration parameter.
@@ -48,7 +50,7 @@ trait t_database_reset {
       return c_base_return_error::s_false($error);
     }
 
-    if ($reset == c_database_code_reset::PARAMETER) {
+    if ($reset == e_database_reset::PARAMETER) {
       if (!is_null($parameter) || !is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
@@ -58,7 +60,7 @@ trait t_database_reset {
       $this->query_reset_parameter = $parameter;
       return new c_base_return_true();
     }
-    else if ($reset == c_database_code_reset::ALL) {
+    else if ($reset == e_database_reset::ALL) {
       $this->query_reset = $reset;
       $this->query_reset_parameter = NULL;
       return new c_base_return_true();

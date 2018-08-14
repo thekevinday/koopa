@@ -12,6 +12,9 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_owner_to.php');
+require_once('common/database/enumerations/database_user.php');
+
 require_once('common/database/classes/database_string.php');
 
 /**
@@ -26,7 +29,7 @@ trait t_database_owner_to {
    *
    * @param int|null $owner_to
    *   The owner type to assign.
-   *   Should be one of: c_database_code_user.
+   *   Should be one of: e_database_user.
    *   Set to NULL to disable.
    * @param string|null $user_name
    *   (optional) When non-NULL this is the database user name.
@@ -48,7 +51,7 @@ trait t_database_owner_to {
       return c_base_return_error::s_false($error);
     }
 
-    if ($owner_type == c_database_code_user::USER_NAME) {
+    if ($owner_type == e_database_user::NAME) {
       if (!is_null($user_name) && !is_string($user_name)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'user_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
@@ -67,10 +70,10 @@ trait t_database_owner_to {
     $this->query_owner_to = $owner_to;
     $this->query_owner_to_user_name = NULL;
 
-    if ($owner_type == c_database_code_user::USER_CURRENT) {
+    if ($owner_type == e_database_user::CURRENT) {
       $this->query_owner_to_user_name = c_database_string::USER_CURRENT;
     }
-    else if ($owner_type == c_database_code_user::USER_SESSION) {
+    else if ($owner_type == e_database_user::SESSION) {
       $this->query_owner_to_user_name = c_database_string::USER_SESSION;
     }
 
@@ -81,7 +84,7 @@ trait t_database_owner_to {
    * Get the currently assigned sql owner to.
    *
    * @return c_base_return_int|c_base_return_null
-   *   A (c_database_code_user) code representing the owner on success.
+   *   A (e_database_user) code representing the owner on success.
    *   NULL without error bit set is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */

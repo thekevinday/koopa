@@ -12,6 +12,8 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_set.php');
+
 require_once('common/database/classes/database_code.php');
 
 /**
@@ -53,7 +55,7 @@ trait t_database_set {
       return c_base_return_error::s_false($error);
     }
 
-    if ($set == c_database_code_set::TO || $set == c_database_code_set::EQUAL) {
+    if ($set == e_database_set::TO || $set == e_database_set::EQUAL) {
       if (!is_null($parameter) || !is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
@@ -69,7 +71,7 @@ trait t_database_set {
       $this->query_set_value = $value;
       return new c_base_return_true();
     }
-    else if ($set == c_database_code_set::FROM_CURRENT) {
+    else if ($set == e_database_set::FROM_CURRENT) {
       $this->query_set = $set;
       $this->query_set_parameter = NULL;
       $this->query_set_value = NULL;

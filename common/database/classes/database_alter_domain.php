@@ -8,9 +8,13 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_action.php');
+require_once('common/database/enumerations/database_option.php');
+require_once('common/database/enumerations/database_property.php');
+
 require_once('common/database/classes/database_query.php');
 
-require_once('common/base/traits/base_query.php');
+require_once('common/database/traits/database_query.php');
 
 /**
  * The class for building and returning a Postgresql ALTER DOMAIN query string.
@@ -27,27 +31,6 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_action;
   use t_database_property;
   use t_database_option;
-
-  public const ACTION_NONE                = 0;
-  public const ACTION_ADD                 = 1;
-  public const ACTION_DROP                = 2;
-  public const ACTION_DROP_CONSTRAINT     = 3;
-  public const ACTION_DROP_DEFAULT        = 4;
-  public const ACTION_OWNER_TO            = 5;
-  public const ACTION_RENAME_CONSTRAINT   = 6;
-  public const ACTION_RENAME_TO           = 7;
-  public const ACTION_SET                 = 8;
-  public const ACTION_SET_DEFAULT         = 9;
-  public const ACTION_SET_SCHEMA          = 10;
-  public const ACTION_VALIDATE_CONSTRAINT = 11;
-
-  public const PROPERTY_NONE      = 0;
-  public const PROPERTY_NOT_VALID = 1;
-  public const PROPERTY_IF_EXISTS = 2;
-
-  public const OPTION_NONE     = 0;
-  public const OPTION_CASCADE  = 1;
-  public const OPTION_RESTRICT = 2;
 
   protected const pr_QUERY_COMMAND = 'alter domain';
 
@@ -246,7 +229,7 @@ class c_database_alter_coalation extends c_database_query {
 
     $action = NULL;
     switch ($this->query_action) {
-        case static::ACTION_ADD:
+        case e_database_action::ADD:
           if (!is_string($this->constraint)) {
             unset($action);
             return new c_base_return_false();
@@ -255,44 +238,44 @@ class c_database_alter_coalation extends c_database_query {
           $action = c_database_string::ADD;
           $action .= ' ' . $this->constraint;
 
-          if ($this->property === static::PROPERTY_NOT_VALID) {
+          if ($this->property === e_database_property::NOT_VALID) {
             $action .= ' ' . c_database_string::NOT_VALID;
           }
           break;
 
-        case static::ACTION_DROP:
+        case e_database_action::DROP:
           $action = c_database_string::DROP;
-          if ($this->property === static::PROPERTY_NOT_NULL) {
+          if ($this->property === e_database_property::NOT_NULL) {
             $action .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
-        case static::ACTION_DROP_CONSTRAINT:
+        case e_database_action::DROP_CONSTRAINT:
           if (!is_string($this->constraint)) {
             unset($action);
             return new c_base_return_false();
           }
 
           $action = c_database_string::DROP_CONSTRAINT;
-          if ($this->property === static::PROPERTY_IF_EXISTS) {
+          if ($this->property === e_database_property::IF_EXISTS) {
             $action .= ' ' . c_database_string::IF_EXISTS;
           }
 
           $action .= ' ' . $this->constraint;
 
-          if ($this->option === static::OPTION_RESTRICT) {
+          if ($this->option === e_database_option::RESTRICT) {
             $action .= ' ' . c_database_string::RESTRICT;
           }
-          else if ($this->option === static::OPTION_CASCADE) {
+          else if ($this->option === e_database_option::CASCADE) {
             $action .= ' ' . c_database_string::CASCADE;
           }
           break;
 
-        case static::ACTION_DROP_DEFAULT:
+        case e_database_action::DROP_DEFAULT:
           $action = c_database_string::DROP_DEFAULT;
           break;
 
-        case static::ACTION_OWNER_TO:
+        case e_database_action::OWNER_TO:
           if (!is_string($this->query_owner_to_user_name)) {
             unset($action);
             return new c_base_return_false();
@@ -301,7 +284,7 @@ class c_database_alter_coalation extends c_database_query {
           $action = c_database_string::OWNER_TO . ' (' . $this->query_owner_to_user_name . ')';
           break;
 
-        case static::ACTION_RENAME_CONSTRAINT:
+        case e_database_action::RENAME_CONSTRAINT:
           if (!is_string($this->constraint) || !is_string($this->constraint_new)) {
             unset($action);
             return new c_base_return_false();
@@ -310,7 +293,7 @@ class c_database_alter_coalation extends c_database_query {
           $action = c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint . ' ' . c_database_string::TO . ' ' . $this->constraint_new;
           break;
 
-        case static::ACTION_RENAME_TO:
+        case e_database_action::RENAME_TO:
           if (!is_string($this->query_rename_to)) {
             unset($action);
             return new c_base_return_false();
@@ -319,14 +302,14 @@ class c_database_alter_coalation extends c_database_query {
           $action = c_database_string::RENAME_TO . ' (' . $this->query_rename_to . ')';
           break;
 
-        case static::ACTION_SET:
+        case e_database_action::SET:
           $action = c_database_string::SET;
-          if ($this->property === static::PROPERTY_NOT_NULL) {
+          if ($this->property === e_database_property::NOT_NULL) {
             $action .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
-        case static::ACTION_SET_DEFAULT:
+        case e_database_action::SET_DEFAULT:
           if (!is_string($this->expression)) {
             unset($action);
             return new c_base_return_false();
@@ -335,7 +318,7 @@ class c_database_alter_coalation extends c_database_query {
           $action = c_database_string::SET_DEFAULT . ' ' . $this->expression;
           break;
 
-        case static::ACTION_SET_SCHEMA:
+        case e_database_action::SET_SCHEMA:
           if (!is_string($this->query_set_schema)) {
             unset($action);
             return new c_base_return_false();
@@ -344,7 +327,7 @@ class c_database_alter_coalation extends c_database_query {
           $action = ' ' . c_database_string::SET_SCHEMA . ' (' . $this->query_set_schema . ')';
           break;
 
-        case static::ACTION_VALIDATE_CONSTRAINT:
+        case e_database_action::VALIDATE_CONSTRAINT:
           if (!is_string($this->constraint)) {
             unset($action);
             return new c_base_return_false();

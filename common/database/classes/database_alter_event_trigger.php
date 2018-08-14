@@ -10,7 +10,7 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/base/traits/base_query.php');
+require_once('common/database/traits/database_query.php');
 
 /**
  * The class for building and returning a Postgresql ALTER EVENT TRIGGER query string.
@@ -20,6 +20,12 @@ require_once('common/base/traits/base_query.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
  */
 class c_database_alter_coalation extends c_database_query {
+  use t_database_action;
+  use t_database_action_property;
+  use t_database_name;
+  use t_database_owner_to;
+  use t_database_rename_to;
+
   protected const pr_QUERY_COMMAND = 'alter event trigger';
 
 
@@ -28,12 +34,24 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->query_action          = NULL;
+    $this->query_action_property = NULL;
+    $this->query_name            = NULL;
+    $this->query_owner_to        = NULL;
+    $this->query_rename_to       = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->query_action);
+    unset($this->query_action_property);
+    unset($this->query_name);
+    unset($this->query_owner_to);
+    unset($this->query_rename_to);
+
     parent::__destruct();
   }
 

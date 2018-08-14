@@ -45,11 +45,11 @@ trait t_database_order_by {
   }
 
   /**
-   * Get the currently assigned name to rename to.
+   * Get the currently assigned name to order by.
    *
    * @return c_base_return_string|c_base_return_null
    *   A name on success.
-   *   NULL is returned if not set (rename to is not to be used).
+   *   NULL is returned if not set (order by to is not to be used).
    *   NULL with the error bit set is returned on error.
    */
   public function get_query_order_by() {

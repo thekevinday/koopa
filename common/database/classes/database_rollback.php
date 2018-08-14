@@ -12,7 +12,7 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/base/traits/base_query.php');
+require_once('common/database/traits/database_query.php');
 
 /**
  * The class for building and returning a Postgresql ROLLBACK query string.

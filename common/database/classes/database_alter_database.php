@@ -8,6 +8,9 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_reset.php');
+require_once('common/database/enumerations/database_set.php');
+
 require_once('common/database/classes/database_query.php');
 require_once('common/database/classes/database_string.php');
 
@@ -27,8 +30,8 @@ class c_database_alter_database extends c_database_query {
   use t_database_name;
   use t_database_rename_to;
   use t_database_owner_to;
-  use t_database_set_tablespace;
   use t_database_set;
+  use t_database_set_tablespace;
   use t_database_reset;
 
   protected const pr_QUERY_COMMAND = 'alter database';
@@ -44,8 +47,8 @@ class c_database_alter_database extends c_database_query {
     $this->query_name            = NULL;
     $this->query_rename_to       = NULL;
     $this->query_owner_to        = NULL;
-    $this->query_set_tablespace  = NULL;
     $this->query_set             = NULL;
+    $this->query_set_tablespace  = NULL;
     $this->query_set_parameter   = NULL;
     $this->query_set_value       = NULL;
     $this->query_reset           = NULL;
@@ -61,8 +64,8 @@ class c_database_alter_database extends c_database_query {
     unset($this->query_name);
     unset($this->query_rename_to);
     unset($this->query_owner_to);
-    unset($this->query_set_tablespace);
     unset($this->query_set);
+    unset($this->query_set_tablespace);
     unset($this->query_set_parameter);
     unset($this->query_set_value);
     unset($this->query_reset);
@@ -166,7 +169,7 @@ class c_database_alter_database extends c_database_query {
       $this->value .= ' ' . c_database_string::SET_TABLESPACE . ' (' . $this->query_set_tablespace . ')';
     }
     else if (is_int($this->query_set)) {
-      if ($this->query_set == c_database_code_set::TO) {
+      if ($this->query_set === e_database_set::TO) {
         if (is_null($this->query_set_parameter)) {
           $this->value .= ' ' . c_database_string::SET . ' ' . $this->query_set_parameter . ' ' . c_database_string::TO . ' ' . c_database_string::DEFAULT;
         }
@@ -174,7 +177,7 @@ class c_database_alter_database extends c_database_query {
           $this->value .= ' ' . c_database_string::SET . ' ' . $this->query_set_parameter . ' ' . c_database_string::TO . ' ' . $this->query_set_value;
         }
       }
-      else if ($this->query_set == c_database_code_set::EQUAL) {
+      else if ($this->query_set === e_database_set::EQUAL) {
         if (is_null($this->query_set_parameter)) {
           $this->value .= ' ' . c_database_string::SET . ' ' . $this->query_set_parameter . ' = ' . c_database_string::DEFAULT;
         }
@@ -182,19 +185,19 @@ class c_database_alter_database extends c_database_query {
           $this->value .= ' ' . c_database_string::SET . ' ' . $this->query_set_parameter . ' = ' . $this->query_set_value;
         }
       }
-      else if ($this->query_set == c_database_code_set::FROM_CURRENT) {
+      else if ($this->query_set == e_database_set::FROM_CURRENT) {
         if (is_string($this->query_set_parameter)) {
           $this->value .= ' ' . c_database_string::SET . ' ' . $this->query_set_parameter . ' = ' . c_database_string::FROM_CURRENT;
         }
       }
     }
     else if (is_string($this->query_reset)) {
-      if ($this->query_set == c_database_code_reset::PARAMETER) {
+      if ($this->query_set === e_database_reset::PARAMETER) {
         if (is_string($this->query_set_parameter)) {
           $this->value .= ' ' . c_database_string::RESET . ' ' . $this->query_set_parameter;
         }
       }
-      else if ($this->query_set == c_database_code_reset::ALL) {
+      else if ($this->query_set === e_database_reset::ALL) {
         $this->value .= ' ' . c_database_string::RESET . ' ' . c_database_string::ALL;
       }
     }

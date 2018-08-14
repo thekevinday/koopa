@@ -37,7 +37,7 @@ class c_standard_database extends c_base_database {
     $query_parameters[8] = $response_code;
 
     if ($log_type === c_base_log::TYPE_CONNECT) {
-      $query_parameters[0] = "Logging in to the system.";
+      $query_parameters[0] = 'Logging in to the system.';
       $query_parameters[1] = c_base_log::TYPE_SESSION;
       $query_parameters[2] = c_base_log::TYPE_CONNECT;
       $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
@@ -63,7 +63,7 @@ class c_standard_database extends c_base_database {
       }
     }
     else if ($log_type === c_base_log::TYPE_DISCONNECT) {
-      $query_parameters[0] = "Logging out of the system.";
+      $query_parameters[0] = 'Logging out of the system.';
       $query_parameters[1] = c_base_log::TYPE_SESSION;
       $query_parameters[2] = c_base_log::TYPE_DISCONNECT;
       $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
@@ -71,7 +71,7 @@ class c_standard_database extends c_base_database {
       $query_parameters[9] = NULL;
     }
     else if ($log_type === c_base_log::TYPE_CREATE) {
-      $query_parameters[0] = "Created the user account.";
+      $query_parameters[0] = 'Created the user account.';
       $query_parameters[1] = c_base_log::TYPE_CREATE;
       $query_parameters[2] = c_base_log::TYPE_NONE;
       $query_parameters[3] = c_base_error::SEVERITY_INFORMATIONAL;
@@ -84,7 +84,7 @@ class c_standard_database extends c_base_database {
         $user_name = $data['user_name'];
       }
 
-      $query_parameters[0] = "Failed to login as the user ':{user_name}'.";
+      $query_parameters[0] = 'Failed to login as the user \':{user_name}\'.';
       $query_parameters[1] = c_base_log::TYPE_CONNECT;
       $query_parameters[2] = c_base_log::TYPE_FAILURE;
       $query_parameters[3] = c_base_error::SEVERITY_NOTICE;

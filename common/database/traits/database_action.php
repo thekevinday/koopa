@@ -65,9 +65,9 @@ trait t_database_action {
 }
 
 /**
- * Provide property support for an SQL query.
+ * Provide action property support for an SQL query.
  *
- * A single property that is associated with a particular class-specific property such as SELECT, INSERT, etc...
+ * A single property that is associated with a particular action.
  */
 trait t_database_action_property {
   protected $query_action_property;
@@ -76,7 +76,7 @@ trait t_database_action_property {
    * Assigns this query action property.
    *
    * @param int|null $property
-   *   Whether or not to use a property associated with a particular class-specific action such as SELECT, INSERT, etc...
+   *   Whether or not to use a action property associated.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
@@ -106,7 +106,7 @@ trait t_database_action_property {
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
-  protected function get_action_property() {
+  protected function get_query_action_property() {
     if (is_null($this->query_action_property)) {
       return new c_base_return_null();
     }

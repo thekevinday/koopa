@@ -8,6 +8,11 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/enumerations/database_action.php');
+require_once('common/database/enumerations/database_on.php');
+require_once('common/database/enumerations/database_option.php');
+require_once('common/database/enumerations/database_privilege.php');
+
 require_once('common/database/classes/database_query.php');
 
 require_once('common/database/traits/database_in_schema.php');
@@ -23,34 +28,6 @@ class c_database_alter_default_priveleges extends c_database_query {
   use t_database_in_schema;
   use t_database_action;
   use t_database_option;
-
-  public const ACTION_NONE   = 0;
-  public const ACTION_GRANT  = 1;
-  public const ACTION_REVOKE = 2;
-
-  public const ON_NONE      = 0;
-  public const ON_TABLES_TO = 1;
-  public const ON_SEQUENCES = 2;
-  public const ON_FUNCTIONS = 3;
-  public const ON_TYPES     = 4;
-  public const ON_SCHEMAS   = 5;
-
-  public const PRIVILEGE_NONE       = 0;
-  public const PRIVILEGE_SELECT     = 1;
-  public const PRIVILEGE_INSERT     = 2;
-  public const PRIVILEGE_UPDATE     = 3;
-  public const PRIVILEGE_DELETE     = 4;
-  public const PRIVILEGE_TRUNCATE   = 5;
-  public const PRIVILEGE_REFERENCES = 6;
-  public const PRIVILEGE_TRIGGER    = 7;
-  public const PRIVILEGE_USAGE      = 8;
-  public const PRIVILEGE_EXECUTE    = 9;
-  public const PRIVILEGE_CREATE     = 10;
-  public const PRIVILEGE_ALL        = 11;
-
-  public const OPTION_NONE     = 0;
-  public const OPTION_CASCADE  = 1;
-  public const OPTION_RESTRICT = 2;
 
   protected const pr_QUERY_COMMAND = 'alter default privileges';
 
@@ -198,11 +175,11 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
 
     switch ($on) {
-      case static::ON_TABLES_TO:
-      case static::ON_SEQUENCES:
-      case static::ON_FUNCTIONS:
-      case static::ON_TYPES:
-      case static::ON_SCHEMAS:
+      case e_database_on::TABLES_TO:
+      case e_database_on::SEQUENCES:
+      case e_database_on::FUNCTIONS:
+      case e_database_on::TYPES:
+      case e_database_on::SCHEMAS:
         $this->on = $on;
         return new c_base_return_true();
       default:
@@ -456,8 +433,8 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
 
     switch ($this->query_action) {
-        case static::ACTION_GRANT:
-        case static::ACTION_REVOKE:
+        case e_database_action::_GRANT:
+        case e_database_action::_REVOKE:
           break;
         default:
           return new c_base_return_false();
@@ -491,10 +468,10 @@ class c_database_alter_default_priveleges extends c_database_query {
       unset($names);
     }
 
-    if ($this->query_action === static::ACTION_GRANT) {
+    if ($this->query_action === e_database_action::ACTION_GRANT) {
       $this->value .= ' ' . c_database_string::GRANT;
     }
-    else if ($this->query_action === static::ACTION_REVOKE) {
+    else if ($this->query_action === e_database_action::ACTION_REVOKE) {
       $this->value .= ' ' . c_database_string::REVOKE;
 
       if ($this->option_grant) {
@@ -507,37 +484,37 @@ class c_database_alter_default_priveleges extends c_database_query {
     foreach ($this->privileges as $privilege) {
       $privileges .= ', ';
       switch ($privilege) {
-        case static::PRIVILEGE_SELECT:
+        case e_database_privilege::SELECT:
           $privileges .= c_database_string::SELECT;
           break;
-        case static::PRIVILEGE_INSERT:
+        case e_database_privilege::INSERT:
           $privileges .= c_database_string::INSERT;
           break;
-        case static::PRIVILEGE_UPDATE:
+        case e_database_privilege::UPDATE:
           $privileges .= c_database_string::UPDATE;
           break;
-        case static::PRIVILEGE_DELETE:
+        case e_database_privilege::DELETE:
           $privileges .= c_database_string::DELETE;
           break;
-        case static::PRIVILEGE_TRUNCATE:
+        case e_database_privilege::TRUNCATE:
           $privileges .= c_database_string::TRUNCATE;
           break;
-        case static::PRIVILEGE_REFERENCES:
+        case e_database_privilege::REFERENCES:
           $privileges .= c_database_string::REFERENCES;
           break;
-        case static::PRIVILEGE_TRIGGER:
+        case e_database_privilege::TRIGGER:
           $privileges .= c_database_string::TRIGGER;
           break;
-        case static::PRIVILEGE_USAGE:
+        case e_database_privilege::USAGE:
           $privileges .= c_database_string::USAGE;
           break;
-        case static::PRIVILEGE_EXECUTE:
+        case e_database_privilege::EXECUTE:
           $privileges .= c_database_string::EXECUTE;
           break;
-        case static::PRIVILEGE_CREATE:
+        case e_database_privilege::CREATE:
           $privileges .= c_database_string::CREATE;
           break;
-        case static::PRIVILEGE_ALL:
+        case e_database_privilege::ALL:
           $privileges .= c_database_string::ALL;
           break;
         default:
@@ -550,28 +527,28 @@ class c_database_alter_default_priveleges extends c_database_query {
 
     // ON ...
     switch($this->on) {
-      case static::ON_TABLES_TO:
+      case e_database_on::TABLES_TO:
         $this->value .= ' ' . c_database_string::ON_TABLES_TO;
         break;
-      case static::ON_SEQUENCES:
+      case e_database_on::SEQUENCES:
         $this->value .= ' ' . c_database_string::ON_SEQUENCES;
         break;
-      case static::ON_FUNCTIONS:
+      case e_database_on::FUNCTIONS:
         $this->value .= ' ' . c_database_string::ON_FUNCTIONS;
         break;
-      case static::ON_TYPES:
+      case e_database_on::TYPES:
         $this->value .= ' ' . c_database_string::ON_TYPES;
         break;
-      case static::ON_SCHEMAS:
+      case e_database_on::SCHEMAS:
         $this->value .= ' ' . c_database_string::ON_SCHEMAS;
         break;
     }
 
     // [ TO | FROM ] ... role names ...
-    if ($this->query_action === static::ACTION_GRANT) {
+    if ($this->query_action === e_database_action::GRANT) {
       $this->value .= ' ' . c_database_string::TO;
     }
-    else if ($this->query_action === static::ACTION_REVOKE) {
+    else if ($this->query_action === e_database_action::REVOKE) {
       $this->value .= ' ' . c_database_string::FROM;
     }
 
@@ -585,18 +562,18 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
     unset($role_name);
 
-    if ($this->query_action === static::ACTION_GRANT) {
+    if ($this->query_action === e_database_action::GRANT) {
       // [ WITH GRANT OPTION ]
       if ($this->option_grant) {
         $this->value .= ' ' . c_database_string::WITH_GRANT_OPTION;
       }
     }
-    else if ($this->query_action === static::ACTION_REVOKE) {
+    else if ($this->query_action === e_database_action::REVOKE) {
       // [ CASCADE | RESTRICT ]
-      if ($this->query_option === static::OPTION_CASCADE) {
+      if ($this->query_option === e_database_option::CASCADE) {
         $this->value .= ' ' . c_database_string::CASCADE;
       }
-      else if ($this->query_option === static::OPTION_RESTRICT) {
+      else if ($this->query_option === e_database_option::RESTRICT) {
         $this->value .= ' ' . c_database_string::RESTRICT;
       }
     }

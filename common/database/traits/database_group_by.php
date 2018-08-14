@@ -19,7 +19,7 @@ trait t_database_group_by {
   protected $query_group_by;
 
   /**
-   * Set the RENAME TO settings.
+   * Set the GROUP BY settings.
    *
    * @param string|null $group_by
    *   The name to rename to.
@@ -45,11 +45,11 @@ trait t_database_group_by {
   }
 
   /**
-   * Get the currently assigned name to rename to.
+   * Get the currently assigned name to group by.
    *
    * @return c_base_return_string|c_base_return_null
    *   A name on success.
-   *   NULL is returned if not set (rename to is not to be used).
+   *   NULL is returned if not set (group by is not to be used).
    *   NULL with the error bit set is returned on error.
    */
   public function get_query_group_by() {
