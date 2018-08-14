@@ -1,25 +1,29 @@
 <?php
+
   // make sure the class files can be loaded.
   set_include_path('.');
 
+  $root_path = 'common/base/classes/';
+
   // load the global defaults file (this file is not included by default but is required by all).
   // replace this with your own as you see fit.
-  require_once('common/base/classes/base_defaults_global.php');
+  require_once($root_path . 'base_defaults_global.php');
 
-
-  $root_path = 'common/base/classes/';
+  require_once($root_path . 'base_return.php');
   require_once($root_path . 'base_http.php');
   require_once($root_path . 'base_database.php');
   require_once($root_path . 'base_cookie.php');
   require_once($root_path . 'base_languages.php');
 
-  class_alias('c_base_return', 'c_return');
-  class_alias('c_base_return_status', 'c_status');
-  class_alias('c_base_return_false', 'c_false');
-  class_alias('c_base_return_true', 'c_true');
-  class_alias('c_base_return_array', 'c_array');
-  class_alias('c_base_return_string', 'c_string');
-  class_alias('c_base_return_int', 'c_int');
+  use \n_koopa\c_base_return as c_return;
+  use \n_koopa\c_base_return_status as c_status;
+  use \n_koopa\c_base_return_false as c_false;
+  use \n_koopa\c_base_return_true as c_true;
+  use \n_koopa\c_base_return_array as c_array;
+  use \n_koopa\c_base_return_string as c_string;
+  use \n_koopa\c_base_return_int as c_int;
+
+  use \n_koopa\c_base_defaults_global as c_defaults;
   unset($root_path);
 
 
@@ -79,11 +83,11 @@
     ini_set('output_buffering', FALSE);
 
     // default supported languages.
-    c_base_defaults_global::s_set_languages(new c_base_languages_limited());
+    c_defaults::s_set_languages(new \n_koopa\c_base_languages_limited());
   }
 
   function program_load_session(&$data_program) {
-    $database = new c_base_database();
+    $database = new \n_koopa\c_base_database();
 
     $remote_address = '127.0.0.1';
     if (!empty($_SERVER['REMOTE_ADDR'])) {
@@ -91,7 +95,7 @@
     }
 
     // cookie is used to determine whether or not the user is logged in.
-    $cookie = new c_base_cookie();
+    $cookie = new \n_koopa\c_base_cookie();
     $cookie->set_name("localhost");
     $cookie->set_path('/');
     $cookie->set_domain('.localhost');
@@ -101,17 +105,17 @@
     $failure = FALSE;
 
     $result = $cookie->do_pull();
-    if ($result instanceof c_base_return_true) {
+    if ($result instanceof c_true) {
       $value = $cookie->get_value_exact();
 
-      if ($cookie->validate() instanceof c_base_return_true && !empty($value['session_id'])) {
-        $session = new c_base_session();
+      if ($cookie->validate() instanceof c_true && !empty($value['session_id'])) {
+        $session = new \n_koopa\c_base_session();
         $session->set_socket_directory('/programs/sockets/sessionize_accounts/');
         $session->set_system_name('example');
         $session->set_host($remote_address);
         $session->set_session_id($value['session_id']);
         $result = $session->do_connect();
-        $failure = c_base_return::s_has_error($result);
+        $failure = c_return::s_has_error($result);
         if (!$failure) {
           $result = $session->do_pull();
           $session->do_disconnect();
@@ -120,7 +124,7 @@
         unset($failure);
 
         $connected = FALSE;
-        if ($result instanceof c_base_return_true) {
+        if ($result instanceof c_true) {
           $name = $session->get_name()->get_value();
           $password = $session->get_name()->get_value();
           program_assign_database_string($database, $name, $password, $session);
@@ -168,7 +172,7 @@
   }
 
   function program_receive_request(&$data_program) {
-    $data_program['http'] = new c_base_http();
+    $data_program['http'] = new \n_koopa\c_base_http();
 
     $data_program['http']->do_load_request();
     $data_program['http']->set_response_content("");
@@ -179,8 +183,8 @@
 
   function program_process_request(&$data_program) {
     $timestamp = $data_program['http']->get_request_time();
-    if (!($timestamp instanceof c_base_return_false)) {
-      $data_program['http']->set_response_content("The request was made on (" . $timestamp->get_value_exact() . "): " . c_base_defaults_global::s_get_date("Y/m/d h:i:s a", $timestamp->get_value_exact())->get_value_exact() . ": " . "<br>\n<br>\n");
+    if (!($timestamp instanceof c_false)) {
+      $data_program['http']->set_response_content("The request was made on (" . $timestamp->get_value_exact() . "): " . c_defaults::s_get_date("Y/m/d h:i:s a", $timestamp->get_value_exact())->get_value_exact() . ": " . "<br>\n<br>\n");
     }
     unset($timestamp);
 
@@ -195,97 +199,97 @@
       $request_name = "Undefined";
 
       switch ($request_id) {
-        case c_base_http::REQUEST_ACCEPT:
+        case \n_koopa\c_base_http::REQUEST_ACCEPT:
           $request_name = "Accept";
           break;
-        case c_base_http::REQUEST_ACCEPT_CHARSET:
+        case \n_koopa\c_base_http::REQUEST_ACCEPT_CHARSET:
           $request_name = "Accept";
           break;
-        case c_base_http::REQUEST_ACCEPT_ENCODING:
+        case \n_koopa\c_base_http::REQUEST_ACCEPT_ENCODING:
           $request_name = "Accept-Encoding";
           break;
-        case c_base_http::REQUEST_ACCEPT_LANGUAGE:
+        case \n_koopa\c_base_http::REQUEST_ACCEPT_LANGUAGE:
           $request_name = "Accept-Language";
           break;
-        case c_base_http::REQUEST_ACCEPT_DATETIME:
+        case \n_koopa\c_base_http::REQUEST_ACCEPT_DATETIME:
           $request_name = "Accept-Datetime";
           break;
-        case c_base_http::REQUEST_AUTHORIZATION:
+        case \n_koopa\c_base_http::REQUEST_AUTHORIZATION:
           $request_name = "Authorization";
           break;
-        case c_base_http::REQUEST_CACHE_CONTROL:
+        case \n_koopa\c_base_http::REQUEST_CACHE_CONTROL:
           $request_name = "Cache-Control";
           break;
-        case c_base_http::REQUEST_CONNECTION:
+        case \n_koopa\c_base_http::REQUEST_CONNECTION:
           $request_name = "Connection";
           break;
-        case c_base_http::REQUEST_COOKIE:
+        case \n_koopa\c_base_http::REQUEST_COOKIE:
           $request_name = "Cookie";
           break;
-        case c_base_http::REQUEST_CONTENT_LENGTH:
+        case \n_koopa\c_base_http::REQUEST_CONTENT_LENGTH:
           $request_name = "Content-Length";
           break;
-        case c_base_http::REQUEST_CONTENT_TYPE:
+        case \n_koopa\c_base_http::REQUEST_CONTENT_TYPE:
           $request_name = "Content-Type";
           break;
-        case c_base_http::REQUEST_DATE:
+        case \n_koopa\c_base_http::REQUEST_DATE:
           $request_name = "Date";
           break;
-        case c_base_http::REQUEST_EXPECT:
+        case \n_koopa\c_base_http::REQUEST_EXPECT:
           $request_name = "Expect";
           break;
-        case c_base_http::REQUEST_FROM:
+        case \n_koopa\c_base_http::REQUEST_FROM:
           $request_name = "From";
           break;
-        case c_base_http::REQUEST_HOST:
+        case \n_koopa\c_base_http::REQUEST_HOST:
           $request_name = "Host";
           break;
-        case c_base_http::REQUEST_IF_MATCH:
+        case \n_koopa\c_base_http::REQUEST_IF_MATCH:
           $request_name = "If-Match";
           break;
-        case c_base_http::REQUEST_IF_MODIFIED_SINCE:
+        case \n_koopa\c_base_http::REQUEST_IF_MODIFIED_SINCE:
           $request_name = "If-Modified-Since";
           break;
-        case c_base_http::REQUEST_IF_NONE_MATCH:
+        case \n_koopa\c_base_http::REQUEST_IF_NONE_MATCH:
           $request_name = "If-None-Match";
           break;
-        case c_base_http::REQUEST_IF_RANGE:
+        case \n_koopa\c_base_http::REQUEST_IF_RANGE:
           $request_name = "If-Range";
           break;
-        case c_base_http::REQUEST_IF_UNMODIFIED_SINCE:
+        case \n_koopa\c_base_http::REQUEST_IF_UNMODIFIED_SINCE:
           $request_name = "If-Unmodified-Since";
           break;
-        case c_base_http::REQUEST_MAX_FORWARDS:
+        case \n_koopa\c_base_http::REQUEST_MAX_FORWARDS:
           $request_name = "Max-Forwards";
           break;
-        case c_base_http::REQUEST_ORIGIN:
+        case \n_koopa\c_base_http::REQUEST_ORIGIN:
           $request_name = "Origin";
           break;
-        case c_base_http::REQUEST_PRAGMA:
+        case \n_koopa\c_base_http::REQUEST_PRAGMA:
           $request_name = "Pragma";
           break;
-        case c_base_http::REQUEST_PROXY_AUTHORIZATION:
+        case \n_koopa\c_base_http::REQUEST_PROXY_AUTHORIZATION:
           $request_name = "Prox-Authorization";
           break;
-        case c_base_http::REQUEST_RANGE:
+        case \n_koopa\c_base_http::REQUEST_RANGE:
           $request_name = "Range";
           break;
-        case c_base_http::REQUEST_REFERER:
+        case \n_koopa\c_base_http::REQUEST_REFERER:
           $request_name = "Referer";
           break;
-        case c_base_http::REQUEST_TE:
+        case \n_koopa\c_base_http::REQUEST_TE:
           $request_name = "TE";
           break;
-        case c_base_http::REQUEST_USER_AGENT:
+        case \n_koopa\c_base_http::REQUEST_USER_AGENT:
           $request_name = "User-Agent";
           break;
-        case c_base_http::REQUEST_UPGRADE:
+        case \n_koopa\c_base_http::REQUEST_UPGRADE:
           $request_name = "Upgrade";
           break;
-        case c_base_http::REQUEST_VIA:
+        case \n_koopa\c_base_http::REQUEST_VIA:
           $request_name = "Via";
           break;
-        case c_base_http::REQUEST_WARNING:
+        case \n_koopa\c_base_http::REQUEST_WARNING:
           $request_name = "Warning";
           break;
       }
@@ -308,14 +312,14 @@
   }
 
   function program_build_response(&$data_program) {
-    $data_program['http']->set_language_class(c_base_defaults_global::s_get_languages_class()->get_value_exact());
+    $data_program['http']->set_languages(c_defaults::s_get_languages_class()->get_value_exact());
 
     $data_program['http']->set_response_protocol('HTTP/1.1');
-    $data_program['http']->set_response_allow(c_base_http::HTTP_METHOD_GET);
-    $data_program['http']->set_response_allow(c_base_http::HTTP_METHOD_HEAD);
-    $data_program['http']->set_response_cache_control(c_base_http::CACHE_CONTROL_NO_CACHE);
-    #$data_program['http']->set_response_cache_control(c_base_http::CACHE_CONTROL_PUBLIC);
-    #$data_program['http']->set_response_cache_control(c_base_http::CACHE_CONTROL_MAX_AGE, '32');
+    $data_program['http']->set_response_allow(\n_koopa\c_base_http::HTTP_METHOD_GET);
+    $data_program['http']->set_response_allow(\n_koopa\c_base_http::HTTP_METHOD_HEAD);
+    $data_program['http']->set_response_cache_control(\n_koopa\c_base_http::CACHE_CONTROL_NO_CACHE);
+    #$data_program['http']->set_response_cache_control(\n_koopa\c_base_http::CACHE_CONTROL_PUBLIC);
+    #$data_program['http']->set_response_cache_control(\n_koopa\c_base_http::CACHE_CONTROL_MAX_AGE, '32');
     #$data_program['http']->set_response_age(2);
     #$data_program['http']->set_response_connection('close');
     #$data_program['http']->set_response_content_disposition();
@@ -325,7 +329,7 @@
     $data_program['http']->set_response_expires(strtotime('+5 minutes', $data_program['timestamp']));
     $data_program['http']->set_response_last_modified($data_program['timestamp']);
     #$data_program['http']->set_response_location();
-    $data_program['http']->set_response_status(c_base_http_status::OK);
+    $data_program['http']->set_response_status(\n_koopa\c_base_http_status::OK);
     $data_program['http']->set_response_vary('host');
     $data_program['http']->set_response_vary('user-agent');
     $data_program['http']->set_response_vary('accept-encoding');
@@ -386,7 +390,7 @@
     $encoding = array_pop($encodings);
     unset($encodings);
 
-    if ($encoding instanceof c_base_return_false || $encoding == c_base_http::ENCODING_CHUNKED) {
+    if ($encoding instanceof c_false || $encoding == \n_koopa\c_base_http::ENCODING_CHUNKED) {
       $data_program['http']->set_response_content("<br>\n");
       $data_program['http']->set_response_content("<strong>Memory Used (1)</strong>: " . ($data_program['debug']['memory_usage'][1] - $data_program['debug']['memory_usage'][0]) . " bytes (". (floor(($data_program['debug']['memory_usage'][1] - $data_program['debug']['memory_usage'][0]) / 1024)) . " KB)" . "<br>\n");
       $data_program['http']->set_response_content("<strong>Memory Used Peak (1)</strong>: " . ($data_program['debug']['memory_peak'][1] - $data_program['debug']['memory_peak'][0]) . " bytes (". (floor(($data_program['debug']['memory_peak'][1] - $data_program['debug']['memory_peak'][0]) / 1024)) . " KB)" . "<br>\n");
@@ -418,7 +422,7 @@
       $database->set_session($session);
     }
 
-    $connection_string = new c_base_database_connection_string();
+    $connection_string = new \n_koopa\c_base_database_connection_string();
     $connection_string->set_host('127.0.0.1');
     $connection_string->set_port(5432);
     $connection_string->set_database('example');
@@ -434,7 +438,7 @@
   }
 
   function program_connect_database(&$database) {
-    if (!($database->do_connect() instanceof c_base_return_true)) {
+    if (!($database->do_connect() instanceof c_true)) {
       return FALSE;
     }
 
