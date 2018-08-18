@@ -44,6 +44,26 @@ trait t_base_return_value {
   }
 
   /**
+   * Determine if this class has a value assigned to it.
+   *
+   * @return bool
+   *   TRUE if the value is assigned to something other than NULL, FALSE otherwise.
+   */
+  public function has_value() {
+    return !is_null($this->value);
+  }
+
+  /**
+   * Return the value.
+   *
+   * @return $value
+   *   The value stored within this class.
+   */
+  public function get_value() {
+    return $this->value;
+  }
+
+  /**
    * Creates a new return __class__ type.
    *
    * This is used to simplify the returning of a new class value.
@@ -136,6 +156,16 @@ trait t_base_return_value {
 trait t_base_return_value_exact {
   // PHP does not support this. This project's API does require this trait to be used even if its not enforced by PHP.
   //use t_base_return_value;
+
+  /**
+   * Return the value of the expected type.
+   *
+   * @return $value
+   *   The value stored within this class.
+   */
+  public function get_value_exact() {
+    return $this->value;
+  }
 
   /**
    * Perform a very basic, safe, value retrieval of the expected type.

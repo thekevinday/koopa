@@ -32,7 +32,7 @@ require_once('common/base/traits/base_return.php');
  *
  * @require class c_base_error
  */
-class c_base_return {
+abstract class c_base_return {
   private $errors;
 
   /**
@@ -108,7 +108,7 @@ class c_base_return {
       return;
     }
 
-    $errors = $source->get_error()->get_value_exact();
+    $errors = $source->get_error()->get_value();
     if (is_array($errors)) {
       foreach ($errors as $error) {
         $destination->set_error($error);
@@ -309,30 +309,11 @@ class c_base_return {
   }
 
   /**
-   * Return the value.
-   *
-   * @return null $value
-   *   The value within this class.
-   */
-  public function get_value() {
-    return NULL;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return NULL $value
-   *   The value c_base_markup_tag stored within this class.
-   */
-  public function get_value_exact() {
-    return NULL;
-  }
-
-  /**
    * Determine if this class has a value assigned to it.
    *
    * @return bool
-   *   TRUE if a value is assigned, FALSE otherwise.
+   *   TRUE if the value is assigned to this class.
+   *   FALSE is returned otherwise.
    */
   public function has_value() {
     return FALSE;
@@ -345,28 +326,42 @@ class c_base_return {
  * This is used as a return status for a function that does not return any expected valid values.
  * This class does not have any values of its own.
  */
-class c_base_return_status extends c_base_return {
+abstract class c_base_return_status extends c_base_return {
+
+  /**
+   * Return the value.
+   *
+   * @return
+   *   Always returns value represented by this class.
+   */
+  public abstract function get_value();
+
+  /**
+   * Return the value.
+   *
+   * @return
+   *   Always returns value represented by this class
+   */
+  public abstract function get_value_exact();
+
+  /**
+   * Determine if this class has a value assigned to it.
+   *
+   * @return bool
+   *   Always returns TRUE.
+   */
+  public function has_value() {
+    return TRUE;
+  }
 }
 
 /**
  * A boolean return class representing a return value of TRUE.
  *
- * This class will not have any values.
+ * This class does not actually use any values.
  */
 class c_base_return_true extends c_base_return_status {
-
-  /**
-   * Assign the value.
-   *
-   * @param $value
-   *   This is ignored.
-   *
-   * @return bool
-   *   Always returns TRUE.
-   */
-  public function set_value($value) {
-    return TRUE;
-  }
+  use t_base_return_value_exact;
 
   /**
    * Return the value.
@@ -395,19 +390,7 @@ class c_base_return_true extends c_base_return_status {
  * This class will not have any values.
  */
 class c_base_return_false extends c_base_return_status {
-
-  /**
-   * Assign the value.
-   *
-   * @param $value
-   *   This is ignored.
-   *
-   * @return bool
-   *   Always returns TRUE.
-   */
-  public function set_value($value) {
-    return TRUE;
-  }
+  use t_base_return_value_exact;
 
   /**
    * Return the value.
@@ -436,24 +419,12 @@ class c_base_return_false extends c_base_return_status {
  * This class will not have any values.
  */
 class c_base_return_null extends c_base_return_status {
+  use t_base_return_value_exact;
 
   /**
    * Assign the value.
    *
-   * @param $value
-   *   This is ignored.
-   *
-   * @return bool
-   *   Always returns TRUE.
-   */
-  public function set_value($value) {
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return $value
+   * @return null
    *   Always returns NULL.
    */
   public function get_value() {
@@ -463,11 +434,21 @@ class c_base_return_null extends c_base_return_status {
   /**
    * Return the value of the expected type.
    *
-   * @return $value
+   * @return null $value
    *   Always returns NULL.
    */
   public function get_value_exact() {
     return NULL;
+  }
+
+  /**
+   * Determine if this class has a value assigned to it.
+   *
+   * @return bool
+   *   Always returns TRUE.
+   */
+  public function has_value() {
+    return TRUE;
   }
 }
 
@@ -503,59 +484,6 @@ class c_base_return_value extends c_base_return {
    */
   public static function s_value($return) {
     return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * Assign the value.
-   *
-   * @param bool $value
-   *   Any value so long as it is a bool.
-   *   NULL is not allowed.
-   *
-   * @return bool
-   *   TRUE on success, FALSE otherwise.
-   */
-  public function set_value($value) {
-    $this->value = $value;
-    return TRUE;
-  }
-
-  /**
-   * Return the value.
-   *
-   * @return $value
-   *   The value bool stored within this class.
-   */
-  public function get_value() {
-    if (!isset($this->value)) {
-      return NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Return the value of the expected type.
-   *
-   * @return $value
-   *   The value bool stored within this class.
-   */
-  public function get_value_exact() {
-    if (!isset($this->value)) {
-      return NULL;
-    }
-
-    return $this->value;
-  }
-
-  /**
-   * Determine if this class has a value assigned to it.
-   *
-   * @return bool
-   *   TRUE if a value is assigned, FALSE otherwise.
-   */
-  public function has_value() {
-    return !is_null($this->value);
   }
 }
 

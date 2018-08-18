@@ -14,7 +14,7 @@ require_once('common/base/classes/base_mime.php');
 /**
  * A generic container for files.
  */
-class c_base_file extends c_base_return_value {
+class c_base_file extends c_base_return {
   protected $id;
   protected $id_creator;
   protected $id_creator_session;
@@ -90,27 +90,6 @@ class c_base_file extends c_base_return_value {
     unset($this->date_deleted);
 
     parent::__destruct();
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_new()
-   */
-  public static function s_new($value) {
-    return self::p_s_new($value, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value::p_s_value()
-   */
-  public static function s_value($return) {
-    return self::p_s_value($return, __CLASS__);
-  }
-
-  /**
-   * @see: t_base_return_value_exact::p_s_value_exact()
-   */
-  public static function s_value_exact($return) {
-    return self::p_s_value_exact($return, __CLASS__, '');
   }
 
   /**
