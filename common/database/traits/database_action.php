@@ -19,7 +19,7 @@ require_once('common/base/classes/base_return.php');
  * A query only performs one action.
  */
 trait t_database_action {
-  protected $query_action;
+  protected $action;
 
   /**
    * Assigns this query action.
@@ -32,14 +32,14 @@ trait t_database_action {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_query_action($action) {
+  public function set_action($action) {
     if (is_null($action)) {
-      $this->query_action = NULL;
+      $this->action = NULL;
       return new c_base_return_true();
     }
 
     if (is_int($action)) {
-      $this->query_action = $action;
+      $this->action = $action;
       return new c_base_return_true();
     }
 
@@ -70,12 +70,12 @@ trait t_database_action {
  * A single property that is associated with a particular action.
  */
 trait t_database_action_property {
-  protected $query_action_property;
+  protected $action_property;
 
   /**
    * Assigns this query action property.
    *
-   * @param int|null $property
+   * @param int|null $action_property
    *   Whether or not to use a action property associated.
    *   Set to NULL to disable.
    *
@@ -83,18 +83,18 @@ trait t_database_action_property {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_query_action_property($property) {
-    if (is_null($property)) {
-      $this->query_action_property = NULL;
+  public function set_action_property($action_property) {
+    if (is_null($action_property)) {
+      $this->action_property = NULL;
       return new c_base_return_true();
     }
 
-    if (is_int($property)) {
-      $this->query_action_property = $property;
+    if (is_int($action_property)) {
+      $this->action_property = $action_property;
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'property', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'action_property', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
     return c_base_return_error::s_false($error);
   }
 
@@ -106,11 +106,11 @@ trait t_database_action_property {
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
-  protected function get_query_action_property() {
-    if (is_null($this->query_action_property)) {
+  protected function get_action_property() {
+    if (is_null($this->action_property)) {
       return new c_base_return_null();
     }
 
-    return c_base_return_int::s_new($this->query_action_property);
+    return c_base_return_int::s_new($this->action_property);
   }
 }

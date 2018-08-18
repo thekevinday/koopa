@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide the sql SET TABLESPACE functionality.
  */
 trait t_database_set_tablespace {
-  protected $query_set_tablespace;
+  protected $set_tablespace;
 
   /**
    * Set the SET TABLESPACE settings.
@@ -29,13 +29,13 @@ trait t_database_set_tablespace {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_set_tablespace($set_tablespace) {
+  public function set_set_tablespace($set_tablespace) {
     if (!is_null($set_tablespace) && !is_string($set_tablespace)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->query_set_tablespace = $set_tablespace;
+    $this->set_tablespace = $set_tablespace;
     return new c_base_return_true();
   }
 
@@ -47,16 +47,16 @@ trait t_database_set_tablespace {
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_set_tablespace() {
-    if (is_null($this->query_set_tablespace)) {
+  public function get_set_tablespace() {
+    if (is_null($this->set_tablespace)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_set_tablespace)) {
-      return c_base_return_string::s_new($this->query_set_tablespace);
+    if (is_string($this->set_tablespace)) {
+      return c_base_return_string::s_new($this->set_tablespace);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

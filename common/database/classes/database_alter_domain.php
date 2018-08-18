@@ -10,11 +10,15 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_action.php');
 require_once('common/database/enumerations/database_option.php');
-require_once('common/database/enumerations/database_property.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_query.php');
+require_once('common/database/traits/database_name.php');
+require_once('common/database/traits/database_owner_to.php');
+require_once('common/database/traits/database_rename_to.php');
+require_once('common/database/traits/database_set_schema.php');
+require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_option.php');
 
 /**
  * The class for building and returning a Postgresql ALTER DOMAIN query string.
@@ -29,7 +33,7 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_rename_to;
   use t_database_set_schema;
   use t_database_action;
-  use t_database_property;
+  use t_database_action_property;
   use t_database_option;
 
   protected const pr_QUERY_COMMAND = 'alter domain';
@@ -43,13 +47,13 @@ class c_database_alter_coalation extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->query_name            = NULL;
-    $this->query_owner_to        = NULL;
-    $this->query_rename_to       = NULL;
-    $this->query_set_schema      = NULL;
-    $this->query_action          = NULL;
-    $this->query_action_property = NULL;
-    $this->query_option          = NULL;
+    $this->name            = NULL;
+    $this->owner_to        = NULL;
+    $this->rename_to       = NULL;
+    $this->set_schema      = NULL;
+    $this->action          = NULL;
+    $this->action_property = NULL;
+    $this->option          = NULL;
 
     $this->expression    = NULL;
     $this->contraint     = NULL;
@@ -60,13 +64,13 @@ class c_database_alter_coalation extends c_database_query {
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->query_name);
-    unset($this->query_owner_to);
-    unset($this->query_rename_to);
-    unset($this->query_set_schema);
-    unset($this->query_action);
-    unset($this->query_action_property);
-    unset($this->query_option);
+    unset($this->name);
+    unset($this->owner_to);
+    unset($this->rename_to);
+    unset($this->set_schema);
+    unset($this->action);
+    unset($this->action_property);
+    unset($this->option);
 
     unset($this->expression);
     unset($this->contraint);
@@ -223,12 +227,12 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (is_null($this->query_name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
     $action = NULL;
-    switch ($this->query_action) {
+    switch ($this->action) {
         case e_database_action::ADD:
           if (!is_string($this->constraint)) {
             unset($action);
@@ -276,12 +280,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::OWNER_TO:
-          if (!is_string($this->query_owner_to_user_name)) {
+          if (!is_string($this->owner_to_user_name)) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::OWNER_TO . ' (' . $this->query_owner_to_user_name . ')';
+          $action = c_database_string::OWNER_TO . ' (' . $this->owner_to_user_name . ')';
           break;
 
         case e_database_action::RENAME_CONSTRAINT:
@@ -294,12 +298,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::RENAME_TO:
-          if (!is_string($this->query_rename_to)) {
+          if (!is_string($this->rename_to)) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::RENAME_TO . ' (' . $this->query_rename_to . ')';
+          $action = c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
           break;
 
         case e_database_action::SET:
@@ -319,12 +323,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::SET_SCHEMA:
-          if (!is_string($this->query_set_schema)) {
+          if (!is_string($this->set_schema)) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = ' ' . c_database_string::SET_SCHEMA . ' (' . $this->query_set_schema . ')';
+          $action = ' ' . c_database_string::SET_SCHEMA . ' (' . $this->set_schema . ')';
           break;
 
         case e_database_action::VALIDATE_CONSTRAINT:
@@ -342,7 +346,7 @@ class c_database_alter_coalation extends c_database_query {
     }
 
     $this->value = static::pr_QUERY_COMMAND;
-    $this->value .= ' ' . $this->query_name;
+    $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
 
     return new c_base_return_true();

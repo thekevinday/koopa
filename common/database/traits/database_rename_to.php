@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide the sql RENAME TO functionality.
  */
 trait t_database_rename_to {
-  protected $query_rename_to;
+  protected $rename_to;
 
   /**
    * Set the RENAME TO settings.
@@ -29,13 +29,13 @@ trait t_database_rename_to {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_rename_to($rename_to) {
+  public function set_rename_to($rename_to) {
     if (!is_null($rename_to) && !is_string($rename_to)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->query_rename_to = $rename_to;
+    $this->rename_to = $rename_to;
     return new c_base_return_true();
   }
 
@@ -47,16 +47,16 @@ trait t_database_rename_to {
    *   NULL is returned if not set (rename to is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_rename_to() {
-    if (is_null($this->query_rename_to)) {
+  public function get_rename_to() {
+    if (is_null($this->rename_to)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_rename_to)) {
-      return c_base_return_string::s_new($this->query_rename_to);
+    if (is_string($this->rename_to)) {
+      return c_base_return_string::s_new($this->rename_to);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

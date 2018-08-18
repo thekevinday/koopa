@@ -10,7 +10,10 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_query.php');
+require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_name.php');
+require_once('common/database/traits/database_owner_to.php');
+require_once('common/database/traits/database_rename_to.php');
 
 /**
  * The class for building and returning a Postgresql ALTER EVENT TRIGGER query string.

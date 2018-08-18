@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide the sql NAME functionality.
  */
 trait t_database_name {
-  protected $query_name;
+  protected $name;
 
   /**
    * Set the NAME settings.
@@ -29,14 +29,14 @@ trait t_database_name {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_name($name) {
+  public function set_name($name) {
     if (is_null($name)) {
-      $this->query_name = NULL;
+      $this->name = NULL;
       return new c_base_return_true();
     }
 
     if (is_string($name)) {
-      $this->query_name = $name;
+      $this->name = $name;
       return new c_base_return_true();
     }
 
@@ -52,16 +52,16 @@ trait t_database_name {
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_name() {
-    if (is_null($this->query_name)) {
+  public function get_name() {
+    if (is_null($this->name)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_name)) {
-      return c_base_return_string::s_new($this->query_name);
+    if (is_string($this->name)) {
+      return c_base_return_string::s_new($this->name);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

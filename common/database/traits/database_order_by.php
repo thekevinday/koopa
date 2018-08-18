@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide the sql ORDER BY functionality.
  */
 trait t_database_order_by {
-  protected $query_order_by;
+  protected $order_by;
 
   /**
    * Set the ORDER BY settings.
@@ -29,14 +29,14 @@ trait t_database_order_by {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_order_by($order_by) {
+  public function set_order_by($order_by) {
     if (is_null($order_by)) {
-      $this->query_order_by = NULL;
+      $this->order_by = NULL;
       return new c_base_return_true();
     }
 
     if (is_string($order_by)) {
-      $this->query_order_by = $order_by;
+      $this->order_by = $order_by;
       return new c_base_return_true();
     }
 
@@ -52,16 +52,16 @@ trait t_database_order_by {
    *   NULL is returned if not set (order by to is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_order_by() {
-    if (is_null($this->query_order_by)) {
+  public function get_order_by() {
+    if (is_null($this->order_by)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_order_by)) {
-      return c_base_return_string::s_new($this->query_order_by);
+    if (is_string($this->order_by)) {
+      return c_base_return_string::s_new($this->order_by);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_order_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'order_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

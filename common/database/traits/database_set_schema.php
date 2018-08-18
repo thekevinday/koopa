@@ -18,7 +18,7 @@ require_once('common/database/classes/database_string.php');
  * Provide the sql SET SCHEMA functionality.
  */
 trait t_database_set_schema {
-  protected $query_set_schema;
+  protected $set_schema;
 
   /**
    * Set the RENAME TO settings.
@@ -31,13 +31,13 @@ trait t_database_set_schema {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_set_schema($set_schema) {
+  public function set_set_schema($set_schema) {
     if (!is_null($set_schema) && !is_string($set_schema)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'set_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->query_set_schema = $set_schema;
+    $this->set_schema = $set_schema;
     return new c_base_return_true();
   }
 
@@ -49,16 +49,16 @@ trait t_database_set_schema {
    *   NULL is returned if not set (set schema is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_set_schema() {
-    if (is_null($this->query_set_schema)) {
+  public function get_set_schema() {
+    if (is_null($this->set_schema)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_set_schema)) {
-      return c_base_return_string::s_new($this->query_set_schema);
+    if (is_string($this->set_schema)) {
+      return c_base_return_string::s_new($this->set_schema);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_set_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

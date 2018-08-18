@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide the sql IN SCHEMA functionality.
  */
 trait t_database_in_schema {
-  protected $query_in_schema;
+  protected $in_schema;
 
   /**
    * Set the in schema, schema names.
@@ -33,9 +33,9 @@ trait t_database_in_schema {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_query_in_schema($schema_name, $append = TRUE) {
+  public function set_in_schema($schema_name, $append = TRUE) {
     if (is_null($schema_name)) {
-      $this->query_in_schema = NULL;
+      $this->in_schema = NULL;
       return new c_base_return_true();
     }
 
@@ -46,14 +46,14 @@ trait t_database_in_schema {
 
     if (is_string($schema_name)) {
       if ($append) {
-        if (!is_array($this->query_in_schema)) {
-          $this->query_in_schema = [];
+        if (!is_array($this->in_schema)) {
+          $this->in_schema = [];
         }
 
-        $this->query_in_schema[] = $schema_name;
+        $this->in_schema[] = $schema_name;
       }
       else {
-        $this->query_in_schema = [$schema_name];
+        $this->in_schema = [$schema_name];
       }
 
       return new c_base_return_true();
@@ -75,26 +75,26 @@ trait t_database_in_schema {
    *   A single schema name is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_in_schema($index = NULL) {
-    if (is_null($this->query_in_schema)) {
+  public function get_in_schema($index = NULL) {
+    if (is_null($this->in_schema)) {
       return new c_base_return_null();
     }
 
     if (is_null($index)) {
-      if (is_array($this->query_in_schema)) {
-        return c_bse_return_array::s_new($this->query_in_schema);
+      if (is_array($this->in_schema)) {
+        return c_base_return_array::s_new($this->in_schema);
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->query_in_schema) && is_string($this->query_in_schema[$index])) {
-        return c_base_return_string::s_new($this->query_in_schema[$index]);
+      if (is_int($index) && array_key_exists($index, $this->in_schema) && is_string($this->in_schema[$index])) {
+        return c_base_return_string::s_new($this->in_schema[$index]);
       }
 
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_in_schema[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'in_schema[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_null($error);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_in_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'in_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

@@ -35,10 +35,10 @@ class c_database_alter_coalation extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->query_name       = NULL;
-    $this->query_rename_to  = NULL;
-    $this->query_owner_to   = NULL;
-    $this->query_set_schema = NULL;
+    $this->name       = NULL;
+    $this->rename_to  = NULL;
+    $this->owner_to   = NULL;
+    $this->set_schema = NULL;
 
     $this->refreh_version = NULL;
   }
@@ -47,10 +47,10 @@ class c_database_alter_coalation extends c_database_query {
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->query_name);
-    unset($this->query_rename_to);
-    unset($this->query_owner_to);
-    unset($this->query_set_schema);
+    unset($this->name);
+    unset($this->rename_to);
+    unset($this->owner_to);
+    unset($this->set_schema);
 
     unset($this->refresh_version);
 
@@ -129,26 +129,26 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function do_build() {
     // the collation name is required.
-    if (!is_string($this->query_name)) {
+    if (!is_string($this->name)) {
       return new c_base_return_false();
     }
 
     $this->value = static::pr_QUERY_COMMAND;
-    $this->value .= ' ' . $this->query_name;
+    $this->value .= ' ' . $this->name;
 
     if (is_bool($this->refresh_version)) {
       if ($this->refresh_version) {
         $this->value .= ' ' . c_database_string::REFRESH_VERSION;
       }
     }
-    else if (is_string($this->query_rename_to)) {
-      $this->value .= ' ' . $this->pr_QUERY_RENAME_TO . ' (' . $this->query_rename_to . ')';
+    else if (is_string($this->rename_to)) {
+      $this->value .= ' ' . $this->pr_QUERY_RENAME_TO . ' (' . $this->rename_to . ')';
     }
-    else if (is_string($this->query_owner_to_user_name)) {
-      $this->value .= ' ' . $this->pr_QUERY_OWNER_TO . ' (' . $this->query_owner_to_user_name . ')';
+    else if (is_string($this->owner_to_user_name)) {
+      $this->value .= ' ' . $this->pr_QUERY_OWNER_TO . ' (' . $this->owner_to_user_name . ')';
     }
-    else if (is_string($this->query_set_schema)) {
-      $this->value .= ' ' . $this->pr_QUERY_SET_SCHEMA . ' (' . $this->query_set_schema . ')';
+    else if (is_string($this->set_schema)) {
+      $this->value .= ' ' . $this->pr_QUERY_SET_SCHEMA . ' (' . $this->set_schema . ')';
     }
     else {
       $this->value = NULL;

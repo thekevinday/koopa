@@ -14,14 +14,12 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_reset.php');
 
-require_once('common/database/classes/database_code.php');
-
 /**
  * Provide the sql RESET functionality.
  */
 trait t_database_reset {
-  protected $query_reset;
-  protected $query_reset_parameter;
+  protected $reset;
+  protected $reset_parameter;
 
   /**
    * Set the RESET settings.
@@ -38,10 +36,10 @@ trait t_database_reset {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_reset($reset, $parameter = NULL) {
+  public function set_reset($reset, $parameter = NULL) {
     if (is_null($reset)) {
-      $this->query_reset = NULL;
-      $this->query_reset_parameter = NULL;
+      $this->reset = NULL;
+      $this->reset_parameter = NULL;
       return new c_base_return_true();
     }
 
@@ -56,13 +54,13 @@ trait t_database_reset {
         return c_base_return_error::s_false($error);
       }
 
-      $this->query_reset = $reset;
-      $this->query_reset_parameter = $parameter;
+      $this->reset = $reset;
+      $this->reset_parameter = $parameter;
       return new c_base_return_true();
     }
     else if ($reset == e_database_reset::ALL) {
-      $this->query_reset = $reset;
-      $this->query_reset_parameter = NULL;
+      $this->reset = $reset;
+      $this->reset_parameter = NULL;
       return new c_base_return_true();
     }
 
@@ -77,16 +75,16 @@ trait t_database_reset {
    *   NULL is returned if not set (reset tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_reset() {
-    if (is_null($this->query_reset)) {
+  public function get_reset() {
+    if (is_null($this->reset)) {
       return new c_base_return_null();
     }
 
-    if (is_int($this->query_reset)) {
-      return c_base_return_int::s_new($this->query_reset);
+    if (is_int($this->reset)) {
+      return c_base_return_int::s_new($this->reset);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -98,16 +96,16 @@ trait t_database_reset {
    *   NULL without error bit reset is returned if not assigned.
    *   NULL with the error bit reset is returned on error.
    */
-  public function get_query_reset_parameter() {
-    if (is_null($this->query_reset_parameter)) {
+  public function get_reset_parameter() {
+    if (is_null($this->reset_parameter)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_reset_parameter)) {
-      return c_base_return_string::s_new($this->query_reset_parameter);
+    if (is_string($this->reset_parameter)) {
+      return c_base_return_string::s_new($this->reset_parameter);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_reset_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'reset_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

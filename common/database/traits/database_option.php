@@ -16,7 +16,7 @@ require_once('common/base/classes/base_return.php');
  * Provide option support for an SQL query.
  */
 trait t_database_option {
-  protected $query_option;
+  protected $option;
 
   /**
    * Assigns this query option.
@@ -29,14 +29,14 @@ trait t_database_option {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_query_option($option) {
+  public function set_option($option) {
     if (is_null($grant)) {
-      $this->query_option = NULL;
+      $this->option = NULL;
       return new c_base_return_true();
     }
 
     if (is_int($option)) {
-      $this->query_option = $option;
+      $this->option = $option;
       return new c_base_return_true();
     }
 
@@ -53,10 +53,10 @@ trait t_database_option {
    *   FALSE with error bit set is returned on error.
    */
   protected function get_option() {
-    if (is_null($this->query_option)) {
+    if (is_null($this->option)) {
       return new c_base_return_null();
     }
 
-    return c_base_return_int::s_new($this->query_option);
+    return c_base_return_int::s_new($this->option);
   }
 }

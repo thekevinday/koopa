@@ -12,7 +12,6 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
-require_once('common/database/enumerations/database_owner_to.php');
 require_once('common/database/enumerations/database_user.php');
 
 require_once('common/database/classes/database_string.php');
@@ -21,8 +20,8 @@ require_once('common/database/classes/database_string.php');
  * Provide sql OWNER TO functionality.
  */
 trait t_database_owner_to {
-  protected $query_owner_to;
-  protected $query_owner_to_user_name;
+  protected $owner_to;
+  protected $owner_to_user_name;
 
   /**
    * Set the OWNER TO settings.
@@ -39,10 +38,10 @@ trait t_database_owner_to {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_query_owner_to($owner_to, $user_name = NULL) {
+  public function set_owner_to($owner_to, $user_name = NULL) {
     if (is_null($owner_to)) {
-      $this->query_owner_to = NULL;
-      $this->query_owner_to_user_name = NULL;
+      $this->owner_to = NULL;
+      $this->owner_to_user_name = NULL;
       return new c_base_return_true();
     }
 
@@ -57,8 +56,8 @@ trait t_database_owner_to {
         return c_base_return_error::s_false($error);
       }
 
-      $this->query_owner_to = $owner_to;
-      $this->query_owner_to_user_name = $user_name;
+      $this->owner_to = $owner_to;
+      $this->owner_to_user_name = $user_name;
       return new c_base_return_true();
     }
 
@@ -67,14 +66,14 @@ trait t_database_owner_to {
       return c_base_return_error::s_false($error);
     }
 
-    $this->query_owner_to = $owner_to;
-    $this->query_owner_to_user_name = NULL;
+    $this->owner_to = $owner_to;
+    $this->owner_to_user_name = NULL;
 
     if ($owner_type == e_database_user::CURRENT) {
-      $this->query_owner_to_user_name = c_database_string::USER_CURRENT;
+      $this->owner_to_user_name = c_database_string::USER_CURRENT;
     }
     else if ($owner_type == e_database_user::SESSION) {
-      $this->query_owner_to_user_name = c_database_string::USER_SESSION;
+      $this->owner_to_user_name = c_database_string::USER_SESSION;
     }
 
     return new c_base_return_true();
@@ -88,16 +87,16 @@ trait t_database_owner_to {
    *   NULL without error bit set is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_owner_to() {
-    if (is_null($this->query_owner_to)) {
+  public function get_owner_to() {
+    if (is_null($this->owner_to)) {
       return new c_base_return_null();
     }
 
-    if (is_int($this->query_owner_to)) {
-      return c_base_return_int::s_new($this->query_owner_to);
+    if (is_int($this->owner_to)) {
+      return c_base_return_int::s_new($this->owner_to);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_owner_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -109,16 +108,16 @@ trait t_database_owner_to {
    *   NULL without error bit set is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_query_owner_to_user_name() {
-    if (is_null($this->query_owner_to_user_name)) {
+  public function get_owner_to_user_name() {
+    if (is_null($this->owner_to_user_name)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->query_owner_to_user_name)) {
-      return c_base_return_string::s_new($this->query_owner_to_user_name);
+    if (is_string($this->owner_to_user_name)) {
+      return c_base_return_string::s_new($this->owner_to_user_name);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query_owner_to_user_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to_user_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 }

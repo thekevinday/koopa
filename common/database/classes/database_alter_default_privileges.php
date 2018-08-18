@@ -43,9 +43,9 @@ class c_database_alter_default_priveleges extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->query_in_schema = NULL;
-    $this->query_action    = NULL;
-    $this->query_option    = NULL;
+    $this->in_schema = NULL;
+    $this->action    = NULL;
+    $this->option    = NULL;
     $this->for_targets     = NULL;
 
     $this->abbreviated  = NULL;
@@ -61,8 +61,8 @@ class c_database_alter_default_priveleges extends c_database_query {
   public function __destruct() {
     parent::__destruct();
 
-    unset($this->query_in_schema);
-    unset($this->query_action);
+    unset($this->in_schema);
+    unset($this->action);
 
     unset($this->abbreviated);
     unset($this->option_grant);
@@ -299,7 +299,7 @@ class c_database_alter_default_priveleges extends c_database_query {
 
     if (is_null($index)) {
       if (is_array($this->role_names)) {
-        return c_bse_return_array::s_new($this->role_names);
+        return c_base_return_array::s_new($this->role_names);
       }
     }
     else {
@@ -432,7 +432,7 @@ class c_database_alter_default_priveleges extends c_database_query {
       return new c_base_return_false();
     }
 
-    switch ($this->query_action) {
+    switch ($this->action) {
         case e_database_action::_GRANT:
         case e_database_action::_REVOKE:
           break;
@@ -456,11 +456,11 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
 
     // [ IN SCHEMA schema_name [, ... ] ]
-    if (is_array($this->query_in_schema) && !empty($this->query_in_schema)) {
+    if (is_array($this->in_schema) && !empty($this->in_schema)) {
       $this->value .= ' ' . c_database_string::IN . ' ' . c_database_string::SCHEMA;
 
       $names = NULL;
-      foreach ($this->query_in_schema as $schema_name) {
+      foreach ($this->in_schema as $schema_name) {
         $names .= ', ' . $schema_name;
       }
 
@@ -468,10 +468,10 @@ class c_database_alter_default_priveleges extends c_database_query {
       unset($names);
     }
 
-    if ($this->query_action === e_database_action::ACTION_GRANT) {
+    if ($this->action === e_database_action::ACTION_GRANT) {
       $this->value .= ' ' . c_database_string::GRANT;
     }
-    else if ($this->query_action === e_database_action::ACTION_REVOKE) {
+    else if ($this->action === e_database_action::ACTION_REVOKE) {
       $this->value .= ' ' . c_database_string::REVOKE;
 
       if ($this->option_grant) {
@@ -545,10 +545,10 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
 
     // [ TO | FROM ] ... role names ...
-    if ($this->query_action === e_database_action::GRANT) {
+    if ($this->action === e_database_action::GRANT) {
       $this->value .= ' ' . c_database_string::TO;
     }
-    else if ($this->query_action === e_database_action::REVOKE) {
+    else if ($this->action === e_database_action::REVOKE) {
       $this->value .= ' ' . c_database_string::FROM;
     }
 
@@ -562,18 +562,18 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
     unset($role_name);
 
-    if ($this->query_action === e_database_action::GRANT) {
+    if ($this->action === e_database_action::GRANT) {
       // [ WITH GRANT OPTION ]
       if ($this->option_grant) {
         $this->value .= ' ' . c_database_string::WITH_GRANT_OPTION;
       }
     }
-    else if ($this->query_action === e_database_action::REVOKE) {
+    else if ($this->action === e_database_action::REVOKE) {
       // [ CASCADE | RESTRICT ]
-      if ($this->query_option === e_database_option::CASCADE) {
+      if ($this->option === e_database_option::CASCADE) {
         $this->value .= ' ' . c_database_string::CASCADE;
       }
-      else if ($this->query_option === e_database_option::RESTRICT) {
+      else if ($this->option === e_database_option::RESTRICT) {
         $this->value .= ' ' . c_database_string::RESTRICT;
       }
     }

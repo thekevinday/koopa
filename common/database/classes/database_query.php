@@ -19,6 +19,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 require_once('common/database/interfaces/database_query.php');
+require_once('common/database/interfaces/database_query_parameter.php');
 
 /**
  * The base class for building and returning a Postgresql query string.
@@ -237,7 +238,7 @@ abstract class c_database_query extends c_base_return_string implements i_databa
  * SQL queries may be passed to other SQL queries, marking them as sub-queries.
  * This will most commonly be added to other expressions.
  */
-class c_database_argument_query extends c_base_return_string implements i_database_argument {
+class c_database_argument_query extends c_base_return_string implements i_database_query_parameter {
   protected $query;
 
   /**
@@ -364,7 +365,7 @@ class c_database_argument_query extends c_base_return_string implements i_databa
 /**
  * Provide an SQL expression argument.
  */
-class c_database_argument_expression extends c_base_return_string implements i_database_argument {
+class c_database_argument_expression extends c_base_return_string implements i_database_query_parameter {
   protected const pr_QUERY_AS = 'as';
 
   protected $expression;
@@ -417,7 +418,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
    * Expression are usually fields but also be other expressions.
    * Expressions may even be SQL queries.
    *
-   * @param i_database_argument|null $expression
+   * @param i_database_query_parameter|null $expression
    *   The expression to assign.
    *   Set to NULL to remove the assigned expression.
    *
@@ -431,7 +432,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
       return new c_base_return_true();
     }
 
-    if ($expression instanceof i_database_argument) {
+    if ($expression instanceof i_database_query_parameter) {
       $this->expression = $expression;
       return new c_base_return_true();
     }
@@ -470,7 +471,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
   /**
    * Get the assigned SQL expression.
    *
-   * @return i_database_argument|null
+   * @return i_database_query_parameter|null
    *   A valid query argument.
    *   NULL is returned if not assigned.
    *   NULL with the error bit set is returned on error.
@@ -480,7 +481,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
       return new c_base_return_null();
     }
 
-    if ($this->expression instanceof i_database_argument) {
+    if ($this->expression instanceof i_database_query_parameter) {
       return clone($this->expression);
     }
 
@@ -673,7 +674,7 @@ class c_database_argument_expression_column extends c_database_argument_expressi
  * This is essentially an aggregate_signature without the wildcard and ORDER BY support.
  * The ORDER BY support can then utilize this base without having its own wildcard and ORDER BY.
  */
-class c_database_argument_aggregate_signature_base extends c_base_return_string implements i_database_argument {
+class c_database_argument_aggregate_signature_base extends c_base_return_string implements i_database_query_parameter {
   public const QUERY_ARGUMENT_MODE_NONE     = 0;
   public const QUERY_ARGUMENT_MODE_IN       = 1;
   public const QUERY_ARGUMENT_MODE_VARIADIC = 2;
@@ -1049,7 +1050,7 @@ class c_database_argument_aggregate_signature extends c_database_argument_aggreg
 /**
  * Provide an SQL argument database option.
  */
-class c_database_argument_database_option extends c_base_return_string implements i_database_argument {
+class c_database_argument_database_option extends c_base_return_string implements i_database_query_parameter {
   protected $argument_allow_connection;
   protected $argument_connection_limit;
   protected $argument_is_template;
@@ -1296,7 +1297,7 @@ class c_database_argument_database_option extends c_base_return_string implement
 /**
  * Provide an SQL role name base structure.
  */
-class c_database_argument_role_name extends c_base_return_string implements i_database_argument {
+class c_database_argument_role_name extends c_base_return_string implements i_database_query_parameter {
   public const QUERY_ARGUMENT_MODE_NONE   = 0;
   public const QUERY_ARGUMENT_MODE_PUBLIC = 1;
   public const QUERY_ARGUMENT_MODE_NAME   = 2;
