@@ -439,35 +439,29 @@ class c_database_alter_default_priveleges extends c_database_query {
           return new c_base_return_false();
     }
 
-    // @fixme: use a local variable and only assign value once at the end after any potential error cases.
-    $this->value = static::pr_QUERY_COMMAND;
-
     // [ FOR ROLE target_role [, ... ] ]
+    $action = NULL;
     if (is_array($this->for_role_targets) && !empty($this->for_role_targets)) {
-      $this->value .= ' ' . c_database_string::FOR . ' ' . c_database_string::ROLE;
-
-      $names = NULL;
-      foreach ($this->for_role_targets as $schema_name) {
-        $names .= ', ' . $schema_name;
-      }
-
-      $this->value .= ltrim($names, ',');
-      unset($names);
+      $action = c_database_string::FOR . ' ' . c_database_string::ROLE;
+      $action .= ' ' . implode(', ', $this->for_role_targets);
     }
 
     // [ IN SCHEMA schema_name [, ... ] ]
     if (is_array($this->in_schema) && !empty($this->in_schema)) {
-      $this->value .= $this->p_do_build_in_schema();
+      $action .= is_null($action) ? '' : ' ';
+      $action .= $this->p_do_build_in_schema();
     }
 
     if ($this->action === e_database_action::ACTION_GRANT) {
-      $this->value .= ' ' . c_database_string::GRANT;
+      $action .= is_null($action) ? '' : ' ';
+      $action .= c_database_string::GRANT;
     }
     else if ($this->action === e_database_action::ACTION_REVOKE) {
-      $this->value .= ' ' . c_database_string::REVOKE;
+      $action .= is_null($action) ? '' : ' ';
+      $action .= c_database_string::REVOKE;
 
       if ($this->option_grant) {
-        $this->value .= ' ' . c_database_string::GRANT_OPTION_FOR;
+        $action .= ' ' . c_database_string::GRANT_OPTION_FOR;
       }
     }
 
@@ -514,34 +508,35 @@ class c_database_alter_default_priveleges extends c_database_query {
       }
     }
 
-    $this->value .= ltrim($privileges, ',');
+    $action .= is_null($action) ? '' : ' ';
+    $action .= ltrim($privileges, ', ');
     unset($privileges);
 
     // ON ...
     switch($this->on) {
       case e_database_on::TABLES_TO:
-        $this->value .= ' ' . c_database_string::ON_TABLES_TO;
+        $action .= ' ' . c_database_string::ON_TABLES_TO;
         break;
       case e_database_on::SEQUENCES:
-        $this->value .= ' ' . c_database_string::ON_SEQUENCES;
+        $action .= ' ' . c_database_string::ON_SEQUENCES;
         break;
       case e_database_on::FUNCTIONS:
-        $this->value .= ' ' . c_database_string::ON_FUNCTIONS;
+        $action .= ' ' . c_database_string::ON_FUNCTIONS;
         break;
       case e_database_on::TYPES:
-        $this->value .= ' ' . c_database_string::ON_TYPES;
+        $action .= ' ' . c_database_string::ON_TYPES;
         break;
       case e_database_on::SCHEMAS:
-        $this->value .= ' ' . c_database_string::ON_SCHEMAS;
+        $action .= ' ' . c_database_string::ON_SCHEMAS;
         break;
     }
 
     // [ TO | FROM ] ... role names ...
     if ($this->action === e_database_action::GRANT) {
-      $this->value .= ' ' . c_database_string::TO;
+      $action .= ' ' . c_database_string::TO;
     }
     else if ($this->action === e_database_action::REVOKE) {
-      $this->value .= ' ' . c_database_string::FROM;
+      $action .= ' ' . c_database_string::FROM;
     }
 
     foreach ($this->role_names as $role_name) {
@@ -550,24 +545,29 @@ class c_database_alter_default_priveleges extends c_database_query {
       }
 
       $role_name->do_build_argument();
-      $this->value .= ' ' . $role_name->get_value_exact();
+      $action .= ' ' . $role_name->get_value_exact();
     }
     unset($role_name);
 
     if ($this->action === e_database_action::GRANT) {
       // [ WITH GRANT OPTION ]
       if ($this->option_grant) {
-        $this->value .= ' ' . c_database_string::WITH_GRANT_OPTION;
+        $action .= ' ' . c_database_string::WITH_GRANT_OPTION;
       }
     }
     else if ($this->action === e_database_action::REVOKE) {
       // [ CASCADE | RESTRICT ]
       $option = $this->p_do_build_option();
       if (is_string($option)) {
-        $this->value .= ' ' . $option;
+        $action .= ' ' . $option;
       }
       unset($option);
     }
+
+    $this->value = static::pr_QUERY_COMMAND;
+    $this->value .= ' ' . $this->name;
+    $this->value .= ' ' . $action;
+    unset($action);
 
     return new c_base_return_true();
   }

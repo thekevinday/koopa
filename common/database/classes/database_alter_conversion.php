@@ -83,23 +83,25 @@ class c_database_alter_conversion extends c_database_query {
       return new c_base_return_false();
     }
 
-    // @fixme: use a local variable for value.
-    $this->value = static::pr_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
-
+    $action = NULL;
     if (is_string($this->rename_to)) {
-      $this->value .= ' ' . $this->p_do_build_rename_to();
+      $action = $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $this->value .= ' ' . $this->p_do_build_owner_to();
+      $action = $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $this->value .= ' ' . $this->p_do_build_set_schema();
+      $action = $this->p_do_build_set_schema();
     }
     else {
-      $this->value = NULL;
+      unset($action);
       return new c_base_return_false();
     }
+
+    $this->value = static::pr_QUERY_COMMAND;
+    $this->value .= ' ' . $this->name;
+    $this->value .= ' ' . $action;
+    unset($action);
 
     return new c_base_return_true();
   }

@@ -136,7 +136,9 @@ class c_database_alter_extension extends c_database_query {
         unset($action);
         return new c_base_return_false();
     }
+    unset($action);
 
+    $this->value = $action;
     return new c_base_return_true();
   }
 }

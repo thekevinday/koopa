@@ -301,10 +301,6 @@ class c_database_alter_aggregate extends c_database_query {
       return new c_base_return_false();
     }
 
-    // @fixme: use a local variable fo value before assigning.
-    $this->value = static::pr_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
-
     $aggregate_signatures = NULL;
     if (!is_array($this->aggregate_modes) || empty($this->aggregate_modes)) {
       $aggregate_signatures = ' *';
@@ -353,22 +349,27 @@ class c_database_alter_aggregate extends c_database_query {
       unset($order_by_signatures);
     }
 
+    $value = NULL;
     if (is_string($this->rename_to)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
+      $action = $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
+      $action = $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
+      $action = $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
     }
     else {
       unset($aggregate_signatures);
-
-      $this->value = NULL;
+      unset($action);
       return new c_base_return_false();
     }
     unset($aggregate_signatures);
+
+    $this->value = static::pr_QUERY_COMMAND;
+    $this->value .= ' ' . $this->name;
+    $this->value .= ' ' . $action;
+    unset($action);
 
     return new c_base_return_true();
   }

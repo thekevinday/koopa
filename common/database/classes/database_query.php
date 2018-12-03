@@ -1449,26 +1449,28 @@ class c_database_argument_role_name extends c_base_return_string implements i_da
       return new c_base_return_false();
     }
 
-    $this->value = '';
+    $value = '';
     if ($this->argument_mode === static::QUERY_ARGUMENT_MODE_PUBLIC) {
-      $this->value .= ' ' . c_database_string::PUBLIC;
+      $value .= ' ' . c_database_string::PUBLIC;
     }
     else if ($this->argument_mode === static::QUERY_ARGUMENT_MODE_NAME) {
       if (is_string($this->argument_name)) {
-        $this->value .= ' ' . $this->argument_name;
+        $value .= ' ' . $this->argument_name;
       }
     }
     else if ($this->argument_mode === static::QUERY_ARGUMENT_MODE_GROUP) {
-      $this->value .= ' ' . c_database_string::GROUP;
+      $value .= ' ' . c_database_string::GROUP;
 
       if (is_string($this->argument_name)) {
-        $this->value .= ' ' . $this->argument_name;
+        $value .= ' ' . $this->argument_name;
       }
     }
     else {
+      unset($value);
       return new c_base_return_false();
     }
 
+    $this->value = $value;
     return new c_base_return_true();
   }
 

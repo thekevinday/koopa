@@ -347,6 +347,7 @@ class c_database_alter_coalation extends c_database_query {
     $this->value = static::pr_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
+    unset($action);
 
     return new c_base_return_true();
   }
