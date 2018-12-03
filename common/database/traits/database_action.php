@@ -64,25 +64,6 @@ trait t_database_action {
 
     return c_base_return_int::s_new($this->action);
   }
-
-  /**
-   * Perform the common build process for this trait.
-   *
-   * As an internal trait method, the caller is expected to perform any appropriate validation.
-   *
-   * @return string|null
-   *   A string is returned on success.
-   *   NULL is returned if there is nothing to process or there is an error.
-   */
-  protected function p_do_build_action() {
-    $value = NULL;
-
-    if (is_string($this->action)) {
-      //$value = c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
-    }
-
-    return $value;
-  }
 }
 
 /**
@@ -133,25 +114,6 @@ trait t_database_action_property {
     }
 
     return c_base_return_int::s_new($this->action_property);
-  }
-
-  /**
-   * Perform the common build process for this trait.
-   *
-   * As an internal trait method, the caller is expected to perform any appropriate validation.
-   *
-   * @return string|null
-   *   A string is returned on success.
-   *   NULL is returned if there is nothing to process or there is an error.
-   */
-  protected function p_do_build_action_property() {
-    $value = NULL;
-
-    if (is_string($this->action_property)) {
-      //$value = c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
-    }
-
-    return $value;
   }
 }
 
