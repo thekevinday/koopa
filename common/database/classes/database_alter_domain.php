@@ -9,7 +9,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_action.php');
-require_once('common/database/enumerations/database_option.php');
+require_once('common/database/enumerations/database_cascade.php');
 
 require_once('common/database/classes/database_query.php');
 
@@ -18,7 +18,6 @@ require_once('common/database/traits/database_owner_to.php');
 require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_set_schema.php');
 require_once('common/database/traits/database_action.php');
-require_once('common/database/traits/database_option.php');
 
 /**
  * The class for building and returning a Postgresql ALTER DOMAIN query string.
@@ -34,47 +33,42 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_set_schema;
   use t_database_action;
   use t_database_action_property;
-  use t_database_option;
 
   protected const pr_QUERY_COMMAND = 'alter domain';
 
   protected $expression;
-  protected $contraint;
+  protected $constraint;
 
   /**
    * Class constructor.
    */
   public function __construct() {
     parent::__construct();
-
+;
+    $this->action          = NULL;
+    $this->action_property = NULL;
     $this->name            = NULL;
     $this->owner_to        = NULL;
     $this->rename_to       = NULL;
-    $this->set_schema      = NULL;
-    $this->action          = NULL;
-    $this->action_property = NULL;
-    $this->option          = NULL;
+    $this->set_schema      = NULL
 
-    $this->expression    = NULL;
-    $this->contraint     = NULL;
-    $this->contraint_new = NULL;
+    $this->expression = NULL;
+    $this->constraint = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->action);
+    unset($this->action_property);
     unset($this->name);
     unset($this->owner_to);
     unset($this->rename_to);
     unset($this->set_schema);
-    unset($this->action);
-    unset($this->action_property);
-    unset($this->option);
 
     unset($this->expression);
-    unset($this->contraint);
-    unset($this->contraint_new);
+    unset($this->constraint);
 
     parent::__destruct();
   }
@@ -134,43 +128,44 @@ class c_database_alter_coalation extends c_database_query {
    * @param string|null $constraint
    *   The constraint string to use.
    *   Set to NULL to disable.
-   * @param string|null $constraint_new
-   *   When the constraint
+   * @param string|null $new_name
+   *   The new constraint name, when applicable.
+   *   Set to NULL to disable.
+   * @param int|null $cascade
+   *   Set eithe CASCADE/RESTRICT, when applicable.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_constraint($constraint, $constraint_new = NULL) {
+  public function set_constraint($constraint, $new_name = NULL, $cascade = NULL) {
     if (is_null($constraint)) {
-      if (is_null($constraint_new)) {
-        $this->constraint = NULL;
-        $this->constraint_new = NULL;
-        return new c_base_return_true();
-      }
-
-      if (is_string($constraint_new)) {
-        $this->constraint = NULL;
-        $this->constraint_new = $constraint_new;
-        return new c_base_return_true();
-      }
-    }
-    else if (is_string($constraint)) {
-      if (is_null($constraint_new)) {
-        $this->constraint = $constraint;
-        $this->constraint_new = NULL;
-        return new c_base_return_true();
-      }
-      else if (is_string($constraint_new)) {
-        $this->constraint = $constraint;
-        $this->constraint_new = $constraint_new;
-        return new c_base_return_true();
-      }
+      $this->constraint = NULL;
+      return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'expression', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-    return c_base_return_error::s_false($error);
+    if (!is_string($constraint)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'constraint', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($new_name) && !is_string($new_name)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'new_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (!is_null($cascade) && $cascade !== e_database_cascade::CASCADE && $cascade !== e_database_cascade::RESTRICT) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'cascade', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    $this->constraint = [
+      'name' => $constraint,
+      'name_new' => $new_name,
+      'cascade' => $cascade,
+    ];
+    return new c_base_return_true();
   }
 
   /**
@@ -202,7 +197,23 @@ class c_database_alter_coalation extends c_database_query {
       return new c_base_return_null();
     }
 
-    return c_base_return_string::s_new($this->constraint);
+    return c_base_return_string::s_new($this->constraint['name']);
+  }
+
+  /**
+   * Get constraint cascade option.
+   *
+   * @return c_base_return_int|c_base_return_null
+   *   An integer representing the constraint cascade option.
+   *   NULL is returned if undefined.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function get_constraint_cascade() {
+    if (is_null($this->constraint) || is_null($this->constraint['cascade'])) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->constraint['cascade']);
   }
 
   /**
@@ -215,12 +226,12 @@ class c_database_alter_coalation extends c_database_query {
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
-  public function get_constraint_new() {
-    if (is_null($this->constraint_new)) {
+  public function get_constraint_new_name() {
+    if (is_null($this->constraint) || is_null($this->constraint['name_new'])) {
       return new c_base_return_null();
     }
 
-    return c_base_return_string::s_new($this->constraint_new);
+    return c_base_return_string::s_new($this->constraint['name_new']);
   }
 
   /**
@@ -234,13 +245,13 @@ class c_database_alter_coalation extends c_database_query {
     $action = NULL;
     switch ($this->action) {
         case e_database_action::ADD:
-          if (!is_string($this->constraint)) {
+          if (!is_array($this->constraint)) {
             unset($action);
             return new c_base_return_false();
           }
 
           $action = c_database_string::ADD;
-          $action .= ' ' . $this->constraint;
+          $action .= ' ' . $this->constraint['name'];
 
           if ($this->property === e_database_property::NOT_VALID) {
             $action .= ' ' . c_database_string::NOT_VALID;
@@ -255,7 +266,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::DROP_CONSTRAINT:
-          if (!is_string($this->constraint)) {
+          if (!is_array($this->constraint['name'])) {
             unset($action);
             return new c_base_return_false();
           }
@@ -265,13 +276,14 @@ class c_database_alter_coalation extends c_database_query {
             $action .= ' ' . c_database_string::IF_EXISTS;
           }
 
-          $action .= ' ' . $this->constraint;
+          $action .= ' ' . $this->constraint['name'];
 
-          $option = $this->p_do_build_option();
-          if (is_string($option)) {
-            $action .= ' ' . $option;
+          if ($this->constraint['cascade'] === e_database_cascade::CASCADE) {
+            $action .= ' ' . c_database_string::CASCADE;
           }
-          unset($option);
+          else if ($this->constraint['cascade'] === e_database_cascade::RESTRICT) {
+            $action .= ' ' . c_database_string::RESTRICT;
+          }
           break;
 
         case e_database_action::DROP_DEFAULT:
@@ -288,12 +300,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::RENAME_CONSTRAINT:
-          if (!is_string($this->constraint) || !is_string($this->constraint_new)) {
+          if (!is_string($this->constraint['name']) || !is_string($this->constraint['name_new'])) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint . ' ' . c_database_string::TO . ' ' . $this->constraint_new;
+          $action = c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
           break;
 
         case e_database_action::RENAME_TO:
@@ -331,12 +343,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::VALIDATE_CONSTRAINT:
-          if (!is_string($this->constraint)) {
+          if (!is_array($this->constraint)) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::VALIDATE_CONSTRAINT . ' ' . $this->constraint;
+          $action = c_database_string::VALIDATE_CONSTRAINT . ' ' . $this->constraint['name'];
           break;
 
         default:

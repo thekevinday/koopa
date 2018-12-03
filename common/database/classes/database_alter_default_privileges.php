@@ -9,15 +9,16 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_action.php');
+require_once('common/database/enumerations/database_cascade.php');
 require_once('common/database/enumerations/database_on.php');
-require_once('common/database/enumerations/database_option.php');
 require_once('common/database/enumerations/database_privilege.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/enumerations/database_cascade.php');
+
 require_once('common/database/traits/database_in_schema.php');
 require_once('common/database/traits/database_action.php');
-require_once('common/database/traits/database_option.php');
 
 /**
  * The class for building and returning a Postgresql ALTER DEFAULT PRIVILEGES query string.
@@ -27,11 +28,11 @@ require_once('common/database/traits/database_option.php');
 class c_database_alter_default_priveleges extends c_database_query {
   use t_database_in_schema;
   use t_database_action;
-  use t_database_option;
 
   protected const pr_QUERY_COMMAND = 'alter default privileges';
 
   protected $abbreviated;
+  protected $cascade;
   protected $option_grant;
   protected $on;
   protected $privileges;
@@ -43,11 +44,11 @@ class c_database_alter_default_priveleges extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->in_schema = NULL;
     $this->action    = NULL;
-    $this->option    = NULL;
+    $this->in_schema = NULL;
 
     $this->abbreviated  = NULL;
+    $this->cascade      = NULL;
     $this->option_grant = NULL;
     $this->on           = NULL;
     $this->privileges   = NULL;
@@ -60,10 +61,11 @@ class c_database_alter_default_priveleges extends c_database_query {
   public function __destruct() {
     parent::__destruct();
 
-    unset($this->in_schema);
     unset($this->action);
+    unset($this->in_schema);
 
     unset($this->abbreviated);
+    unset($this->cascade);
     unset($this->option_grant);
     unset($this->privileges);
     unset($this->role_names);
@@ -88,6 +90,36 @@ class c_database_alter_default_priveleges extends c_database_query {
    */
   public static function s_value_exact($return) {
     return self::p_s_value_exact($return, __CLASS__, '');
+  }
+
+  /**
+   * Assigns the SQL CASCADE/RESTRICT option.
+   *
+   * @param int|null $cascade
+   *   Whether or not to use CASCADE/RESTRICT in the query.
+   *   Set to NULL to disable.
+   *
+   * @return c_base_return_status
+   *   TRUE on success, FALSE otherwise.
+   *   FALSE with error bit set is returned on error.
+   */
+  public function set_cascade($cascade) {
+    if (is_null($cascade)) {
+      $this->cascade = NULL;
+      return new c_base_return_true();
+    }
+
+    switch ($cascade) {
+      case e_database_cascade::CASCADE:
+      case e_database_cascade::RESTRICT:
+        $this->cascade = $cascade;
+        return new c_base_return_true();
+      default:
+        break;
+    }
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'cascade', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    return c_base_return_error::s_false($error);
   }
 
   /**
@@ -373,6 +405,22 @@ class c_database_alter_default_priveleges extends c_database_query {
   }
 
   /**
+   * Get the CASCADE/RESTRICT operation status.
+   *
+   * @return c_base_return_int|c_base_return_null
+   *   Integer representing the on operation is returned on success.
+   *   NULL is returned if undefined.
+   *   FALSE with error bit set is returned on error.
+   */
+  protected function get_cascade() {
+    if (is_null($this->cascade)) {
+      return new c_base_return_null();
+    }
+
+    return c_base_return_int::s_new($this->cascade);
+  }
+
+  /**
    * Get the ON operation status.
    *
    * @return c_base_return_int|c_base_return_null
@@ -407,11 +455,11 @@ class c_database_alter_default_priveleges extends c_database_query {
 
     if (is_null($index)) {
       if (is_array($this->privileges)) {
-        return c_base_return_array::s_new($this->aggregate_signatures);
+        return c_base_return_array::s_new($this->privileges);
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->aggregate_signatures) && $this->aggregate_signatures[$index] instanceof c_database_argument_aggregate_signature) {
+      if (is_int($index) && array_key_exists($index, $this->privileges) && $this->privileges[$index] instanceof c_database_argument_aggregate_signature) {
         return clone($this->privileges[$index]);
       }
 
@@ -557,11 +605,12 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
     else if ($this->action === e_database_action::REVOKE) {
       // [ CASCADE | RESTRICT ]
-      $option = $this->p_do_build_option();
-      if (is_string($option)) {
-        $action .= ' ' . $option;
+      if ($this->cascade === e_database_option::CASCADE) {
+        $value .= ' ' . c_database_string::CASCADE;
       }
-      unset($option);
+      else if ($this->cascade === e_database_option::RESTRICT) {
+        $value .= ' ' . c_database_string::RESTRICT;
+      }
     }
 
     $this->value = static::pr_QUERY_COMMAND;
