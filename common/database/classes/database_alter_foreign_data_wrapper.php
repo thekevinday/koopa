@@ -25,8 +25,6 @@ require_once('common/database/traits/database_validator.php');
  */
 class c_database_alter_foreign_data_wrapper extends c_database_query {
   use t_database_action;
-  use t_database_action_property;
-  use t_database_action_parameter;
   use t_database_handler;
   use t_database_name;
   use t_database_options;
@@ -43,15 +41,13 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->action           = NULL;
-    $this->action_property  = NULL;
-    $this->action_parameter = NULL;
-    $this->handler          = NULL;
-    $this->name             = NULL;
-    $this->options          = NULL;
-    $this->owner_to         = NULL;
-    $this->rename_to        = NULL;
-    $this->validator        = NULL;
+    $this->action    = NULL;
+    $this->handler   = NULL;
+    $this->name      = NULL;
+    $this->options   = NULL;
+    $this->owner_to  = NULL;
+    $this->rename_to = NULL;
+    $this->validator = NULL;
   }
 
   /**
@@ -59,8 +55,6 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
    */
   public function __destruct() {
     unset($this->action);
-    unset($this->action_property);
-    unset($this->action_parameter);
     unset($this->handler);
     unset($this->name);
     unset($this->options);

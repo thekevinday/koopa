@@ -32,7 +32,6 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_rename_to;
   use t_database_set_schema;
   use t_database_action;
-  use t_database_action_property;
 
   protected const pr_QUERY_COMMAND = 'alter domain';
 
@@ -45,12 +44,11 @@ class c_database_alter_coalation extends c_database_query {
   public function __construct() {
     parent::__construct();
 ;
-    $this->action          = NULL;
-    $this->action_property = NULL;
-    $this->name            = NULL;
-    $this->owner_to        = NULL;
-    $this->rename_to       = NULL;
-    $this->set_schema      = NULL
+    $this->action     = NULL;
+    $this->name       = NULL;
+    $this->owner_to   = NULL;
+    $this->rename_to  = NULL;
+    $this->set_schema = NULL
 
     $this->expression = NULL;
     $this->constraint = NULL;
@@ -61,7 +59,6 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __destruct() {
     unset($this->action);
-    unset($this->action_property);
     unset($this->name);
     unset($this->owner_to);
     unset($this->rename_to);

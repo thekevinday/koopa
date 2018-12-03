@@ -23,8 +23,6 @@ require_once('common/database/traits/database_rename_to.php');
 class c_database_alter_foreign_table extends c_database_query {
   protected const pr_QUERY_COMMAND = 'alter foreign table';
   use t_database_action;
-  use t_database_action_property;
-  use t_database_action_parameter;
   use t_database_name;
   use t_database_rename_column_to;
   use t_database_rename_to;
@@ -63,8 +61,6 @@ class c_database_alter_foreign_table extends c_database_query {
     parent::__construct();
 
     $this->action           = NULL;
-    $this->action_property  = NULL;
-    $this->action_parameter = NULL;
     $this->name             = NULL;
     $this->rename_column_to = NULL;
     $this->rename_to        = NULL;
@@ -81,8 +77,6 @@ class c_database_alter_foreign_table extends c_database_query {
     parent::__destruct();
 
     unset($this->action);
-    unset($this->action_property);
-    unset($this->action_parameter);
     unset($this->name);
     unset($this->rename_column_to);
     unset($this->rename_to);
