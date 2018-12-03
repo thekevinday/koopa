@@ -78,6 +78,6 @@ trait t_database_group_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_group_by() {
-    //return c_database_string::GROUP_BY . ' (' . $this->group_by . ')';
+    return c_database_string::GROUP_BY . $this->group_by;
   }
 }

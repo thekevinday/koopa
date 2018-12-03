@@ -45,11 +45,13 @@ class c_database_string {
   public const HANDLER                    = 'handler';
   public const IF_EXISTS                  = 'if exists';
   public const IN                         = 'in';
+  public const INHERIT                    = 'inherit';
   public const INSERT                     = 'insert';
   public const IS_TEMPLATE                = 'is_template';
   public const LANGUAGE                   = 'language';
   public const MATERIALIZED_VIEW          = 'materialized view';
   public const NO_HANDLER                 = 'no handler';
+  public const NO_INHERIT                 = 'no inherit';
   public const NO_VALIDATOR               = 'no validator';
   public const NOT_NULL                   = 'not null';
   public const NOT_VALID                  = 'not valid';
@@ -84,6 +86,8 @@ class c_database_string {
   public const SET_DEFAULT                = 'set default';
   public const SET_SCHEMA                 = 'set schema';
   public const SET_TABLESPACE             = 'set tablespace';
+  public const SET_WITH_OIDS              = 'set with oids';
+  public const SET_WITHOUT_OIDS           = 'set without oids';
   public const TABLE                      = 'table';
   public const TEXT_SEARCH_CONFIGURATION  = 'text search configuration';
   public const TEXT_SEARCH_DICTIONARY     = 'text search dictionary';
