@@ -44,16 +44,14 @@ class c_database_alter_database extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->name            = NULL;
-    $this->rename_to       = NULL;
-    $this->owner_to        = NULL;
-    $this->set             = NULL;
-    $this->set_tablespace  = NULL;
-    $this->set_parameter   = NULL;
-    $this->set_value       = NULL;
-    $this->reset           = NULL;
-    $this->reset_parameter = NULL;
+    $this->name           = NULL;
+    $this->rename_to      = NULL;
+    $this->owner_to       = NULL;
+    $this->set            = NULL;
+    $this->set_tablespace = NULL;
+    $this->reset          = NULL;
 
+    // TODO: it may be better (and more consistent) to convert option into a trait, just like all of the others.
     $this->option = NULL;
   }
 
@@ -66,10 +64,7 @@ class c_database_alter_database extends c_database_query {
     unset($this->owner_to);
     unset($this->set);
     unset($this->set_tablespace);
-    unset($this->set_parameter);
-    unset($this->set_value);
     unset($this->reset);
-    unset($this->reset_parameter);
 
     unset($this->option);
 
@@ -160,46 +155,19 @@ class c_database_alter_database extends c_database_query {
       $this->value .= ' ' . $this->option->get_value_exact();
     }
     else if (is_string($this->rename_to)) {
-      $this->value .= ' ' . c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
+      $this->value .= ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to_user_name)) {
-      $this->value .= ' ' . c_database_string::OWNER_TO . ' (' . $this->owner_to_user_name . ')';
+    else if (is_string($this->owner_to)) {
+      $this->value .= ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_tablespace)) {
-      $this->value .= ' ' . c_database_string::SET_TABLESPACE . ' (' . $this->set_tablespace . ')';
+      $this->value .= ' ' . $this->p_do_build_set_tablespace();
     }
-    else if (is_int($this->set)) {
-      if ($this->set === e_database_set::TO) {
-        if (is_null($this->set_parameter)) {
-          $this->value .= ' ' . c_database_string::SET . ' ' . $this->set_parameter . ' ' . c_database_string::TO . ' ' . c_database_string::DEFAULT;
-        }
-        else if (is_string($this->set_parameter) && is_string($this->set_value)) {
-          $this->value .= ' ' . c_database_string::SET . ' ' . $this->set_parameter . ' ' . c_database_string::TO . ' ' . $this->set_value;
-        }
-      }
-      else if ($this->set === e_database_set::EQUAL) {
-        if (is_null($this->set_parameter)) {
-          $this->value .= ' ' . c_database_string::SET . ' ' . $this->set_parameter . ' = ' . c_database_string::DEFAULT;
-        }
-        else if (is_string($this->set_parameter) && is_string($this->set_value)) {
-          $this->value .= ' ' . c_database_string::SET . ' ' . $this->set_parameter . ' = ' . $this->set_value;
-        }
-      }
-      else if ($this->set == e_database_set::FROM_CURRENT) {
-        if (is_string($this->set_parameter)) {
-          $this->value .= ' ' . c_database_string::SET . ' ' . $this->set_parameter . ' = ' . c_database_string::FROM_CURRENT;
-        }
-      }
+    else if (is_array($this->set)) {
+        $this->value .= ' ' . $this->p_do_build_set();
     }
-    else if (is_string($this->reset)) {
-      if ($this->set === e_database_reset::PARAMETER) {
-        if (is_string($this->set_parameter)) {
-          $this->value .= ' ' . c_database_string::RESET . ' ' . $this->set_parameter;
-        }
-      }
-      else if ($this->set === e_database_reset::ALL) {
-        $this->value .= ' ' . c_database_string::RESET . ' ' . c_database_string::ALL;
-      }
+    else if (is_array($this->reset)) {
+      $this->value .= ' ' . $this->p_do_build_reset();
     }
 
     return new c_base_return_true();

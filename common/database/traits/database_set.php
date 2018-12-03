@@ -14,13 +14,13 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_set.php');
 
+require_once('common/database/classes/database_string.php');
+
 /**
  * Provide the sql SET functionality.
  */
 trait t_database_set {
   protected $set;
-  protected $set_parameter;
-  protected $set_value;
 
   /**
    * Set the SET settings.
@@ -43,8 +43,6 @@ trait t_database_set {
   public function set_set($set, $parameter = NULL, $value = NULL) {
     if (is_null($set)) {
       $this->set = NULL;
-      $this->set_parameter = NULL;
-      $this->set_value = NULL;
       return new c_base_return_true();
     }
 
@@ -64,15 +62,20 @@ trait t_database_set {
         return c_base_return_error::s_false($error);
       }
 
-      $this->set = $set;
-      $this->set_parameter = $parameter;
-      $this->set_value = $value;
+      $this->set = [
+        'type' => $set,
+        'parameter' => $parameter,
+        'value' => $value,
+      ];
+
       return new c_base_return_true();
     }
     else if ($set == e_database_set::FROM_CURRENT) {
-      $this->set = $set;
-      $this->set_parameter = NULL;
-      $this->set_value = NULL;
+      $this->set = [
+        'type' => $set,
+        'parameter' => NULL,
+        'value' => NULL,
+      ];
       return new c_base_return_true();
     }
 
@@ -92,8 +95,8 @@ trait t_database_set {
       return new c_base_return_null();
     }
 
-    if (is_int($this->set)) {
-      return c_base_return_int::s_new($this->set);
+    if (is_int($this->set['type'])) {
+      return c_base_return_int::s_new($this->set['type']);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -109,12 +112,12 @@ trait t_database_set {
    *   NULL with the error bit set is returned on error.
    */
   public function get_set_parameter() {
-    if (is_null($this->set_parameter)) {
+    if (is_null($this->set) || is_null($this->set['parameter'])) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->set_parameter)) {
-      return c_base_return_string::s_new($this->set_parameter);
+    if (is_string($this->set['parameter'])) {
+      return c_base_return_string::s_new($this->set['parameter']);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -130,15 +133,52 @@ trait t_database_set {
    *   NULL with the error bit set is returned on error.
    */
   public function get_set_value() {
-    if (is_null($this->set_value)) {
+    if (is_null($this->set) || is_null($this->set['value'])) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->set_value)) {
-      return c_base_return_string::s_new($this->set_value);
+    if (is_string($this->set['value'])) {
+      return c_base_return_string::s_new($this->set['value']);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
+  }
+
+  /**
+   * Perform the common build process for this trait.
+   *
+   * As an internal trait method, the caller is expected to perform any appropriate validation.
+   *
+   * @return string|null
+   *   A string is returned on success.
+   *   NULL is returned if there is nothing to process or there is an error.
+   */
+  protected function p_do_build_set() {
+    $value = NULL;
+
+    if ($this->set['type'] === e_database_set::TO) {
+      if (is_null($this->set['parameter'])) {
+        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ' . c_database_string::DEFAULT;
+      }
+      else if (is_string($this->set['parameter']) && is_string($this->set['value'])) {
+        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ' . $this->set['value'];
+      }
+    }
+    else if ($this->set['type'] === e_database_set::EQUAL) {
+      if (is_null($this->set['parameter'])) {
+        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::DEFAULT;
+      }
+      else if (is_string($this->set['parameter']) && is_string($this->set['value'])) {
+        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . $this->set['value'];
+      }
+    }
+    else if ($this->set['type'] == e_database_set::FROM_CURRENT) {
+      if (is_string($this->set['parameter'])) {
+        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
+      }
+    }
+
+    return $value;
   }
 }

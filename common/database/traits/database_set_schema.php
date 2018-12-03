@@ -61,4 +61,17 @@ trait t_database_set_schema {
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_schema', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
+
+  /**
+   * Perform the common build process for this trait.
+   *
+   * As an internal trait method, the caller is expected to perform any appropriate validation.
+   *
+   * @return string|null
+   *   A string is returned on success.
+   *   NULL is returned if there is nothing to process or there is an error.
+   */
+  protected function p_do_build_set_schema() {
+    return c_database_string::SET_SCHEMA . ' ' . $this->set_schema;
+  }
 }

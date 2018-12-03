@@ -30,6 +30,7 @@ class c_database_alter_aggregate extends c_database_query {
 
   protected const pr_QUERY_COMMAND = 'alter aggregate';
 
+  // @todo: move these into their own traits.
   protected $aggregate_signatures;
   protected $order_by_signatures;
 
@@ -211,6 +212,29 @@ class c_database_alter_aggregate extends c_database_query {
   }
 
   /**
+   * Get the total aggregate signatures.
+   *
+   * @return c_base_return_int
+   *   The total number of aggregate signatures.
+   *   0 with the error bit set is returned on error.
+   */
+  public function get_aggregate_signature_count($index = NULL) {
+    if (is_null($this->aggregate_signatures)) {
+      return new c_base_return_null();
+    }
+
+    if (is_null($index)) {
+      return new c_base_return_int(0);
+    }
+    else if (is_array($this->aggregate_signatures)) {
+      return new c_base_return_int(count($this->aggregate_signatures));
+    }
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'aggregate_signatures', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    return c_base_return_error::s_value(0, 'c_base_return_int', $error);
+  }
+
+  /**
    * Get the order by aggregate signatures.
    *
    * @param int|null $index
@@ -246,6 +270,29 @@ class c_database_alter_aggregate extends c_database_query {
   }
 
   /**
+   * Get the total order by signatures.
+   *
+   * @return c_base_return_int
+   *   The total number of aggregate signatures.
+   *   0 with the error bit set is returned on error.
+   */
+  public function get_order_by_signature_count($index = NULL) {
+    if (is_null($this->order_by_signatures)) {
+      return new c_base_return_null();
+    }
+
+    if (is_null($index)) {
+      return new c_base_return_int(0);
+    }
+    else if (is_array($this->aggregate_signatures)) {
+      return new c_base_return_int(count($this->aggregate_signatures));
+    }
+
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'aggregate_signatures', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    return c_base_return_error::s_value(0, 'c_base_return_int', $error);
+  }
+
+  /**
    * Implements do_build().
    */
   public function do_build() {
@@ -254,6 +301,7 @@ class c_database_alter_aggregate extends c_database_query {
       return new c_base_return_false();
     }
 
+    // @fixme: use a local variable fo value before assigning.
     $this->value = static::pr_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
 
@@ -306,13 +354,13 @@ class c_database_alter_aggregate extends c_database_query {
     }
 
     if (is_string($this->rename_to)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
+      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to_user_name)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . c_database_string::OWNER_TO . ' (' . $this->owner_to_user_name . ')';
+    else if (is_string($this->owner_to)) {
+      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $this->value .= ' ' . $aggregate_signatures . ' ' . c_database_string::SET_SCHEMA . ' (' . $this->set_schema . ')';
+      $this->value .= ' ' . $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
     }
     else {
       unset($aggregate_signatures);

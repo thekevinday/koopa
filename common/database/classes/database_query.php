@@ -210,7 +210,7 @@ abstract class c_database_query extends c_base_return_string implements i_databa
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_value(0, 'c_bae_return_int', $error);
+    return c_base_return_error::s_value(0, 'c_base_return_int', $error);
   }
 
   /**

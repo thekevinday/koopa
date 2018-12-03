@@ -21,7 +21,6 @@ require_once('common/database/classes/database_string.php');
  */
 trait t_database_owner_to {
   protected $owner_to;
-  protected $owner_to_user_name;
 
   /**
    * Set the OWNER TO settings.
@@ -41,7 +40,6 @@ trait t_database_owner_to {
   public function set_owner_to($owner_to, $user_name = NULL) {
     if (is_null($owner_to)) {
       $this->owner_to = NULL;
-      $this->owner_to_user_name = NULL;
       return new c_base_return_true();
     }
 
@@ -56,8 +54,11 @@ trait t_database_owner_to {
         return c_base_return_error::s_false($error);
       }
 
-      $this->owner_to = $owner_to;
-      $this->owner_to_user_name = $user_name;
+      $this->owner_to = [
+        'type' => $owner_to,
+        'value' => $user_name,
+      ];
+
       return new c_base_return_true();
     }
 
@@ -66,14 +67,16 @@ trait t_database_owner_to {
       return c_base_return_error::s_false($error);
     }
 
-    $this->owner_to = $owner_to;
-    $this->owner_to_user_name = NULL;
+    $this->owner_to = [
+      'type' => $owner_to,
+      'value' => NULL,
+    ];
 
     if ($owner_type == e_database_user::CURRENT) {
-      $this->owner_to_user_name = c_database_string::USER_CURRENT;
+      $this->owner_to['value'] = c_database_string::USER_CURRENT;
     }
     else if ($owner_type == e_database_user::SESSION) {
-      $this->owner_to_user_name = c_database_string::USER_SESSION;
+      $this->owner_to['value'] = c_database_string::USER_SESSION;
     }
 
     return new c_base_return_true();
@@ -92,11 +95,11 @@ trait t_database_owner_to {
       return new c_base_return_null();
     }
 
-    if (is_int($this->owner_to)) {
-      return c_base_return_int::s_new($this->owner_to);
+    if (is_int($this->owner_to['type'])) {
+      return c_base_return_int::s_new($this->owner_to['type']);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to[type]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -109,15 +112,28 @@ trait t_database_owner_to {
    *   NULL with the error bit set is returned on error.
    */
   public function get_owner_to_user_name() {
-    if (is_null($this->owner_to_user_name)) {
+    if (is_null($this->owner_to)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->owner_to_user_name)) {
-      return c_base_return_string::s_new($this->owner_to_user_name);
+    if (is_string($this->owner_to['value'])) {
+      return c_base_return_string::s_new($this->owner_to['value']);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to_user_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to[value]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
+  }
+
+  /**
+   * Perform the common build process for this trait.
+   *
+   * As an internal trait method, the caller is expected to perform any appropriate validation.
+   *
+   * @return string|null
+   *   A string is returned on success.
+   *   NULL is returned if there is nothing to process or there is an error.
+   */
+  protected function p_do_build_owner_to() {
+    return c_database_string::OWNER_TO . ' ' . $this->owner_to['value'];
   }
 }

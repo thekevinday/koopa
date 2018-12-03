@@ -1,0 +1,11 @@
+Bugfix: many functions are claiming to return false with error bit set, but are only returning false (no error bit set).
+Investigate: c_base_defaults_global class function s_get_languages_class() is calling get_class() on $this->s_language instead of self::s_language. which is most/more correct?
+
+I have had too much start and stop when writing the postgesql database sql generation classes.
+It looks like I swapped between a few different ways of design.
+To keep progress going, I am just going to continue writing this and plan on returning.
+I need to decided on an approach, implement it fully, and then switch to it.
+One of the problems that I need to review is how I am going to handle argument placeholders:
+1) do it simple and always support passing a string (are the values maintained or are they passed separately?)
+2) use a custom class for representing a parameter (could also store the value).
+3) attempt to automate the process such that parameters are handled internally.

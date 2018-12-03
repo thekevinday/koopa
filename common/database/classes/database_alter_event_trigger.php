@@ -20,11 +20,12 @@ require_once('common/database/traits/database_rename_to.php');
  *
  * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-altereventtrigger.html
  */
 class c_database_alter_coalation extends c_database_query {
   use t_database_action;
   use t_database_action_property;
+  use t_database_action_parameter;
   use t_database_name;
   use t_database_owner_to;
   use t_database_rename_to;
@@ -38,22 +39,24 @@ class c_database_alter_coalation extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->query_action          = NULL;
-    $this->query_action_property = NULL;
-    $this->query_name            = NULL;
-    $this->query_owner_to        = NULL;
-    $this->query_rename_to       = NULL;
+    $this->action           = NULL;
+    $this->action_property  = NULL;
+    $this->action_parameter = NULL;
+    $this->name             = NULL;
+    $this->owner_to         = NULL;
+    $this->rename_to        = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->query_action);
-    unset($this->query_action_property);
-    unset($this->query_name);
-    unset($this->query_owner_to);
-    unset($this->query_rename_to);
+    unset($this->action);
+    unset($this->action_property);
+    unset($this->action_parameter);
+    unset($this->name);
+    unset($this->owner_to);
+    unset($this->rename_to);
 
     parent::__destruct();
   }
@@ -83,9 +86,54 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = NULL;
+    if (is_null($this->name)) {
+      return new c_base_return_false();
+    }
 
-    // @todo
+    $action = NULL;
+    switch($this->action) {
+      case e_database_action::DISABLE:
+        $this->action = c_database_string::DISABLE;
+        break;
+      case e_database_action::ENABLE:
+        $action = c_database_string::ENABLE;
+        if ($this->action_property === e_database_property::REPLICA) {
+          $action .= ' ' . c_database_string::REPLICA;
+        }
+        else if ($this->action_property === e_database_property::ALWAYS) {
+          $action .= ' ' . c_database_string::ALWAYS;
+        }
+        else {
+          unset($action);
+          return new c_base_return_false();
+        }
+        break;
+      case e_database_action::OWNER_TO:
+        if (is_string($this->owner_to)) {
+          $action = $this->p_do_build_owner_to();
+        }
+        else {
+          unset($action);
+          return new c_base_return_false();
+        }
+        break;
+      case e_database_action::RENAME_TO:
+        if (is_string($this->rename_to)) {
+          $action = $this->p_do_build_rename_to();
+        }
+        else {
+          unset($action);
+          return new c_base_return_false();
+        }
+        break;
+      default:
+        unset($action);
+        return new c_base_return_false();
+    }
+
+    $this->value = static::pr_QUERY_COMMAND;
+    $this->value .= ' ' . $action;
+    unset($action);
 
     return new c_base_return_true();
   }

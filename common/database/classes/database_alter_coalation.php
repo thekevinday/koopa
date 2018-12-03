@@ -133,6 +133,7 @@ class c_database_alter_coalation extends c_database_query {
       return new c_base_return_false();
     }
 
+    // @fixme: use a local variable for value before returning.
     $this->value = static::pr_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
 
@@ -142,13 +143,13 @@ class c_database_alter_coalation extends c_database_query {
       }
     }
     else if (is_string($this->rename_to)) {
-      $this->value .= ' ' . $this->pr_QUERY_RENAME_TO . ' (' . $this->rename_to . ')';
+      $this->value .= ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to_user_name)) {
-      $this->value .= ' ' . $this->pr_QUERY_OWNER_TO . ' (' . $this->owner_to_user_name . ')';
+    else if (is_string($this->owner_to)) {
+      $this->value .= ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $this->value .= ' ' . $this->pr_QUERY_SET_SCHEMA . ' (' . $this->set_schema . ')';
+      $this->value .= ' ' . $this->p_do_build_set_schema();
     }
     else {
       $this->value = NULL;

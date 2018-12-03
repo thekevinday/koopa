@@ -12,8 +12,11 @@ namespace n_koopa;
  */
 class e_database_property {
   public const NONE      = 0;
-  public const ALWAYS    = 1;
-  public const IF_EXISTS = 2;
-  public const NOT_VALID = 3;
-  public const REPLICA   = 4;
+  public const ADD       = 1;
+  public const ALWAYS    = 2;
+  public const DROP      = 3;
+  public const IF_EXISTS = 4;
+  public const NOT_VALID = 5;
+  public const REPLICA   = 6;
+  public const SET       = 7;
 }

@@ -12,6 +12,8 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
+require_once('common/database/classes/database_string.php');
+
 /**
  * Provide option support for an SQL query.
  */
@@ -22,7 +24,7 @@ trait t_database_option {
    * Assigns this query option.
    *
    * @param int|null $option
-   *   Whether or not to use a query option, such as .
+   *   Whether or not to use a query option, such as CASCADE.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
@@ -30,7 +32,7 @@ trait t_database_option {
    *   FALSE with error bit set is returned on error.
    */
   public function set_option($option) {
-    if (is_null($grant)) {
+    if (is_null($option)) {
       $this->option = NULL;
       return new c_base_return_true();
     }
@@ -58,5 +60,27 @@ trait t_database_option {
     }
 
     return c_base_return_int::s_new($this->option);
+  }
+
+  /**
+   * Perform the common build process for this trait.
+   *
+   * As an internal trait method, the caller is expected to perform any appropriate validation.
+   *
+   * @return string|null
+   *   A string is returned on success.
+   *   NULL is returned if there is nothing to process or there is an error.
+   */
+  protected function p_do_build_option() {
+    $value = NULL;
+
+    if ($this->option === e_database_option::CASCADE) {
+      $value = c_database_string::CASCADE;
+    }
+    else if ($this->option === e_database_option::RESTRICT) {
+      $value = c_database_string::RESTRICT;
+    }
+
+    return $value;
   }
 }

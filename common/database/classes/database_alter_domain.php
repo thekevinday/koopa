@@ -25,7 +25,7 @@ require_once('common/database/traits/database_option.php');
  *
  * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-alterdomain.html
  */
 class c_database_alter_coalation extends c_database_query {
   use t_database_name;
@@ -267,12 +267,11 @@ class c_database_alter_coalation extends c_database_query {
 
           $action .= ' ' . $this->constraint;
 
-          if ($this->option === e_database_option::RESTRICT) {
-            $action .= ' ' . c_database_string::RESTRICT;
+          $option = $this->p_do_build_option();
+          if (is_string($option)) {
+            $action .= ' ' . $option;
           }
-          else if ($this->option === e_database_option::CASCADE) {
-            $action .= ' ' . c_database_string::CASCADE;
-          }
+          unset($option);
           break;
 
         case e_database_action::DROP_DEFAULT:
@@ -280,12 +279,12 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::OWNER_TO:
-          if (!is_string($this->owner_to_user_name)) {
+          if (!is_string($this->owner_to)) {
             unset($action);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::OWNER_TO . ' (' . $this->owner_to_user_name . ')';
+          $action = $this->p_do_build_owner_to();
           break;
 
         case e_database_action::RENAME_CONSTRAINT:
@@ -303,7 +302,7 @@ class c_database_alter_coalation extends c_database_query {
             return new c_base_return_false();
           }
 
-          $action = c_database_string::RENAME_TO . ' (' . $this->rename_to . ')';
+          $action = $this->p_do_build_rename_to();
           break;
 
         case e_database_action::SET:
@@ -328,7 +327,7 @@ class c_database_alter_coalation extends c_database_query {
             return new c_base_return_false();
           }
 
-          $action = ' ' . c_database_string::SET_SCHEMA . ' (' . $this->set_schema . ')';
+          $action = $this->p_do_build_set_schema();
           break;
 
         case e_database_action::VALIDATE_CONSTRAINT:

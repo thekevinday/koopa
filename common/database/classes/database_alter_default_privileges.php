@@ -46,7 +46,6 @@ class c_database_alter_default_priveleges extends c_database_query {
     $this->in_schema = NULL;
     $this->action    = NULL;
     $this->option    = NULL;
-    $this->for_targets     = NULL;
 
     $this->abbreviated  = NULL;
     $this->option_grant = NULL;
@@ -440,6 +439,7 @@ class c_database_alter_default_priveleges extends c_database_query {
           return new c_base_return_false();
     }
 
+    // @fixme: use a local variable and only assign value once at the end after any potential error cases.
     $this->value = static::pr_QUERY_COMMAND;
 
     // [ FOR ROLE target_role [, ... ] ]
@@ -457,15 +457,7 @@ class c_database_alter_default_priveleges extends c_database_query {
 
     // [ IN SCHEMA schema_name [, ... ] ]
     if (is_array($this->in_schema) && !empty($this->in_schema)) {
-      $this->value .= ' ' . c_database_string::IN . ' ' . c_database_string::SCHEMA;
-
-      $names = NULL;
-      foreach ($this->in_schema as $schema_name) {
-        $names .= ', ' . $schema_name;
-      }
-
-      $this->value .= ltrim($names, ',');
-      unset($names);
+      $this->value .= $this->p_do_build_in_schema();
     }
 
     if ($this->action === e_database_action::ACTION_GRANT) {
@@ -570,12 +562,11 @@ class c_database_alter_default_priveleges extends c_database_query {
     }
     else if ($this->action === e_database_action::REVOKE) {
       // [ CASCADE | RESTRICT ]
-      if ($this->option === e_database_option::CASCADE) {
-        $this->value .= ' ' . c_database_string::CASCADE;
+      $option = $this->p_do_build_option();
+      if (is_string($option)) {
+        $this->value .= ' ' . $option;
       }
-      else if ($this->option === e_database_option::RESTRICT) {
-        $this->value .= ' ' . c_database_string::RESTRICT;
-      }
+      unset($option);
     }
 
     return new c_base_return_true();

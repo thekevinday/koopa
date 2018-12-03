@@ -19,11 +19,16 @@ class e_database_action {
   public const DROP_DEFAULT        = 5;
   public const ENABLE              = 6;
   public const GRANT               = 7;
-  public const OWNER_TO            = 8;
-  public const RENAME_CONSTRAINT   = 9;
-  public const RENAME_TO           = 10;
-  public const SET                 = 11;
-  public const SET_DEFAULT         = 12;
-  public const SET_SCHEMA          = 13;
-  public const VALIDATE_CONSTRAINT = 14;
+  public const HANDLER             = 8;
+  public const NO_HANDLER          = 9;
+  public const OPTIONS             = 10;
+  public const OWNER_TO            = 11;
+  public const RENAME_CONSTRAINT   = 12;
+  public const RENAME_TO           = 13;
+  public const SET                 = 14;
+  public const SET_DEFAULT         = 15;
+  public const SET_SCHEMA          = 16;
+  public const VALIDATE_CONSTRAINT = 17;
+  public const VALIDATOR           = 18;
+  public const NO_VALIDATOR        = 19;
 }
