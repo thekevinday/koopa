@@ -69,6 +69,7 @@ class c_database_string {
   public const REFERENCES                 = 'references';
   public const REFRESH_VERSION            = 'refresh version';
   public const RENAME_TO                  = 'rename to';
+  public const RENAME_COLUMN              = 'rename column';
   public const RENAME_CONSTRAINT          = 'rename constraint';
   public const RESET                      = 'reset';
   public const RESET_ALL                  = 'reset all';
