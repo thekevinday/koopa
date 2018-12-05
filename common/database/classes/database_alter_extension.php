@@ -27,7 +27,7 @@ class c_database_alter_extension extends c_database_query {
   use t_database_action_parameter;
   use t_database_name;
 
-  protected const pr_QUERY_COMMAND = 'alter extension';
+  protected const p_QUERY_COMMAND = 'alter extension';
 
   protected $member_object;
 

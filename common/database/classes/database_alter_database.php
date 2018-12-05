@@ -34,7 +34,7 @@ class c_database_alter_database extends c_database_query {
   use t_database_set_tablespace;
   use t_database_reset;
 
-  protected const pr_QUERY_COMMAND = 'alter database';
+  protected const p_QUERY_COMMAND = 'alter database';
 
   protected $option;
 
@@ -172,7 +172,7 @@ class c_database_alter_database extends c_database_query {
       return new c_base_return_false();
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
     unset($action);

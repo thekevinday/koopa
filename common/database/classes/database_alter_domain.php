@@ -33,7 +33,7 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_set_schema;
   use t_database_action;
 
-  protected const pr_QUERY_COMMAND = 'alter domain';
+  protected const p_QUERY_COMMAND = 'alter domain';
 
   protected $expression;
   protected $constraint;
@@ -353,7 +353,7 @@ class c_database_alter_coalation extends c_database_query {
           return new c_base_return_false();
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
     unset($action);

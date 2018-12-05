@@ -28,7 +28,7 @@ class c_database_alter_aggregate extends c_database_query {
   use t_database_owner_to;
   use t_database_set_schema;
 
-  protected const pr_QUERY_COMMAND = 'alter aggregate';
+  protected const p_QUERY_COMMAND = 'alter aggregate';
 
   // @todo: move these into their own traits.
   protected $aggregate_signatures;
@@ -366,7 +366,7 @@ class c_database_alter_aggregate extends c_database_query {
     }
     unset($aggregate_signatures);
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
     unset($action);

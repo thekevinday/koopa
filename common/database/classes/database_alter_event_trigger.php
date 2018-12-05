@@ -29,7 +29,7 @@ class c_database_alter_coalation extends c_database_query {
   use t_database_owner_to;
   use t_database_rename_to;
 
-  protected const pr_QUERY_COMMAND = 'alter event trigger';
+  protected const p_QUERY_COMMAND = 'alter event trigger';
 
 
   /**
@@ -128,7 +128,7 @@ class c_database_alter_coalation extends c_database_query {
         return new c_base_return_false();
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $action;
     unset($action);
 

@@ -26,10 +26,14 @@ class c_database_string {
   public const CREATE                     = 'create';
   public const DELETE                     = 'delete';
   public const DESCEND                    = 'desc';
+  public const DISABLE_TRIGGER            = 'disable trigger';
   public const DOMAIN                     = 'domain';
   public const DROP                       = 'drop';
   public const DROP_CONSTRAINT            = 'drop constraint';
   public const DROP_DEFAULT               = 'drop default';
+  public const ENABLE_ALWAYS_TRIGGER      = 'enable always trigger';
+  public const ENABLE_REPLICA_TRIGGER     = 'enable replica trigger';
+  public const ENABLE_TRIGGER             = 'enable trigger';
   public const EVENT_TRIGGER              = 'event trigger';
   public const EXECUTE                    = 'execute';
   public const FALSE                      = 'false';
@@ -101,6 +105,7 @@ class c_database_string {
   public const TO                         = 'to';
   public const UPDATE                     = 'update';
   public const USAGE                      = 'usage';
+  public const USER                       = 'user';
   public const USER_CURRENT               = 'current_user';
   public const USER_SESSION               = 'session_user';
   public const USING                      = 'using';

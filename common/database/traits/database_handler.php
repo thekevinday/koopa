@@ -41,7 +41,7 @@ trait t_database_handler {
 
     if ($handler === e_database_handler::HANDLER) {
       if (is_string($handler_function)) {
-        $this->handler[
+        $this->handler = [
           'type' => $handler,
           'name' => $handler_function,
         ];
@@ -53,7 +53,7 @@ trait t_database_handler {
       return c_base_return_error::s_false($error);
     }
     else if ($handler === e_database_handler::NO_HANDLER) {
-      $this->handler[
+      $this->handler = [
         'type' => $handler,
         'name' => null,
       ];
@@ -96,17 +96,18 @@ trait t_database_handler {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_handler() {
-    $value = NULL;
+    if (is_null($this->handler)) {
+      return NULL;
+    }
 
-    if (isset($this->handler['type'])) {
-      if ($this->handler['type'] == e_database_handler::HANDLER) {
-        if (isset($this->handler['name'])) {
-          $value = c_database_string::HANDLER . ' ' . $this->handler['name'];
-        }
+    $value = NULL;
+    if ($this->handler['type'] == e_database_handler::HANDLER) {
+      if (isset($this->handler['name'])) {
+        $value = c_database_string::HANDLER . ' ' . $this->handler['name'];
       }
-      else if ($this->handler['type'] == e_database_handler::NO_HANDLER) {
-        $value .= c_database_string::NO_HANDLER;
-      }
+    }
+    else if ($this->handler['type'] == e_database_handler::NO_HANDLER) {
+      $value .= c_database_string::NO_HANDLER;
     }
 
     return $value;

@@ -77,6 +77,10 @@ trait t_database_set_with_oids {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_with_oids() {
+    if (is_null($this->set_with_oids)) {
+      return NULL;
+    }
+
     return $this->set_with_oids ? c_database_string::SET_WITH_OIDS : c_database_string::SET_WITHOUT_OIDS;
   }
 }

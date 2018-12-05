@@ -125,8 +125,11 @@ trait t_database_reset {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_reset() {
-    $value = NULL;
+    if (is_null($this->reset)) {
+      return NULL;
+    }
 
+    $value = NULL;
     if ($this->reset['type'] === e_database_reset::PARAMETER) {
       if (is_string($this->reset['value'])) {
         $value = c_database_string::RESET . ' ' . $this->reset['value'];

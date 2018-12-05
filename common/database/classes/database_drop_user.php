@@ -19,7 +19,7 @@ require_once('common/database/classes/database_query.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
  */
 class c_database_alter_coalation extends c_database_query {
-  protected const pr_QUERY_COMMAND = 'alter coalation';
+  protected const p_QUERY_COMMAND = 'alter coalation';
 
 
   /**

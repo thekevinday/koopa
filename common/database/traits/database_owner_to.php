@@ -134,6 +134,10 @@ trait t_database_owner_to {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_owner_to() {
+    if (is_null($this->owner_to)) {
+      return NULL;
+    }
+
     return c_database_string::OWNER_TO . ' ' . $this->owner_to['value'];
   }
 }

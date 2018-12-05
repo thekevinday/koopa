@@ -72,6 +72,10 @@ trait t_database_set_tablespace {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_tablespace() {
+    if (is_null($this->set_tablespace)) {
+      return NULL;
+    }
+
     return c_database_string::SET_TABLESPACE . ' (' . $this->set_tablespace . ')';
   }
 }

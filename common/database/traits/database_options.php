@@ -129,6 +129,10 @@ trait t_database_options {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_options() {
+    if (is_null($this->options)) {
+      return NULL;
+    }
+
     $options = [];
     foreach ($this->options as $options_value) {
       if ($options_value['type'] == e_database_options::ADD) {

@@ -33,7 +33,7 @@ require_once('common/database/interfaces/database_query_parameter.php');
 abstract class c_database_query extends c_base_return_string implements i_database_query {
   public const PARAMETER_NONE = 0;
 
-  protected const pr_QUERY_COMMAND = '';
+  protected const p_QUERY_COMMAND = '';
 
   protected $placeholders;
 
@@ -217,7 +217,7 @@ abstract class c_database_query extends c_base_return_string implements i_databa
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     return new c_base_return_true();
   }
 
@@ -366,7 +366,7 @@ class c_database_argument_query extends c_base_return_string implements i_databa
  * Provide an SQL expression argument.
  */
 class c_database_argument_expression extends c_base_return_string implements i_database_query_parameter {
-  protected const pr_QUERY_AS = 'as';
+  protected const p_QUERY_AS = 'as';
 
   protected $expression;
   protected $alias;
@@ -520,7 +520,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
 
     $this->value = $this->expression;
     if (!is_string($this->alias)) {
-      $this->value .= ' ' . static::pr_QUERY_AS . ' ' . $this->alias;
+      $this->value .= ' ' . static::p_QUERY_AS . ' ' . $this->alias;
     }
 
     return new c_base_return_true();

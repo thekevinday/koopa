@@ -78,6 +78,10 @@ trait t_database_order_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_order_by() {
+    if (is_null($this->order_by)) {
+      return NULL;
+    }
+
     return c_database_string::ORDER_BY . ' ' . $this->order_by;
   }
 }

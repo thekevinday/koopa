@@ -41,7 +41,7 @@ trait t_database_validator {
 
     if ($validator === e_database_validator::VALIDATOR) {
       if (is_string($validator_function)) {
-        $this->validator[
+        $this->validator = [
           'type' => $validator,
           'name' => $validator_function,
         ];
@@ -53,7 +53,7 @@ trait t_database_validator {
       return c_base_return_error::s_false($error);
     }
     else if ($validator === e_database_validator::NO_VALIDATOR) {
-      $this->validator[
+      $this->validator = [
         'type' => $validator,
         'name' => null,
       ];
@@ -96,17 +96,18 @@ trait t_database_validator {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_validator() {
-    $value = NULL;
+    if (is_null($this->validator)) {
+      return NULL;
+    }
 
-    if (is_array($this->validator) && isset($this->validator['type'])) {
-      if ($this->validator['type'] == e_database_validator::VALIDATOR) {
-        if (isset($this->validator['name'])) {
-          $value = c_database_string::VALIDATOR . ' ' . $this->validator['name'];
-        }
+    $value = NULL;
+    if ($this->validator['type'] == e_database_validator::VALIDATOR) {
+      if (isset($this->validator['name'])) {
+        $value = c_database_string::VALIDATOR . ' ' . $this->validator['name'];
       }
-      else if ($this->validator['type'] == e_database_validator::NO_VALIDATOR) {
-        $value = c_database_string::NO_VALIDATOR;
-      }
+    }
+    else if ($this->validator['type'] == e_database_validator::NO_VALIDATOR) {
+      $value = c_database_string::NO_VALIDATOR;
     }
 
     return $value;

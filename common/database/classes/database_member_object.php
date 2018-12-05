@@ -25,7 +25,7 @@ class c_database_member_object extends c_database_query {
   use t_database_action_parameter;
   use t_database_name;
 
-  protected const pr_QUERY_COMMAND = '';
+  protected const p_QUERY_COMMAND = '';
 
 
   /**
@@ -220,7 +220,7 @@ class c_database_member_object extends c_database_query {
         return new c_base_return_false();
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $action;
     unset($action);
 

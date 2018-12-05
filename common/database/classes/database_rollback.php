@@ -21,7 +21,7 @@ require_once('common/database/classes/database_query.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-rollback.html
  */
 class c_database_rollback extends c_database_query {
-  protected const pr_QUERY_COMMAND  = 'rollback';
+  protected const p_QUERY_COMMAND  = 'rollback';
 
   /**
    * @see: t_base_return_value::p_s_new()

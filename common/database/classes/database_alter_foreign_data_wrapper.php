@@ -32,7 +32,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
   use t_database_rename_to;
   use t_database_validator;
 
-  protected const pr_QUERY_COMMAND = 'alter foreign data wrapper';
+  protected const p_QUERY_COMMAND = 'alter foreign data wrapper';
 
 
   /**
@@ -125,7 +125,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
       $actions .= ' ' . $this->p_do_build_options();
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
     unset($action);

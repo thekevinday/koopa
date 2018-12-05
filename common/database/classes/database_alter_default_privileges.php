@@ -29,7 +29,7 @@ class c_database_alter_default_priveleges extends c_database_query {
   use t_database_in_schema;
   use t_database_action;
 
-  protected const pr_QUERY_COMMAND = 'alter default privileges';
+  protected const p_QUERY_COMMAND = 'alter default privileges';
 
   protected $abbreviated;
   protected $cascade;
@@ -613,7 +613,7 @@ class c_database_alter_default_priveleges extends c_database_query {
       }
     }
 
-    $this->value = static::pr_QUERY_COMMAND;
+    $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $action;
     unset($action);
