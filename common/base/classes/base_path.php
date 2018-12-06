@@ -610,28 +610,26 @@ class c_base_path extends c_base_return_string {
   /**
    * Assign an allowed http method.
    *
-   * @param int $method
+   * @param int|null $method
    *   The id of the method to allow.
-   * @param bool $append
-   *   (optional) When TRUE, the method id is appended.
-   *   When FALSE, the array is re-created with $method as the only array value.
+   *   When NULL, the allowed_methods array is reset to an empty array.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_allowed_method($method, $append = TRUE) {
+  public function set_allowed_method($method) {
+    if (is_null($method)) {
+      $this->allowed_methods = [];
+      return new c_base_return_true();
+    }
+
     if (!is_int($method)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'method', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!$append) {
+    if (!is_array($this->allowed_methods)) {
       $this->allowed_methods = [];
     }
 
@@ -1488,28 +1486,26 @@ class c_base_path_executed extends c_base_array {
   /**
    * Assign cookies.
    *
-   * @param c_base_cookie $cookie
+   * @param c_base_cookie|null $cookie
    *   The cookie to assign.
-   * @param bool $append
-   *   (optional) When TRUE the $cookie is appended.
-   *   When FALSE, the array is reset with $cookie as the only value in the array.
+   *   When NULL, the cookies array is reset to an empty array.
    *
    * @return c_base_return_status
    *   TRUE is returned on success.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_cookies($cookie, $append = TRUE) {
+  public function set_cookies($cookie) {
+    if (is_null($cookie)) {
+      $this->cookies = [];
+      return new c_base_return_true();
+    }
+
     if (!($cookie instanceof c_base_cookie)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'cookie', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!$append || !is_array($this->cookies)) {
+    if (!is_array($this->cookies)) {
       $this->cookies = [];
     }
 

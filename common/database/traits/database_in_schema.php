@@ -26,38 +26,24 @@ trait t_database_in_schema {
    * @param string|null $schema_name
    *   The schema name to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all schema names regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the schema name will be appended.
-   *   When FALSE, any existing schema names will be cleared before appending the schema name.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_in_schema($schema_name, $append = TRUE) {
+  public function set_in_schema($schema_name) {
     if (is_null($schema_name)) {
       $this->in_schema = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     if (is_string($schema_name)) {
-      if ($append) {
-        if (!is_array($this->in_schema)) {
-          $this->in_schema = [];
-        }
-
-        $this->in_schema[] = $schema_name;
-      }
-      else {
-        $this->in_schema = [$schema_name];
+      if (!is_array($this->in_schema)) {
+        $this->in_schema = [];
       }
 
+      $this->in_schema[] = $schema_name;
       return new c_base_return_true();
     }
 

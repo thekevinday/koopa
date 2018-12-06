@@ -92,38 +92,24 @@ class c_database_alter_aggregate extends c_database_query {
    * @param c_database_argument_aggregate_signature|null $aggregate_signature
    *   The aggregate signatures to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all aggregate signatures regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the aggregate signatures will be appended.
-   *   When FALSE, any existing aggregate signatures will be cleared before appending the aggregate signature.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_aggregate_signature($aggregate_signature, $append = TRUE) {
+  public function set_aggregate_signature($aggregate_signature) {
     if (is_null($aggregate_signature)) {
       $this->aggregate_signatures = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     if ($aggregate_signature instanceof c_database_argument_aggregate_signature) {
-      if ($append) {
-        if (!is_array($this->aggregate_signatures)) {
-          $this->aggregate_signatures = [];
-        }
-
-        $this->aggregate_signatures[] = $aggregate_signature;
-      }
-      else {
-        $this->aggregate_signatures = [$aggregate_signature];
+      if (!is_array($this->aggregate_signatures)) {
+        $this->aggregate_signatures = [];
       }
 
+      $this->aggregate_signatures[] = $aggregate_signature;
       return new c_base_return_true();
     }
 
@@ -137,38 +123,24 @@ class c_database_alter_aggregate extends c_database_query {
    * @param c_database_argument_aggregate_signature_base|null $order_by_signature
    *   The order by aggregate signature to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all modes regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the argument mode will be appended.
-   *   When FALSE, any existing aggregate signatures will be cleared before appending the aggregate signature.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_order_by_signature($order_by_signature, $append = TRUE) {
+  public function set_order_by_signature($order_by_signature) {
     if (is_null($order_by_signature)) {
       $this->order_by_signature = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     if ($order_by_signature instanceof c_database_argument_aggregate_signature_base) {
-      if ($append) {
-        if (!is_array($this->order_by_signature)) {
-          $this->order_by_signatures = [];
-        }
-
-        $this->order_by_signatures[] = $order_by_signature;
-      }
-      else {
-        $this->order_by_signatures = [$order_by_signature];
+      if (!is_array($this->order_by_signature)) {
+        $this->order_by_signatures = [];
       }
 
+      $this->order_by_signatures[] = $order_by_signature;
       return new c_base_return_true();
     }
 

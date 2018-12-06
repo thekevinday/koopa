@@ -129,32 +129,24 @@ class c_database_alter_default_priveleges extends c_database_query {
    *   The for role target to use.
    *   Set to TRUE to use (only) the current role, $append is considered FALSE.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all for role targets regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the for role target will be appended.
-   *   When FALSE, any existing for role targets will be cleared before appending the for role target.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_for_role_targets($target, $append = TRUE) {
+  public function set_for_role_targets($target) {
     if (is_null($target)) {
       $this->target = NULL;
       return new c_base_return_true();
     }
 
     if (is_string($target)) {
-      if ($append) {
-        if (!is_array($this->for_role_targets)) {
-          $this->for_role_targets = [];
-        }
+      if (!is_array($this->for_role_targets)) {
+        $this->for_role_targets = [];
+      }
 
-        $this->for_role_targets[] = $target;
-      }
-      else {
-        $this->for_role_targets = [$target];
-      }
+      $this->for_role_targets[] = $target;
 
       return new c_base_return_true();
     }
@@ -227,38 +219,24 @@ class c_database_alter_default_priveleges extends c_database_query {
    * @param int|null $privilege
    *   Whether or not to use the ON operation in the query.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all privileges regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the aggregate signatures will be appended.
-   *   When FALSE, any existing aggregate signatures will be cleared before appending the aggregate signature.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_privilege($privilege, $append = TRUE) {
+  public function set_privilege($privilege) {
     if (is_null($privilege)) {
       $this->privileges = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     if (is_int($privilege)) {
-      if ($append) {
-        if (!is_array($this->privilege)) {
-          $this->privileges = [];
-        }
-
-        $this->privileges[] = $privilege;
-      }
-      else {
-        $this->privileges = [$privilege];
+      if (!is_array($this->privilege)) {
+        $this->privileges = [];
       }
 
+      $this->privileges[] = $privilege;
       return new c_base_return_true();
     }
 
@@ -272,38 +250,24 @@ class c_database_alter_default_priveleges extends c_database_query {
    * @param c_database_argument_role_name|null $role_name
    *   The role name to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all role names regardless of the $append parameter.
-   * @param bool $append
-   *   (optional) When TRUE, the role name will be appended.
-   *   When FALSE, any existing role names will be cleared before appending the role name.
+   *   When NULL, this will remove all values.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_role_name($role_name, $append = TRUE) {
+  public function set_role_name($role_name) {
     if (is_null($role_name)) {
       $this->role_names = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
     if ($role_name instanceof c_database_argument_role_name) {
-      if ($append) {
-        if (!is_array($this->role_names)) {
-          $this->role_names = [];
-        }
-
-        $this->role_names[] = $role_name;
-      }
-      else {
-        $this->role_names = [$role_name];
+      if (!is_array($this->role_names)) {
+        $this->role_names = [];
       }
 
+      $this->role_names[] = $role_name;
       return new c_base_return_true();
     }
 

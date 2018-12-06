@@ -26,19 +26,16 @@ trait t_database_options {
    * @param string|null $options_type
    *   The option type to use.
    *   Set to NULL to disable.
-   *   When NULL, this will remove all options regardless of the $append parameter.
+   *   When NULL, this will remove all values.
    * @param string $value
    *   The value to associate with the options_type.
    *   When options_type is NULL, this is ignored.
-   * @param bool $append
-   *   (optional) When TRUE, the schema name will be appended.
-   *   When FALSE, any existing schema names will be cleared before appending the schema name.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_options($options_type, $value, $append = TRUE) {
+  public function set_options($options_type, $value) {
     if (is_null($options_type)) {
       $this->options = NULL;
       return new c_base_return_true();
@@ -46,11 +43,6 @@ trait t_database_options {
 
     if (!is_string($value)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    if (!is_bool($append)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'append', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
@@ -64,22 +56,14 @@ trait t_database_options {
         return c_base_return_error::s_false($error);
     };
 
-    $options = [
+    if (!is_array($this->options)) {
+      $this->options = [];
+    }
+
+    $this->options[] = [
       'type' => $options_type,
       'value' => $value,
     ];
-
-    if ($append) {
-      if (!is_array($this->options)) {
-        $this->options = [];
-      }
-
-      $this->options[] = $options;
-    }
-    else {
-      $this->options = [$options];
-    }
-    unset($options);
 
     return new c_base_return_true();
   }
