@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides a class for specific Postgesql query: ALTER COALATION.
+ * Provides a class for specific Postgesql query: ALTER EXTENSION.
  */
 namespace n_koopa;
 

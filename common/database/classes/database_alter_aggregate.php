@@ -323,25 +323,25 @@ class c_database_alter_aggregate extends c_database_query {
 
     $value = NULL;
     if (is_string($this->rename_to)) {
-      $action = $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
+      $value = $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $action = $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
+      $value = $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $action = $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
+      $value = $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
     }
     else {
       unset($aggregate_signatures);
-      unset($action);
+      unset($value);
       return new c_base_return_false();
     }
     unset($aggregate_signatures);
 
     $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

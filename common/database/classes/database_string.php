@@ -40,6 +40,7 @@ class c_database_string {
   public const FOREIGN_DATA_WRAPPER       = 'foreign data wrapper';
   public const FOREIGN_TABLE              = 'foreign table';
   public const FOR                        = 'for';
+  public const FOR_ROLE                   = 'for role';
   public const FROM_CURRENT               = 'from current';
   public const FUNCTION                   = 'function';
   public const GRANT                      = 'grant';

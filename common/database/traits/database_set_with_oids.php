@@ -24,7 +24,8 @@ trait t_database_set_with_oids {
    * Set the SET WITH OIDS value.
    *
    * @param bool|null $set_with_oids
-   *   Set to TRUE for SET WITH OIDS an FALSE for SET WITHOUT OIDS.
+   *   Set to TRUE for SET WITH OIDS.
+   *   Set to FALSE for SET WITHOUT OIDS.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status

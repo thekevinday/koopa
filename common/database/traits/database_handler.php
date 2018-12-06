@@ -82,7 +82,7 @@ trait t_database_handler {
       return c_base_return_array::s_new($this->handler);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'handler', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -101,12 +101,12 @@ trait t_database_handler {
     }
 
     $value = NULL;
-    if ($this->handler['type'] == e_database_handler::HANDLER) {
+    if ($this->handler['type'] === e_database_handler::HANDLER) {
       if (isset($this->handler['name'])) {
         $value = c_database_string::HANDLER . ' ' . $this->handler['name'];
       }
     }
-    else if ($this->handler['type'] == e_database_handler::NO_HANDLER) {
+    else if ($this->handler['type'] === e_database_handler::NO_HANDLER) {
       $value .= c_database_string::NO_HANDLER;
     }
 

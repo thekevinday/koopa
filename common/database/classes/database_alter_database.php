@@ -147,35 +147,35 @@ class c_database_alter_database extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = NULL;
+    $value = NULL;
     if ($this->option instanceof c_database_argument_database_option) {
       $this->option->do_build_argument();
-      $action = $this->option->get_value_exact();
+      $value = $this->option->get_value_exact();
     }
     else if (is_string($this->rename_to)) {
-      $action = $this->p_do_build_rename_to();
+      $value = $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $action = $this->p_do_build_owner_to();
+      $value = $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_tablespace)) {
-      $action = $this->p_do_build_set_tablespace();
+      $value = $this->p_do_build_set_tablespace();
     }
     else if (is_array($this->set)) {
-      $action = $this->p_do_build_set();
+      $value = $this->p_do_build_set();
     }
     else if (is_array($this->reset)) {
-      $action = $this->p_do_build_reset();
+      $value = $this->p_do_build_reset();
     }
     else {
-      unset($action);
+      unset($value);
       return new c_base_return_false();
     }
 
     $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->name;
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }
