@@ -79,150 +79,150 @@ class c_database_member_object extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = NULL;
+    $value = NULL;
     switch($this->action) {
       case e_database_method_object::ACCESS_METHOD:
-        $action = c_database_string::ACCESS_METHOD . ' ' . $this->name;
+        $value = c_database_string::ACCESS_METHOD . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::AGGREGATE:
-        $action = c_database_string::AGGREGATE . ' ' . $this->name;
+        $value = c_database_string::AGGREGATE . ' ' . $this->p_do_build_name();
         // TODO: as a query argument?
         if ($this->action_parameter instanceof c_database_alter_aggregate && $this->action_parameter->do_build()) {
-          $action .= ' ( ' . $this->action_parameter->get_value() . ' )';
+          $value .= ' ( ' . $this->action_parameter->get_value() . ' )';
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::CAST:
         // uses 'name' property to represent AS 'source_type'
-        $action = c_database_string::CAST;
+        $value = c_database_string::CAST;
         if (is_string($this->action_parameter)) {
-          $action .= ' ' . $this->name . ' ' . c_database_string::AS . ' ( ' . $this->action_parameter . ' )';
+          $value .= ' ' . $this->p_do_build_name() . ' ' . c_database_string::AS . ' ( ' . $this->action_parameter . ' )';
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::COLLATION:
-        $action = c_database_string::COLLATION . ' ' . $this->name;
+        $value = c_database_string::COLLATION . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::CONVERSION:
-        $action = c_database_string::CONVERSION . ' ' . $this->name;
+        $value = c_database_string::CONVERSION . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::DOMAIN:
-        $action = c_database_string::DOMAIN . ' ' . $this->name;
+        $value = c_database_string::DOMAIN . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::EVENT_TRIGGER:
-        $action = c_database_string::EVENT_TRIGGER . ' ' . $this->name;
+        $value = c_database_string::EVENT_TRIGGER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FOREIGN_DATA_WRAPPER:
-        $action = c_database_string::FOREIGN_DATA_WRAPPER . ' ' . $this->name;
+        $value = c_database_string::FOREIGN_DATA_WRAPPER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FOREIGN_TABLE:
-        $action = c_database_string::FOREIGN_TABLE . ' ' . $this->name;
+        $value = c_database_string::FOREIGN_TABLE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FUNCTION:
-        $action = c_database_string::FUNCTION . ' ' . $this->name;
+        $value = c_database_string::FUNCTION . ' ' . $this->p_do_build_name();
         // TODO: finish adding support for function
         // TODO: as a query argument?
         /*if ($this->action_parameter instanceof c_database_function && $this->action_parameter->do_build()) {
-          $action .= ' ( ' . $this->action_parameter->get_value() . ' )';
+          $value .= ' ( ' . $this->action_parameter->get_value() . ' )';
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }*/
         break;
       case e_database_method_object::MATERIALIZED_VIEW:
-        $action = c_database_string::MATERIALIZED_VIEW . ' ' . $this->name;
+        $value = c_database_string::MATERIALIZED_VIEW . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::OPERATOR:
-        $action = c_database_string::OPERATOR . ' ' . $this->name;
+        $value = c_database_string::OPERATOR . ' ' . $this->p_do_build_name();
         if (isset($this->action_parameter[0]) && is_string($this->action_parameter[0]) && isset($this->action_parameter[1]) && is_string($this->action_parameter[1])) {
-          $action .= ' ' . $this->action_parameter[0] . ' ( ' . $this->action_parameter[0] . ', ' . $this->action_parameter[1] . ' )';
+          $value .= ' ' . $this->action_parameter[0] . ' ( ' . $this->action_parameter[0] . ', ' . $this->action_parameter[1] . ' )';
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::OPERATOR_CLASS:
-        $action = c_database_string::OPERATOR_CLASS . ' ' . $this->name;
+        $value = c_database_string::OPERATOR_CLASS . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
-          $action .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
+          $value .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::OPERATOR_FAMILY:
-        $action = c_database_string::OPERATOR_FAMILY . ' ' . $this->name;
+        $value = c_database_string::OPERATOR_FAMILY . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
-          $action .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
+          $value .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::LANGUAGE:
-        $action = c_database_string::LANGUAGE . ' ' . $this->name;
+        $value = c_database_string::LANGUAGE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::PROCEDURAL:
-        $action = c_database_string::PROCEDURAL . ' ' . c_database_string::LANGUAGE . ' ' . $this->name;
+        $value = c_database_string::PROCEDURAL . ' ' . c_database_string::LANGUAGE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::SCHEMA:
-        $action = c_database_string::SCHEMA . ' ' . $this->name;
+        $value = c_database_string::SCHEMA . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::SEQUENCE:
-        $action = c_database_string::SEQUENCE . ' ' . $this->name;
+        $value = c_database_string::SEQUENCE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::SERVER:
-        $action = c_database_string::SERVER . ' ' . $this->name;
+        $value = c_database_string::SERVER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TABLE:
-        $action = c_database_string::TABLE . ' ' . $this->name;
+        $value = c_database_string::TABLE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_CONFIGURATION:
-        $action = c_database_string::TEXT_SEARCH_CONFIGURATION . ' ' . $this->name;
+        $value = c_database_string::TEXT_SEARCH_CONFIGURATION . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_DICTIONARY:
-        $action = c_database_string::TEXT_SEARCH_DICTIONARY . ' ' . $this->name;
+        $value = c_database_string::TEXT_SEARCH_DICTIONARY . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_PARSER:
-        $action = c_database_string::TEXT_SEARCH_PARSER . ' ' . $this->name;
+        $value = c_database_string::TEXT_SEARCH_PARSER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_TEMPLATE:
-        $action = c_database_string::TEXT_SEARCH_TEMPLATE . ' ' . $this->name;
+        $value = c_database_string::TEXT_SEARCH_TEMPLATE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TRANSFORM_FOR:
-        $action = c_database_string::TRANSFORM_FOR . ' ' . $this->name;
+        $value = c_database_string::TRANSFORM_FOR . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
-          $action .= ' ' . c_database_string::LANGUAGE . ' ' . $this->action_parameter;
+          $value .= ' ' . c_database_string::LANGUAGE . ' ' . $this->action_parameter;
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_method_object::TYPE:
-        $action = c_database_string::TYPE . ' ' . $this->name;
+        $value = c_database_string::TYPE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::VIEW:
-        $action = c_database_string::VIEW . ' ' . $this->name;
+        $value = c_database_string::VIEW . ' ' . $this->p_do_build_name();
         break;
       default:
-        unset($action);
+        unset($value);
         return new c_base_return_false();
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

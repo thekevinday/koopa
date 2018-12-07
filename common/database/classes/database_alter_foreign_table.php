@@ -353,7 +353,7 @@ class c_database_alter_foreign_table extends c_database_query {
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
+    $this->value .= ' ' . $this->p_do_build_name();
 
     if ($this->include_descendents) {
       $this->value .' *';

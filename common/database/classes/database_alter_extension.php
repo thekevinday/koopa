@@ -85,60 +85,60 @@ class c_database_alter_extension extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = $this->name . ' ';
+    $value = $this->p_do_build_name() . ' ';
     switch($this->action) {
       case e_database_action::UPDATE:
-        $action .= c_database_string::UPDATE;
+        $value .= c_database_string::UPDATE;
         if (is_string($this->action_parameter)) {
-          $action .= ' ' . c_database_string::TO . ' ' . $this->action_parameter;
+          $value .= ' ' . c_database_string::TO . ' ' . $this->action_parameter;
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_action::SET_SCHEMA:
         if (is_string($this->set_schema)) {
-          $action = $this->p_do_build_set_schema();
+          $value = $this->p_do_build_set_schema();
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_action::ADD:
-        $action .= c_database_string::ADD;
+        $value .= c_database_string::ADD;
         if ($this->action_parameter instanceof c_database_member_object && $this->action_parameter->do_build() instanceof c_base_return_true) {
-          $action .= ' ' . $this->action_parameter->get_value();
+          $value .= ' ' . $this->action_parameter->get_value();
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_action::DROP:
-        $action .= c_database_string::DROP;
+        $value .= c_database_string::DROP;
         if ($this->action_parameter instanceof c_database_member_object) {
           if ($this->action_parameter->do_build() instanceof c_base_return_true) {
-            $action .= ' ' . $this->action_parameter->get_value();
+            $value .= ' ' . $this->action_parameter->get_value();
           }
           else {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       default:
-        unset($action);
+        unset($value);
         return new c_base_return_false();
     }
-    unset($action);
+    unset($value);
 
-    $this->value = $action;
+    $this->value = $value;
     return new c_base_return_true();
   }
 }

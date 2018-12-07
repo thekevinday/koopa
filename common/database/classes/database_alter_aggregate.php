@@ -186,6 +186,10 @@ class c_database_alter_aggregate extends c_database_query {
   /**
    * Get the total aggregate signatures.
    *
+   * @param int|null $index
+   *   (optional) Get the aggregate signature at the specified index.
+   *   When NULL, all aggregate signatures are returned.
+   *
    * @return c_base_return_int
    *   The total number of aggregate signatures.
    *   0 with the error bit set is returned on error.
@@ -278,7 +282,6 @@ class c_database_alter_aggregate extends c_database_query {
       $aggregate_signatures = ' *';
     }
     else {
-      // [ argument_mode ] [ argument_name ] argument_type [, ...]
       foreach ($this->aggregate_signatures as $aggregate_signature) {
         if ($aggregate_signature instanceof c_database_argument_aggregate_signature) {
           if (is_null($aggregate_signatures)) {
@@ -294,7 +297,6 @@ class c_database_alter_aggregate extends c_database_query {
       }
       unset($aggregate_signature);
 
-      // ORDER BY [ argument_mode ] [ argument_name ]  argument_type [, ...]
       $order_by_signatures = NULL;
       foreach ($this->order_by_signatures as $order_by_signature) {
         if ($order_by_signature instanceof c_database_argument_aggregate_signature_base) {
@@ -321,15 +323,15 @@ class c_database_alter_aggregate extends c_database_query {
       unset($order_by_signatures);
     }
 
-    $value = NULL;
+    $value = $this->p_do_build_name() . ' ';
     if (is_string($this->rename_to)) {
-      $value = $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
+      $value .= $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $value = $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
+      $value .= $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $value = $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
+      $value .= $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
     }
     else {
       unset($aggregate_signatures);
@@ -339,7 +341,6 @@ class c_database_alter_aggregate extends c_database_query {
     unset($aggregate_signatures);
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $value;
     unset($value);
 

@@ -100,6 +100,6 @@ trait t_database_in_schema {
       return NULL;
     }
 
-    return c_database_string::IN . ' ' . c_database_string::SCHEMA . ' ' . implode(', ', $this->in_schema);
+    return c_database_string::IN_SCHEMA . ' ' . implode(', ', $this->in_schema);
   }
 }

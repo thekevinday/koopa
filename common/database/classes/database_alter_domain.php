@@ -48,7 +48,7 @@ class c_database_alter_coalation extends c_database_query {
     $this->name       = NULL;
     $this->owner_to   = NULL;
     $this->rename_to  = NULL;
-    $this->set_schema = NULL
+    $this->set_schema = NULL;
 
     $this->expression = NULL;
     $this->constraint = NULL;
@@ -239,124 +239,123 @@ class c_database_alter_coalation extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = NULL;
+    $value = $this->p_do_build_name() . ' ';
     switch ($this->action) {
         case e_database_action::ADD:
           if (!is_array($this->constraint)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::ADD;
-          $action .= ' ' . $this->constraint['name'];
+          $value .= c_database_string::ADD;
+          $value .= ' ' . $this->constraint['name'];
 
           if ($this->property === e_database_property::NOT_VALID) {
-            $action .= ' ' . c_database_string::NOT_VALID;
+            $value .= ' ' . c_database_string::NOT_VALID;
           }
           break;
 
         case e_database_action::DROP:
-          $action = c_database_string::DROP;
+          $value .= c_database_string::DROP;
           if ($this->property === e_database_property::NOT_NULL) {
-            $action .= ' ' . c_database_string::NOT_NULL;
+            $value .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
         case e_database_action::DROP_CONSTRAINT:
           if (!is_array($this->constraint['name'])) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::DROP_CONSTRAINT;
+          $value .= c_database_string::DROP_CONSTRAINT;
           if ($this->property === e_database_property::IF_EXISTS) {
-            $action .= ' ' . c_database_string::IF_EXISTS;
+            $value .= ' ' . c_database_string::IF_EXISTS;
           }
 
-          $action .= ' ' . $this->constraint['name'];
+          $value .= ' ' . $this->constraint['name'];
 
           if ($this->constraint['cascade'] === e_database_cascade::CASCADE) {
-            $action .= ' ' . c_database_string::CASCADE;
+            $value .= ' ' . c_database_string::CASCADE;
           }
           else if ($this->constraint['cascade'] === e_database_cascade::RESTRICT) {
-            $action .= ' ' . c_database_string::RESTRICT;
+            $value .= ' ' . c_database_string::RESTRICT;
           }
           break;
 
         case e_database_action::DROP_DEFAULT:
-          $action = c_database_string::DROP_DEFAULT;
+          $value .= c_database_string::DROP_DEFAULT;
           break;
 
         case e_database_action::OWNER_TO:
           if (!is_string($this->owner_to)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = $this->p_do_build_owner_to();
+          $value .= $this->p_do_build_owner_to();
           break;
 
         case e_database_action::RENAME_CONSTRAINT:
           if (!is_string($this->constraint['name']) || !is_string($this->constraint['name_new'])) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
+          $value .= c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
           break;
 
         case e_database_action::RENAME_TO:
           if (!is_string($this->rename_to)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = $this->p_do_build_rename_to();
+          $value .= $this->p_do_build_rename_to();
           break;
 
         case e_database_action::SET:
-          $action = c_database_string::SET;
+          $value = c_database_string::SET;
           if ($this->property === e_database_property::NOT_NULL) {
-            $action .= ' ' . c_database_string::NOT_NULL;
+            $value .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
         case e_database_action::SET_DEFAULT:
           if (!is_string($this->expression)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::SET_DEFAULT . ' ' . $this->expression;
+          $value .= c_database_string::SET_DEFAULT . ' ' . $this->expression;
           break;
 
         case e_database_action::SET_SCHEMA:
           if (!is_string($this->set_schema)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = $this->p_do_build_set_schema();
+          $value .= $this->p_do_build_set_schema();
           break;
 
         case e_database_action::VALIDATE_CONSTRAINT:
           if (!is_array($this->constraint)) {
-            unset($action);
+            unset($value);
             return new c_base_return_false();
           }
 
-          $action = c_database_string::VALIDATE_CONSTRAINT . ' ' . $this->constraint['name'];
+          $value .= c_database_string::VALIDATE_CONSTRAINT . ' ' . $this->constraint['name'];
           break;
 
         default:
-          unset($action);
+          unset($value);
           return new c_base_return_false();
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

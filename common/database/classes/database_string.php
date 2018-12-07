@@ -25,6 +25,7 @@ class c_database_string {
   public const CONVERSION                 = 'conversion';
   public const CREATE                     = 'create';
   public const DELETE                     = 'delete';
+  public const DEPENDS_ON_EXTENSION       = 'depends on extension';
   public const DESCEND                    = 'desc';
   public const DISABLE_TRIGGER            = 'disable trigger';
   public const DOMAIN                     = 'domain';
@@ -50,6 +51,8 @@ class c_database_string {
   public const HANDLER                    = 'handler';
   public const IF_EXISTS                  = 'if exists';
   public const IN                         = 'in';
+  public const INOUT                      = 'inout';
+  public const IN_SCHEMA                  = 'in schema';
   public const INHERIT                    = 'inherit';
   public const INSERT                     = 'insert';
   public const IS_TEMPLATE                = 'is_template';
@@ -70,6 +73,7 @@ class c_database_string {
   public const OPERATOR_FAMILY            = 'operator family';
   public const OPTIONS                    = 'options';
   public const ORDER_BY                   = 'order by';
+  public const OUT                        = 'out';
   public const OWNER_TO                   = 'owner to';
   public const PROCEDURAL                 = 'procedural';
   public const PUBLIC                     = 'public';

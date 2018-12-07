@@ -133,20 +133,20 @@ class c_database_alter_coalation extends c_database_query {
       return new c_base_return_false();
     }
 
-    $value = NULL;
+    $value = $this->p_do_build_name();
     if (is_bool($this->refresh_version)) {
       if ($this->refresh_version) {
-        $value = c_database_string::REFRESH_VERSION;
+        $value .= c_database_string::REFRESH_VERSION;
       }
     }
     else if (is_string($this->rename_to)) {
-      $value = $this->p_do_build_rename_to();
+      $value .= $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $value = $this->p_do_build_owner_to();
+      $value .= $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_schema)) {
-      $value = $this->p_do_build_set_schema();
+      $value .= $this->p_do_build_set_schema();
     }
     else {
       unset($value);
@@ -154,7 +154,6 @@ class c_database_alter_coalation extends c_database_query {
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $value;
     unset($value);
 

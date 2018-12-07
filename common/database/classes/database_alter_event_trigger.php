@@ -87,50 +87,50 @@ class c_database_alter_coalation extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = NULL;
+    $value = $this->p_do_build_name() . ' ';
     switch($this->action) {
       case e_database_action::DISABLE:
-        $this->action = c_database_string::DISABLE;
+        $value .= c_database_string::DISABLE;
         break;
       case e_database_action::ENABLE:
-        $action = c_database_string::ENABLE;
+        $value .= c_database_string::ENABLE;
         if ($this->action_property === e_database_property::REPLICA) {
-          $action .= ' ' . c_database_string::REPLICA;
+          $value .= ' ' . c_database_string::REPLICA;
         }
         else if ($this->action_property === e_database_property::ALWAYS) {
-          $action .= ' ' . c_database_string::ALWAYS;
+          $value .= ' ' . c_database_string::ALWAYS;
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_action::OWNER_TO:
         if (is_string($this->owner_to)) {
-          $action = $this->p_do_build_owner_to();
+          $value .= $this->p_do_build_owner_to();
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       case e_database_action::RENAME_TO:
         if (is_string($this->rename_to)) {
-          $action = $this->p_do_build_rename_to();
+          $value .= $this->p_do_build_rename_to();
         }
         else {
-          unset($action);
+          unset($value);
           return new c_base_return_false();
         }
         break;
       default:
-        unset($action);
+        unset($value);
         return new c_base_return_false();
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

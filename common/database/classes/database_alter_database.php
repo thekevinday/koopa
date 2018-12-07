@@ -147,25 +147,27 @@ class c_database_alter_database extends c_database_query {
       return new c_base_return_false();
     }
 
-    $value = NULL;
+    $value = $this->p_do_build_name() . ' ';
     if ($this->option instanceof c_database_argument_database_option) {
-      $this->option->do_build_argument();
-      $value = $this->option->get_value_exact();
+      // @todo: review this, the code may and probably should be converted into a trait.
+      if ($this->option->do_build_argument() instanceof c_base_return_true) {
+        $value .= $this->option->get_value_exact();
+      }
     }
     else if (is_string($this->rename_to)) {
-      $value = $this->p_do_build_rename_to();
+      $value .= $this->p_do_build_rename_to();
     }
     else if (is_string($this->owner_to)) {
-      $value = $this->p_do_build_owner_to();
+      $value .= $this->p_do_build_owner_to();
     }
     else if (is_string($this->set_tablespace)) {
-      $value = $this->p_do_build_set_tablespace();
+      $value .= $this->p_do_build_set_tablespace();
     }
     else if (is_array($this->set)) {
-      $value = $this->p_do_build_set();
+      $value .= $this->p_do_build_set();
     }
     else if (is_array($this->reset)) {
-      $value = $this->p_do_build_reset();
+      $value .= $this->p_do_build_reset();
     }
     else {
       unset($value);
@@ -173,7 +175,6 @@ class c_database_alter_database extends c_database_query {
     }
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->name;
     $this->value .= ' ' . $value;
     unset($value);
 

@@ -64,4 +64,21 @@ trait t_database_name {
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
+
+  /**
+   * Perform the common build process for this trait.
+   *
+   * As an internal trait method, the caller is expected to perform any appropriate validation.
+   *
+   * @return string|null
+   *   A string is returned on success.
+   *   NULL is returned if there is nothing to process or there is an error.
+   */
+  protected function p_do_build_name() {
+    if (is_null($this->name)) {
+      return NULL;
+    }
+
+    return $this->name;
+  }
 }
