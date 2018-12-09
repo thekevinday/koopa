@@ -83,10 +83,10 @@ trait t_database_owner_to {
   }
 
   /**
-   * Get the currently assigned sql owner to.
+   * Get the currently assigned owner to settings.
    *
-   * @return c_base_return_int|c_base_return_null
-   *   A (e_database_user) code representing the owner on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing the owner to settings on success.
    *   NULL without error bit set is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
@@ -95,32 +95,11 @@ trait t_database_owner_to {
       return new c_base_return_null();
     }
 
-    if (is_int($this->owner_to['type'])) {
-      return c_base_return_int::s_new($this->owner_to['type']);
+    if (is_array($this->owner_to)) {
+      return c_base_return_array::s_new($this->owner_to);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to[type]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned sql owner to specified name.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   An owner to name on success.
-   *   NULL without error bit set is returned if not assigned.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_owner_to_user_name() {
-    if (is_null($this->owner_to)) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->owner_to['value'])) {
-      return c_base_return_string::s_new($this->owner_to['value']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to[value]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owner_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

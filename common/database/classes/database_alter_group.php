@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides a class for specific Postgesql query: ALTER COALATION.
+ * Provides a class for specific Postgesql query: ALTER GROUP.
  */
 namespace n_koopa;
 
@@ -10,16 +10,19 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_add_user.php');
+require_once('common/database/traits/database_role_specification.php');
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql ALTER GROUP query string.
  *
- * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
- *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-altergroup.html
  */
 class c_database_alter_coalation extends c_database_query {
-  protected const p_QUERY_COMMAND = 'alter coalation';
+  use t_database_add_user;
+  use t_database_role_specification;
+
+  protected const p_QUERY_COMMAND = 'alter group';
 
 
   /**
@@ -27,12 +30,18 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->add_user           = NULL;
+    $this->role_specification = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->add_user);
+    unset($this->role_specification);
+
     parent::__destruct();
   }
 
@@ -61,9 +70,21 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = NULL;
+    if (!is_string($this->name)) {
+      return new c_base_return_false();
+    }
 
-    // @todo
+    if ((is_int($this->role_specification) || is_string($this->role_specification)) && is_array($this->add_user)) {
+      $value = $this->p_do_build_role_specification();
+      $value = ' ' . $this->p_do_build_add_user();
+    }
+    else {
+      return new c_base_return_false();
+    }
+
+    $this->value = static::p_QUERY_COMMAND;
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

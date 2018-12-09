@@ -48,7 +48,7 @@ trait t_database_function_action {
       return new c_base_return_true();
     }
 
-    switch($function_action) {
+    switch ($function_action) {
       case e_database_function_action::CALLED_ON_NULL_INPUT:
       case e_database_function_action::COST:
       case e_database_function_action::IMMUTABLE:
@@ -157,6 +157,76 @@ trait t_database_function_action {
       return NULL;
     }
 
-    // @todo
+    $values = [];
+    foreach ($this->function_action as $function_action) {
+      if ($function_action['type'] === e_database_function_action::CALLED_ON_NULL_INPUT) {
+        $values[] = c_database_string::CALLED_ON_NULL_INPUT;
+      }
+      else if ($function_action['type'] === e_database_function_action::COST) {
+        $values[] = c_database_string::COST . ' ' . $function_action['parameter_1'];
+      }
+      else if ($function_action['type'] === e_database_function_action::IMMUTABLE) {
+        $values[] = c_database_string::IMMUTABLE;
+      }
+      else if ($function_action['type'] === e_database_function_action::LEAKPROOF) {
+        $values[] = c_database_string::LEAKPROOF;
+      }
+      else if ($function_action['type'] === e_database_function_action::NOT_LEAKPROOF) {
+        $values[] = c_database_string::NOT_LEAKPROOF;
+      }
+      else if ($function_action['type'] === e_database_function_action::PARALLEL_RESTRICTED) {
+        $values[] = c_database_string::PARALLEL_RESTRICTED;
+      }
+      else if ($function_action['type'] === e_database_function_action::PARALLEL_SAFE) {
+        $values[] = c_database_string::PARALLEL_SAFE;
+      }
+      else if ($function_action['type'] === e_database_function_action::PARALLEL_UNSAFE) {
+        $values[] = c_database_string::PARALLEL_UNSAFE;
+      }
+      else if ($function_action['type'] === e_database_function_action::RESET) {
+        $values[] = c_database_string::RESET;
+      }
+      else if ($function_action['type'] === e_database_function_action::RESET_ALL) {
+        $values[] = c_database_string::RESET_ALL;
+      }
+      else if ($function_action['type'] === e_database_function_action::RETURNS_NULL_ON_NULL_INPUT) {
+        $values[] = c_database_string::RETURNS_NULL_ON_NULL_INPUT;
+      }
+      else if ($function_action['type'] === e_database_function_action::ROWS) {
+        $values[] = c_database_string::ROWS . ' ' . $function_action['parameter_1'];
+      }
+      else if ($function_action['type'] === e_database_function_action::SECURITY_DEFINER) {
+        $values[] = c_database_string::SECURITY_DEFINER;
+      }
+      else if ($function_action['type'] === e_database_function_action::SECURITY_INVOKER) {
+        $values[] = c_database_string::SECURITY_INVOKER;
+      }
+      else if ($function_action['type'] === e_database_function_action::SET_EQUAL) {
+        $value = is_null($function_action['parameter_2']) ? c_database_string::DEFAULT : $function_action['parameter_2'];
+        $values[] = c_database_string::SET . ' ' . $function_action['parameter_1'] . ' = ' . $value;
+        unset($value);
+      }
+      else if ($function_action['type'] === e_database_function_action::SET_FROM) {
+        $values[] = c_database_string::SET . ' ' . $function_action['parameter_1'] . ' ' . c_database_string::FROM_CURRENT;
+        unset($value);
+      }
+      else if ($function_action['type'] === e_database_function_action::SET_TO) {
+        $value = is_null($function_action['parameter_2']) ? c_database_string::DEFAULT : $function_action['parameter_2'];
+        $values[] = c_database_string::SET . ' ' . $function_action['parameter_1'] . ' ' . c_database_string::TO . ' ' . $value;
+        unset($value);
+      }
+      else if ($function_action['type'] === e_database_function_action::STABLE) {
+        $values[] = c_database_string::STABLE;
+      }
+      else if ($function_action['type'] === e_database_function_action::STRICT) {
+        $values[] = c_database_string::STRICT;
+      }
+      else if ($function_action['type'] === e_database_function_action::VOLATILE) {
+        $values[] = c_database_string::VOLATILE;
+      }
+    }
+    unset($function_action);
+
+    return implode(', ', $values);
   }
 }

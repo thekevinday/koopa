@@ -57,44 +57,23 @@ trait t_database_rename_column {
   }
 
   /**
-   * Get the currently assigned name to rename from.
+   * Get the currently assigned rename from settings.
    *
-   * @return c_base_return_string|c_base_return_null
-   *   A name on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing rename from settings on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_rename_column_from_name() {
+  public function get_rename_column() {
     if (is_null($this->rename_column)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->rename_column['from'])) {
-      return c_base_return_string::s_new($this->rename_column['from']);
+    if (is_array($this->rename_column)) {
+      return c_base_return_array::s_new($this->rename_column['from']);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_column[from]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned name to rename to.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   A name on success.
-   *   NULL is returned if not set.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_rename_column_to_name() {
-    if (is_null($this->rename_column)) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->rename_column['to'])) {
-      return c_base_return_string::s_new($this->rename_column['to']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_column[to]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_column', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

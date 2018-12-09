@@ -85,65 +85,23 @@ trait t_database_enable_trigger {
   }
 
   /**
-   * Get the currently assigned ENABLE or DISABLE status.
+   * Get the currently assigned enable trigger settings.
    *
-   * @return c_base_return_bool|c_base_return_null
-   *   TRUE for ENABLE TRIGGER or FALSE for DISABLE TRIGGER on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing the enable trigger settings on success.
    *   NULL is returned if not set (not to be confused with DISABLE TRIGGER).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_enable_trigger_status() {
+  public function get_enable_trigger() {
     if (is_null($this->enable_trigger)) {
       return new c_base_return_null();
     }
 
-    if (is_bool($this->enable_trigger['status'])) {
-      return c_base_return_bool::s_new($this->enable_trigger['status']);
+    if (is_array($this->enable_trigger)) {
+      return c_base_return_array::s_new($this->enable_trigger);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'enable_trigger[status]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned ENABLE or DISABLE type.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   An integer representing the type code on success.
-   *   NULL is returned if not set.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_enable_trigger_type() {
-    if (is_null($this->enable_trigger)) {
-      return new c_base_return_null();
-    }
-
-    if (is_int($this->enable_trigger['type'])) {
-      return c_base_return_int::s_new($this->enable_trigger['type']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'enable_trigger[type]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned ENABLE or DISABLE name.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   An integer representing the type code on success.
-   *   NULL is returned if not set.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_enable_trigger_name() {
-    if (is_null($this->enable_trigger) || is_null($this->enable_trigger['name'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_int($this->enable_trigger['name'])) {
-      return c_base_return_int::s_new($this->enable_trigger['name']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'enable_trigger[name]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'enable_trigger', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

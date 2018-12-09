@@ -74,10 +74,10 @@ trait t_database_reset {
   }
 
   /**
-   * Get the currently assigned sql reset.
+   * Get the currently assigned reset settings.
    *
-   * @return c_base_return_int|c_base_return_null
-   *   A (c_database_reset) code representing the reset on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing reset settings on success.
    *   NULL is returned if not set (reset tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -86,32 +86,11 @@ trait t_database_reset {
       return new c_base_return_null();
     }
 
-    if (is_int($this->reset['type'])) {
-      return c_base_return_int::s_new($this->reset['type']);
+    if (is_array($this->reset)) {
+      return c_base_return_array::s_new($this->reset);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'reset[type]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned sql reset parameter value.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   A reset parameter value on success.
-   *   NULL without error bit reset is returned if not assigned.
-   *   NULL with the error bit reset is returned on error.
-   */
-  public function get_reset_parameter() {
-    if (is_null($this->reset) || is_null($this->reset['value'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->reset['value'])) {
-      return c_base_return_string::s_new($this->reset['value']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'reset[value]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

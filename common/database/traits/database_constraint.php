@@ -104,86 +104,23 @@ trait t_database_constraint {
   }
 
   /**
-   * Get the currently assigned name.
+   * Get the currently assigned constraint settings.
    *
-   * @return c_base_return_string|c_base_return_null
-   *   A name on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array of constraint settings on success.
    *   NULL is returned if not set (constraint is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_constraint_name() {
+  public function get_constraint() {
     if (is_null($this->constraint)) {
       return new c_base_return_null();
     }
 
-    if (is_string($this->constraint['name'])) {
-      return c_base_return_string::s_new($this->constraint['name']);
+    if (is_array($this->constraint)) {
+      return c_base_return_array::s_new($this->constraint);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'constraint[name]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned type.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   A type code on success.
-   *   NULL is returned if not set (constraint is not to be used).
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_constraint_type() {
-    if (is_null($this->constraint)) {
-      return new c_base_return_null();
-    }
-
-    if (is_int($this->constraint['type'])) {
-      return c_base_return_int::s_new($this->constraint['type']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'constraint[type]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned exists or invalid setting.
-   *
-   * @return c_base_return_bool|c_base_return_null
-   *   A boolean on success.
-   *   NULL is returned if not set (constraint is not to be used).
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_constraint_exists_or_invalid() {
-    if (is_null($this->constraint) || is_null($this->constraint['exists_or_invalid'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_bool($this->constraint['exists_or_invalid'])) {
-      return c_base_return_bool::s_new($this->constraint['exists_or_invalid']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'constraint[exists_or_invalid]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned cascade setting.
-   *
-   * @return c_base_return_int|c_base_return_null
-   *   A cascade code on success.
-   *   NULL is returned if not set (constraint is not to be used).
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_constraint_cascade() {
-    if (is_null($this->constraint) || is_null($this->constraint['cascade'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_int($this->constraint['cascade'])) {
-      return c_base_return_bool::s_new($this->constraint['cascade']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'constraint[cascade]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'constraint', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

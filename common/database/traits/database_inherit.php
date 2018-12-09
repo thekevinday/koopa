@@ -49,14 +49,15 @@ trait t_database_inherit {
       'name' => $name,
       'inherit' => $inherit,
     ];
+
     return new c_base_return_true();
   }
 
   /**
-   * Get the currently assigned inherit status.
+   * Get the currently assigned inherit settings.
    *
-   * @return c_base_return_bool|c_base_return_null
-   *   TRUE for INHERIT or FALSE for NO INHERIT on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing the inherit settings on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
@@ -65,32 +66,11 @@ trait t_database_inherit {
       return new c_base_return_null();
     }
 
-    if (is_bool($this->inherit['inherit'])) {
-      return c_base_return_bool::s_new($this->inherit['inherit']);
+    if (is_array($this->inherit)) {
+      return c_base_return_array::s_new($this->inherit);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'inherit[inherit]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned name to inherit from.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   A name on success.
-   *   NULL is returned if not set.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_inherit_name() {
-    if (is_null($this->inherit)) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->inherit['name'])) {
-      return c_base_return_string::s_new($this->inherit['name']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'inherit[name]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'inherit', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

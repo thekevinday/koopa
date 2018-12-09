@@ -20,11 +20,9 @@ require_once('common/database/traits/database_restrict.php');
 require_once('common/database/traits/database_set_schema.php');
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql ALTER FUNCTION query string.
  *
- * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
- *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-alterfunction.html
  */
 class c_database_alter_coalation extends c_database_query {
   use t_database_argument_type;

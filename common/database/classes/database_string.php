@@ -18,12 +18,15 @@ class c_database_string {
   public const ALLOW_CONNECTIONS          = 'allow_connections';
   public const AS                         = 'as';
   public const ASCEND                     = 'asc';
+  public const CALLED_ON_NULL_INPUT       = 'called on null input';
   public const CASCADE                    = 'cascade';
   public const CAST                       = 'cast';
   public const COLLATION                  = 'collation';
   public const CONNECTION_LIMIT           = 'connection limit';
   public const CONVERSION                 = 'conversion';
+  public const COST                       = 'cost';
   public const CREATE                     = 'create';
+  public const DEFAULT                    = 'default';
   public const DELETE                     = 'delete';
   public const DEPENDS_ON_EXTENSION       = 'depends on extension';
   public const DESCEND                    = 'desc';
@@ -37,6 +40,7 @@ class c_database_string {
   public const ENABLE_TRIGGER             = 'enable trigger';
   public const EVENT_TRIGGER              = 'event trigger';
   public const EXECUTE                    = 'execute';
+  public const EXTERNAL                   = 'external';
   public const FALSE                      = 'false';
   public const FOREIGN_DATA_WRAPPER       = 'foreign data wrapper';
   public const FOREIGN_TABLE              = 'foreign table';
@@ -50,6 +54,7 @@ class c_database_string {
   public const GROUP_BY                   = 'group by';
   public const HANDLER                    = 'handler';
   public const IF_EXISTS                  = 'if exists';
+  public const IMMUTABLE                  = 'immutable';
   public const IN                         = 'in';
   public const INOUT                      = 'inout';
   public const IN_SCHEMA                  = 'in schema';
@@ -57,10 +62,12 @@ class c_database_string {
   public const INSERT                     = 'insert';
   public const IS_TEMPLATE                = 'is_template';
   public const LANGUAGE                   = 'language';
+  public const LEAKPROOF                  = 'leakproof';
   public const MATERIALIZED_VIEW          = 'materialized view';
   public const NO_HANDLER                 = 'no handler';
   public const NO_INHERIT                 = 'no inherit';
   public const NO_VALIDATOR               = 'no validator';
+  public const NOT_LEAKPROOF              = 'not leakproof';
   public const NOT_NULL                   = 'not null';
   public const NOT_VALID                  = 'not valid';
   public const ON_FUNCTIONS               = 'on functons';
@@ -75,6 +82,7 @@ class c_database_string {
   public const ORDER_BY                   = 'order by';
   public const OUT                        = 'out';
   public const OWNER_TO                   = 'owner to';
+  public const PARALLEL                   = 'parallel';
   public const PROCEDURAL                 = 'procedural';
   public const PUBLIC                     = 'public';
   public const REFERENCES                 = 'references';
@@ -85,9 +93,15 @@ class c_database_string {
   public const RESET                      = 'reset';
   public const RESET_ALL                  = 'reset all';
   public const RESTRICT                   = 'restrict';
+  public const RESTRICTED                 = 'restricted';
+  public const RETURNS_NULL_ON_NULL_INPUT = 'returns null on null input';
   public const REVOKE                     = 'revoke';
   public const ROLE                       = 'role';
+  public const ROWS                       = 'rows';
+  public const SAFE                       = 'safe';
   public const SCHEMA                     = 'schema';
+  public const SECURITY_DEFINER           = 'security definer';
+  public const SECURITY_INVOKER           = 'security invoker';
   public const SELECT                     = 'select';
   public const SEQUENCE                   = 'sequence';
   public const SERVER                     = 'server';
@@ -97,6 +111,8 @@ class c_database_string {
   public const SET_TABLESPACE             = 'set tablespace';
   public const SET_WITH_OIDS              = 'set with oids';
   public const SET_WITHOUT_OIDS           = 'set without oids';
+  public const STABLE                     = 'stable';
+  public const STRICT                     = 'strict';
   public const TABLE                      = 'table';
   public const TEXT_SEARCH_CONFIGURATION  = 'text search configuration';
   public const TEXT_SEARCH_DICTIONARY     = 'text search dictionary';
@@ -108,6 +124,7 @@ class c_database_string {
   public const TRUNCATE                   = 'truncate';
   public const TYPE                       = 'type';
   public const TO                         = 'to';
+  public const UNSAFE                     = 'unsafe';
   public const UPDATE                     = 'update';
   public const USAGE                      = 'usage';
   public const USER                       = 'user';
@@ -117,6 +134,7 @@ class c_database_string {
   public const VALIDATOR                  = 'validator';
   public const VALIDATE_CONSTRAINT        = 'validate constraint';
   public const VARIADIC                   = 'variadic';
+  public const VOLATILE                   = 'volatile';
   public const VIEW                       = 'view';
   public const WITH                       = 'with';
   public const WITH_GRANT_OPTION          = 'with grant option';

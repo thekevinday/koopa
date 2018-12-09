@@ -83,10 +83,10 @@ trait t_database_set {
   }
 
   /**
-   * Get the currently assigned sql set.
+   * Get the currently assigned set settings.
    *
-   * @return c_base_return_int|c_base_return_null
-   *   A (c_database_set) code representing the set on success.
+   * @return c_base_return_array|c_base_return_null
+   *   An array containing set settings on success.
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -95,53 +95,11 @@ trait t_database_set {
       return new c_base_return_null();
     }
 
-    if (is_int($this->set['type'])) {
-      return c_base_return_int::s_new($this->set['type']);
+    if (is_array($this->set)) {
+      return c_base_return_array::s_new($this->set);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned sql set parameter value.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   A set parameter value on success.
-   *   NULL without error bit set is returned if not assigned.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_set_parameter() {
-    if (is_null($this->set) || is_null($this->set['parameter'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->set['parameter'])) {
-      return c_base_return_string::s_new($this->set['parameter']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the currently assigned sql set value value.
-   *
-   * @return c_base_return_string|c_base_return_null
-   *   A set value value on success.
-   *   NULL without error bit set is returned if not assigned.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_set_value() {
-    if (is_null($this->set) || is_null($this->set['value'])) {
-      return new c_base_return_null();
-    }
-
-    if (is_string($this->set['value'])) {
-      return c_base_return_string::s_new($this->set['value']);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

@@ -14,8 +14,6 @@ require_once('common/database/classes/database_query.php');
 /**
  * The class for building and returning a Postgresql ALTER COALATION query string.
  *
- * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
  */
 class c_database_alter_coalation extends c_database_query {
