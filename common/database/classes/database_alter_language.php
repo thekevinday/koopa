@@ -59,10 +59,14 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = NULL;
+    if (!is_string($this->name)) {
+      return new c_base_return_false();
+    }
 
     // @todo
 
-    return new c_base_return_true();
+    $this->value = static::p_QUERY_COMMAND;
+    $this->value .= ' ' . $value;
+    unset($value);
   }
 }

@@ -24,7 +24,7 @@ require_once('common/database/traits/database_set_schema.php');
  *
  * @see: https://www.postgresql.org/docs/current/static/sql-alterfunction.html
  */
-class c_database_alter_coalation extends c_database_query {
+class c_database_alter_function extends c_database_query {
   use t_database_argument_type;
   use t_database_depends_on_extension;
   use t_database_function_action;

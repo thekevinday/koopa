@@ -3,7 +3,7 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with set/reset.
+ * These traits are associated with set.
  *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
@@ -33,7 +33,7 @@ trait t_database_set {
    *   (optional) When non-NULL this is the configuration parameter.
    *   When NULL, DEFAULT is used if applicablem otherwise this is ignored.
    * @param string|null $value
-   *   (optional) When non-NULL this is the value.
+   *   (optional) When non-NULL this is the value associated with the parameter.
    *   When NULL, this is ignored.
    *
    * @return c_base_return_status
@@ -51,13 +51,13 @@ trait t_database_set {
       return c_base_return_error::s_false($error);
     }
 
-    if ($set == e_database_set::TO || $set == e_database_set::EQUAL) {
+    if ($set === e_database_set::TO || $set === e_database_set::EQUAL) {
       if (!is_null($parameter) || !is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
-      if (!is_null($value) || !is_string($value)) {
+      if (!is_null($value) && !is_string($value)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }

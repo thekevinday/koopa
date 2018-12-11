@@ -76,6 +76,6 @@ trait t_database_set_tablespace {
       return NULL;
     }
 
-    return c_database_string::SET_TABLESPACE . ' (' . $this->set_tablespace . ')';
+    return c_database_string::SET_TABLESPACE . ' ' . $this->set_tablespace;
   }
 }
