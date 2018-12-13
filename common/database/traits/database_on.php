@@ -83,10 +83,6 @@ trait t_database_on {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_on() {
-    if (is_null($this->on)) {
-      return NULL;
-    }
-
     $value = NULL;
     switch($this->on) {
       case e_database_on::TABLES_TO:

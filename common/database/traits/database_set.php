@@ -113,10 +113,6 @@ trait t_database_set {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set() {
-    if (is_null($this->set)) {
-      return NULL;
-    }
-
     $value = NULL;
     if ($this->set['type'] === e_database_set::TO) {
       if (is_null($this->set['parameter'])) {

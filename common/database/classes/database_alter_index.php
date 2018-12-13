@@ -33,8 +33,8 @@ class c_database_alter_index extends c_database_query {
   use t_database_no_wait;
   use t_database_owned_by;
   use t_database_rename_to;
-  use t_database_reset_index_storage_parameter;
-  use t_database_set_index_storage_parameter;
+  use t_database_reset_storage_parameter;
+  use t_database_set_storage_parameter; // @todo: override the storage parameter to limit/restrict parameters to index storage parameters.
   use t_database_set_tablespace;
 
   protected const p_QUERY_COMMAND = 'alter index';
@@ -108,7 +108,7 @@ class c_database_alter_index extends c_database_query {
       $if_exists = ' ' . $this->p_do_build_if_exists();
     }
 
-    $value = $this->name;
+    $value = $this->p_do_build_name();
     if (is_string($this->rename_to)) {
       $value .= ' ' . $this->p_do_build_rename_to();
     }
@@ -129,7 +129,7 @@ class c_database_alter_index extends c_database_query {
       $if_exists = NULL;
       $value = c_database_string::ALL_IN_TABLESPACE . ' ' . $value;
 
-      if (is_array($this->owned_by)) {
+      if (!is_null($this->owned_by)) {
         $value .= ' ' . $this->p_do_build_owned_by();
       }
 

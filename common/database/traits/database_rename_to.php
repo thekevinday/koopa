@@ -72,10 +72,6 @@ trait t_database_rename_to {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_rename_to() {
-    if (is_null($this->rename_to)) {
-      return NULL;
-    }
-
     return c_database_string::RENAME_TO . ' ' . $this->rename_to;
   }
 }

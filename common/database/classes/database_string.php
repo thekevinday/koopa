@@ -16,6 +16,7 @@ class c_database_string {
   public const AGGREGATE                             = 'aggregate';
   public const ALL                                   = 'all';
   public const ALLOW_CONNECTIONS                     = 'allow_connections';
+  public const ALTER                                 = 'alter';
   public const AS                                    = 'as';
   public const ASCEND                                = 'asc';
   public const AUTOSUMMARIZE                         = 'autosummarize';
@@ -35,7 +36,9 @@ class c_database_string {
   public const CALLED_ON_NULL_INPUT                  = 'called on null input';
   public const CASCADE                               = 'cascade';
   public const CAST                                  = 'cast';
+  public const CLUSTER_ON                            = 'cluster on';
   public const COLLATION                             = 'collation';
+  public const COLUMN                                = 'column';
   public const CONNECTION_LIMIT                      = 'connection limit';
   public const CONVERSION                            = 'conversion';
   public const COST                                  = 'cost';
@@ -54,6 +57,7 @@ class c_database_string {
   public const ENABLE_TRIGGER                        = 'enable trigger';
   public const EVENT_TRIGGER                         = 'event trigger';
   public const EXECUTE                               = 'execute';
+  public const EXTENDED                              = 'extended';
   public const EXTERNAL                              = 'external';
   public const FALSE                                 = 'false';
   public const FAST_UPDATE                           = 'fastupdate';
@@ -81,11 +85,14 @@ class c_database_string {
   public const LANGUAGE                              = 'language';
   public const LEAKPROOF                             = 'leakproof';
   public const LOG_AUTOVACUUM_MIN_DURATION           = 'log_autovacuum_min_duration';
+  public const MAIN                                  = 'main';
   public const MATERIALIZED_VIEW                     = 'materialized view';
+  public const N_DISTINCT                            = 'n_distinct';
+  public const N_DISTINCT_INHERITED                  = 'n_distinct_inherited';
   public const NO_HANDLER                            = 'no handler';
   public const NO_INHERIT                            = 'no inherit';
   public const NO_VALIDATOR                          = 'no validator';
-  public const NO_WAIT                               = 'no wait';
+  public const NO_WAIT                               = 'nowait';
   public const NOT_LEAKPROOF                         = 'not leakproof';
   public const NOT_NULL                              = 'not null';
   public const NOT_VALID                             = 'not valid';
@@ -105,6 +112,7 @@ class c_database_string {
   public const PAGES_PER_RANGE                       = 'pages_per_range';
   public const PARALLEL                              = 'parallel';
   public const PARALLEL_WORKERS                      = 'parallel_workers';
+  public const PLAIN                                 = 'plain';
   public const PROCEDURAL                            = 'procedural';
   public const PUBLIC                                = 'public';
   public const REFERENCES                            = 'references';
@@ -130,8 +138,11 @@ class c_database_string {
   public const SET                                   = 'set';
   public const SET_DEFAULT                           = 'set default';
   public const SET_SCHEMA                            = 'set schema';
+  public const SET_STATISTICS                        = 'set statistics';
+  public const SET_STORAGE                           = 'set storage';
   public const SET_TABLESPACE                        = 'set tablespace';
   public const SET_WITH_OIDS                         = 'set with oids';
+  public const SET_WITHOUT_CLUSTER                   = 'set without cluster';
   public const SET_WITHOUT_OIDS                      = 'set without oids';
   public const STABLE                                = 'stable';
   public const STRICT                                = 'strict';

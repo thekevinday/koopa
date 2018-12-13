@@ -10,7 +10,7 @@ namespace n_koopa;
 /**
  * Codes associated with database cascade/restrict.
  */
-class e_database_on {
+class e_database_cascade {
   public const NONE     = 0;
   public const CASCADE  = 1;
   public const RESTRICT = 2;

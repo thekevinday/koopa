@@ -96,10 +96,6 @@ trait t_database_for_role {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_for_role() {
-    if (is_null($this->for_role)) {
-      return NULL;
-    }
-
     return c_database_string::FOR_ROLE . ' ' . implode(', ', $this->for_role);
   }
 }

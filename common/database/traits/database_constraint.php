@@ -134,10 +134,6 @@ trait t_database_constraint {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_constraint() {
-    if (is_null($this->constraint)) {
-      return NULL;
-    }
-
     $value = NULL;
     if ($this->constraint['type'] === e_database_constraint::ADD) {
       if (is_string($this->constraint['name'])) {

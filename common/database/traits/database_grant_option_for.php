@@ -78,10 +78,6 @@ trait t_database_grant_option_for {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_grant_option_for() {
-    if (is_null($this->grant_option_for)) {
-      return NULL;
-    }
-
     return $this->grant_option_for ? c_database_string::GRANT_OPTION_FOR : NULL;
   }
 }

@@ -8,12 +8,12 @@
 namespace n_koopa;
 
 /**
- * Codes associated with postgresql user/session information.
+ * Codes associated with database set storage.
  */
-class e_database_user {
-  public const NONE    = 0;
-  public const CURRENT = 1;
-  public const SESSION = 2;
-  public const NAME    = 3;
-  public const ALL     = 4;
+class e_database_set_storage {
+  public const NONE     = 0;
+  public const EXTENDED = 1;
+  public const EXTERNAL = 2;
+  public const MAIN     = 3;
+  public const PLAIN    = 4;
 }

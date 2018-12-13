@@ -319,7 +319,7 @@ class c_database_alter_foreign_table extends c_database_query {
 
       $value .= ' ' . $this->p_do_build_rename_column();
     }
-    else if (is_array($this->rename_to)) {
+    else if (is_string($this->rename_to)) {
       $value .= is_null($value) ? '' : ' ';
       $value .= $this->p_do_build_rename_to();
     }

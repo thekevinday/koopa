@@ -24,7 +24,7 @@ trait t_database_handler {
    * Set the HANDLER settings.
    *
    * @param int|null $handler
-   *   The intege representing handler/no-handler.
+   *   The integer representing handler/no-handler.
    *   Set to NULL to disable.
    * @param string|null $handler_function
    *   The handler function name or null when NO_HANDLER is specified.
@@ -96,10 +96,6 @@ trait t_database_handler {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_handler() {
-    if (is_null($this->handler)) {
-      return NULL;
-    }
-
     $value = NULL;
     if ($this->handler['type'] === e_database_handler::HANDLER) {
       if (isset($this->handler['name'])) {

@@ -24,7 +24,7 @@ trait t_database_validator {
    * Set the VALIDATOR settings.
    *
    * @param int|null $validator
-   *   The intege representing validator/no-validator.
+   *   The integer representing validator/no-validator.
    *   Set to NULL to disable.
    * @param string|null $validator_function
    *   The validator function name or null when NO_VALIDATOR is specified.
@@ -96,10 +96,6 @@ trait t_database_validator {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_validator() {
-    if (is_null($this->validator)) {
-      return NULL;
-    }
-
     $value = NULL;
     if ($this->validator['type'] == e_database_validator::VALIDATOR) {
       if (isset($this->validator['name'])) {

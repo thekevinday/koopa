@@ -153,10 +153,6 @@ trait t_database_function_action {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_function_action() {
-    if (is_null($this->function_action)) {
-      return NULL;
-    }
-
     $values = [];
     foreach ($this->function_action as $function_action) {
       if ($function_action['type'] === e_database_function_action::CALLED_ON_NULL_INPUT) {

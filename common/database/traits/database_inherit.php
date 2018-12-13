@@ -84,10 +84,6 @@ trait t_database_inherit {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_inherit() {
-    if (is_null($this->inherit)) {
-      return NULL;
-    }
-
     $value = $this->inherit['inherit'] ? c_database_string::INHERIT : c_database_string::NO_INHERIT;
     $value .= ' ' . $this->inherit['name'];
     return $value;

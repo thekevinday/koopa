@@ -115,10 +115,6 @@ trait t_database_enable_trigger {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_enable_trigger() {
-    if (is_null($this->enable_trigger)) {
-      return NULL;
-    }
-
     $value = NULL;
     switch ($this->enable_trigger['type']) {
       case e_database_enable_trigger::ALWAYS:

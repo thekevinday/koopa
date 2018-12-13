@@ -23,8 +23,8 @@ trait t_database_owned_by {
   /**
    * Assigns the SQL owned_by.
    *
-   * @param int|null $owned_by
-   *   Set a owned_by code.
+   * @param int|string|null $owned_by
+   *   Set a owned_by code or name.
    *   Set to NULL to disable.
    *   When NULL, this will remove all values.
    *
@@ -39,23 +39,18 @@ trait t_database_owned_by {
     }
 
     if (is_int($owned_by)) {
-      // no reason to add any owned_by once ALL is present.
-      if ($this->owned_by === e_database_owned_by::ALL) {
+      if ($owned_by === e_database_user::ALL) {
+        $this->owned_by = e_database_user::ALL;
+
         return new c_base_return_true();
       }
-
-      if ($owned_by === e_database_owned_by::ALL) {
-        $this->owned_by = e_database_owned_by::ALL;
-      }
-      else {
-        if (!is_array($this->owned_by)) {
-          $this->owned_by = [];
-        }
-
-        $this->owned_by[] = $owned_by;
+    }
+    else if (is_string($owned_by)) {
+      if (!is_array($this->owned_by)) {
+        $this->owned_by = [];
       }
 
-      return new c_base_return_true();
+      $this->owned_by[] = $owned_by;
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'owned_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
@@ -69,7 +64,7 @@ trait t_database_owned_by {
    *   (optional) Get the owned_by at the specified index.
    *   When NULL, all owned_by are returned.
    *
-   * @return c_base_return_int|c_base_return_array|c_base_return_null
+   * @return c_base_return_int|c_base_return_string|c_base_return_array|c_base_return_null
    *   An array of owned_by or NULL if not defined.
    *   A single owned_by is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
@@ -80,20 +75,26 @@ trait t_database_owned_by {
     }
 
     if (is_null($index)) {
-      if ($this->owned_by === e_database_owned_by::ALL) {
+      if ($this->owned_by === e_database_user::ALL) {
         return c_base_return_array::s_new([$this->owned_by]);
       }
       else if (is_array($this->owned_by)) {
         return c_base_return_array::s_new($this->owned_by);
       }
     }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->owned_by) && is_int($this->owned_by[$index])) {
-        return clone($this->owned_by[$index]);
+    else if (is_int($index)) {
+      if (array_key_exists($index, $this->owned_by)) {
+        if (is_int($this->owned_by[$index])) {
+          return c_base_return_int::s_new($this->owned_by[$index]);
+        }
+        else if (is_string($this->owned_by[$index])) {
+          return c_base_return_string::s_new($this->owned_by[$index]);
+        }
       }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owned_by[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+      else {
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owned_by[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+        return c_base_return_error::s_null($error);
+      }
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owned_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -110,10 +111,15 @@ trait t_database_owned_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_owned_by() {
-    if (is_null($this->owned_by)) {
-      return NULL;
+    $owned_by = c_database_string::OWNED_BY . ' ';
+
+    if ($this->owned_by === e_database_user::ALL) {
+      $owned_by .= c_database_string::ALL;
+    }
+    else {
+      $owned_by .= implode(', ', $this->owned_by);
     }
 
-    return c_database_string::OWNED_BY . ' ' . implode(', ', $this->owned_by);
+    return $owned_by;
   }
 }

@@ -96,10 +96,6 @@ trait t_database_add_user {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_add_user() {
-    if (is_null($this->add_user)) {
-      return NULL;
-    }
-
     $values = [];
     foreach ($this->add_user['names'] as $name) {
       if ($name === e_database_user::CURRENT) {

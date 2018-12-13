@@ -72,10 +72,6 @@ trait t_database_depends_on_extension {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_depends_on_extension() {
-    if (is_null($this->depends_on_extension)) {
-      return NULL;
-    }
-
     return c_database_string::DEPENDS_ON_EXTENSION . ' ' . $this->depends_on_extension;
   }
 }

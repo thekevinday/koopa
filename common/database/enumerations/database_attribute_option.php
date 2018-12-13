@@ -8,12 +8,10 @@
 namespace n_koopa;
 
 /**
- * Codes associated with postgresql user/session information.
+ * Codes associated with database attribute option.
  */
-class e_database_user {
-  public const NONE    = 0;
-  public const CURRENT = 1;
-  public const SESSION = 2;
-  public const NAME    = 3;
-  public const ALL     = 4;
+class e_database_attribute_option {
+  public const NONE                 = 0;
+  public const N_DISTINCT           = 1;
+  public const N_DISTINCT_INHERITED = 2;
 }

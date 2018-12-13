@@ -15,16 +15,16 @@ require_once('common/base/classes/base_return.php');
 require_once('common/database/classes/database_string.php');
 
 /**
- * Provide the sql WITH GRANT OPTION functionality.
+ * Provide the sql SET WITHOUT CLUSTER functionality.
  */
-trait t_database_with_grant_option {
-  protected $with_grant_option;
+trait t_database_set_without_cluster {
+  protected $set_without_cluster;
 
   /**
-   * Set the WITH GRANT OPTION value.
+   * Set the SET WITHOUT CLUSTER value.
    *
-   * @param bool|null $with_grant_option
-   *   Set to TRUE for WITH GRANT OPTION.
+   * @param bool|null $set_without_cluster
+   *   Set to TRUE for SET WITHOUT CLUSTER.
    *   Set to FALSE for nothing.
    *   Set to NULL to disable.
    *
@@ -32,18 +32,18 @@ trait t_database_with_grant_option {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_with_grant_option($with_grant_option) {
-    if (is_null($with_grant_option)) {
-      $this->with_grant_option = NULL;
+  public function set_set_without_cluster($set_without_cluster) {
+    if (is_null($set_without_cluster)) {
+      $this->set_without_cluster = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_bool($with_grant_option)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'with_grant_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    if (!is_bool($set_without_cluster)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'set_without_cluster', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $this->with_grant_option = $with_grant_option;
+    $this->set_without_cluster = $set_without_cluster;
     return new c_base_return_true();
   }
 
@@ -51,20 +51,20 @@ trait t_database_with_grant_option {
    * Get the currently assigned with grant option value.
    *
    * @return c_base_return_bool|c_base_return_null
-   *   TRUE for WITH GRANT OPTION on success.
+   *   TRUE for SET WITHOUT CLUSTER on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_with_grant_option() {
-    if (is_null($this->with_grant_option)) {
+  public function get_set_without_cluster() {
+    if (is_null($this->set_without_cluster)) {
       return new c_base_return_null();
     }
 
-    if (is_bool($this->with_grant_option)) {
-      return c_base_return_bool::s_new($this->with_grant_option);
+    if (is_bool($this->set_without_cluster)) {
+      return c_base_return_bool::s_new($this->set_without_cluster);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'with_grant_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_without_cluster', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -77,7 +77,7 @@ trait t_database_with_grant_option {
    *   A string is returned on success.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_with_grant_option() {
-    return $this->with_grant_option ? c_database_string::WITH_GRANT_OPTION : NULL;
+  protected function p_do_build_set_without_cluster() {
+    return $this->set_without_cluster ? c_database_string::SET_WITHOUT_CLUSTER : NULL;
   }
 }

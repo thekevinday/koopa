@@ -96,10 +96,6 @@ trait t_database_in_schema {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_in_schema() {
-    if (is_null($this->in_schema)) {
-      return NULL;
-    }
-
     return c_database_string::IN_SCHEMA . ' ' . implode(', ', $this->in_schema);
   }
 }

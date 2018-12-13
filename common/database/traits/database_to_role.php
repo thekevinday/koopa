@@ -113,10 +113,6 @@ trait t_database_to_role {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_to_role() {
-    if (is_null($this->to_role)) {
-      return NULL;
-    }
-
     $values = [];
     foreach ($this->to_role as $to_role) {
       if ($this->to_role['type'] === e_database_role::PUBLIC) {

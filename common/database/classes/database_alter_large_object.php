@@ -10,14 +10,19 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_oid.php');
+require_once('common/database/traits/database_owner_to.php');
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql ALTER LARGE OBJECT query string.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-alterlargeobject.html
  */
-class c_database_alter_coalation extends c_database_query {
-  protected const p_QUERY_COMMAND = 'alter coalation';
+class c_database_alter_large_object extends c_database_query {
+  use t_database_oid;
+  use t_database_owner_to;
+
+  protected const p_QUERY_COMMAND = 'alter large object';
 
 
   /**
@@ -25,12 +30,18 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->oid      = NULL;
+    $this->owner_to = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->oid);
+    unset($this->owner_to);
+
     parent::__destruct();
   }
 
@@ -59,9 +70,14 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = NULL;
+    if (!is_string($this->oid) || !is_array($this->owner_to)) {
+      return new c_base_return_false();
+    }
 
-    // @todo
+    $this->value = static::p_QUERY_COMMAND;
+    $this->value .= ' ' . $this->p_do_build_oid();
+    $this->value .= ' ' . $this->p_do_build_owner_to();
+    unset($value);
 
     return new c_base_return_true();
   }

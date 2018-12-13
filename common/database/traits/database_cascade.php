@@ -24,7 +24,7 @@ trait t_database_cascade {
    * Set the HANDLER settings.
    *
    * @param int|null $cascade
-   *   The intege representing cascade/no-cascade.
+   *   The integer representing cascade/no-cascade.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
@@ -77,10 +77,6 @@ trait t_database_cascade {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_cascade() {
-    if (is_null($this->cascade)) {
-      return NULL;
-    }
-
     $value = NULL;
     if ($this->cascade['type'] === e_database_cascade::CASCADE) {
       if (isset($this->cascade['name'])) {

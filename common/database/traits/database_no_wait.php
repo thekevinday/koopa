@@ -78,10 +78,6 @@ trait t_database_no_wait {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_no_wait() {
-    if (is_null($this->no_wait)) {
-      return NULL;
-    }
-
     return $this->no_wait ? c_database_string::NO_WAIT : NULL;
   }
 }

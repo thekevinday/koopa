@@ -106,10 +106,6 @@ trait t_database_reset_storage_parameter {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_reset_storage_parameter() {
-    if (is_null($this->reset_storage_parameter)) {
-      return NULL;
-    }
-
     $values = [];
     foreach ($this->reset_storage_parameter as $storage_parameter) {
       if ($storage_parameter === e_database_storage_parameter::AUTOSUMMARIZE) {

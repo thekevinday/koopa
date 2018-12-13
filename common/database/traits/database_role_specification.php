@@ -84,10 +84,6 @@ trait t_database_role_specification {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_role_specification() {
-    if (is_null($this->role_specification)) {
-      return NULL;
-    }
-
     $value = NULL;
     if (is_string($this->role_specification)) {
       $value = $this->role_specification;

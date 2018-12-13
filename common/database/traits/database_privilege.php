@@ -110,10 +110,6 @@ trait t_database_privilege {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_privilege() {
-    if (is_null($this->privilege)) {
-      return NULL;
-    }
-
     if ($this->privilege === e_database_privilege::ALL) {
       return c_database_string::ALL;
     }

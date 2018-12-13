@@ -120,10 +120,6 @@ trait t_database_argument_type {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_argument_type() {
-    if (is_null($this->argument_type)) {
-      return NULL;
-    }
-
     $values = [];
     foreach ($this->argument_type as $argument_type) {
       $value = '';
