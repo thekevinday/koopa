@@ -22,6 +22,18 @@ trait t_base_return_value {
   protected $value;
 
   /**
+   * Provide to string object override.
+   *
+   * @return string
+   *   The string representation of the value contained in this object.
+   *
+   * @see: http://php.net/manual/en/language.oop5.magic.php@object.tostring
+   */
+  public function __toString() {
+    return strval($this->value);
+  }
+
+  /**
    * Assign the value.
    *
    * If the value is an object, then this should create a copy of the object (a clone).

@@ -841,6 +841,18 @@ class c_base_return_array extends c_base_return_value {
   }
 
   /**
+   * Provide to string object override.
+   *
+   * @return string
+   *   An empty string.
+   *
+   * @see: http://php.net/manual/en/language.oop5.magic.php@object.tostring
+   */
+  public function __toString() {
+    return "";
+  }
+
+  /**
    * Assign the value.
    *
    * @param array $value
@@ -1213,6 +1225,18 @@ class c_base_return_object extends c_base_return_value {
   }
 
   /**
+   * Provide to string object override.
+   *
+   * @return string
+   *   An empty string.
+   *
+   * @see: http://php.net/manual/en/language.oop5.magic.php@object.tostring
+   */
+  public function __toString() {
+    return "";
+  }
+
+  /**
    * Assign the value.
    *
    * @param object $value
@@ -1270,6 +1294,18 @@ class c_base_return_resource extends c_base_return_value {
    */
   public static function s_value($return) {
     return self::p_s_value($return, __CLASS__);
+  }
+
+  /**
+   * Provide to string object override.
+   *
+   * @return string
+   *   An empty string.
+   *
+   * @see: http://php.net/manual/en/language.oop5.magic.php@object.tostring
+   */
+  public function __toString() {
+    return "";
   }
 
   /**
