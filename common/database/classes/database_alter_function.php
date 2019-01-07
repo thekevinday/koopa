@@ -93,7 +93,7 @@ class c_database_alter_function extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -110,16 +110,16 @@ class c_database_alter_function extends c_database_query {
         $value .= ' ' . $this->p_do_build_restrict();
       }
     }
-    else if (is_string($this->rename_to)) {
+    else if (isset($this->rename_to)) {
       $value .= $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to)) {
+    else if (isset($this->owner_to)) {
       $value .= $this->p_do_build_owner_to();
     }
-    else if (is_string($this->set_schema)) {
+    else if (isset($this->set_schema)) {
       $value .= $this->p_do_build_set_schema();
     }
-    else if (is_string($this->depends_on_extension)) {
+    else if (isset($this->depends_on_extension)) {
       $value .= $this->p_do_build_depends_on_extension();
     }
     else {

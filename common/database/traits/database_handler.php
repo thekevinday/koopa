@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with handler.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -41,10 +39,17 @@ trait t_database_handler {
 
     if ($handler === e_database_handler::HANDLER) {
       if (is_string($handler_function)) {
+        $placeholder = $this->add_placeholder($handler_function);
+        if ($placeholder->has_error()) {
+          unset($action);
+          return c_base_return_error::s_false($placeholder->get_error());
+        }
+
         $this->handler = [
           'type' => $handler,
-          'name' => $handler_function,
+          'name' => $placeholder,
         ];
+        unset($placeholder);
 
         return new c_base_return_true();
       }

@@ -104,7 +104,7 @@ class c_database_alter_coalation extends c_database_query {
         }
         break;
       case e_database_action::OWNER_TO:
-        if (is_string($this->owner_to)) {
+        if (isset($this->owner_to)) {
           $value .= $this->p_do_build_owner_to();
         }
         else {
@@ -113,7 +113,7 @@ class c_database_alter_coalation extends c_database_query {
         }
         break;
       case e_database_action::RENAME_TO:
-        if (is_string($this->rename_to)) {
+        if (isset($this->rename_to)) {
           $value .= $this->p_do_build_rename_to();
         }
         else {

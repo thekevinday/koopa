@@ -70,7 +70,7 @@ class c_database_alter_large_object extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->oid) || !is_array($this->owner_to)) {
+    if (is_null($this->oid) || !is_array($this->owner_to)) {
       return new c_base_return_false();
     }
 

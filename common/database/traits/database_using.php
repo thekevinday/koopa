@@ -11,62 +11,62 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 /**
- * Provide the sql NAME functionality.
+ * Provide the sql USING functionality.
  */
-trait t_database_name {
-  protected $name;
+trait t_database_using {
+  protected $using;
 
   /**
-   * Set the NAME settings.
+   * Set the USING settings.
    *
-   * @param string|null $name
-   *   The name to use.
+   * @param string|null $using
+   *   The using to use.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_name($name) {
-    if (is_null($name)) {
-      $this->name = NULL;
+  public function set_using($using) {
+    if (is_null($using)) {
+      $this->using = NULL;
       return new c_base_return_true();
     }
 
-    if (is_string($name)) {
-      $placeholder = $this->add_placeholder($name);
+    if (is_string($using)) {
+      $placeholder = $this->add_placeholder($using);
       if ($placeholder->has_error()) {
         return c_base_return_error::s_false($placeholder->get_error());
       }
 
-      $this->name = $placeholder;
+      $this->using = $placeholder;
       unset($placeholder);
 
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'using', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
     return c_base_return_error::s_false($error);
   }
 
   /**
-   * Get the currently assigned name.
+   * Get the currently assigned using.
    *
    * @return i_database_query_placeholder|c_base_return_null
-   *   A name query placeholder on success.
+   *   A using query placeholder on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_name() {
-    if (is_null($this->name)) {
+  public function get_using() {
+    if (is_null($this->using)) {
       return new c_base_return_null();
     }
 
-    if (isset($this->name)) {
-      return clone($this->name);
+    if (isset($this->using)) {
+      return clone($this->using);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'using', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -79,7 +79,7 @@ trait t_database_name {
    *   A string is returned on success.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_name() {
-    return strval($this->name);
+  protected function p_do_build_using() {
+    return strval($this->using);
   }
 }

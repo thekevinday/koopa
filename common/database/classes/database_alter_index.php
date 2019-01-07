@@ -99,7 +99,7 @@ class c_database_alter_index extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -109,13 +109,13 @@ class c_database_alter_index extends c_database_query {
     }
 
     $value = $this->p_do_build_name();
-    if (is_string($this->rename_to)) {
+    if (isset($this->rename_to)) {
       $value .= ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->set_tablespace)) {
+    else if (isset($this->set_tablespace)) {
       $value .= ' ' . $this->p_do_build_set_tablespace();
     }
-    else if (is_string($this->depends_on_extension)) {
+    else if (isset($this->depends_on_extension)) {
       $if_exists = NULL;
       $value .= ' ' . $this->p_do_build_depends_on_extension();
     }
@@ -125,7 +125,7 @@ class c_database_alter_index extends c_database_query {
     else if (is_array($this->reset_storage_parameter)) {
       $value .= ' ' . $this->p_do_build_reset_storage_parameter();
     }
-    else if (is_string($this->set_tablespace)) {
+    else if (isset($this->set_tablespace)) {
       $if_exists = NULL;
       $value = c_database_string::ALL_IN_TABLESPACE . ' ' . $value;
 
@@ -142,7 +142,7 @@ class c_database_alter_index extends c_database_query {
 
     $this->value = static::p_QUERY_COMMAND;
 
-    if (is_string($if_exists)) {
+    if (isset($if_exists)) {
       $this->value .= $if_exists;
     }
     unset($if_exists);

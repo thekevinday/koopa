@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with SET index attribute_option.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -66,8 +64,13 @@ trait t_database_column_set {
     }
 
     if (is_string($name)) {
+      $placeholder = $this->add_placeholder($name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
       if (is_array($this->column_set)) {
-        $this->column_set['name'] = $name;
+        $this->column_set['name'] = $placeholder;
       }
       else {
         $this->column_set = [
@@ -76,6 +79,7 @@ trait t_database_column_set {
         ];
       }
     }
+    unset($placeholder);
 
     if (!is_null($attribute_option)) {
       $this->column_set['values'][] = [

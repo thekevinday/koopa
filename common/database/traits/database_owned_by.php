@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -50,7 +48,13 @@ trait t_database_owned_by {
         $this->owned_by = [];
       }
 
-      $this->owned_by[] = $owned_by;
+      $placeholder = $this->add_placeholder($owned_by);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $this->owned_by[] = $placeholder;
+      unset($placeholder);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'owned_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
@@ -64,7 +68,7 @@ trait t_database_owned_by {
    *   (optional) Get the owned_by at the specified index.
    *   When NULL, all owned_by are returned.
    *
-   * @return c_base_return_int|c_base_return_string|c_base_return_array|c_base_return_null
+   * @return c_base_return_int|i_database_query_placeholder|c_base_return_array|c_base_return_null
    *   An array of owned_by or NULL if not defined.
    *   A single owned_by is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
@@ -87,8 +91,8 @@ trait t_database_owned_by {
         if (is_int($this->owned_by[$index])) {
           return c_base_return_int::s_new($this->owned_by[$index]);
         }
-        else if (is_string($this->owned_by[$index])) {
-          return c_base_return_string::s_new($this->owned_by[$index]);
+        else if (isset($this->owned_by[$index])) {
+          return clone($this->owned_by[$index]);
         }
       }
       else {

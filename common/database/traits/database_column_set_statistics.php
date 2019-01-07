@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -46,10 +44,16 @@ trait t_database_column_set_statistics {
     }
 
     if (is_int($column_set_statistics)) {
+      $placeholder = $this->add_placeholder($name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
       $this->column_set_statistics = [
-        'name' => $name,
+        'name' => $placeholder,
         'value' => $value,
       ];
+      unset($placeholder);
 
       return new c_base_return_true();
     }

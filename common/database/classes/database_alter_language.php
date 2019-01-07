@@ -79,12 +79,12 @@ class c_database_alter_language extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
     $value = $this->p_do_build_name();
-    if (is_string($this->rename_to)) {
+    if (isset($this->rename_to)) {
       $value .= ' ' . $this->p_do_build_rename_to();
     }
     else if (is_array($this->owner_to)) {

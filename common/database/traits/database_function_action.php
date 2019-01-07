@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with function_action.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -103,8 +101,22 @@ trait t_database_function_action {
         return c_base_return_error::s_false($error);
       }
 
-      $action['parameter_1'] = $parameter_1;
-      $action['parameter_2'] = $parameter_2;
+      $placeholder = $this->add_placeholder($parameter_1);
+      if ($placeholder->has_error()) {
+        unset($action);
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $action['parameter_1'] = $placeholder;
+
+      $placeholder = $this->add_placeholder($parameter_2);
+      if ($placeholder->has_error()) {
+        unset($action);
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $action['parameter_2'] = $placeholder;
+      unset($placeholder);
     }
     else if ($function_action === e_database_function_action::SET_FROM || $function_action === e_database_function_action::RESET) {
       if (!is_string($parameter_1)) {
@@ -113,7 +125,14 @@ trait t_database_function_action {
         return c_base_return_error::s_false($error);
       }
 
-      $action['parameter_1'] = $parameter_1;
+      $placeholder = $this->add_placeholder($parameter_1);
+      if ($placeholder->has_error()) {
+        unset($action);
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $action['parameter_1'] = $placeholder;
+      unset($placeholder);
     }
 
     $this->function_action = $action;

@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -49,10 +47,24 @@ trait t_database_rename_column {
       return c_base_return_error::s_false($error);
     }
 
+    $placeholder_from = $this->add_placeholder($from_name);
+    if ($placeholder_from->has_error()) {
+      return c_base_return_error::s_false($placeholder_from->get_error());
+    }
+
+    $placeholder_to = $this->add_placeholder($to_name);
+    if ($placeholder_to->has_error()) {
+      unset($placeholder_from);
+      return c_base_return_error::s_false($placeholder_to->get_error());
+    }
+
     $this->rename_column = [
-      'from' => $from_name,
-      'to' => $to_name,
+      'from' => $placeholder_from,
+      'to' => $placeholder_to,
     ];
+    unset($placeholder_from);
+    unset($placeholder_to);
+
     return new c_base_return_true();
   }
 
@@ -87,6 +99,6 @@ trait t_database_rename_column {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_rename_column() {
-    return c_database_string::RENAME_COLUMN . ' ' . $this->rename_column['from'] . ' ' . c_database_string::TO . $this->rename_column['to'];
+    return c_database_string::RENAME_COLUMN . ' ' . $this->rename_column['from'] . ' ' . c_database_string::TO . ' ' . $this->rename_column['to'];
   }
 }

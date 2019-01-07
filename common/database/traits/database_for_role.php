@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -47,7 +45,13 @@ trait t_database_for_role {
       $this->for_role = [];
     }
 
-    $this->for_role[] = $for_role;
+    $placeholder = $this->add_placeholder($for_role);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
+    $this->for_role[] = $placeholder;
+    unset($placeholder);
     return new c_base_return_true();
   }
 
@@ -58,9 +62,9 @@ trait t_database_for_role {
    *   (optional) Get the for role at the specified index.
    *   When NULL, all for role values are returned.
    *
-   * @return c_base_return_string|c_base_return_array|c_base_return_null
+   * @return i_database_query_placeholder|c_base_return_array|c_base_return_null
    *   An array of for roles or NULL if not defined.
-   *   A single for role is returned if $index is an integer.
+   *   A single for role query placeholder is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
   public function get_for_role($index = NULL) {
@@ -74,8 +78,8 @@ trait t_database_for_role {
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->for_role) && is_string($this->for_role[$index])) {
-        return c_base_return_string::s_new($this->for_role[$index]);
+      if (is_int($index) && array_key_exists($index, $this->for_role) && isset($this->for_role[$index])) {
+        return clone($this->for_role[$index]);
       }
 
       $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'for_role[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

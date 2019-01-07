@@ -8,8 +8,14 @@
  * The following query parameter placeholders are reserved for use for auto-generation reasons:
  *   - :qp_# such that # is any valid whole number >= 0.
  *
- * @todo: a base class is needed for handling all query parameters because SQL functions may be used anywhere!
- *        This will make argument handling more complex than using simple integers, strings, etc..
+ * The query placeholders are intended to be auto-managed as much as possible.
+ * Whenever a string value is used, the implementing classes are expected to convert this to a query placeholder.
+ * Classes should handle string literals via PHP constants.
+ * The current design uses numeric array indexes that functions similar to a write-only manner.
+ * As a result, if any of the query placeholders are removed, then all values need to be re-assigned.
+ *
+ * @todo: Review the classes defined here to see if they are still needed.
+ *        (query arguments are likely to be removed as query placeholders are intended to be used.)
  *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
@@ -19,7 +25,11 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 require_once('common/database/interfaces/database_query.php');
-require_once('common/database/interfaces/database_query_parameter.php');
+require_once('common/database/interfaces/database_query_placeholder_bool.php');
+require_once('common/database/interfaces/database_query_placeholder_float.php');
+require_once('common/database/interfaces/database_query_placeholder_int.php');
+require_once('common/database/interfaces/database_query_placeholder_null.php');
+require_once('common/database/interfaces/database_query_placeholder_string.php');
 
 /**
  * The base class for building and returning a Postgresql query string.
@@ -33,7 +43,8 @@ require_once('common/database/interfaces/database_query_parameter.php');
 abstract class c_database_query extends c_base_return_string implements i_database_query {
   public const PARAMETER_NONE = 0;
 
-  protected const p_QUERY_COMMAND = '';
+  protected const p_QUERY_COMMAND     = '';
+  protected const p_QUERY_PLACEHOLDER = ':qp_';
 
   protected $placeholders;
 
@@ -77,6 +88,20 @@ abstract class c_database_query extends c_base_return_string implements i_databa
   }
 
   /**
+   * Provide to string object override.
+   *
+   * Unlike normal c_base_retun_value classes, this will return the placeholder name instead of value.
+   *
+   * @return string
+   *   The string representation of the placeholder name contained in this object.
+   *
+   * @see: http://php.net/manual/en/language.oop5.magic.php@object.tostring
+   */
+  public function __toString() {
+    return strval($this->get_name());
+  }
+
+  /**
    * Assign the value.
    *
    * This changes the behavior of the extended class from accepting only strings to accepting only c_database_query.
@@ -102,18 +127,32 @@ abstract class c_database_query extends c_base_return_string implements i_databa
    *
    * This does not sanitize the placeholder.
    *
-   * @param string $placeholder
-   *   The placeholder string, without the leading ':'.
-   * @param $value
-   *   The placeholder value the placeholder represents.
-   *   @todo: add placeholder types and validation?
+   * @param string $value
+   *   The value that the placeholder represents.
+   * @param int|null $placeholder
+   *   (optional) The placeholder array key id.
+   *   When NULL, the placeholder is appended.
    *
-   * @return c_base_return_status
-   *   TRUE if added, FALSE otherwise.
+   * @return i_database_query_placeholder|c_base_return_false
+   *   A query placeholder representing is returned on success.
    *   FALSE with the error bit set is returned on error.
    */
-  public function add_placeholder($placeholder, $value) {
-    if (!is_string($placeholder)) {
+  public function add_placeholder($value, $placeholder = NULL) {
+    if (!is_string($value)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_int($placeholder)) {
+      $total = count($this->placeholders);
+      if ($placeholder < 0 || $placeholder > $total) {
+        unset($total);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'placeholder', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+        return c_base_return_error::s_false($error);
+      }
+      unset($total);
+    }
+    else if (!is_null($placeholder)) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'placeholder', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
@@ -122,67 +161,113 @@ abstract class c_database_query extends c_base_return_string implements i_databa
       $this->placeholders = [];
     }
 
-    $this->placeholders[$placeholder] = $value;
-    return new c_base_return_true();
-  }
+    if (is_float($placeholder)) {
+      $placeholder_value = new c_database_query_placeholder_float();
+    }
+    else if (is_int($placeholder)) {
+      $placeholder_value = new c_database_query_placeholder_int();
+    }
+    else if (is_bool($placeholder)) {
+      $placeholder_value = new c_database_query_placeholder_bool();
+    }
+    else if (is_null($placeholder)) {
+      $placeholder_value = new c_database_query_placeholder_null();
+    }
+    else {
+      $placeholder_value = new c_database_query_placeholder_string();
+    }
 
-  /**
-   * Get a query parameter placeholder value.
-   *
-   * @param string $placeholder
-   *   Name of the placeholder to return the value of, without the leading ':'.
-   *
-   * @return c_base_return_value|c_base_return_status
-   *   The value assigned to the placeholder.
-   *   FALSE without the error bit set is returned if placeholder does not exist.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function get_placeholder($placeholder) {
-    if (!is_string($placeholder)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'placeholder', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    $result = $placeholder_value->set_prefix(static::p_QUERY_PLACEHOLDER);
+    if ($result->has_error()) {
+      return c_base_return_error::s_false($result->get_error());
+    }
+
+    if (!$placeholder_value->set_value($value)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'value', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_false($error);
     }
 
-    if (is_array($this->placeholders) && array_key_exists($placeholder, $this->placeholders)) {
-      return c_base_return_value::s_new($this->placeholders[$placeholder]);
+    if (is_null($placeholder)) {
+      $placeholder = count($this->placeholders) + 1;
+    }
+
+    $result = $placeholder_value->set_id($placeholder);
+    if ($result->has_error()) {
+      return c_base_return_error::s_false($result->get_error());
+    }
+    unset($result);
+
+    $this->placeholders[$placeholder] = $placeholder_value;
+
+    return $placeholder_value;
+  }
+
+  /**
+   * Get a query parameter placeholder value(s).
+   *
+   * To get an array of placeholders fit for PDO usage, instead use get_placeholders().
+   *
+   * @param int|null $index
+   *   (optional) Index of the placeholder.
+   *   Set to NULL to get all placeholders.
+   *
+   * @return i_database_query_placeholder|c_base_return_array|c_base_return_status
+   *   The placeholder assigned at the index.
+   *   When $index is NULL, an array of placeholders are returned.
+   *   FALSE without the error bit set is returned if placeholder does not exist.
+   *   FALSE with the error bit set is returned on error.
+   *   An empty array with the error bit set is returned on error when $index is NULL.
+   *
+   * @see: get_placeholders()
+   */
+  public function get_placeholder($index = NULL) {
+    if (is_null($index)) {
+      if (is_array($this->placeholders)) {
+        return c_base_return_array::s_new($this->placeholders);
+      }
+
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'placeholders', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+      return c_base_return_error::s_vale([], 'c_base_return_array', $error);
+    }
+    else if (!is_int($index)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
+    }
+
+    if (is_array($this->placeholders) && array_key_exists($index, $this->placeholders)) {
+      return $this->placeholders[$index];
     }
 
     return new c_base_return_false();
   }
 
   /**
-   * Get all query parameter placeholders assigned.
+   * Gets all placeholders in a array structure design for PDO input parameter arguments.
+   *
+   * This is intended to be used as a parameter for the dbo->prepare() or dbo->execute() methods.
+   * To simply get all of the placeholders in the original structure, instead call get_placeholder() with no arguments.
    *
    * @return c_base_return_array
-   *   An array of all assigned placeholders.
-   *   An empty array with the error bit set is returned on error.
+   *   An array for use as input_parameters.
+   *   An array with the error bit set is returned on error.
+   *
+   * @see: get_placeholder()
    */
   public function get_placeholders() {
     if (is_array($this->placeholders)) {
-      return c_base_return_array::s_new($this->placeholders);
+      $input_parameters = [];
+
+      foreach ($this->placeholders as $placeholder) {
+        if ($placeholder instanceof i_database_query_placeholder) {
+          $input_parameters[$placeholder->get_name()->get_value_exact()] = $placeholder->get_value_exact();
+        }
+      }
+
+      return c_base_return_array::s_new($input_parameters);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'query', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'placeholders', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_vale([], 'c_base_return_array', $error);
-  }
-
-  /**
-   * Remove a query parameter placeholder and its value.
-   *
-   * @param string $placeholder
-   *   Name of the placeholder to remove, without the leading ':'.
-   *
-   * @return c_base_return_status
-   *   TRUE if placeholder exists and is removed, FALSE otherwise.
-   *   FALSE with the error bit set is returned on error.
-   */
-  public function remove_placeholder($placeholder) {
-    if (is_array($this->placeholders) && array_key_exists($placeholder, $this->placeholders)) {
-      unset($this->placeholders[$placeholder]);
-      return new c_base_return_true();
-    }
-
-    return new c_base_return_false();
   }
 
   /**
@@ -237,6 +322,8 @@ abstract class c_database_query extends c_base_return_string implements i_databa
  *
  * SQL queries may be passed to other SQL queries, marking them as sub-queries.
  * This will most commonly be added to other expressions.
+ *
+ * @fixme: rewrite/replace/remove this.
  */
 class c_database_argument_query extends c_base_return_string implements i_database_query_parameter {
   protected $query;

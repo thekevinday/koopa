@@ -13,60 +13,60 @@ require_once('common/base/classes/base_return.php');
 /**
  * Provide the sql NAME functionality.
  */
-trait t_database_name {
-  protected $name;
+trait t_database_cluster_on {
+  protected $cluster_on;
 
   /**
-   * Set the NAME settings.
+   * Set the OID settings.
    *
-   * @param string|null $name
-   *   The name to use.
+   * @param string|null $index_name
+   *   The index name to use.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_name($name) {
-    if (is_null($name)) {
-      $this->name = NULL;
+  public function set_cluster_on($index_name) {
+    if (is_null($index_name)) {
+      $this->cluster_on = NULL;
       return new c_base_return_true();
     }
 
-    if (is_string($name)) {
-      $placeholder = $this->add_placeholder($name);
+    if (is_string($index_name)) {
+      $placeholder = $this->add_placeholder($index_name);
       if ($placeholder->has_error()) {
         return c_base_return_error::s_false($placeholder->get_error());
       }
 
-      $this->name = $placeholder;
+      $this->cluster_on = $placeholder;
       unset($placeholder);
 
       return new c_base_return_true();
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'index_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
     return c_base_return_error::s_false($error);
   }
 
   /**
-   * Get the currently assigned name.
+   * Get the currently assigned index name.
    *
    * @return i_database_query_placeholder|c_base_return_null
-   *   A name query placeholder on success.
+   *   A index name query placeholder on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_name() {
-    if (is_null($this->name)) {
+  public function get_cluster_on() {
+    if (is_null($this->cluster_on)) {
       return new c_base_return_null();
     }
 
-    if (isset($this->name)) {
-      return clone($this->name);
+    if (isset($this->cluster_on)) {
+      return clone($this->cluster_on);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'cluster_on', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -79,7 +79,7 @@ trait t_database_name {
    *   A string is returned on success.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_name() {
-    return strval($this->name);
+  protected function p_do_build_cluster_on() {
+    return strval($this->cluster_on);
   }
 }

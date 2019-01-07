@@ -286,7 +286,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::OWNER_TO:
-          if (!is_string($this->owner_to)) {
+          if (!isset($this->owner_to)) {
             unset($value);
             return new c_base_return_false();
           }
@@ -295,7 +295,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::RENAME_CONSTRAINT:
-          if (!is_string($this->constraint['name']) || !is_string($this->constraint['name_new'])) {
+          if (!isset($this->constraint['name']) || !isset($this->constraint['name_new'])) {
             unset($value);
             return new c_base_return_false();
           }
@@ -304,7 +304,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::RENAME_TO:
-          if (!is_string($this->rename_to)) {
+          if (!isset($this->rename_to)) {
             unset($value);
             return new c_base_return_false();
           }
@@ -320,7 +320,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::SET_DEFAULT:
-          if (!is_string($this->expression)) {
+          if (!isset($this->expression)) {
             unset($value);
             return new c_base_return_false();
           }
@@ -329,7 +329,7 @@ class c_database_alter_coalation extends c_database_query {
           break;
 
         case e_database_action::SET_SCHEMA:
-          if (!is_string($this->set_schema)) {
+          if (!isset($this->set_schema)) {
             unset($value);
             return new c_base_return_false();
           }

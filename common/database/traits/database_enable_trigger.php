@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -60,6 +58,11 @@ trait t_database_enable_trigger {
           unset($use_name);
           $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
           return c_base_return_error::s_false($error);
+        }
+
+        $use_name = $this->add_placeholder($name);
+        if ($use_name->has_error()) {
+          return c_base_return_error::s_false($placeholder->get_error());
         }
         break;
       case e_database_enable_trigger::ALL:

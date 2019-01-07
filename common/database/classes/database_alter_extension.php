@@ -87,7 +87,7 @@ class c_database_alter_extension extends c_database_query {
     switch($this->action) {
       case e_database_action::UPDATE:
         $value .= c_database_string::UPDATE;
-        if (is_string($this->action_parameter)) {
+        if (isset($this->action_parameter)) {
           $value .= ' ' . c_database_string::TO . ' ' . $this->action_parameter;
         }
         else {
@@ -96,7 +96,7 @@ class c_database_alter_extension extends c_database_query {
         }
         break;
       case e_database_action::SET_SCHEMA:
-        if (is_string($this->set_schema)) {
+        if (isset($this->set_schema)) {
           $value = $this->p_do_build_set_schema();
         }
         else {

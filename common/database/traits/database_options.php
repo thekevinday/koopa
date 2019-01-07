@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -60,10 +58,16 @@ trait t_database_options {
       $this->options = [];
     }
 
+    $placeholder = $this->add_placeholder($value);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
     $this->options[] = [
       'type' => $options_type,
-      'value' => $value,
+      'value' => $placeholder,
     ];
+    unset($placeholder);
 
     return new c_base_return_true();
   }
@@ -91,7 +95,7 @@ trait t_database_options {
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->options) && is_arrray($this->options[$index])) {
+      if (is_int($index) && array_key_exists($index, $this->options) && is_array($this->options[$index])) {
         return c_base_return_array::s_new($this->options[$index]);
       }
 

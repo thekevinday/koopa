@@ -78,8 +78,7 @@ class c_database_alter_conversion extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    // the collation name is required.
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -87,10 +86,10 @@ class c_database_alter_conversion extends c_database_query {
     if (is_string($this->rename_to)) {
       $value .= $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to)) {
+    else if (isset($this->owner_to)) {
       $value .= $this->p_do_build_owner_to();
     }
-    else if (is_string($this->set_schema)) {
+    else if (isset($this->set_schema)) {
       $value .= $this->p_do_build_set_schema();
     }
     else {

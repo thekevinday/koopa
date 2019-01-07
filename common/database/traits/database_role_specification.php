@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -41,20 +39,30 @@ trait t_database_role_specification {
       return new c_base_return_true();
     }
 
-    if (!is_string($name) && $name !== e_database_role::CURRENT && $name !== e_database_role::SESSION) {
+    if (is_string($name)) {
+      $placeholder = $this->add_placeholder($name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $this->role_specification = $placeholder;
+      unset($placeholder);
+    }
+    else if ($name !== e_database_role::CURRENT && $name !== e_database_role::SESSION) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
+
+      $this->role_specification = $name;
     }
 
-    $this->role_specification = $name;
     return new c_base_return_true();
   }
 
   /**
    * Get the role specification.
    *
-   * @return c_base_return_int|c_base_return_string|c_base_return_null
-   *   A role name string or an integer representing either e_database_role::CURRENT or e_database_role::SESSION on success.
+   * @return c_base_return_int|i_database_query_placeholder|c_base_return_null
+   *   A role name query placeholder or an integer representing either e_database_role::CURRENT or e_database_role::SESSION on success.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
@@ -63,11 +71,11 @@ trait t_database_role_specification {
       return new c_base_return_null();
     }
 
-    if (is_string($this->role_specification)) {
-      return c_base_return_array::s_new($this->role_specification);
-    }
-    else if ($this->role_specification === e_database_role::CURRENT || $this->role_specification === e_database_role::SESSION) {
+    if ($this->role_specification === e_database_role::CURRENT || $this->role_specification === e_database_role::SESSION) {
       return c_base_return_int::s_new($this->role_specification);
+    }
+    else if (isset($this->role_specification)) {
+      return clone($this->role_specification);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'role_specification', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -95,6 +103,6 @@ trait t_database_role_specification {
       $value = c_database_string::SESSION;
     }
 
-    return $value;
+    return strval($value);
   }
 }

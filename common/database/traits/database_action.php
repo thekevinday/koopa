@@ -3,7 +3,9 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
+ * These traits are associated with actions
+ *
+ * @fixme: redesign/rewrite/replace this.
  *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */

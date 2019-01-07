@@ -272,8 +272,7 @@ class c_database_alter_aggregate extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    // the aggregate name is required.
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -313,9 +312,9 @@ class c_database_alter_aggregate extends c_database_query {
       }
       unset($order_by_signature);
 
-      if (is_string($aggregate_signatures)) {
+      if (isset($aggregate_signatures)) {
         $aggregate_signatures = ' (' . $aggregate_signatures;
-        if (is_string($order_by_signatures)) {
+        if (isset($order_by_signatures)) {
           $aggregate_signatures = ' ' . c_database_string::ORDER_BY . ' ' . $order_by_signatures . '';
         }
         $aggregate_signatures .= ')';
@@ -324,13 +323,13 @@ class c_database_alter_aggregate extends c_database_query {
     }
 
     $value = $this->p_do_build_name() . ' ';
-    if (is_string($this->rename_to)) {
+    if (isset($this->rename_to)) {
       $value .= $aggregate_signatures . ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to)) {
+    else if (isset($this->owner_to)) {
       $value .= $aggregate_signatures . ' ' . $this->p_do_build_owner_to();
     }
-    else if (is_string($this->set_schema)) {
+    else if (isset($this->set_schema)) {
       $value .= $aggregate_signatures . ' ' . $this->p_do_build_set_schema();
     }
     else {

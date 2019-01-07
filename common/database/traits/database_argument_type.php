@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with argument_type.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -69,11 +67,24 @@ trait t_database_argument_type {
       $this->argument_type = [];
     }
 
+    $placeholder_type = $this->add_placeholder($argument_type);
+    if ($placeholder_type->has_error()) {
+      return c_base_return_error::s_false($placeholder_type->get_error());
+    }
+
+    $placeholder_name = $this->add_placeholder($argument_name);
+    if ($placeholder_name->has_error()) {
+      unset($placeholder_type);
+      return c_base_return_error::s_false($placeholder_name->get_error());
+    }
+
     $this->argument_type[] = [
-      'type' => $argument_type,
-      'name' => $argument_name,
+      'type' => $placeholder_type,
+      'name' => $placeholder_name,
       'mode' => $argument_mode,
     ];
+    unset($placeholder_type);
+    unset($placeholder_name);
 
     return new c_base_return_true();
   }
@@ -86,8 +97,9 @@ trait t_database_argument_type {
    *   When NULL, all argument type are returned.
    *
    * @return c_base_return_array|c_base_return_null
-   *   A code representing the argument_type on success.
-   *   NULL is returned if not set (argument_type tablespace is not to be used).
+   *   An array representing the argument type at the $index.
+   *   An array representing all argument types when $index is NULL.
+   *   NULL is returned if not set (argument type tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
   public function get_argument_type($index = NULL) {
@@ -99,7 +111,7 @@ trait t_database_argument_type {
       return c_base_return_array::s_new($this->argument_type);
     }
     else if (isset($this->argument_type[$index]) && is_array($this->argument_type[$index])) {
-      return c_base_return_int::s_new($this->argument_type[$index]);
+      return c_base_return_array::s_new($this->argument_type[$index]);
     }
     else {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'argument_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);

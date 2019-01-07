@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -37,15 +35,22 @@ trait t_database_rename_to {
       return c_base_return_error::s_false($error);
     }
 
-    $this->rename_to = $rename_to;
+    $placeholder = $this->add_placeholder($rename_to);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
+    $this->rename_to = $placeholder;
+    unset($placeholder);
+
     return new c_base_return_true();
   }
 
   /**
    * Get the currently assigned name to rename to.
    *
-   * @return c_base_return_string|c_base_return_null
-   *   A name on success.
+   * @return i_database_query_placeholder|c_base_return_null
+   *   A name query placeholder.
    *   NULL is returned if not set (rename to is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -54,8 +59,8 @@ trait t_database_rename_to {
       return new c_base_return_null();
     }
 
-    if (is_string($this->rename_to)) {
-      return c_base_return_string::s_new($this->rename_to);
+    if (isset($this->rename_to)) {
+      return clone($this->rename_to);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

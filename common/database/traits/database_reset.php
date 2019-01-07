@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with reset.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -48,16 +46,22 @@ trait t_database_reset {
       return c_base_return_error::s_false($error);
     }
 
-    if ($reset == e_database_reset::PARAMETER) {
+    if ($reset === e_database_reset::PARAMETER) {
       if (!is_null($parameter) || !is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
 
+      $placeholder = $this->add_placeholder($parameter);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
       $this->reset = [
         'type' => $reset,
-        'value' => $parameter,
+        'value' => $placeholder,
       ];
+      unset($placeholder);
 
       return new c_base_return_true();
     }
@@ -106,9 +110,7 @@ trait t_database_reset {
   protected function p_do_build_reset() {
     $value = NULL;
     if ($this->reset['type'] === e_database_reset::PARAMETER) {
-      if (is_string($this->reset['value'])) {
-        $value = c_database_string::RESET . ' ' . $this->reset['value'];
-      }
+      $value = c_database_string::RESET . ' ' . $this->reset['value'];
     }
     else if ($this->reset['type'] === e_database_reset::ALL) {
       $value = c_database_string::RESET . ' ' . c_database_string::ALL;

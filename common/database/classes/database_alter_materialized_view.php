@@ -139,7 +139,7 @@ class c_database_alter_materialized_view extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -149,20 +149,20 @@ class c_database_alter_materialized_view extends c_database_query {
     }
 
     $value = $this->p_do_build_name();
-    if (is_string($this->depends_on_extension)) {
+    if (isset($this->depends_on_extension)) {
       $value .= ' ' . $this->p_do_build_depends_on_extension();
       $if_exists = NULL;
     }
     else if (is_array($this->rename_column)) {
       $value .= ' ' . $this->p_do_build_rename_column();
     }
-    else if (is_string($this->rename_to)) {
+    else if (isset($this->rename_to)) {
       $value .= ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_string($this->set_schema)) {
+    else if (isset($this->set_schema)) {
       $value .= ' ' . $this->p_do_build_set_schema();
     }
-    else if (is_string($this->set_tablespace)) {
+    else if (isset($this->set_tablespace)) {
       $if_exists = NULL;
       $value = c_database_string::ALL_IN_TABLESPACE . ' ' . $value;
 
@@ -188,19 +188,19 @@ class c_database_alter_materialized_view extends c_database_query {
     else if (is_array($this->column_set_storage)) {
       $value .= ' ' . $this->p_do_build_column_set_storage();
     }
-    else if (is_string($this->cluster_on)) {
+    else if (isset($this->cluster_on)) {
       $value .= ' ' . $this->p_do_build_cluster_on();
     }
-    else if (is_string($this->set_without_cluster)) {
+    else if (isset($this->set_without_cluster)) {
       $value .= ' ' . $this->p_do_build_set_without_cluster();
     }
-    else if (is_string($this->set_storage_parameter)) {
+    else if (isset($this->set_storage_parameter)) {
       $value .= ' ' . $this->p_do_build_set_storage_parameter();
     }
-    else if (is_string($this->reset_storage_parameter)) {
+    else if (isset($this->reset_storage_parameter)) {
       $value .= ' ' . $this->p_do_build_reset_storage_parameter();
     }
-    else if (is_string($this->owner_to)) {
+    else if (isset($this->owner_to)) {
       $value .= ' ' . $this->p_do_build_owner_to();
     }
     else {
@@ -211,7 +211,7 @@ class c_database_alter_materialized_view extends c_database_query {
 
     $this->value = static::p_QUERY_COMMAND;
 
-    if (is_string($if_exists)) {
+    if (isset($if_exists)) {
       $this->value .= ' ' . $if_exists;
     }
     unset($if_exists);

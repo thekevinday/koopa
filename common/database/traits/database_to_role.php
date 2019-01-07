@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -57,10 +55,17 @@ trait t_database_to_role {
         $this->to_role = [];
       }
 
+      $placeholder = $this->add_placeholder($role_name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
       $this->to_role[] = [
         'type' => $role_type,
-        'name' => $role_name,
+        'name' => $placeholder,
       ];
+      unset($placeholder);
+
       return new c_base_return_true();
     }
 
@@ -91,7 +96,7 @@ trait t_database_to_role {
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->to_role) && is_array($this->to_role[$index])) {
+      if (is_int($index) && array_key_exists($index, $this->to_role)) {
         return c_base_return_array::s_new($this->to_role[$index]);
       }
 

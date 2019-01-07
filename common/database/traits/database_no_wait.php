@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -38,13 +36,13 @@ trait t_database_no_wait {
       return new c_base_return_true();
     }
 
-    if (!is_bool($no_wait)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'no_wait', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
+    if (is_bool($no_wait)) {
+      $this->no_wait = $no_wait;
+      return new c_base_return_true();
     }
 
-    $this->no_wait = $no_wait;
-    return new c_base_return_true();
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'no_wait', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    return c_base_return_error::s_false($error);
   }
 
   /**

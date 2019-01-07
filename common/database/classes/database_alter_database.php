@@ -143,7 +143,7 @@ class c_database_alter_database extends c_database_query {
    */
   public function do_build() {
     // the database name is required.
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
@@ -154,13 +154,13 @@ class c_database_alter_database extends c_database_query {
         $value .= $this->option->get_value_exact();
       }
     }
-    else if (is_string($this->rename_to)) {
+    else if (isset($this->rename_to)) {
       $value .= $this->p_do_build_rename_to();
     }
-    else if (is_string($this->owner_to)) {
+    else if (isset($this->owner_to)) {
       $value .= $this->p_do_build_owner_to();
     }
-    else if (is_string($this->set_tablespace)) {
+    else if (isset($this->set_tablespace)) {
       $value .= $this->p_do_build_set_tablespace();
     }
     else if (is_array($this->set)) {

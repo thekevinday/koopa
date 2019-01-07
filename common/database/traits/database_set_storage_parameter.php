@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with SET index storage_parameter.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -66,10 +64,17 @@ trait t_database_set_storage_parameter {
       $this->set_storage_parameter = [];
     }
 
+    $placeholder = $this->add_placeholder($value);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
     $this->set_storage_parameter[] = [
       'type' => $storage_parameter,
-      'value' => $value,
+      'value' => $placeholder,
     ];
+    unset($placeholder);
+
     return new c_base_return_true();
   }
 
@@ -96,7 +101,7 @@ trait t_database_set_storage_parameter {
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->set_storage_parameter) && is_int($this->set_storage_parameter[$index])) {
+      if (is_int($index) && array_key_exists($index, $this->set_storage_parameter)) {
         return c_base_return_array::s_new($this->set_storage_parameter[$index]);
       }
 

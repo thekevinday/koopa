@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -55,12 +53,18 @@ trait t_database_constraint {
       return c_base_return_error::s_false($error);
     }
 
+    $placeholder = $this->add_placeholder($name);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
     $constraint = [
-      'name' => $constraint_name,
+      'name' => $placeholder,
       'type' => $type,
       'exists_or_invalid' => NULL,
       'cascade' => NULL,
     ];
+    unset($placeholder);
 
     if ($type === e_database_constraint::ADD) {
       if (!is_bool($exists_or_invalid)) {
@@ -136,35 +140,29 @@ trait t_database_constraint {
   protected function p_do_build_constraint() {
     $value = NULL;
     if ($this->constraint['type'] === e_database_constraint::ADD) {
-      if (is_string($this->constraint['name'])) {
-        $value = c_database_string::ADD . ' ' . $this->constraint['name'];
+      $value = c_database_string::ADD . ' ' . $this->constraint['name']->get_name();
 
-        if ($this->constraint['exists_or_invalid']) {
-          $value .= ' ' . c_database_string::NOT_VALID;
-        }
+      if ($this->constraint['exists_or_invalid']) {
+        $value .= ' ' . c_database_string::NOT_VALID;
       }
     }
     else if ($this->constraint['type'] === e_database_constraint::DROP) {
-      if (is_string($this->constraint['name'])) {
-        $value = c_database_string::DROP_CONSTRAINT . ' ' . $this->constraint['name'];
-      }
+      $value = c_database_string::DROP_CONSTRAINT . ' ' . $this->constraint['name'];
     }
     else if ($this->constraint['type'] === e_database_constraint::VALIDATE) {
-      if (is_string($this->constraint['name'])) {
-        $value = c_database_string::VALIDATE_CONSTAINT;
+      $value = c_database_string::VALIDATE_CONSTAINT;
 
-        if ($this->constraint['exists_or_invalid']) {
-          $value .= ' ' . c_database_string::NOT_VALID;
-        }
+      if ($this->constraint['exists_or_invalid']) {
+        $value .= ' ' . c_database_string::NOT_VALID;
+      }
 
-        $value .=' ' . $this->constraint['name'];
+      $value .=' ' . $this->constraint['name'];
 
-        if ($this->constraint['cascade'] === e_database_cascade::CASCADE) {
-          $value .= ' ' . c_database_string::CASCADE;
-        }
-        else if ($this->constraint['cascade'] === e_database_cascade::RESTRICT) {
-          $value .= ' ' . c_database_string::RESTRICT;
-        }
+      if ($this->constraint['cascade'] === e_database_cascade::CASCADE) {
+        $value .= ' ' . c_database_string::CASCADE;
+      }
+      else if ($this->constraint['cascade'] === e_database_cascade::RESTRICT) {
+        $value .= ' ' . c_database_string::RESTRICT;
       }
     }
 

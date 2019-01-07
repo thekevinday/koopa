@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -43,7 +41,14 @@ trait t_database_in_schema {
         $this->in_schema = [];
       }
 
-      $this->in_schema[] = $schema_name;
+      $placeholder = $this->add_placeholder($schema_name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $this->in_schema[] = $placeholder;
+      unset($placeholder);
+
       return new c_base_return_true();
     }
 
@@ -58,9 +63,9 @@ trait t_database_in_schema {
    *   (optional) Get the schema name at the specified index.
    *   When NULL, all schema names are returned.
    *
-   * @return c_base_return_string|c_base_return_array|c_base_return_null
+   * @return i_database_query_placeholder|c_base_return_array|c_base_return_null
    *   An array of schema names or NULL if not defined.
-   *   A single schema name is returned if $index is an integer.
+   *   A single schema name query placeholder is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
   public function get_in_schema($index = NULL) {
@@ -74,8 +79,8 @@ trait t_database_in_schema {
       }
     }
     else {
-      if (is_int($index) && array_key_exists($index, $this->in_schema) && is_string($this->in_schema[$index])) {
-        return c_base_return_string::s_new($this->in_schema[$index]);
+      if (is_int($index) && array_key_exists($index, $this->in_schema) && isset($this->in_schema[$index])) {
+        return clone($this->in_schema[$index]);
       }
 
       $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'in_schema[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

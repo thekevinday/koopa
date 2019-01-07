@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with validator.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -41,10 +39,16 @@ trait t_database_validator {
 
     if ($validator === e_database_validator::VALIDATOR) {
       if (is_string($validator_function)) {
+        $placeholder = $this->add_placeholder($validator_function);
+        if ($placeholder->has_error()) {
+          return c_base_return_error::s_false($placeholder->get_error());
+        }
+
         $this->validator = [
           'type' => $validator,
-          'name' => $validator_function,
+          'name' => $placeholder,
         ];
+        unset($placeholder);
 
         return new c_base_return_true();
       }
@@ -82,7 +86,7 @@ trait t_database_validator {
       return c_base_return_array::s_new($this->validator);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'validator', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 

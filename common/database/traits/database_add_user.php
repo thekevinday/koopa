@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -59,7 +57,13 @@ trait t_database_add_user {
       $this->add_user['type'] = $name;
     }
     else {
-      $this->add_user['names'][] = $name;
+      $placeholder = $this->add_placeholder($name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $this->add_user['names'][] = $placeholder;
+      unset($placeholder);
     }
 
     return new c_base_return_true();
@@ -78,7 +82,7 @@ trait t_database_add_user {
       return new c_base_return_null();
     }
 
-    if (is_array($this->add_use)) {
+    if (is_array($this->add_user)) {
         return c_base_return_array::s_new($this->add_user);
     }
 
@@ -104,7 +108,7 @@ trait t_database_add_user {
       else if ($name === e_database_user::SESSION) {
         $values[] = c_database_string::SESSION;
       }
-      else if (is_string($name)) {
+      else {
         $values[] = $name;
       }
     }

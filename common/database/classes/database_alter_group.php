@@ -78,11 +78,11 @@ class c_database_alter_group extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (is_array($this->add_user) && (is_int($this->role_specification) || is_string($this->role_specification))) {
+    if (is_array($this->add_user) && isset($this->role_specification)) {
       $value = $this->p_do_build_role_specification();
       $value .= ' ' . $this->p_do_build_add_user();
     }
-    else if (!is_string($this->name) && !is_string($this->rename_to)) {
+    else if (isset($this->name) && is_null($this->rename_to)) {
       $value = $this->p_do_build_name();
       $value .= ' ' . $this->p_do_build_rename_to();
     }

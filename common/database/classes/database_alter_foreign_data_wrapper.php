@@ -90,13 +90,13 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (!is_string($this->name)) {
+    if (is_null($this->name)) {
       return new c_base_return_false();
     }
 
     $action = NULL;
     if ($this->action === e_database_action::OWNER_TO) {
-      if (is_string($this->owner_to)) {
+      if (isset($this->owner_to)) {
         $action = $this->p_do_build_owner_to();
       }
       else {
@@ -105,7 +105,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
       }
     }
     else if ($this->action === e_database_action::RENAME_TO) {
-      if (is_string($this->rename_to)) {
+      if (isset($this->rename_to)) {
         $action = $this->p_do_build_rename_to();
       }
       else {

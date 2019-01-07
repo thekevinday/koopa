@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with set.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -31,10 +29,11 @@ trait t_database_set {
    *   Set to NULL to disable.
    * @param string|null $parameter
    *   (optional) When non-NULL this is the configuration parameter.
-   *   When NULL, DEFAULT is used if applicablem otherwise this is ignored.
+   *   When NULL, this and $value are ignored.
+   *   Some values of $set may require this to be a non-NULL.
    * @param string|null $value
    *   (optional) When non-NULL this is the value associated with the parameter.
-   *   When NULL, this is ignored.
+   *   When NULL, DEFAULT is used, if applicable, otherwise this is ignored.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
@@ -52,7 +51,7 @@ trait t_database_set {
     }
 
     if ($set === e_database_set::TO || $set === e_database_set::EQUAL) {
-      if (!is_null($parameter) || !is_string($parameter)) {
+      if (!is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
       }
@@ -62,11 +61,30 @@ trait t_database_set {
         return c_base_return_error::s_false($error);
       }
 
-      $this->set = [
+      $placeholder = $this->add_placeholder($parameter);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
+      $set = [
         'type' => $set,
-        'parameter' => $parameter,
-        'value' => $value,
+        'parameter' => $placeholder,
+        'value' => NULL,
       ];
+
+      if (is_string($value)) {
+        $placeholder = $this->add_placeholder($value);
+        if ($placeholder->has_error()) {
+          unset($set);
+          return c_base_return_error::s_false($placeholder->get_error());
+        }
+
+        $set['value'] = $placeholder;
+        unset($placeholder);
+      }
+
+      $this->set = $set;
+      unset($set);
 
       return new c_base_return_true();
     }
@@ -76,6 +94,7 @@ trait t_database_set {
         'parameter' => NULL,
         'value' => NULL,
       ];
+
       return new c_base_return_true();
     }
 
@@ -115,25 +134,25 @@ trait t_database_set {
   protected function p_do_build_set() {
     $value = NULL;
     if ($this->set['type'] === e_database_set::TO) {
-      if (is_null($this->set['parameter'])) {
-        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ' . c_database_string::DEFAULT;
+      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ';
+      if (is_null($this->set['value'])) {
+        $value .= c_database_string::DEFAULT;
       }
-      else if (is_string($this->set['parameter']) && is_string($this->set['value'])) {
-        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ' . $this->set['value'];
+      else {
+        $value = $this->set['value'];
       }
     }
     else if ($this->set['type'] === e_database_set::EQUAL) {
-      if (is_null($this->set['parameter'])) {
-        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::DEFAULT;
+      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ';
+      if (is_null($this->set['value'])) {
+        $value .= c_database_string::DEFAULT;
       }
-      else if (is_string($this->set['parameter']) && is_string($this->set['value'])) {
-        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . $this->set['value'];
+      else if (isset($this->set['parameter']) && isset($this->set['value'])) {
+        $value .= $this->set['value'];
       }
     }
     else if ($this->set['type'] == e_database_set::FROM_CURRENT) {
-      if (is_string($this->set['parameter'])) {
-        $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
-      }
+      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
     }
 
     return $value;

@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with actions.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -37,14 +35,21 @@ trait t_database_set_tablespace {
       return c_base_return_error::s_false($error);
     }
 
-    $this->set_tablespace = $set_tablespace;
+    $placeholder = $this->add_placeholder($set_tablespace);
+    if ($placeholder->has_error()) {
+      return c_base_return_error::s_false($placeholder->get_error());
+    }
+
+    $this->set_tablespace = $placeholder;
+    unset($placeholder);
+
     return new c_base_return_true();
   }
 
   /**
    * Get the currently assigned tablespace name to set to.
    *
-   * @return c_base_return_string|c_base_return_null
+   * @return i_database_query_placeholder|c_base_return_null
    *   A tablespace name on success.
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
@@ -54,8 +59,8 @@ trait t_database_set_tablespace {
       return new c_base_return_null();
     }
 
-    if (is_string($this->set_tablespace)) {
-      return c_base_return_string::s_new($this->set_tablespace);
+    if (isset($this->set_tablespace)) {
+      return clone($this->set_tablespace);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

@@ -3,8 +3,6 @@
  * @file
  * Provides traits for specific Postgesql Queries.
  *
- * These traits are associated with COLUMN_RESET attribute_option.
- *
  * @see: https://www.postgresql.org/docs/current/static/sql-commands.html
  */
 namespace n_koopa;
@@ -52,14 +50,21 @@ trait t_database_column_reset {
       case e_database_attribute_option::N_DISTINCT:
       case e_database_attribute_option::N_DISTINCT_INHERITED:
         break;
+      case NULL:
+        break;
       default:
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'attribute_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
     }
 
     if (is_string($name)) {
+      $placeholder = $this->add_placeholder($name);
+      if ($placeholder->has_error()) {
+        return c_base_return_error::s_false($placeholder->get_error());
+      }
+
       if (is_array($this->column_reset)) {
-        $this->column_reset['name'] = $name;
+        $this->column_reset['name'] = $placeholder;
       }
       else {
         $this->column_reset = [
@@ -68,8 +73,9 @@ trait t_database_column_reset {
         ];
       }
     }
+    unset($placeholder);
 
-    if (!is_null($attribute_option)) {
+    if (is_int($attribute_option)) {
       $this->column_reset['values'][] = $attribute_option;
     }
 
@@ -103,7 +109,7 @@ trait t_database_column_reset {
         return c_base_return_int::s_new($this->column_reset['values'][$index]);
       }
 
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_reset[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_reset[values][index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
       return c_base_return_error::s_null($error);
     }
 
