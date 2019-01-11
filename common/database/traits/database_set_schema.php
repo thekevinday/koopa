@@ -22,7 +22,7 @@ trait t_database_set_schema {
    * Set the RENAME TO settings.
    *
    * @param string|null $set_schema
-   *   The name to rename to.
+   *   The schema name.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
@@ -50,7 +50,7 @@ trait t_database_set_schema {
    * Get the currently assigned schema name to set to.
    *
    * @return i_database_query_placeholder|c_base_return_null
-   *   A schema name on success.
+   *   A schema name query placeholder on success.
    *   NULL is returned if not set (set schema is not to be used).
    *   NULL with the error bit set is returned on error.
    */

@@ -107,7 +107,7 @@ trait t_database_argument_type {
       return new c_base_return_null();
     }
 
-    if (is_null($this->argument_type['type'])) {
+    if (is_null($index)) {
       return c_base_return_array::s_new($this->argument_type);
     }
     else if (isset($this->argument_type[$index]) && is_array($this->argument_type[$index])) {

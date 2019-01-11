@@ -23,7 +23,7 @@ trait t_database_add_user {
   /**
    * Set the add user or drop user.
    *
-   * @param string|int|bool|null $role_type
+   * @param string|int|bool|null $name
    *   The user name (role name) to use.
    *   Set to TRUE to toggle to ADD USER (default).
    *   Set to FALSE to toggle to DROP USER.

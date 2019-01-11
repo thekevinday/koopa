@@ -41,8 +41,8 @@ trait t_database_reset_storage_parameter {
     switch ($storage_parameter) {
       case e_database_storage_parameter::AUTOSUMMARIZE:
       case e_database_storage_parameter::BUFFERING:
-      case e_database_storage_parameter::FAST_UPDATE:
-      case e_database_storage_parameter::FILL_FACTOR:
+      case e_database_storage_parameter::FASTUPDATE:
+      case e_database_storage_parameter::FILLFACTOR:
       case e_database_storage_parameter::GIN_PENDING_LIST_LIMIT:
       case e_database_storage_parameter::PAGES_PER_RANGE:
         break;
@@ -112,11 +112,11 @@ trait t_database_reset_storage_parameter {
       else if ($storage_parameter === e_database_storage_parameter::BUFFERING) {
         $values[] = c_database_string::BUFFERING;
       }
-      else if ($storage_parameter === e_database_storage_parameter::FAST_UPDATE) {
-        $values[] = c_database_string::FAST_UPDATE;
+      else if ($storage_parameter === e_database_storage_parameter::FASTUPDATE) {
+        $values[] = c_database_string::FASTUPDATE;
       }
-      else if ($storage_parameter === e_database_storage_parameter::FILL_FACTOR) {
-        $values[] = c_database_string::FILL_FACTOR;
+      else if ($storage_parameter === e_database_storage_parameter::FILLFACTOR) {
+        $values[] = c_database_string::FILLFACTOR;
       }
       else if ($storage_parameter === e_database_storage_parameter::GIN_PENDING_LIST_LIMIT) {
         $values[] = c_database_string::GIN_PENDING_LIST_LIMIT;
@@ -127,6 +127,6 @@ trait t_database_reset_storage_parameter {
     }
     unset($storage_parameter);
 
-    return c_database_string::RESET . ' ' . implode(', ', $values);
+    return c_database_string::RESET . ' (' . implode(', ', $values) . ')';
   }
 }

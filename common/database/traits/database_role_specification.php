@@ -25,7 +25,7 @@ trait t_database_role_specification {
    *
    * @param int|string|null $name
    *   A string representing the role name to use.
-   *   May be an integer of either e_database_role::CURRENT or e_database_role::SESSION.
+   *   May be an integer of from e_database_role.
    *   Set to NULL to disable.
    *   When NULL, this will remove all values.
    *
@@ -48,7 +48,7 @@ trait t_database_role_specification {
       $this->role_specification = $placeholder;
       unset($placeholder);
     }
-    else if ($name !== e_database_role::CURRENT && $name !== e_database_role::SESSION) {
+    else if ($name !== e_database_role::ALL && $name !== e_database_role::CURRENT && $name !== e_database_role::SESSION) {
       $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
 
@@ -62,7 +62,7 @@ trait t_database_role_specification {
    * Get the role specification.
    *
    * @return c_base_return_int|i_database_query_placeholder|c_base_return_null
-   *   A role name query placeholder or an integer representing either e_database_role::CURRENT or e_database_role::SESSION on success.
+   *   A role name query placeholder or an integer from e_database_role.
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
@@ -71,7 +71,7 @@ trait t_database_role_specification {
       return new c_base_return_null();
     }
 
-    if ($this->role_specification === e_database_role::CURRENT || $this->role_specification === e_database_role::SESSION) {
+    if ($this->role_specification === e_database_role::ALL || $this->role_specification === e_database_role::CURRENT || $this->role_specification === e_database_role::SESSION) {
       return c_base_return_int::s_new($this->role_specification);
     }
     else if (isset($this->role_specification)) {
@@ -94,7 +94,10 @@ trait t_database_role_specification {
   protected function p_do_build_role_specification() {
     $value = NULL;
     if (is_string($this->role_specification)) {
-      $value = $this->role_specification;
+      $value = strval($this->role_specification);
+    }
+    else if ($this->role_specification === e_database_role::ALL) {
+      $value = c_database_string::ALL;
     }
     else if ($this->role_specification === e_database_role::CURRENT) {
       $value = c_database_string::CURRENT;
@@ -103,6 +106,6 @@ trait t_database_role_specification {
       $value = c_database_string::SESSION;
     }
 
-    return strval($value);
+    return $value;
   }
 }

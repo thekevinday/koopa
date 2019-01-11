@@ -15,7 +15,7 @@ require_once('common/database/enumerations/database_index_storage_parameter.php'
 require_once('common/database/classes/database_string.php');
 
 /**
- * Provide the sql SET functionality.
+ * Provide the sql SET storage parameter functionality.
  */
 trait t_database_set_storage_parameter {
   protected $set_storage_parameter;
@@ -23,7 +23,7 @@ trait t_database_set_storage_parameter {
   /**
    * Set the SET index (storage_parameter ...) settings.
    *
-   * @param int|null $storage_parameter
+   * @param int|null $parameter
    *   The storage parameter code to assign.
    *   Should be one of: e_database_storage_parameter.
    *   Set to NULL to disable.
@@ -36,22 +36,22 @@ trait t_database_set_storage_parameter {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_storage_parameter($storage_parameter, $value = NULL) {
-    if (is_null($storage_parameter)) {
+  public function set_set_storage_parameter($parameter, $value = NULL) {
+    if (is_null($parameter)) {
       $this->set_storage_parameter = NULL;
       return new c_base_return_true();
     }
 
-    switch ($storage_parameter) {
+    switch ($parameter) {
       case e_database_storage_parameter::AUTOSUMMARIZE:
       case e_database_storage_parameter::BUFFERING:
-      case e_database_storage_parameter::FAST_UPDATE:
-      case e_database_storage_parameter::FILL_FACTOR:
+      case e_database_storage_parameter::FASTUPDATE:
+      case e_database_storage_parameter::FILLFACTOR:
       case e_database_storage_parameter::GIN_PENDING_LIST_LIMIT:
       case e_database_storage_parameter::PAGES_PER_RANGE:
         break;
       default:
-        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'storage_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+        $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
     }
 
@@ -70,7 +70,7 @@ trait t_database_set_storage_parameter {
     }
 
     $this->set_storage_parameter[] = [
-      'type' => $storage_parameter,
+      'type' => $parameter,
       'value' => $placeholder,
     ];
     unset($placeholder);
@@ -124,29 +124,29 @@ trait t_database_set_storage_parameter {
    */
   protected function p_do_build_set_storage_parameter() {
     $values = [];
-    foreach ($this->set_storage_parameter as $storage_parameter => $value) {
-      if ($storage_parameter === e_database_storage_parameter::AUTOSUMMARIZE) {
+    foreach ($this->set_storage_parameter as $parameter => $value) {
+      if ($parameter === e_database_storage_parameter::AUTOSUMMARIZE) {
         $values[] = c_database_string::AUTOSUMMARIZE . ' = ' . $value;
       }
-      else if ($storage_parameter === e_database_storage_parameter::BUFFERING) {
+      else if ($parameter === e_database_storage_parameter::BUFFERING) {
         $values[] = c_database_string::BUFFERING . ' = ' . $value;
       }
-      else if ($storage_parameter === e_database_storage_parameter::FAST_UPDATE) {
-        $values[] = c_database_string::FAST_UPDATE . ' = ' . $value;
+      else if ($parameter === e_database_storage_parameter::FASTUPDATE) {
+        $values[] = c_database_string::FASTUPDATE . ' = ' . $value;
       }
-      else if ($storage_parameter === e_database_storage_parameter::FILL_FACTOR) {
-        $values[] = c_database_string::FILL_FACTOR . ' = ' . $value;
+      else if ($parameter === e_database_storage_parameter::FILLFACTOR) {
+        $values[] = c_database_string::FILLFACTOR . ' = ' . $value;
       }
-      else if ($storage_parameter === e_database_storage_parameter::GIN_PENDING_LIST_LIMIT) {
+      else if ($parameter === e_database_storage_parameter::GIN_PENDING_LIST_LIMIT) {
         $values[] = c_database_string::GIN_PENDING_LIST_LIMIT . ' = ' . $value;
       }
-      else if ($storage_parameter === e_database_storage_parameter::PAGES_PER_RANGE) {
+      else if ($parameter === e_database_storage_parameter::PAGES_PER_RANGE) {
         $values[] = c_database_string::PAGES_PER_RANGE . ' = ' . $value ;
       }
     }
-    unset($storage_parameter);
+    unset($parameter);
     unset($value);
 
-    return c_database_string::SET . ' ' . implode(', ', $values);
+    return c_database_string::SET . ' (' . implode(', ', $values) . ')';
   }
 }

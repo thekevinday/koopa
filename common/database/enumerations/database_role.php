@@ -12,7 +12,8 @@ namespace n_koopa;
  */
 class e_database_role {
   public const NONE   = 0;
-  public const GROUP  = 1;
-  public const NAME   = 2;
-  public const PUBLIC = 3;
+  public const ALL    = 1;
+  public const GROUP  = 2;
+  public const NAME   = 3;
+  public const PUBLIC = 4;
 }

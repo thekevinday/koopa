@@ -94,41 +94,41 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
       return new c_base_return_false();
     }
 
-    $action = NULL;
+    $value = NULL;
     if ($this->action === e_database_action::OWNER_TO) {
       if (isset($this->owner_to)) {
-        $action = $this->p_do_build_owner_to();
+        $value = $this->p_do_build_owner_to();
       }
       else {
-        unset($action);
+        unset($value);
         return new c_base_return_false();
       }
     }
     else if ($this->action === e_database_action::RENAME_TO) {
       if (isset($this->rename_to)) {
-        $action = $this->p_do_build_rename_to();
+        $value = $this->p_do_build_rename_to();
       }
       else {
-        unset($action);
+        unset($value);
         return new c_base_return_false();
       }
     }
     else {
       if (is_array($this->handler)) {
-        $action .= ' ' . $this->p_do_build_handler();
+        $value .= ' ' . $this->p_do_build_handler();
       }
 
       if (is_array($this->validator)) {
-        $action .= ' ' . $this->p_do_build_validator();
+        $value .= ' ' . $this->p_do_build_validator();
       }
 
-      $actions .= ' ' . $this->p_do_build_options();
+      $value .= ' ' . $this->p_do_build_options();
     }
 
     $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $this->p_do_build_name();
-    $this->value .= ' ' . $action;
-    unset($action);
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

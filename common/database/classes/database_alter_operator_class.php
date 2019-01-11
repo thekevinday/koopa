@@ -12,8 +12,9 @@ require_once('common/database/classes/database_query.php');
 
 require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_owner_to.php');
+require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_set_schema.php');
-require_once('common/database/traits/database_using.php');
+require_once('common/database/traits/database_using_index_method.php');
 
 
 /**
@@ -24,8 +25,9 @@ require_once('common/database/traits/database_using.php');
 class c_database_alter_operator_class extends c_database_query {
   use t_database_name;
   use t_database_owner_to;
+  use t_database_rename_to;
   use t_database_set_schema;
-  use t_database_using;
+  use t_database_using_index_method;
 
   protected const p_QUERY_COMMAND = 'alter operator class';
 
@@ -35,12 +37,24 @@ class c_database_alter_operator_class extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->name               = NULL;
+    $this->owner_to           = NULL;
+    $this->rename_to          = NULL;
+    $this->set_schema         = NULL;
+    $this->using_index_method = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->name);
+    unset($this->owner_to);
+    unset($this->rename_to);
+    unset($this->set_schema);
+    unset($this->using_index_method);
+
     parent::__destruct();
   }
 
@@ -73,9 +87,12 @@ class c_database_alter_operator_class extends c_database_query {
       return new c_base_return_false();
     }
 
-    $value = $this->p_do_build_name() . ' ' . $this->p_do_build_using();
+    $value = $this->p_do_build_name() . ' ' . $this->p_do_build_using_index_method();
     if (isset($this->set_schema)) {
       $value .= ' ' . $this->p_do_build_set_schema();
+    }
+    else if (isset($this->rename_to)) {
+      $value .= ' ' . $this->p_do_build_rename_to();
     }
     else if (isset($this->owner_to)) {
       $value .= ' ' . $this->p_do_build_owner_to();

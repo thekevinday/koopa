@@ -37,7 +37,7 @@ trait t_database_owned_by {
     }
 
     if (is_int($owned_by)) {
-      if ($owned_by === e_database_user::ALL) {
+      if ($owned_by === e_database_user::ALL || $owned_by === e_database_user::NONE) {
         $this->owned_by = e_database_user::ALL;
 
         return new c_base_return_true();
@@ -79,7 +79,7 @@ trait t_database_owned_by {
     }
 
     if (is_null($index)) {
-      if ($this->owned_by === e_database_user::ALL) {
+      if ($this->owned_by === e_database_user::ALL || $this->owned_by === e_database_user::NONE) {
         return c_base_return_array::s_new([$this->owned_by]);
       }
       else if (is_array($this->owned_by)) {
@@ -115,15 +115,18 @@ trait t_database_owned_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_owned_by() {
-    $owned_by = c_database_string::OWNED_BY . ' ';
+    $value = c_database_string::OWNED_BY . ' ';
 
     if ($this->owned_by === e_database_user::ALL) {
-      $owned_by .= c_database_string::ALL;
+      $value .= c_database_string::ALL;
+    }
+    else if ($this->owned_by === e_database_user::NONE) {
+      $value .= c_database_string::NONE;
     }
     else {
-      $owned_by .= implode(', ', $this->owned_by);
+      $value .= implode(', ', $this->owned_by);
     }
 
-    return $owned_by;
+    return $value;
   }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides a class for specific Postgesql query: ALTER COALATION.
+ * Provides a class for specific Postgesql query: ALTER PUBLICATION.
  */
 namespace n_koopa;
 
@@ -10,14 +10,28 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_add_table.php');
+require_once('common/database/traits/database_drop_table.php');
+require_once('common/database/traits/database_name.php');
+require_once('common/database/traits/database_owner_to.php');
+require_once('common/database/traits/database_rename_to.php');
+require_once('common/database/traits/database_set_table.php');
+
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql ALTER PUBLICATION query string.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-alterpublication.html
  */
-class c_database_alter_coalation extends c_database_query {
-  protected const p_QUERY_COMMAND = 'alter coalation';
+class c_database_alter_publication extends c_database_query {
+  use t_database_add_table;
+  use t_database_drop_table;
+  use t_database_name;
+  use t_database_owner_to;
+  use t_database_rename_to;
+  use t_database_set_table;
+
+  protected const p_QUERY_COMMAND = 'alter publication';
 
 
   /**
@@ -25,12 +39,26 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->add_table  = NULL;
+    $this->drop_table = NULL;
+    $this->name       = NULL;
+    $this->owner_to   = NULL;
+    $this->rename_to  = NULL;
+    $this->set_table  = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->add_table);
+    unset($this->drop_table);
+    unset($this->name);
+    unset($this->owner_to);
+    unset($this->rename_to);
+    unset($this->set_table);
+
     parent::__destruct();
   }
 
@@ -59,9 +87,36 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    $this->value = NULL;
+    if (is_null($this->name)) {
+      return new c_base_return_false();
+    }
 
-    // @todo
+    $value = $this->p_do_build_name();
+
+
+    if (isset($this->add_table)) {
+      $value .= ' ' . $this->p_do_build_add_table();
+    }
+    else if (isset($this->drop_table)) {
+      $value .= ' ' . $this->p_do_build_drop_table();
+    }
+    else if (isset($this->owner_to)) {
+      $value .= ' ' . $this->p_do_build_owner_to();
+    }
+    else if (isset($this->rename_to)) {
+      $value .= ' ' . $this->p_do_build_rename_to();
+    }
+    else if (isset($this->set_table)) {
+      $value .= ' ' . $this->p_do_build_set_table();
+    }
+    else {
+      unset($value);
+      return new c_base_return_false();
+    }
+
+    $this->value = static::p_QUERY_COMMAND;
+    $this->value .= ' ' . $value;
+    unset($value);
 
     return new c_base_return_true();
   }

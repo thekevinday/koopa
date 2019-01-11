@@ -11,13 +11,13 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 /**
- * Provide the sql NAME functionality.
+ * Provide the sql CLUSTER ON functionality.
  */
 trait t_database_cluster_on {
   protected $cluster_on;
 
   /**
-   * Set the OID settings.
+   * Set the CLUSTER ON settings.
    *
    * @param string|null $index_name
    *   The index name to use.
@@ -50,7 +50,7 @@ trait t_database_cluster_on {
   }
 
   /**
-   * Get the currently assigned index name.
+   * Get the currently assigned cluster on setting.
    *
    * @return i_database_query_placeholder|c_base_return_null
    *   A index name query placeholder on success.
@@ -80,6 +80,6 @@ trait t_database_cluster_on {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_cluster_on() {
-    return strval($this->cluster_on);
+    return c_database_string::CLUSTER_ON . ' ' . strval($this->cluster_on);
   }
 }

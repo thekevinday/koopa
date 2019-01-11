@@ -8,7 +8,7 @@
 namespace n_koopa;
 
 /**
- * Codes associated with index storage_parameter and related queries.
+ * Codes associated with index storage parameter and related queries.
  */
 class e_database_storage_parameter {
   public const NONE                                  = 0;
@@ -26,8 +26,8 @@ class e_database_storage_parameter {
   public const AUTOVACUUM_SCALE_FACTOR               = 12;
   public const AUTOVACUUM_VACUUM_THRESHOLD           = 13;
   public const BUFFERING                             = 14;
-  public const FAST_UPDATE                           = 15;
-  public const FILL_FACTOR                           = 16;
+  public const FASTUPDATE                            = 15;
+  public const FILLFACTOR                            = 16;
   public const GIN_PENDING_LIST_LIMIT                = 17;
   public const LOG_AUTOVACUUM_MIN_DURATION           = 18;
   public const PAGES_PER_RANGE                       = 19;
