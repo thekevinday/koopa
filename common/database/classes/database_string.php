@@ -200,6 +200,7 @@ class c_database_string {
   public const TRUNCATE                              = 'truncate';
   public const TYPE                                  = 'type';
   public const TO                                    = 'to';
+  public const TO_DEFAULT                            = 'to default';
   public const UNSAFE                                = 'unsafe';
   public const UPDATE                                = 'update';
   public const USAGE                                 = 'usage';

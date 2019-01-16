@@ -17,7 +17,7 @@ require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_owner_to.php');
 require_once('common/database/traits/database_refresh_publication.php');
 require_once('common/database/traits/database_rename_to.php');
-require_once('common/database/traits/database_set.php');
+require_once('common/database/traits/database_set_configuration_parameter.php');
 require_once('common/database/traits/database_set_publication_name.php');
 require_once('common/database/traits/database_set_schema.php');
 require_once('common/database/traits/database_with_publication_option.php');
@@ -37,7 +37,7 @@ class c_database_alter_subscription extends c_database_query {
   use t_database_owner_to;
   use t_database_refresh_publication;
   use t_database_rename_to;
-  use t_database_set;
+  use t_database_set_configuration_parameter;
   use t_database_set_publication_name;
   use t_database_set_schema;
   use t_database_with_publication_option;
@@ -52,18 +52,18 @@ class c_database_alter_subscription extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->connection              = NULL;
-    $this->disable                 = NULL;
-    $this->enable                  = NULL;
-    $this->name                    = NULL;
-    $this->owner_to                = NULL;
-    $this->refresh_publication     = NULL;
-    $this->rename_to               = NULL;
-    $this->set                     = NULL;
-    $this->set_publication_name    = NULL;
-    $this->set_schema              = NULL;
-    $this->with_publication_option = NULL;
-    $this->with_refresh_option     = NULL;
+    $this->connection                  = NULL;
+    $this->disable                     = NULL;
+    $this->enable                      = NULL;
+    $this->name                        = NULL;
+    $this->owner_to                    = NULL;
+    $this->refresh_publication         = NULL;
+    $this->rename_to                   = NULL;
+    $this->set_configuration_parameter = NULL;
+    $this->set_publication_name        = NULL;
+    $this->set_schema                  = NULL;
+    $this->with_publication_option     = NULL;
+    $this->with_refresh_option         = NULL;
   }
 
   /**
@@ -77,7 +77,7 @@ class c_database_alter_subscription extends c_database_query {
     unset($this->owner_to);
     unset($this->refresh_publication);
     unset($this->rename_to);
-    unset($this->set);
+    unset($this->set_configuration_parameter);
     unset($this->set_publication_name);
     unset($this->set_schema);
     unset($this->with_publication_option);
@@ -139,8 +139,8 @@ class c_database_alter_subscription extends c_database_query {
     else if (isset($this->disable)) {
       $value .= ' ' . $this->p_do_build_disable();
     }
-    else if (isset($this->set)) {
-      $value .= ' ' . $this->p_do_build_set();
+    else if (isset($this->set_configuration_parameter)) {
+      $value .= ' ' . $this->p_do_build_set_configuration_parameter();
     }
     else if (isset($this->owner_to)) {
       $value .= ' ' . $this->p_do_build_owner_to();

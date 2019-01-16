@@ -15,7 +15,7 @@ require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_reset.php');
 require_once('common/database/traits/database_role_specification.php');
-require_once('common/database/traits/database_set.php');
+require_once('common/database/traits/database_set_configuration_parameter.php');
 require_once('common/database/traits/database_with_role_option.php');
 
 
@@ -31,7 +31,7 @@ class c_database_alter_role extends c_database_query {
   use t_database_reset;
   use t_database_role_option;
   use t_database_role_specification;
-  use t_database_set;
+  use t_database_set_configuration_parameter;
 
   protected const p_QUERY_COMMAND = 'alter role';
 
@@ -42,13 +42,13 @@ class c_database_alter_role extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->in_database        = NULL;
-    $this->name               = NULL;
-    $this->rename             = NULL;
-    $this->reset              = NULL;
-    $this->role_specification = NULL;
-    $this->set                = NULL;
-    $this->with_role_option   = NULL;
+    $this->in_database                 = NULL;
+    $this->name                        = NULL;
+    $this->rename                      = NULL;
+    $this->reset                       = NULL;
+    $this->role_specification          = NULL;
+    $this->set_configuration_parameter = NULL;
+    $this->with_role_option            = NULL;
   }
 
   /**
@@ -60,7 +60,7 @@ class c_database_alter_role extends c_database_query {
     unset($this->rename);
     unset($this->reset);
     unset($this->role_specification);
-    unset($this->set);
+    unset($this->set_configuration_parameter);
     unset($this->with_role_option);
 
     parent::__destruct();
@@ -110,8 +110,8 @@ class c_database_alter_role extends c_database_query {
         $value .= ' ' . $this->p_do_build_in_database();
       }
 
-      if (isset($this->set)) {
-        $value .= ' ' . $this->p_do_build_set();
+      if (isset($this->set_configuration_parameter)) {
+        $value .= ' ' . $this->p_do_build_set_configuration_parameter();
       }
       else if (isset($this->reset)) {
         $value .= ' ' . $this->p_do_build_reset();

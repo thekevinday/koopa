@@ -17,13 +17,13 @@ require_once('common/database/classes/database_string.php');
 /**
  * Provide the sql SET functionality.
  */
-trait t_database_set {
-  protected $set;
+trait t_database_set_configuration_parameter {
+  protected $set_configuration_parameter;
 
   /**
-   * Set the SET settings.
+   * Set the SET configuation parameter settings.
    *
-   * @param int|null $set
+   * @param int|null $type
    *   The SET code to assign.
    *   Should be one of: e_database_set.
    *   Set to NULL to disable.
@@ -39,18 +39,18 @@ trait t_database_set {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_set($set, $parameter = NULL, $value = NULL) {
-    if (is_null($set)) {
-      $this->set = NULL;
+  public function set_set_configuration_parameter($type, $parameter = NULL, $value = NULL) {
+    if (is_null($type)) {
+      $this->set_configuration_parameter = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_int($set)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'set', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    if (!is_int($type)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    if ($set === e_database_set::TO || $set === e_database_set::EQUAL) {
+    if ($type === e_database_set::TO || $type === e_database_set::EQUAL) {
       if (!is_string($parameter)) {
         $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
         return c_base_return_error::s_false($error);
@@ -66,8 +66,8 @@ trait t_database_set {
         return c_base_return_error::s_false($placeholder->get_error());
       }
 
-      $set = [
-        'type' => $set,
+      $configuration_parameter = [
+        'type' => $type,
         'parameter' => $placeholder,
         'value' => NULL,
       ];
@@ -75,7 +75,7 @@ trait t_database_set {
       if (is_string($value)) {
         $placeholder = $this->add_placeholder($value);
         if ($placeholder->has_error()) {
-          unset($set);
+          unset($configuration_parameter);
           return c_base_return_error::s_false($placeholder->get_error());
         }
 
@@ -83,14 +83,14 @@ trait t_database_set {
         unset($placeholder);
       }
 
-      $this->set = $set;
-      unset($set);
+      $this->set_configuration_parameter = $configuration_parameter;
+      unset($configuration_parameter);
 
       return new c_base_return_true();
     }
-    else if ($set == e_database_set::FROM_CURRENT) {
-      $this->set = [
-        'type' => $set,
+    else if ($type == e_database_set::FROM_CURRENT) {
+      $this->set_configuration_parameter = [
+        'type' => $type,
         'parameter' => NULL,
         'value' => NULL,
       ];
@@ -102,23 +102,23 @@ trait t_database_set {
   }
 
   /**
-   * Get the currently assigned set settings.
+   * Get the currently assigned set configuration parameter settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing set settings on success.
+   *   An array containing set configuration parameter settings on success.
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set() {
-    if (is_null($this->set)) {
+  public function get_set_configuration_parameter() {
+    if (is_null($this->set_configuration_parameter)) {
       return new c_base_return_null();
     }
 
-    if (is_array($this->set)) {
-      return c_base_return_array::s_new($this->set);
+    if (is_array($this->set_configuration_parameter)) {
+      return c_base_return_array::s_new($this->set_configuration_parameter);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_configuration_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -131,28 +131,31 @@ trait t_database_set {
    *   A string is returned on success.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_set() {
+  protected function p_do_build_set_configuration_parameter() {
     $value = NULL;
-    if ($this->set['type'] === e_database_set::TO) {
-      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' ' . c_database_string::TO . ' ';
-      if (is_null($this->set['value'])) {
+    if ($this->set_configuration_parameter['type'] === e_database_set::TO) {
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' ' . c_database_string::TO . ' ';
+      if (is_null($this->set_configuration_parameter['value'])) {
         $value .= c_database_string::DEFAULT;
       }
       else {
-        $value = $this->set['value'];
+        $value = $this->set_configuration_parameter['value'];
       }
     }
-    else if ($this->set['type'] === e_database_set::EQUAL) {
-      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ';
-      if (is_null($this->set['value'])) {
+    else if ($this->set_configuration_parameter['type'] === e_database_set::EQUAL) {
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' = ';
+      if (is_null($this->set_configuration_parameter['value'])) {
         $value .= c_database_string::DEFAULT;
       }
-      else if (isset($this->set['parameter']) && isset($this->set['value'])) {
-        $value .= $this->set['value'];
+      else if (isset($this->set_configuration_parameter['parameter']) && isset($this->set_configuration_parameter['value'])) {
+        $value .= $this->set_configuration_parameter['value'];
       }
     }
-    else if ($this->set['type'] == e_database_set::FROM_CURRENT) {
-      $value = c_database_string::SET . ' ' . $this->set['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
+    else if ($this->set_configuration_parameter['type'] == e_database_set::FROM_CURRENT) {
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
+    }
+    else if ($this->set_configuration_parameter['type'] == e_database_set::TO_DEFAULT) {
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' ' . c_database_string::TO_DEFAULT;
     }
 
     return $value;

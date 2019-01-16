@@ -80,6 +80,6 @@ trait t_database_connection {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_connection() {
-    return c_database_string::CONNECTION . ' ' . strval($this->connection);
+    return c_database_string::CONNECTION . ' ' . $this->connection;
   }
 }

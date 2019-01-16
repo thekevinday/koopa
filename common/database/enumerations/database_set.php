@@ -13,6 +13,7 @@ namespace n_koopa;
 class e_database_set {
   public const NONE         = 0;
   public const TO           = 1;
-  public const EQUAL        = 2;
-  public const FROM_CURRENT = 3;
+  public const TO_DEFAULT   = 2;
+  public const EQUAL        = 3;
+  public const FROM_CURRENT = 4;
 }

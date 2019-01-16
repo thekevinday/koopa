@@ -9,7 +9,7 @@ require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
 require_once('common/database/enumerations/database_reset.php');
-require_once('common/database/enumerations/database_set.php');
+require_once('common/database/enumerations/database_set_configuration_parameter.php');
 
 require_once('common/database/classes/database_query.php');
 require_once('common/database/classes/database_string.php');
@@ -18,7 +18,7 @@ require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_owner_to.php');
 require_once('common/database/traits/database_set_tablespace.php');
-require_once('common/database/traits/database_set.php');
+require_once('common/database/traits/database_set_configuration_parameter.php');
 require_once('common/database/traits/database_reset.php');
 
 /**
@@ -30,7 +30,7 @@ class c_database_alter_database extends c_database_query {
   use t_database_name;
   use t_database_rename_to;
   use t_database_owner_to;
-  use t_database_set;
+  use t_database_set_configuration_parameter;
   use t_database_set_tablespace;
   use t_database_reset;
 
@@ -44,12 +44,12 @@ class c_database_alter_database extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->name           = NULL;
-    $this->rename_to      = NULL;
-    $this->owner_to       = NULL;
-    $this->set            = NULL;
-    $this->set_tablespace = NULL;
-    $this->reset          = NULL;
+    $this->name                        = NULL;
+    $this->rename_to                   = NULL;
+    $this->owner_to                    = NULL;
+    $this->set_configuration_parameter = NULL;
+    $this->set_tablespace              = NULL;
+    $this->reset                       = NULL;
 
     // TODO: it may be better (and more consistent) to convert option into a trait, just like all of the others.
     $this->option = NULL;
@@ -62,7 +62,7 @@ class c_database_alter_database extends c_database_query {
     unset($this->name);
     unset($this->rename_to);
     unset($this->owner_to);
-    unset($this->set);
+    unset($this->set_configuration_parameter);
     unset($this->set_tablespace);
     unset($this->reset);
 
@@ -101,7 +101,7 @@ class c_database_alter_database extends c_database_query {
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
-   *   FALSE with error bit set is returned on error.
+   *   FALSE with error bit set_configuration_parameter is returned on error.
    */
   public function set_option($option) {
     if (is_null($option)) {
@@ -123,7 +123,7 @@ class c_database_alter_database extends c_database_query {
    *
    * @return c_database_argument_database_option|c_base_return_null
    *   The assigned option or NULL if not defined.
-   *   NULL with the error bit set is returned on error.
+   *   NULL with the error bit set_configuration_parameter is returned on error.
    */
   public function get_option() {
     if (is_null($this->option)) {
@@ -163,8 +163,8 @@ class c_database_alter_database extends c_database_query {
     else if (isset($this->set_tablespace)) {
       $value .= $this->p_do_build_set_tablespace();
     }
-    else if (is_array($this->set)) {
-      $value .= $this->p_do_build_set();
+    else if (is_array($this->set_configuration_parameter)) {
+      $value .= $this->p_do_build_set_configuration_parameter();
     }
     else if (is_array($this->reset)) {
       $value .= $this->p_do_build_reset();
