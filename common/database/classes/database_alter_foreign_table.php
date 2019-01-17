@@ -8,13 +8,30 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
-require_once('common/database/classes/database_alter_foeign_table_action.php');
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_action_add_column.php');
+require_once('common/database/traits/database_action_add_constraint.php');
+require_once('common/database/traits/database_action_alter_column.php');
+require_once('common/database/traits/database_action_alter_column_options.php');
+require_once('common/database/traits/database_action_alter_column_reset.php');
+require_once('common/database/traits/database_action_alter_column_set.php');
+require_once('common/database/traits/database_action_disable_trigger.php');
+require_once('common/database/traits/database_action_drop_columm.php');
+require_once('common/database/traits/database_action_drop_constraint.php');
+require_once('common/database/traits/database_action_enable_trigger.php');
+require_once('common/database/traits/database_action_inherit.php');
+require_once('common/database/traits/database_action_options.php');
+require_once('common/database/traits/database_action_owner_to.php');
+require_once('common/database/traits/database_action_set_oids.php');
+require_once('common/database/traits/database_action_validate_constraint.php');
+require_once('common/database/traits/database_if_exists.php');
 require_once('common/database/traits/database_name.php');
+require_once('common/database/traits/database_only.php');
 require_once('common/database/traits/database_rename_column.php');
 require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_set_schema.php');
+require_once('common/database/traits/database_wildcard.php');
 
 /**
  * The class for building and returning a Postgresql ALTER FOREIGN TABLE query string.
@@ -22,17 +39,32 @@ require_once('common/database/traits/database_set_schema.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alterforeigntable.html
  */
 class c_database_alter_foreign_table extends c_database_query {
+  use t_database_action_add_column;
+  use t_database_action_add_constraint;
+  use t_database_action_alter_column;
+  use t_database_action_alter_column_options;
+  use t_database_action_alter_column_reset;
+  use t_database_action_alter_column_set;
+  use t_database_action_alter_constraint;
+  use t_database_action_disable_trigger;
+  use t_database_action_drop_columm;
+  use t_database_action_drop_constraint;
+  use t_database_action_enable_trigger;
+  use t_database_action_inherit;
+  use t_database_action_options;
+  use t_database_action_owner_to;
+  use t_database_action_set_oids;
+  use t_database_action_validate_constraint;
+  use t_database_if_exists;
   use t_database_name;
+  use t_database_only;
   use t_database_rename_column;
   use t_database_rename_to;
   use t_database_set_schema;
+  use t_database_wildcard;
 
   protected const p_QUERY_COMMAND = 'alter foreign table';
 
-  protected $actions;
-  protected $if_exists;
-  protected $include_descendents; // The '*' following 'name'
-  protected $only;
 
   /**
    * Class constructor.
@@ -40,15 +72,29 @@ class c_database_alter_foreign_table extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->name          = NULL;
-    $this->rename_column = NULL;
-    $this->rename_to     = NULL;
-    $this->set_schema    = NULL;
-
-    $this->actions             = NULL;
-    $this->if_exists           = NULL;
-    $this->include_descendents = NULL;
-    $this->only                = NULL;
+    $this->action_add_column           = NULL;
+    $this->action_add_constraint       = NULL;
+    $this->action_alter_column         = NULL;
+    $this->action_alter_column_options = NULL;
+    $this->action_alter_column_reset   = NULL;
+    $this->action_alter_column_set     = NULL;
+    $this->action_alter_constraint     = NULL;
+    $this->action_disable_trigger      = NULL;
+    $this->action_drop_columm          = NULL;
+    $this->action_drop_constraint      = NULL;
+    $this->action_enable_trigger       = NULL;
+    $this->action_inherit              = NULL;
+    $this->action_options              = NULL;
+    $this->action_owner_to             = NULL;
+    $this->action_set_oids             = NULL;
+    $this->action_validate_constraint  = NULL;
+    $this->if_exists                   = NULL;
+    $this->name                        = NULL;
+    $this->only                        = NULL;
+    $this->rename_column               = NULL;
+    $this->rename_to                   = NULL;
+    $this->set_schema                  = NULL;
+    $this->wildcard                    = NULL;
   }
 
   /**
@@ -57,15 +103,29 @@ class c_database_alter_foreign_table extends c_database_query {
   public function __destruct() {
     parent::__destruct();
 
+    unset($this->action_add_column);
+    unset($this->action_add_constraint);
+    unset($this->action_alter_column);
+    unset($this->action_alter_column_options);
+    unset($this->action_alter_column_reset);
+    unset($this->action_alter_column_set);
+    unset($this->action_alter_constraint);
+    unset($this->action_disable_trigger);
+    unset($this->action_drop_columm);
+    unset($this->action_drop_constraint);
+    unset($this->action_enable_trigger);
+    unset($this->action_inherit);
+    unset($this->action_options);
+    unset($this->action_owner_to);
+    unset($this->action_set_oids);
+    unset($this->action_validate_constraint);
+    unset($this->if_exists);
     unset($this->name);
+    unset($this->only);
     unset($this->rename_column);
     unset($this->rename_to);
     unset($this->set_schema);
-
-    unset($this->actions);
-    unset($this->if_exists);
-    unset($this->include_descendents);
-    unset($this->only);
+    unset($this->wildcard);
   }
 
   /**
@@ -90,215 +150,6 @@ class c_database_alter_foreign_table extends c_database_query {
   }
 
   /**
-   * Set or append and action.
-   *
-   * @param c_database_alter_foreign_table_action|null $action
-   *   A specific action to this class.
-   *   Set to NULL to disable.
-   *   When NULL, this will remove all actions.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function set_action($action) {
-    if (is_null($action)) {
-      $this->actions = NULL;
-      return new c_base_return_true();
-    }
-
-    if (is_string($action)) {
-      if (!is_array($this->actions)) {
-        $this->actions = [];
-      }
-
-      $this->actions[] = $action;
-    }
-    else {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'action', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_false($error);
-    }
-
-    return new c_base_return_true();
-  }
-
-  /**
-   * Assigns IF EXISTS.
-   *
-   * @param bool|null $if_exists
-   *   Set to TRUE to enable IF EXISTS, FALSE to disable.
-   *   Set to NULL to disable.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function set_if_exists($if_exists) {
-    if (is_null($if_exists)) {
-      $this->if_exists = NULL;
-      return new c_base_return_true();
-    }
-
-    if (is_bool($if_exists)) {
-      $this->if_exists = $if_exists;
-      return new c_base_return_true();
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'if_exists', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-    return c_base_return_error::s_false($error);
-  }
-
-  /**
-   * Assigns wildcard '*' after the table name.
-   *
-   * @param bool|null $include_decendents
-   *   Set to TRUE to enable wildcard '*', FALSE to disable.
-   *   Set to NULL to disable.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function set_include_decendents($include_decendents) {
-    if (is_null($include_decendents)) {
-      $this->include_decendents = NULL;
-      return new c_base_return_true();
-    }
-
-    if (is_bool($include_decendents)) {
-      $this->include_decendents = $include_decendents;
-      return new c_base_return_true();
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'include_decendents', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-    return c_base_return_error::s_false($error);
-  }
-
-  /**
-   * Assigns ONLY.
-   *
-   * @param bool|null $only
-   *   Set to TRUE to enable ONLY, FALSE to disable.
-   *   Set to NULL to disable.
-   *
-   * @return c_base_return_status
-   *   TRUE on success, FALSE otherwise.
-   *   FALSE with error bit set is returned on error.
-   */
-  public function set_only($only) {
-    if (is_null($only)) {
-      $this->only = NULL;
-      return new c_base_return_true();
-    }
-
-    if (is_bool($only)) {
-      $this->only = $only;
-      return new c_base_return_true();
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'only', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-    return c_base_return_error::s_false($error);
-  }
-
-  /**
-   * Get an action or all actions.
-   *
-   * @param int|null $index
-   *   (optional) Get the action at the specified index.
-   *   When NULL, all actions are returned.
-   *
-   * @return c_database_alter_foreign_table_action|c_base_return_array|c_base_return_null
-   *   An array of actions or NULL if not defined.
-   *   A single action is returned if $index is an integer.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_action($index = NULL) {
-    if (is_null($this->actions)) {
-      return new c_base_return_null();
-    }
-
-    if (is_null($index)) {
-      if (is_array($this->actions)) {
-        return c_base_return_array::s_new($this->actions);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->actions) && $this->actions[$index] instanceof c_database_alter_foreign_table_action) {
-        return $this->actions[$index];
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'actions[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'actions', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the if exists setting.
-   *
-   * @return c_base_return_bool|c_base_return_null
-   *   A boolean representing the IF EXISTS setting.
-   *   NULL is returned if not defined.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_if_exists($index = NULL) {
-    if (is_null($this->if_exists)) {
-      return new c_base_return_null();
-    }
-
-    if (is_bool($index)) {
-      return c_base_return_bool::s_new($this->if_exists);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'if_exists', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the include decendents setting.
-   *
-   * @return c_base_return_bool|c_base_return_null
-   *   A boolean representing the '*' setting.
-   *   NULL is returned if not defined.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_include_decendents($index = NULL) {
-    if (is_null($this->include_decendents)) {
-      return new c_base_return_null();
-    }
-
-    if (is_bool($index)) {
-      return c_base_return_bool::s_new($this->include_decendents);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'include_decendents', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
-   * Get the set only setting.
-   *
-   * @return c_base_return_bool|c_base_return_null
-   *   A boolean representing the ONLY setting.
-   *   NULL is returned if not defined.
-   *   NULL with the error bit set is returned on error.
-   */
-  public function get_set_only($index = NULL) {
-    if (is_null($this->set_only)) {
-      return new c_base_return_null();
-    }
-
-    if (is_bool($index)) {
-      return c_base_return_bool::s_new($this->set_only);
-    }
-
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_only', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-    return c_base_return_error::s_null($error);
-  }
-
-  /**
    * Implements do_build().
    */
   public function do_build() {
@@ -306,59 +157,94 @@ class c_database_alter_foreign_table extends c_database_query {
       return new c_base_return_false();
     }
 
-    $value = NULL;
+    $if_exists = NULL;
     if ($this->if_exists) {
-      $value = ' ' . c_database_string::IF_EXISTS;
+      $if_exists = $this->p_do_build_if_exists() . ' ';
     }
 
-    if (is_array($this->rename_column)) {
-      if ($this->only) {
-        $value .= is_null($value) ? '' : ' ';
-        $value .= c_database_string::ONLY;
-      }
+    $only = NULL;
+    if ($this->only) {
+      $only = $this->p_do_build_only() . ' ';
+    }
 
-      $value .= ' ' . $this->p_do_build_rename_column();
+    $wildcard = NULL;
+    if ($this->wildcard) {
+      $wildcard = ' ' . $this->p_do_build_wildcard();
+    }
+
+    $value = $this->p_do_build_name();
+    if (isset($this->rename_column)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_rename_column();
+    }
+    else if (isset($this->rename_constraint)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_rename_constraint();
     }
     else if (isset($this->rename_to)) {
-      $value .= is_null($value) ? '' : ' ';
-      $value .= $this->p_do_build_rename_to();
+      $value = $if_exists . $value . ' ' . $this->p_do_build_rename_to();
     }
-    else if (is_array($this->set_schema)) {
-      $value .= is_null($value) ? '' : ' ';
-      $value .= $this->p_do_build_set_schema();
+    else if (isset($this->set_schema)) {
+      $value = $if_exists . $value . ' ' . $this->p_do_build_set_schema();
+    }
+    else if (isset($this->action_add_column)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_add_column();
+    }
+    else if (isset($this->action_add_constraint)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_add_constraint();
+    }
+    else if (isset($this->action_alter_column)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column();
+    }
+    else if (isset($this->action_alter_column_options)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_options();
+    }
+    else if (isset($this->action_alter_column_reset)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_reset();
+    }
+    else if (isset($this->action_alter_column_set)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_set();
+    }
+    else if (isset($this->action_alter_constraint)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_constraint();
+    }
+    else if (isset($this->action_disable_trigger)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_disable_trigger();
+    }
+    else if (isset($this->action_drop_columm)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_drop_columm();
+    }
+    else if (isset($this->action_drop_constraint)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_drop_constraint();
+    }
+    else if (isset($this->action_enable_trigger)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_enable_trigger();
+    }
+    else if (isset($this->action_inherit)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_inherit();
+    }
+    else if (isset($this->action_options)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_options();
+    }
+    else if (isset($this->action_owner_to)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_owner_to();
+    }
+    else if (isset($this->action_set_oids)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_set_oids();
+    }
+    else if (isset($this->action_validate_constraint)) {
+      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_validate_constraint();
     }
     else {
-      if ($this->only) {
-        $value .= is_null($value) ? '' : ' ';
-        $value .= c_database_string::ONLY;
-      }
-
-      $value .= is_null($value) ? '' : ' ';
-      if (is_array($this->actions) && !empty($this->actions)) {
-        $actions = [];
-        foreach ($this->actions as $action) {
-          if ($action instanceof c_database_alter_foreign_table_action && $action->do_build() instanceof c_base_return_true) {
-            $actions[] = $action->get_value_exact();
-          }
-        }
-        unset($action);
-
-        $value .= implode(', ', $actions);
-        unset($actions);
-      }
-      else {
-        unset($value);
-        return new c_base_return_false();
-      }
+      unset($value);
+      unset($if_exists);
+      unset($only);
+      unset($wildcard);
+      return new c_base_return_false();
     }
+    unset($if_exists);
+    unset($only);
+    unset($wildcard);
 
     $this->value = static::p_QUERY_COMMAND;
-    $this->value .= ' ' . $this->p_do_build_name();
-
-    if ($this->include_descendents) {
-      $this->value .' *';
-    }
-
     $this->value .= ' ' . $value;
     unset($value);
 

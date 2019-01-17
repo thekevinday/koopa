@@ -111,7 +111,7 @@ trait t_database_constraint {
    * Get the currently assigned constraint settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array of constraint settings on success.
+   *   An array of constraint settings.
    *   NULL is returned if not set (constraint is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -134,7 +134,7 @@ trait t_database_constraint {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_constraint() {

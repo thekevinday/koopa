@@ -10,7 +10,6 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_all_in_tablespace.php');
 require_once('common/database/traits/database_cluster_on.php');
 require_once('common/database/traits/database_column_reset.php');
 require_once('common/database/traits/database_column_set.php');
@@ -37,7 +36,6 @@ require_once('common/database/traits/database_set_without_cluster.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-altermaterializedview.html
  */
 class c_database_alter_materialized_view extends c_database_query {
-  use t_database_all_in_tablespace;
   use t_database_cluster_on;
   use t_database_column_reset;
   use t_database_column_set;
@@ -66,7 +64,6 @@ class c_database_alter_materialized_view extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->all_in_tablespace       = NULL;
     $this->cluster_on              = NULL;
     $this->column_reset            = NULL;
     $this->column_set              = NULL;
@@ -91,7 +88,6 @@ class c_database_alter_materialized_view extends c_database_query {
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->all_in_tablespace);
     unset($this->cluster_on);
     unset($this->column_reset);
     unset($this->column_set);

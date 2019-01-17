@@ -10,7 +10,6 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_action.php');
 require_once('common/database/traits/database_handler.php');
 require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_options.php');
@@ -24,7 +23,6 @@ require_once('common/database/traits/database_validator.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alterforeigndatawrapper.html
  */
 class c_database_alter_foreign_data_wrapper extends c_database_query {
-  use t_database_action;
   use t_database_handler;
   use t_database_name;
   use t_database_options;
@@ -41,7 +39,6 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
   public function __construct() {
     parent::__construct();
 
-    $this->action    = NULL;
     $this->handler   = NULL;
     $this->name      = NULL;
     $this->options   = NULL;
@@ -54,7 +51,6 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
    * Class destructor.
    */
   public function __destruct() {
-    unset($this->action);
     unset($this->handler);
     unset($this->name);
     unset($this->options);
@@ -94,6 +90,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
       return new c_base_return_false();
     }
 
+    // @fixme: rewrite this.
     $value = NULL;
     if ($this->action === e_database_action::OWNER_TO) {
       if (isset($this->owner_to)) {

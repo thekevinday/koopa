@@ -80,8 +80,8 @@ trait t_database_set_configuration_parameter {
         }
 
         $set['value'] = $placeholder;
-        unset($placeholder);
       }
+      unset($placeholder);
 
       $this->set_configuration_parameter = $configuration_parameter;
       unset($configuration_parameter);
@@ -105,7 +105,7 @@ trait t_database_set_configuration_parameter {
    * Get the currently assigned set configuration parameter settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing set configuration parameter settings on success.
+   *   An array containing set configuration parameter settings.
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -128,7 +128,7 @@ trait t_database_set_configuration_parameter {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_configuration_parameter() {

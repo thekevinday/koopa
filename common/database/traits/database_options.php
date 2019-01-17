@@ -21,22 +21,32 @@ trait t_database_options {
   /**
    * Set the in options.
    *
-   * @param string|null $options_type
+   * @param string|null $type
    *   The option type to use.
    *   Set to NULL to disable.
    *   When NULL, this will remove all values.
-   * @param string $value
-   *   The value to associate with the options_type.
-   *   When options_type is NULL, this is ignored.
+   * @param string|null $option
+   *   (optional) The option name to use.
+   *   When type is NULL, this is ignored.
+   *   Required when $type is not NULL.
+   * @param string|null $value
+   *   (optional) The value to associate with the type.
+   *   When type is NULL, this is ignored.
+   *   Required when $type is not NULL.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with error bit set is returned on error.
    */
-  public function set_options($options_type, $value) {
-    if (is_null($options_type)) {
+  public function set_options($type, $option = NULL, $value = NULL) {
+    if (is_null($type)) {
       $this->options = NULL;
       return new c_base_return_true();
+    }
+
+    if (!is_string($option)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+      return c_base_return_error::s_false($error);
     }
 
     if (!is_string($value)) {
@@ -44,7 +54,7 @@ trait t_database_options {
       return c_base_return_error::s_false($error);
     }
 
-    switch ($options_type) {
+    switch ($type) {
       case e_database_options::ADD:
       case e_database_options::DROP:
       case e_database_options::SET:
@@ -58,16 +68,24 @@ trait t_database_options {
       $this->options = [];
     }
 
-    $placeholder = $this->add_placeholder($value);
-    if ($placeholder->has_error()) {
-      return c_base_return_error::s_false($placeholder->get_error());
+    $placeholder_option = $this->add_placeholder($option);
+    if ($placeholder_option->has_error()) {
+      return c_base_return_error::s_false($placeholder_option->get_error());
+    }
+
+    $placeholder_value = $this->add_placeholder($value);
+    if ($placeholder_value->has_error()) {
+      unset($placeholder_option);
+      return c_base_return_error::s_false($placeholder_value->get_error());
     }
 
     $this->options[] = [
-      'type' => $options_type,
-      'value' => $placeholder,
+      'type' => $type,
+      'option' => $placeholder_option,
+      'value' => $placeholder_value,
     ];
-    unset($placeholder);
+    unset($placeholder_option);
+    unset($placeholder_value);
 
     return new c_base_return_true();
   }
@@ -113,24 +131,33 @@ trait t_database_options {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_options() {
-    $options = [];
-    foreach ($this->options as $options_value) {
-      if ($options_value['type'] == e_database_options::ADD) {
-        $options[] = c_database_string::ADD . ' ' . $options_value['value'];
-      }
-      else if ($options_value['type'] == e_database_options::DROP) {
-        $options[] = c_database_string::DROP . ' ' . $options_value['value'];
-      }
-      else if ($options_value['type'] == e_database_options::SET) {
-        $options[] = c_database_string::SET . ' ' . $options_value['value'];
-      }
-    }
-    unset($options_value);
+    $value = c_database_string::OPTIONS;
 
-    return empty($options) ? NULL : c_database_string::OPTIONS . ' ' . implode(', ', $options);
+    $values = [];
+    foreach ($this->options['values'] as $set) {
+      if ($set['type'] === e_database_options::ADD) {
+        $set_value = c_database_string::ADD;
+      }
+      else if ($set['type'] === e_database_options::DROP) {
+        $set_value = c_database_string::DROP;
+      }
+      else if ($set['type'] === e_database_options::SET) {
+        $set_value = c_database_string::SET;
+      }
+      else {
+        continue;
+      }
+
+      $set_value .= ' ' . $set['option'] . ' ' . $set['value'];
+      $values[] = $set_value;
+    }
+    unset($set);
+    unset($set_value);
+
+    return $value . ' ' . implode(', ', $values);
   }
 }

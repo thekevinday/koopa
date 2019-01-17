@@ -134,7 +134,7 @@ abstract class c_database_query extends c_base_return_string implements i_databa
    *   When NULL, the placeholder is appended.
    *
    * @return i_database_query_placeholder|c_base_return_false
-   *   A query placeholder representing is returned on success.
+   *   A query placeholder representing is returned.
    *   FALSE with the error bit set is returned on error.
    */
   public function add_placeholder($value, $placeholder = NULL) {

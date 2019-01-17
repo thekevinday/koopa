@@ -90,7 +90,7 @@ trait t_database_owner_to {
    * Get the currently assigned owner to settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing the owner to settings on success.
+   *   An array containing the owner to settings.
    *   NULL without error bit set is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
@@ -113,7 +113,7 @@ trait t_database_owner_to {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_owner_to() {

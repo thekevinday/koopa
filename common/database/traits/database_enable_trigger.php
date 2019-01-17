@@ -91,7 +91,7 @@ trait t_database_enable_trigger {
    * Get the currently assigned enable trigger settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing the enable trigger settings on success.
+   *   An array containing the enable trigger settings.
    *   NULL is returned if not set (not to be confused with DISABLE TRIGGER).
    *   NULL with the error bit set is returned on error.
    */
@@ -114,7 +114,7 @@ trait t_database_enable_trigger {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_enable_trigger() {

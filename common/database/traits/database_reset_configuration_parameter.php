@@ -81,7 +81,7 @@ trait t_database_reset_configuration_parameter {
    * Get the currently assigned reset configuration_parameter settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing reset settings on success.
+   *   An array containing reset settings.
    *   NULL is returned if not set (reset tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -104,7 +104,7 @@ trait t_database_reset_configuration_parameter {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_reset_configuration_parameter() {

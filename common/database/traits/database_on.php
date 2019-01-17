@@ -59,7 +59,7 @@ trait t_database_on {
    * Get the ON operation status.
    *
    * @return c_base_return_int|c_base_return_null
-   *   Integer representing the on operation is returned on success.
+   *   Integer representing the on operation is returned.
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
@@ -77,7 +77,7 @@ trait t_database_on {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_on() {

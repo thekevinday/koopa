@@ -55,7 +55,7 @@ trait t_database_action {
    * Get the currently assigned action.
    *
    * @return c_base_return_int|c_base_return_null
-   *   Integer representing the action is returned on success.
+   *   Integer representing the action is returned.
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
@@ -106,7 +106,7 @@ trait t_database_action_property {
    * Get the currently assigned action property.
    *
    * @return c_base_return_int|c_base_return_null
-   *   Integer representing the action property is returned on success.
+   *   Integer representing the action property is returned.
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */
@@ -162,7 +162,7 @@ trait t_database_action_parameter {
    * Get the currently assigned action parameter.
    *
    * @return c_base_return_string|c_base_return_array|c_database_query|c_base_return_null
-   *   String or array representing the action parameters are returned on success.
+   *   String or array representing the action parameters are returned.
    *   NULL is returned if undefined.
    *   FALSE with error bit set is returned on error.
    */

@@ -13,6 +13,7 @@ namespace n_koopa;
 class c_database_string {
   public const ACCESS_METHOD                         = 'access method';
   public const ADD                                   = 'add';
+  public const ADD_COLUMN                            = 'add column';
   public const ADD_TABLE                             = 'add table';
   public const AGGREGATE                             = 'aggregate';
   public const ALL                                   = 'all';
@@ -20,6 +21,7 @@ class c_database_string {
   public const ALTER                                 = 'alter';
   public const AS                                    = 'as';
   public const ASCEND                                = 'asc';
+  public const ATTACH_PARTITION                      = 'attach partition';
   public const AUTOSUMMARIZE                         = 'autosummarize';
   public const AUTOVACUUM_ANALYZE_SCALE_FACTOR       = 'autovacuum_analyze_scale_factor';
   public const AUTOVACUUM_ANALYZE_THRESHOLD          = 'autovacuum_analyze_threshold';
@@ -40,6 +42,7 @@ class c_database_string {
   public const CASCADE                               = 'cascade';
   public const CAST                                  = 'cast';
   public const CLUSTER_ON                            = 'cluster on';
+  public const COLLATE                               = 'collate';
   public const COLLATION                             = 'collation';
   public const COLUMN                                = 'column';
   public const CONNECT                               = 'connect';
@@ -61,9 +64,9 @@ class c_database_string {
   public const DISABLE_TRIGGER                       = 'disable trigger';
   public const DOMAIN                                = 'domain';
   public const DROP                                  = 'drop';
-  public const DROP_TABLE                            = 'drop table';
   public const DROP_CONSTRAINT                       = 'drop constraint';
   public const DROP_DEFAULT                          = 'drop default';
+  public const DROP_TABLE                            = 'drop table';
   public const ENABLE                                = 'enable';
   public const ENABLED                               = 'enabled';
   public const ENABLE_ALWAYS_TRIGGER                 = 'enable always trigger';
@@ -82,6 +85,7 @@ class c_database_string {
   public const FOR_ORDER_BY                          = 'for order by';
   public const FOR_ROLE                              = 'for role';
   public const FOR_SEARCH                            = 'for search';
+  public const FOR_VALUES                            = 'for values';
   public const FROM_CURRENT                          = 'from current';
   public const FUNCTION                              = 'function';
   public const GRANT                                 = 'grant';
@@ -173,6 +177,7 @@ class c_database_string {
   public const SEQUENCE                              = 'sequence';
   public const SERVER                                = 'server';
   public const SET                                   = 'set';
+  public const SET_DATA                              = 'set data';
   public const SET_DEFAULT                           = 'set default';
   public const SET_PUBLICATION                       = 'set publication';
   public const SET_SCHEMA                            = 'set schema';

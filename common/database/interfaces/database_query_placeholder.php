@@ -36,7 +36,7 @@ interface i_database_query_placeholder {
    * Gets the id used for generating the placeholder name.
    *
    * @return c_base_return_id|c_base_return_null
-   *   A value is returned on success.
+   *   A value is returned.
    *   NULL is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
@@ -46,7 +46,7 @@ interface i_database_query_placeholder {
    * Gets a placeholder name, generated from the prefix and id.
    *
    * @return c_base_return_string|c_base_return_null
-   *   A value is returned on success.
+   *   A value is returned.
    *   NULL is returned if not assigned.
    *   NULL with the error bit set is returned on error.
    */
@@ -56,7 +56,7 @@ interface i_database_query_placeholder {
    * Gets the prefix used for generating the placeholder name.
    *
    * @return c_base_return_string|c_base_return_null
-   *   A value is returned on success.
+   *   A value is returned.
    *   NULL with the error bit set is returned on error.
    */
   public function get_placeholder();

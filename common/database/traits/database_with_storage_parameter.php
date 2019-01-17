@@ -86,7 +86,7 @@ trait t_database_with_storage_parameter {
    *   When NULL, all index storage parameter types are returned.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing the set index storage parameter settings on success.
+   *   An array containing the set index storage parameter settings.
    *   NULL is returned if not set (set index storage parameter not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -119,7 +119,7 @@ trait t_database_with_storage_parameter {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_with_storage_parameter() {

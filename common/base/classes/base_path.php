@@ -257,7 +257,7 @@ class c_base_path extends c_base_return_string {
    *   Default setting is assigned on parameter error.
    *
    * @return c_base_markup_tag|c_base_return_status
-   *   A newly created tag is returned on success.
+   *   A newly created tag is returned.
    *   FALSE with the error bit set is returned on error.
    */
   public static function s_create_alias($id_group, $field_path, $field_destination, $is_private = TRUE) {
@@ -313,7 +313,7 @@ class c_base_path extends c_base_return_string {
    *   Default setting is assigned on parameter error.
    *
    * @return c_base_markup_tag|c_base_return_status
-   *   A newly created tag is returned on success.
+   *   A newly created tag is returned.
    *   FALSE with the error bit set is returned on error.
    */
   public static function s_create_redirect($field_destination, $field_response_code, $is_private = TRUE) {
@@ -1194,7 +1194,7 @@ class c_base_path extends c_base_return_string {
    *   (optional) An array of additional settings that are usually site-specific.
    *
    * @return c_base_path_executed|int
-   *   An executed array object is returned on success.
+   *   An executed array object is returned.
    *   An executed array object with error bit set is returned on error.
    */
   public function do_execute(&$http, &$database, &$session, $settings = []) {
@@ -1491,7 +1491,7 @@ class c_base_path_executed extends c_base_array {
    *   When NULL, the cookies array is reset to an empty array.
    *
    * @return c_base_return_status
-   *   TRUE is returned on success.
+   *   TRUE is returned.
    *   FALSE with error bit set is returned on error.
    */
   public function set_cookies($cookie) {
@@ -1521,7 +1521,7 @@ class c_base_path_executed extends c_base_array {
    *   NULL may be specified to remove any output.
    *
    * @return c_base_return_status
-   *   TRUE is returned on success.
+   *   TRUE is returned.
    *   FALSE with error bit set is returned on error.
    */
   public function set_output($output) {
@@ -1605,7 +1605,7 @@ class c_base_path_tree extends c_base_array {
    *   The group id to assign.
    *
    * @return c_base_return_status
-   *   TRUE is returned on success.
+   *   TRUE is returned.
    *   FALSE with error bit set is returned on error.
    */
   public function set_id_group($id_group) {

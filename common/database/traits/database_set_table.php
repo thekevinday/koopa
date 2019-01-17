@@ -83,7 +83,7 @@ trait t_database_set_table {
    *   When NULL, all add table settings are returned.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array containing the add table settings on success.
+   *   An array containing the add table settings.
    *   NULL is returned if not set (add table not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -106,7 +106,7 @@ trait t_database_set_table {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_table() {

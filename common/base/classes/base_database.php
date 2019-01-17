@@ -1494,7 +1494,7 @@ class c_base_database extends c_base_return {
    *   Instead, use pg_escape_bytea() or a large object function.
    *
    * @return c_base_database_result
-   *   Query resource is returned on success.
+   *   Query resource is returned.
    *   Query resource with the error bit set is returned on error.
    *
    * @see: self::execute()
@@ -1596,7 +1596,7 @@ class c_base_database extends c_base_return {
    *   The query statement to execute.
    *
    * @return c_base_database_result
-   *   Query resource is returned on success.
+   *   Query resource is returned.
    *   Query resource with error bit set is returned on error.
    *
    * @see: self::execute()
@@ -1666,7 +1666,7 @@ class c_base_database extends c_base_return {
    * This is only useful when a query is asynchronous.
    *
    * @return c_base_database_result
-   *   A database result is returned on success.
+   *   A database result is returned.
    *   A database result with the error bit set is returned on error.
    */
   public function get_result() {
@@ -1726,7 +1726,7 @@ class c_base_database extends c_base_return {
    * This design, however, means that only a single a synchronous query operation may be performed at any given time.
    *
    * @return c_base_return_status
-   *   TRUE is returned on success.
+   *   TRUE is returned.
    *   FALSE is returned on failure.
    *   When asynchronous is not enabled, FALSE is returned without an error flag set.
    *
@@ -1785,7 +1785,7 @@ class c_base_database extends c_base_return {
    *
    * @return c_base_return_status|c_base_return_string
    *   TRUE on success, FALSE on failure.
-   *   If PGSQL_DML_STRING is set, a string is returned on success.
+   *   If PGSQL_DML_STRING is set, a string is returned.
    *
    *   Its unclear as to what the returned string is, but it can be assumed to be a value, such as an serialized number that was incremented by this operation.
    *
@@ -1870,7 +1870,7 @@ class c_base_database extends c_base_return {
    *
    * @return c_base_return_status|c_base_return_string
    *   TRUE on success, FALSE on failure.
-   *   If PGSQL_DML_STRING is set, a string is returned on success.
+   *   If PGSQL_DML_STRING is set, a string is returned.
    *
    *   Its unclear as to what the returned string is, but it can be assumed to be a value, such as an serialized number that was incremented by this operation.
    *
@@ -1957,7 +1957,7 @@ class c_base_database extends c_base_return {
    *
    * @return c_base_return_status|c_base_return_string|c_base_return_array
    *   TRUE or an array on success, FALSE on failure.
-   *   If PGSQL_DML_STRING is set, a string is returned on success.
+   *   If PGSQL_DML_STRING is set, a string is returned.
    *
    *   Its unclear as to what the returned string is, but it can be assumed to be a value, such as an serialized number that was incremented by this operation.
    *
@@ -2045,7 +2045,7 @@ class c_base_database extends c_base_return {
    *
    * @return c_base_return_status|c_base_return_string|c_base_return_array
    *   TRUE on success, FALSE on failure.
-   *   If PGSQL_DML_STRING is set, a string is returned on success.
+   *   If PGSQL_DML_STRING is set, a string is returned.
    *
    *   Its unclear as to what the returned string is, but it can be assumed to be a value, such as an serialized number that was incremented by this operation.
    *

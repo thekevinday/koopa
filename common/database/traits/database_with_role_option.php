@@ -114,7 +114,7 @@ trait t_database_with_role_option {
    * Get the with role option settings.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array of with role option settings on success.
+   *   An array of with role option settings.
    *   NULL is returned if not set (with role option is not to be used).
    *   NULL with the error bit set is returned on error.
    */
@@ -137,7 +137,7 @@ trait t_database_with_role_option {
    * As an internal trait method, the caller is expected to perform any appropriate validation.
    *
    * @return string|null
-   *   A string is returned on success.
+   *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_with_role_option() {
