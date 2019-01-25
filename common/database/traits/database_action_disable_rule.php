@@ -12,26 +12,28 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_string.php');
 
+require_once('common/database/enumerations/database_rule.php');
+
 /**
- * Provide the sql SET TABLESPACE functionality.
+ * Provide the sql action DISABLE RULE functionality.
  */
-trait t_database_set_tablespace {
-  protected $set_tablespace;
+trait t_database_action_disable_rule {
+  protected $action_disable_rule;
 
   /**
-   * Set the SET TABLESPACE settings.
+   * Set the action DISABLE RULE value.
    *
    * @param string|null $name
-   *   The tablespace name to set to.
+   *   A string representing the rule name.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_set_tablespace($name) {
+  public function set_action_disable_rule($name) {
     if (is_null($name)) {
-      $this->set_tablespace = NULL;
+      $this->action_disable_rule = NULL;
       return new c_base_return_true();
     }
 
@@ -45,30 +47,30 @@ trait t_database_set_tablespace {
       return c_base_return_error::s_false($placeholder->get_error());
     }
 
-    $this->set_tablespace = $placeholder;
+    $this->action_disable_rule = $placeholder;
     unset($placeholder);
 
     return new c_base_return_true();
   }
 
   /**
-   * Get the currently assigned tablespace name to set to.
+   * Get the currently assigned enable rule settings.
    *
-   * @return i_database_query_placeholder|c_base_return_null
-   *   A tablespace name on success.
-   *   NULL is returned if not set (set tablespace is not to be used).
+   * @return c_base_return_string|c_base_return_null
+   *   A string containing the disable rule name.
+   *   NULL is returned if not set (not to be confused with DISABLE RULE).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set_tablespace() {
-    if (is_null($this->set_tablespace)) {
+  public function get_action_disable_rule() {
+    if (is_null($this->action_disable_rule)) {
       return new c_base_return_null();
     }
 
-    if (isset($this->set_tablespace)) {
-      return clone($this->set_tablespace);
+    if (is_string($this->action_disable_rule)) {
+      return c_base_return_string::s_new($this->action_disable_rule);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_disable_rule', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -81,7 +83,7 @@ trait t_database_set_tablespace {
    *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_set_tablespace() {
-    return c_database_string::SET_TABLESPACE . ' ' . $this->set_tablespace;
+  protected function p_do_build_action_disable_rule() {
+    return c_database_string::DISABLE_RULE . ' ' . $this->action_disable_rule;
   }
 }

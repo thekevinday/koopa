@@ -10,7 +10,7 @@ namespace n_koopa;
 /**
  * Codes associated with postgresql enable/disable trigger information.
  */
-class e_database_enable_trigger {
+class e_database_trigger {
   public const NONE    = 0;
   public const ALL     = 1;
   public const ALWAYS  = 2;

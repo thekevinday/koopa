@@ -19,6 +19,7 @@ class c_database_string {
   public const ALL                                   = 'all';
   public const ALLOW_CONNECTIONS                     = 'allow_connections';
   public const ALTER                                 = 'alter';
+  public const ALTER_CONSTRAINT                      = 'alter constraint';
   public const AS                                    = 'as';
   public const ASCEND                                = 'asc';
   public const ATTACH_PARTITION                      = 'attach partition';
@@ -55,12 +56,15 @@ class c_database_string {
   public const CREATEDB                              = 'createdb';
   public const CREATEROLE                            = 'createrole';
   public const CREATE_SLOT                           = 'create_slot';
+  public const CURRENT_USER                          = 'current user';
   public const CYCLE                                 = 'cycle';
   public const DEFAULT                               = 'default';
+  public const DEFERRABLE                            = 'deferrable';
   public const DELETE                                = 'delete';
   public const DEPENDS_ON_EXTENSION                  = 'depends on extension';
   public const DESCEND                               = 'desc';
   public const DISABLE                               = 'disable';
+  public const DISABLE_RULE                          = 'disable rule';
   public const DISABLE_TRIGGER                       = 'disable trigger';
   public const DOMAIN                                = 'domain';
   public const DROP                                  = 'drop';
@@ -69,8 +73,11 @@ class c_database_string {
   public const DROP_TABLE                            = 'drop table';
   public const ENABLE                                = 'enable';
   public const ENABLED                               = 'enabled';
+  public const ENABLE_ALWAYS_RULE                    = 'enable always rule';
   public const ENABLE_ALWAYS_TRIGGER                 = 'enable always trigger';
+  public const ENABLE_REPLICA_RULE                   = 'enable replica rule';
   public const ENABLE_REPLICA_TRIGGER                = 'enable replica trigger';
+  public const ENABLE_RULE                           = 'enable rule';
   public const ENABLE_TRIGGER                        = 'enable trigger';
   public const EVENT_TRIGGER                         = 'event trigger';
   public const EXECUTE                               = 'execute';
@@ -87,6 +94,7 @@ class c_database_string {
   public const FOR_SEARCH                            = 'for search';
   public const FOR_VALUES                            = 'for values';
   public const FROM_CURRENT                          = 'from current';
+  public const FULL                                  = 'full';
   public const FUNCTION                              = 'function';
   public const GRANT                                 = 'grant';
   public const GRANT_OPTION_FOR                      = 'grant option for';
@@ -101,6 +109,8 @@ class c_database_string {
   public const INOUT                                 = 'inout';
   public const IN_SCHEMA                             = 'in schema';
   public const INHERIT                               = 'inherit';
+  public const INITIALLY_DEFERRED                    = 'initially deferred';
+  public const INITIALLY_IMMEDIATE                   = 'initially immediate';
   public const INSERT                                = 'insert';
   public const IS_TEMPLATE                           = 'is_template';
   public const LANGUAGE                              = 'language';
@@ -121,11 +131,14 @@ class c_database_string {
   public const NOLOGIN                               = 'nologin';
   public const NOREPLICATION                         = 'noreplication';
   public const NOSUPERUSER                           = 'nosuperuser';
+  public const NOTHING                               = 'nothing';
+  public const NOWAIT                               = 'nowait';
   public const NO_HANDLER                            = 'no handler';
   public const NO_INHERIT                            = 'no inherit';
   public const NO_VALIDATOR                          = 'no validator';
-  public const NO_WAIT                               = 'nowait';
+  public const NOT_DEFERRABLE                        = 'not deferrable';
   public const NOT_LEAKPROOF                         = 'not leakproof';
+  public const NOT_OF                                = 'not of';
   public const NOT_NULL                              = 'not null';
   public const NOT_VALID                             = 'not valid';
   public const ON_FUNCTIONS                          = 'on functons';
@@ -158,6 +171,7 @@ class c_database_string {
   public const RENAME_TO                             = 'rename to';
   public const RENAME_COLUMN                         = 'rename column';
   public const RENAME_CONSTRAINT                     = 'rename constraint';
+  public const REPLICA_IDENTITY                      = 'replica identity';
   public const REPLICATION                           = 'replication';
   public const RESET                                 = 'reset';
   public const RESET_ALL                             = 'reset all';
@@ -169,6 +183,7 @@ class c_database_string {
   public const REVOKE                                = 'revoke';
   public const ROLE                                  = 'role';
   public const ROWS                                  = 'rows';
+  public const ROW_LEVEL_SECURITY                    = 'row level security';
   public const SAFE                                  = 'safe';
   public const SCHEMA                                = 'schema';
   public const SECURITY_DEFINER                      = 'security definer';
@@ -176,15 +191,18 @@ class c_database_string {
   public const SELECT                                = 'select';
   public const SEQUENCE                              = 'sequence';
   public const SERVER                                = 'server';
+  public const SESSION_USER                          = 'session user';
   public const SET                                   = 'set';
   public const SET_DATA                              = 'set data';
   public const SET_DEFAULT                           = 'set default';
+  public const SET_LOGGED                            = 'set logged';
   public const SET_PUBLICATION                       = 'set publication';
   public const SET_SCHEMA                            = 'set schema';
   public const SET_STATISTICS                        = 'set statistics';
   public const SET_STORAGE                           = 'set storage';
   public const SET_TABLE                             = 'set table';
   public const SET_TABLESPACE                        = 'set tablespace';
+  public const SET_UNLOGGED                          = 'set unlogged';
   public const SET_WITH_OIDS                         = 'set with oids';
   public const SET_WITHOUT_CLUSTER                   = 'set without cluster';
   public const SET_WITHOUT_OIDS                      = 'set without oids';
@@ -214,6 +232,7 @@ class c_database_string {
   public const USER_CURRENT                          = 'current_user';
   public const USER_SESSION                          = 'session_user';
   public const USING                                 = 'using';
+  public const USING_INDEX                           = 'using index';
   public const VALIDATOR                             = 'validator';
   public const VALIDATE_CONSTRAINT                   = 'validate constraint';
   public const VALIDUNTIL                            = 'validuntil';
@@ -222,6 +241,7 @@ class c_database_string {
   public const VOLATILE                              = 'volatile';
   public const VIEW                                  = 'view';
   public const WITH                                  = 'with';
+  public const WITHOUT_CLUSTER                       = 'without cluster';
   public const WITH_CHECK                            = 'with check';
   public const WITH_GRANT_OPTION                     = 'with grant option';
 }

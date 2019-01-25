@@ -8,12 +8,12 @@
 namespace n_koopa;
 
 /**
- * Codes associated with database constaint.
+ * Codes associated with REPLICA IDENTITY, and related queries.
  */
-class e_database_constraint {
+class e_database_row_level_security {
   public const NONE     = 0;
-  public const ADD      = 1;
-  public const ALTER    = 2;
-  public const DROP     = 3;
-  public const VALIDATE = 4;
+  public const DISABLE  = 1;
+  public const ENABLE   = 2;
+  public const FORCE    = 3;
+  public const NO_FORCE = 4;
 }

@@ -11,20 +11,26 @@ require_once('common/base/classes/base_return.php');
 require_once('common/database/classes/database_query.php');
 
 require_once('common/database/traits/database_action_add_column.php');
-require_once('common/database/traits/database_action_add_constraint.php');
 require_once('common/database/traits/database_action_alter_column.php');
 require_once('common/database/traits/database_action_alter_column_options.php');
 require_once('common/database/traits/database_action_alter_column_reset.php');
 require_once('common/database/traits/database_action_alter_column_set.php');
-require_once('common/database/traits/database_action_alter_constraint.php');
+require_once('common/database/traits/database_action_cluster_on.php');
+require_once('common/database/traits/database_action_constraint.php');
+require_once('common/database/traits/database_action_disable_rule.php');
 require_once('common/database/traits/database_action_disable_trigger.php');
 require_once('common/database/traits/database_action_drop_columm.php');
-require_once('common/database/traits/database_action_drop_constraint.php');
+require_once('common/database/traits/database_action_enable_rule.php');
 require_once('common/database/traits/database_action_enable_trigger.php');
 require_once('common/database/traits/database_action_inherit.php');
 require_once('common/database/traits/database_action_owner_to.php');
+require_once('common/database/traits/database_action_replica_identity.php');
+require_once('common/database/traits/database_action_row_level_security.php');
+require_once('common/database/traits/database_action_set_logged.php');
+require_once('common/database/traits/database_action_set_of.php');
 require_once('common/database/traits/database_action_set_oids.php');
-require_once('common/database/traits/database_action_validate_constraint.php');
+require_once('common/database/traits/database_action_set_tablespace.php');
+require_once('common/database/traits/database_action_without_cluster.php');
 require_once('common/database/traits/database_attach_partition.php');
 require_once('common/database/traits/database_detach_partition.php');
 require_once('common/database/traits/database_if_exists.php');
@@ -47,20 +53,27 @@ require_once('common/database/traits/database_wildcard.php');
  */
 class c_database_alter_table extends c_database_query {
   use t_database_action_add_column;
-  use t_database_action_add_constraint;
   use t_database_action_alter_column;
   use t_database_action_alter_column_options;
   use t_database_action_alter_column_reset;
   use t_database_action_alter_column_set;
-  use t_database_action_alter_constraint;
+  use t_database_action_cluster_on;
+  use t_database_action_constraint;
+  use t_database_action_disable_rule;
   use t_database_action_disable_trigger;
   use t_database_action_drop_columm;
-  use t_database_action_drop_constraint;
+  use t_database_action_enable_rule;
   use t_database_action_enable_trigger;
   use t_database_action_inherit;
+  use t_database_action_not_of;
+  use t_database_action_of;
   use t_database_action_owner_to;
+  use t_database_action_replica_identity;
+  use t_database_action_row_level_security;
+  use t_database_action_set_logged;
   use t_database_action_set_oids;
-  use t_database_action_validate_constraint;
+  use t_database_action_set_tablespace;
+  use t_database_action_without_cluster;
   use t_database_attach_partition;
   use t_database_detach_partition;
   use t_database_if_exists;
@@ -85,20 +98,28 @@ class c_database_alter_table extends c_database_query {
     parent::__construct();
 
     $this->action_add_column           = NULL;
-    $this->action_add_constraint       = NULL;
     $this->action_alter_column         = NULL;
     $this->action_alter_column_options = NULL;
     $this->action_alter_column_reset   = NULL;
     $this->action_alter_column_set     = NULL;
-    $this->action_alter_constraint     = NULL;
+    $this->action_cluster_on           = NULL;
+    $this->action_constraint           = NULL;
+    $this->action_disable_rule         = NULL;
     $this->action_disable_trigger      = NULL;
     $this->action_drop_columm          = NULL;
-    $this->action_drop_constraint      = NULL;
+    $this->action_enable_rule          = NULL;
     $this->action_enable_trigger       = NULL;
     $this->action_inherit              = NULL;
+    $this->action_not_of               = NULL;
     $this->action_options              = NULL;
     $this->action_owner_to             = NULL;
+    $this->action_replica_identity     = NULL;
+    $this->action_row_level_security   = NULL;
+    $this->action_set_logged           = NULL;
+    $this->action_set_of               = NULL;
     $this->action_set_oids             = NULL;
+    $this->action_set_tablespace       = NULL;
+    $this->action_without_cluster      = NULL;
     $this->attach_partition            = NULL;
     $this->detach_partition            = NULL;
     $this->if_exists                   = NULL;
@@ -119,21 +140,28 @@ class c_database_alter_table extends c_database_query {
    */
   public function __destruct() {
     unset($this->action_add_column);
-    unset($this->action_add_constraint);
     unset($this->action_alter_column);
     unset($this->action_alter_column_options);
     unset($this->action_alter_column_reset);
     unset($this->action_alter_column_set);
-    unset($this->action_alter_constraint);
+    unset($this->action_cluster_on);
+    unset($this->action_constraint);
+    unset($this->action_disable_rule);
     unset($this->action_disable_trigger);
     unset($this->action_drop_columm);
-    unset($this->action_drop_constraint);
+    unset($this->action_enable_rule);
     unset($this->action_enable_trigger);
     unset($this->action_inherit);
+    unset($this->action_not_of);
     unset($this->action_options);
     unset($this->action_owner_to);
+    unset($this->action_replica_identity);
+    unset($this->action_row_level_security);
+    unset($this->action_set_logged);
+    unset($this->action_set_of);
     unset($this->action_set_oids);
-    unset($this->action_validate_constraint);
+    unset($this->action_set_tablespace);
+    unset($this->action_without_cluster);
     unset($this->attach_partition);
     unset($this->detach_partition);
     unset($this->if_exists);
@@ -221,66 +249,90 @@ class c_database_alter_table extends c_database_query {
         $value .= ' ' . $this->p_do_build_no_wait();
       }
     }
-    else if (isset($this->attach_partition)) {
-      $value =$if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_attach_partition();
-    }
-    else if (isset($this->detach_partition)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_detach_partition();
-    }
-    else if (isset($this->action_add_column)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_add_column();
-    }
-    else if (isset($this->action_add_constraint)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_add_constraint();
-    }
-    else if (isset($this->action_alter_column)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column();
-    }
-    else if (isset($this->action_alter_column_options)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_options();
-    }
-    else if (isset($this->action_alter_column_reset)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_reset();
-    }
-    else if (isset($this->action_alter_column_set)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_column_set();
-    }
-    else if (isset($this->action_alter_constraint)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_alter_constraint();
-    }
-    else if (isset($this->action_disable_trigger)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_disable_trigger();
-    }
-    else if (isset($this->action_drop_columm)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_drop_columm();
-    }
-    else if (isset($this->action_drop_constraint)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_drop_constraint();
-    }
-    else if (isset($this->action_enable_trigger)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_enable_trigger();
-    }
-    else if (isset($this->action_inherit)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_inherit();
-    }
-    else if (isset($this->action_options)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_options();
-    }
-    else if (isset($this->action_owner_to)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_owner_to();
-    }
-    else if (isset($this->action_set_oids)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_set_oids();
-    }
-    else if (isset($this->action_validate_constraint)) {
-      $value = $if_exists . $only . $value . ' ' . $wildcard . $this->p_do_build_action_validate_constraint();
-    }
     else {
-      unset($value);
-      unset($if_exists);
-      unset($only);
-      unset($wildcard);
-      return new c_base_return_false();
+      $value = $if_exists . $only . $value . ' ' . $wildcard;
+      if (isset($this->action_add_column)) {
+        $value .= $this->p_do_build_action_add_column();
+      }
+      else if (isset($this->action_alter_column)) {
+        $value .= $this->p_do_build_action_alter_column();
+      }
+      else if (isset($this->action_alter_column_options)) {
+        $value .= $this->p_do_build_action_alter_column_options();
+      }
+      else if (isset($this->action_alter_column_reset)) {
+        $value .= $this->p_do_build_action_alter_column_reset();
+      }
+      else if (isset($this->action_alter_column_set)) {
+        $value .= $this->p_do_build_action_alter_column_set();
+      }
+      else if (isset($this->action_cluster_on)) {
+        $value .= $this->p_do_build_action_cluster_on();
+      }
+      else if (isset($this->action_constraint)) {
+        $value .= $this->p_do_build_action_constraint();
+      }
+      else if (isset($this->action_disable_rule)) {
+        $value .= $this->p_do_build_action_disable_rule();
+      }
+      else if (isset($this->action_disable_trigger)) {
+        $value .= $this->p_do_build_action_disable_trigger();
+      }
+      else if (isset($this->action_drop_columm)) {
+        $value .= $this->p_do_build_action_drop_columm();
+      }
+      else if (isset($this->action_enable_rule)) {
+        $value .= $this->p_do_build_action_enable_rule();
+      }
+      else if (isset($this->action_enable_trigger)) {
+        $value .= $this->p_do_build_action_enable_trigger();
+      }
+      else if (isset($this->action_inherit)) {
+        $value .= $this->p_do_build_action_inherit();
+      }
+      else if (isset($this->action_not_of)) {
+        $value .= $this->p_do_build_action_not_of();
+      }
+      else if (isset($this->action_options)) {
+        $value .= $this->p_do_build_action_options();
+      }
+      else if (isset($this->action_owner_to)) {
+        $value .= $this->p_do_build_action_owner_to();
+      }
+      else if (isset($this->action_replica_identity)) {
+        $value .= $this->p_do_build_action_replica_identity();
+      }
+      else if (isset($this->action_row_level_security)) {
+        $value .= $this->p_do_build_action_row_level_security();
+      }
+      else if (isset($this->action_set_logged)) {
+        $value .= $this->p_do_build_action_set_logged();
+      }
+      else if (isset($this->action_set_of)) {
+        $value .= $this->p_do_build_action_set_of();
+      }
+      else if (isset($this->action_set_oids)) {
+        $value .= $this->p_do_build_action_set_oids();
+      }
+      else if (isset($this->action_set_tablespace)) {
+        $value .= $this->p_do_build_action_set_tablespace();
+      }
+      else if (isset($this->action_without_cluster)) {
+        $value .= $this->p_do_build_action_without_cluster();
+      }
+      else if (isset($this->attach_partition)) {
+        $value .= $this->p_do_build_attach_partition();
+      }
+      else if (isset($this->detach_partition)) {
+        $value .= $this->p_do_build_detach_partition();
+      }
+      else {
+        unset($value);
+        unset($if_exists);
+        unset($only);
+        unset($wildcard);
+        return new c_base_return_false();
+      }
     }
     unset($if_exists);
     unset($only);

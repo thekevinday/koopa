@@ -13,62 +13,62 @@ require_once('common/base/classes/base_return.php');
 require_once('common/database/classes/database_string.php');
 
 /**
- * Provide the sql RENAME TO functionality.
+ * Provide the sql action OF functionality.
  */
-trait t_database_rename_to {
-  protected $rename_to;
+trait t_database_action_of {
+  protected $action_of;
 
   /**
-   * Set the RENAME TO settings.
+   * Set the action OF settings.
    *
-   * @param string|null $rename_to
-   *   The name to rename to.
+   * @param string|null $type_name
+   *   The of type name to set to.
    *   Set to NULL to disable.
    *
    * @return c_base_return_status
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_rename_to($rename_to) {
-    if (is_null($rename_to)) {
-      $this->rename_to = NULL;
+  public function set_action_of($type_name) {
+    if (is_null($type_name)) {
+      $this->action_of = NULL;
       return new c_base_return_true();
     }
 
-    if (!is_string($rename_to)) {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
+    if (!is_string($type_name)) {
+      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'type_name', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
       return c_base_return_error::s_false($error);
     }
 
-    $placeholder = $this->add_placeholder($rename_to);
+    $placeholder = $this->add_placeholder($type_name);
     if ($placeholder->has_error()) {
       return c_base_return_error::s_false($placeholder->get_error());
     }
 
-    $this->rename_to = $placeholder;
+    $this->action_of = $placeholder;
     unset($placeholder);
 
     return new c_base_return_true();
   }
 
   /**
-   * Get the currently assigned name to rename to.
+   * Get the currently assigned  action OF setting.
    *
    * @return i_database_query_placeholder|c_base_return_null
-   *   A name query placeholder.
-   *   NULL is returned if not set (rename to is not to be used).
+   *   A tablespace name on success.
+   *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_rename_to() {
-    if (is_null($this->rename_to)) {
+  public function get_action_of() {
+    if (is_null($this->action_of)) {
       return new c_base_return_null();
     }
 
-    if (isset($this->rename_to)) {
-      return clone($this->rename_to);
+    if (isset($this->action_of)) {
+      return clone($this->action_of);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'rename_to', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_of', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -81,7 +81,7 @@ trait t_database_rename_to {
    *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_rename_to() {
-    return c_database_string::RENAME_TO . ' ' . $this->rename_to;
+  protected function p_do_build_action_of() {
+    return c_database_string::OF . ' ' . $this->action_of;
   }
 }

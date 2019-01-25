@@ -259,7 +259,7 @@ abstract class c_database_query extends c_base_return_string implements i_databa
 
       foreach ($this->placeholders as $placeholder) {
         if ($placeholder instanceof i_database_query_placeholder) {
-          $input_parameters[$placeholder->get_name()->get_value_exact()] = $placeholder->get_value_exact();
+          $input_parameters[strval($placeholder)] = $placeholder->get_value_exact();
         }
       }
 

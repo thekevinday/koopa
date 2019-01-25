@@ -99,7 +99,7 @@ trait t_database_column_set_storage {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_column_set_storage() {
-    $value = c_database_string::COLUMN . ' ' . $this->column_set_storage['name']->get_name() . ' ' . c_database_string::SET_STORAGE . ' ';
+    $value = c_database_string::COLUMN . ' ' . $this->column_set_storage['name'] . ' ' . c_database_string::SET_STORAGE . ' ';
     if ($this->column_set_storage['type'] === e_database_column_set_storage::EXTENDED) {
       return $value . c_database_string::EXTENDED;
     }

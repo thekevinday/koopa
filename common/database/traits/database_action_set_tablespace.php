@@ -13,13 +13,13 @@ require_once('common/base/classes/base_return.php');
 require_once('common/database/classes/database_string.php');
 
 /**
- * Provide the sql SET TABLESPACE functionality.
+ * Provide the sql action SET TABLESPACE functionality.
  */
-trait t_database_set_tablespace {
-  protected $set_tablespace;
+trait t_database_action_set_tablespace {
+  protected $action_set_tablespace;
 
   /**
-   * Set the SET TABLESPACE settings.
+   * Set the action SET TABLESPACE settings.
    *
    * @param string|null $name
    *   The tablespace name to set to.
@@ -29,9 +29,9 @@ trait t_database_set_tablespace {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_set_tablespace($name) {
+  public function set_action_set_tablespace($name) {
     if (is_null($name)) {
-      $this->set_tablespace = NULL;
+      $this->action_set_tablespace = NULL;
       return new c_base_return_true();
     }
 
@@ -45,7 +45,7 @@ trait t_database_set_tablespace {
       return c_base_return_error::s_false($placeholder->get_error());
     }
 
-    $this->set_tablespace = $placeholder;
+    $this->action_set_tablespace = $placeholder;
     unset($placeholder);
 
     return new c_base_return_true();
@@ -59,16 +59,16 @@ trait t_database_set_tablespace {
    *   NULL is returned if not set (set tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set_tablespace() {
-    if (is_null($this->set_tablespace)) {
+  public function get_action_set_tablespace() {
+    if (is_null($this->action_set_tablespace)) {
       return new c_base_return_null();
     }
 
-    if (isset($this->set_tablespace)) {
-      return clone($this->set_tablespace);
+    if (isset($this->action_set_tablespace)) {
+      return clone($this->action_set_tablespace);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_set_tablespace', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -81,7 +81,7 @@ trait t_database_set_tablespace {
    *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_set_tablespace() {
-    return c_database_string::SET_TABLESPACE . ' ' . $this->set_tablespace;
+  protected function p_do_build_action_set_tablespace() {
+    return c_database_string::SET_TABLESPACE . ' ' . $this->action_set_tablespace;
   }
 }

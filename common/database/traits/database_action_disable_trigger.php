@@ -12,16 +12,16 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_string.php');
 
-require_once('common/database/enumerations/database_enable_trigger.php');
+require_once('common/database/enumerations/database_disable_trigger.php');
 
 /**
- * Provide the sql ENABLE TRIGGER functionality.
+ * Provide the sql action DISABLE TRIGGER functionality.
  */
-trait t_database_enable_trigger {
-  protected $enable_trigger;
+trait t_database_action_disable_trigger {
+  protected $action_disable_trigger;
 
   /**
-   * Set the ENABLE TRIGGER value.
+   * Set the action DISABLE TRIGGER value.
    *
    * @param int|null $type
    *   An integer representing the type of the trigger.
@@ -35,9 +35,9 @@ trait t_database_enable_trigger {
    *   TRUE on success, FALSE otherwise.
    *   FALSE with the error bit set is returned on error.
    */
-  public function set_enable_trigger($type, $name = NULL) {
+  public function set_action_disable_trigger($type, $name = NULL) {
     if (is_null($type)) {
-      $this->enable_trigger = NULL;
+      $this->action_disable_trigger = NULL;
       return new c_base_return_true();
     }
 
@@ -69,7 +69,7 @@ trait t_database_enable_trigger {
         return c_base_return_error::s_false($error);
     }
 
-    $this->enable_trigger = [
+    $this->action_disable_trigger = [
       'type' => $type,
       'name' => $use_name,
     ];
@@ -86,16 +86,16 @@ trait t_database_enable_trigger {
    *   NULL is returned if not set (not to be confused with DISABLE TRIGGER).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_enable_trigger() {
-    if (is_null($this->enable_trigger)) {
+  public function get_action_disable_trigger() {
+    if (is_null($this->action_disable_trigger)) {
       return new c_base_return_null();
     }
 
-    if (is_array($this->enable_trigger)) {
-      return c_base_return_array::s_new($this->enable_trigger);
+    if (is_array($this->action_disable_trigger)) {
+      return c_base_return_array::s_new($this->action_disable_trigger);
     }
 
-    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'enable_trigger', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
+    $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_disable_trigger', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
     return c_base_return_error::s_null($error);
   }
 
@@ -108,29 +108,19 @@ trait t_database_enable_trigger {
    *   A string is returned.
    *   NULL is returned if there is nothing to process or there is an error.
    */
-  protected function p_do_build_enable_trigger() {
-    $value = NULL;
+  protected function p_do_build_action_disable_trigger() {
+    $value = c_database_string::DISABLE_TRIGGER;
 
-    if ($this->enable_trigger['type'] === e_database_trigger::ALWAYS || $this->enable_trigger['type'] === e_database_trigger::REPLICA) {
-      if (is_string($this->enable_trigger['name'])) {
-        if ($this->enable_trigger['type'] === e_database_trigger::ALWAYS) {
-          $value = c_database_string::ENABLE_ALWAYS_TRIGGER . ' ' . $this->enable_trigger['name'];
-        }
-        else if ($this->enable_trigger['type'] === e_database_trigger::REPLICA) {
-          $value = c_database_string::ENABLE_REPLICA_TRIGGER . ' ' . $this->enable_trigger['name'];
-        }
+    if ($this->action_disable_trigger['type'] === e_database_trigger::NAME) {
+      if (is_string($this->action_disable_trigger['name'])) {
+          $value .= ' ' . $this->action_disable_trigger['name'];
       }
     }
-    else if ($this->enable_trigger['type'] === e_database_trigger::NAME) {
-      if (is_string($this->enable_trigger['name'])) {
-          $value = c_database_string::ENABLE_TRIGGER . ' ' . $this->enable_trigger['name'];
-      }
+    else if ($this->action_disable_trigger['type'] === e_database_trigger::ALL) {
+      $value .= ' ' . c_database_string::ALL;
     }
-    else if ($this->enable_trigger['type'] === e_database_trigger::ALL) {
-      $value = c_database_string::ENABLE_TRIGGER . ' ' . c_database_string::ALL;
-    }
-    else if ($this->enable_trigger['type'] === e_database_trigger::USER) {
-      $value = c_database_string::ENABLE_TRIGGER . ' ' . c_database_string::USER;
+    else if ($this->action_disable_trigger['type'] === e_database_trigger::USER) {
+      $value .= ' ' . c_database_string::USER;
     }
 
     return $value;
