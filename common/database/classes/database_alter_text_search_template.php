@@ -10,14 +10,22 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_name.php');
+require_once('common/database/traits/database_rename_to.php');
+require_once('common/database/traits/database_set_schema.php');
+
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql ALTER TEXT SEARCH TEMPLATE query string.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-altertextsearchtemplate.html
  */
-class c_database_alter_coalation extends c_database_query {
-  protected const p_QUERY_COMMAND = 'alter coalation';
+class c_database_alter_text_search_template extends c_database_query {
+  use t_database_name;
+  use t_database_rename_to;
+  use t_database_set_schema;
+
+  protected const p_QUERY_COMMAND = 'alter text search template';
 
 
   /**
@@ -25,12 +33,20 @@ class c_database_alter_coalation extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
+
+    $this->name       = NULL;
+    $this->rename_to  = NULL;
+    $this->set_schema = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->name);
+    unset($this->rename_to);
+    unset($this->set_schema);
+
     parent::__destruct();
   }
 
@@ -64,6 +80,16 @@ class c_database_alter_coalation extends c_database_query {
     }
 
     $value = $this->p_do_build_name();
+    if (isset($this->rename_to)) {
+      $value .= ' ' . $this->p_do_build_rename_to();
+    }
+    else if (isset($this->set_schema)) {
+      $value .= ' ' . $this->p_do_build_set_schema();
+    }
+    else {
+      unset($value);
+      return new c_base_return_false();
+    }
 
     $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $value;

@@ -15,6 +15,8 @@ class c_database_string {
   public const ADD                                   = 'add';
   public const ADD_COLUMN                            = 'add column';
   public const ADD_TABLE                             = 'add table';
+  public const ADD_VALUE                             = 'add value';
+  public const AFTER                                 = 'after';
   public const AGGREGATE                             = 'aggregate';
   public const ALL                                   = 'all';
   public const ALLOW_CONNECTIONS                     = 'allow_connections';
@@ -36,8 +38,9 @@ class c_database_string {
   public const AUTOVACUUM_MULTIXACT_FREEZE_TABLE_AGE = 'autovacuum_multixact_freeze_table_age';
   public const AUTOVACUUM_SCALE_FACTOR               = 'autovacuum_scale_factor';
   public const AUTOVACUUM_VACUUM_THRESHOLD           = 'autovacuum_vacuum_threshold';
-  public const BYPASSRLS                             = 'bypassrls';
+  public const BEFORE                                = 'before';
   public const BUFFERING                             = 'buffering';
+  public const BYPASSRLS                             = 'bypassrls';
   public const CACHE                                 = 'cache';
   public const CALLED_ON_NULL_INPUT                  = 'called on null input';
   public const CASCADE                               = 'cascade';
@@ -70,6 +73,7 @@ class c_database_string {
   public const DROP                                  = 'drop';
   public const DROP_CONSTRAINT                       = 'drop constraint';
   public const DROP_DEFAULT                          = 'drop default';
+  public const DROP_MAPPING                          = 'drop mapping';
   public const DROP_TABLE                            = 'drop table';
   public const ENABLE                                = 'enable';
   public const ENABLED                               = 'enabled';
@@ -103,6 +107,7 @@ class c_database_string {
   public const GIN_PENDING_LIST_LIMIT                = 'gin_pending_list_limit';
   public const HANDLER                               = 'handler';
   public const IF_EXISTS                             = 'if exists';
+  public const IF_NOT_EXISTS                         = 'if not exists';
   public const IMMUTABLE                             = 'immutable';
   public const IN                                    = 'in';
   public const IN_DATABASE                           = 'in database';
@@ -118,6 +123,9 @@ class c_database_string {
   public const LOGIN                                 = 'login';
   public const LOG_AUTOVACUUM_MIN_DURATION           = 'log_autovacuum_min_duration';
   public const MAIN                                  = 'main';
+  public const MAPPING                               = 'mapping';
+  public const MAPPING_FOR                           = 'mapping for';
+  public const MAPPING_REPLACE                       = 'mapping replace';
   public const MATERIALIZED_VIEW                     = 'materialized view';
   public const MAXVALUE                              = 'maxvalue';
   public const MINVALUE                              = 'minvalue';
@@ -241,6 +249,7 @@ class c_database_string {
   public const VOLATILE                              = 'volatile';
   public const VIEW                                  = 'view';
   public const WITH                                  = 'with';
+  public const WITH_DICTIONARY                       = 'with dictionary';
   public const WITHOUT_CLUSTER                       = 'without cluster';
   public const WITH_CHECK                            = 'with check';
   public const WITH_GRANT_OPTION                     = 'with grant option';

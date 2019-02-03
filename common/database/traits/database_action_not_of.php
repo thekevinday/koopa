@@ -59,7 +59,7 @@ trait t_database_action_not_of {
     }
 
     if (is_bool($this->action_not_of)) {
-      return c_base_return_bool:s_new($this->action_not_of);
+      return c_base_return_bool::s_new($this->action_not_of);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_not_of', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

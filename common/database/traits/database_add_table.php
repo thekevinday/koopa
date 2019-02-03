@@ -78,10 +78,6 @@ trait t_database_add_table {
   /**
    * Get the currently assigned add table settings.
    *
-   * @param int|null $index
-   *   (optional) Get the add table settings at the specified index.
-   *   When NULL, all add table settings are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the add table settings.
    *   NULL is returned if not set (add table not to be used).
