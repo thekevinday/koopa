@@ -74,34 +74,20 @@ trait t_database_set_publication_parameter {
   }
 
   /**
-   * Get the currently assigned SET publication parameter at the specified index.
-   *
-   * @param int|null $index
-   *   (optional) Get the publication parameter type at the specified index.
-   *   When NULL, all publication parameter types are returned.
+   * Get the currently assigned SET publication parameter.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the set publication parameter settings.
    *   NULL is returned if not set (publication parameter not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set_publication_parameter($index = NULL) {
+  public function get_set_publication_parameter() {
     if (is_null($this->set_publication_parameter)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->set_publication_parameter)) {
-        return c_base_return_array::s_new($this->set_publication_parameter);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->set_publication_parameter)) {
-        return c_base_return_array::s_new($this->set_publication_parameter[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_publication_parameter[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->set_publication_parameter)) {
+      return c_base_return_array::s_new($this->set_publication_parameter);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_publication_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

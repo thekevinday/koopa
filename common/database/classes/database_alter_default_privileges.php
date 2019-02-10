@@ -121,7 +121,7 @@ class c_database_alter_default_priveleges extends c_database_query {
       $value .= is_null($value) ? '' : ' ';
       $value .= $this->p_do_build_grant();
 
-      if ($this->grant === e_database_action::ACTION_REVOKE) {
+      if ($this->grant === e_database_action_deprecated::ACTION_REVOKE) {
         if ($this->grant_option_for) {
           $value .= ' ' . $this->p_do_build_grant_option_for();
         }
@@ -135,10 +135,10 @@ class c_database_alter_default_priveleges extends c_database_query {
       $value .= ' ' . $this->p_do_build_on();
     }
 
-    if ($this->grant === e_database_action::GRANT) {
+    if ($this->grant === e_database_action_deprecated::GRANT) {
       $value .= ' ' . c_database_string::TO;
     }
-    else if ($this->grant === e_database_action::REVOKE) {
+    else if ($this->grant === e_database_action_deprecated::REVOKE) {
       $value .= ' ' . c_database_string::FROM;
     }
 
@@ -146,12 +146,12 @@ class c_database_alter_default_priveleges extends c_database_query {
       $value .= ' ' . $this->p_do_build_to_role();
     }
 
-    if ($this->grant === e_database_action::GRANT) {
+    if ($this->grant === e_database_action_deprecated::GRANT) {
       if ($this->with_grant_option) {
         $value .= ' ' . $this->p_do_build_with_grant_option();
       }
     }
-    else if ($this->grant === e_database_action::REVOKE) {
+    else if ($this->grant === e_database_action_deprecated::REVOKE) {
       if (is_int($this->cascade)) {
         $value .= ' ' . $this->p_do_build_cascade();
       }

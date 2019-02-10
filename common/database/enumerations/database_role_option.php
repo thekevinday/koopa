@@ -29,5 +29,5 @@ class e_database_role_option {
   public const PASSWORD_ENCRYPTED = 15;
   public const REPLICATION        = 16;
   public const SUPERUSER          = 17;
-  public const VALIDUNTIL         = 18;
+  public const VALID_UNTIL        = 18;
 }

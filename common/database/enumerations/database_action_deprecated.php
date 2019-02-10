@@ -10,7 +10,7 @@ namespace n_koopa;
 /**
  * Codes associated with database actions.
  */
-class e_database_action {
+class e_database_action_deprecated {
   public const NONE                = 0;
   public const ADD                 = 1;
   public const DISABLE             = 2;

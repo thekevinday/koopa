@@ -76,32 +76,17 @@ trait t_database_to_role {
   /**
    * Get the in schema, to roles.
    *
-   * @param int|null $index
-   *   (optional) Get the schema name at the specified index.
-   *   When NULL, all to roles are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array of to role arrays or NULL if not defined.
-   *   A single to role array is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_to_role($index = NULL) {
+  public function get_to_role() {
     if (is_null($this->to_role)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->to_role)) {
-        return c_base_return_array::s_new($this->to_role);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->to_role)) {
-        return c_base_return_array::s_new($this->to_role[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'to_role[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->to_role)) {
+      return c_base_return_array::s_new($this->to_role);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'to_role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

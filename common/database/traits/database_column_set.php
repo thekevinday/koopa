@@ -92,34 +92,20 @@ trait t_database_column_set {
   }
 
   /**
-   * Get the currently assigned COLUMN .. SET index attribute option at the specified index.
-   *
-   * @param int|null $index
-   *   (optional) Get the index attribute option type at the specified index.
-   *   When NULL, all index attribute option types are returned.
+   * Get the currently assigned COLUMN .. SET index attribute option.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the set index attribute option settings.
    *   NULL is returned if not set (set index attribute option not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_column_set($index = NULL) {
+  public function get_column_set() {
     if (is_null($this->column_set)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->column_set)) {
-        return c_base_return_array::s_new($this->column_set);
-      }
-    }
-    else {
-      if (is_int($index) && isset($index, $this->column_set['values']) && is_array($this->column_set['values'][$index])) {
-        return c_base_return_array::s_new($this->column_set['values'][$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_set[values][index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->column_set)) {
+      return c_base_return_array::s_new($this->column_set);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_set', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

@@ -131,6 +131,7 @@ trait t_database_add_value {
    */
   protected function p_do_build_add_value() {
     $value = c_database_string::ADD_VALUE;
+    // @todo: confirm/deny whether or not the placeholder will be auto-quoted by PDO.
     $value .= ' \'' . $this->add_value['new_enum_value'] . '\'';
 
     if ($this->add_value['if_not_exists']) {
@@ -145,6 +146,7 @@ trait t_database_add_value {
         $value .= ' ' . c_database_string::BEFORE;
       }
 
+      // @todo: confirm/deny whether or not the placeholder will be auto-quoted by PDO.
       $value .= ' \'' . $this->add_value['neighbor_enum_value'] . '\'';
     }
 

@@ -90,32 +90,20 @@ trait t_database_argument_type {
   }
 
   /**
-   * Get the currently assigned sql argument type at the specified index.
-   *
-   * @param int|null $index
-   *   (optional) Get the argument type array at the specified index.
-   *   When NULL, all argument type are returned.
+   * Get the currently assigned sql argument type.
    *
    * @return c_base_return_array|c_base_return_null
-   *   An array representing the argument type at the $index.
-   *   An array representing all argument types when $index is NULL.
-   *   NULL is returned if not set (argument type tablespace is not to be used).
+   *   An array representing all argument types.
+   *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_argument_type($index = NULL) {
+  public function get_argument_type() {
     if (is_null($this->argument_type)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
+    if (is_array($this->argument_type)) {
       return c_base_return_array::s_new($this->argument_type);
-    }
-    else if (isset($this->argument_type[$index]) && is_array($this->argument_type[$index])) {
-      return c_base_return_array::s_new($this->argument_type[$index]);
-    }
-    else {
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{argument_name}' => 'argument_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_ARGUMENT);
-      return c_base_return_error::s_null($error);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'argument_type', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

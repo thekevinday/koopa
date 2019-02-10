@@ -149,7 +149,7 @@ trait t_database_function_action {
    *   NULL is returned if not set (function action tablespace is not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_function_action($index = NULL) {
+  public function get_function_action() {
     if (is_null($this->function_action)) {
       return new c_base_return_null();
     }

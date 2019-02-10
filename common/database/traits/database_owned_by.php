@@ -62,43 +62,22 @@ trait t_database_owned_by {
   }
 
   /**
-   * Get the owned_by.
+   * Get the owned by settings.
    *
-   * @param int|null $index
-   *   (optional) Get the owned_by at the specified index.
-   *   When NULL, all owned_by are returned.
-   *
-   * @return c_base_return_int|i_database_query_placeholder|c_base_return_array|c_base_return_null
+   * @return c_base_return_array|c_base_return_null
    *   An array of owned_by or NULL if not defined.
-   *   A single owned_by is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_owned_by($index = NULL) {
+  public function get_owned_by() {
     if (is_null($this->owned_by)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if ($this->owned_by === e_database_user::ALL || $this->owned_by === e_database_user::NONE) {
-        return c_base_return_array::s_new([$this->owned_by]);
-      }
-      else if (is_array($this->owned_by)) {
-        return c_base_return_array::s_new($this->owned_by);
-      }
+    if ($this->owned_by === e_database_user::ALL || $this->owned_by === e_database_user::NONE) {
+      return c_base_return_array::s_new([$this->owned_by]);
     }
-    else if (is_int($index)) {
-      if (array_key_exists($index, $this->owned_by)) {
-        if (is_int($this->owned_by[$index])) {
-          return c_base_return_int::s_new($this->owned_by[$index]);
-        }
-        else if (isset($this->owned_by[$index])) {
-          return clone($this->owned_by[$index]);
-        }
-      }
-      else {
-        $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owned_by[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-        return c_base_return_error::s_null($error);
-      }
+    else if (is_array($this->owned_by)) {
+      return c_base_return_array::s_new($this->owned_by);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'owned_by', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

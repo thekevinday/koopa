@@ -92,7 +92,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
 
     // @fixme: rewrite this.
     $value = NULL;
-    if ($this->action === e_database_action::OWNER_TO) {
+    if ($this->action === e_database_action_deprecated::OWNER_TO) {
       if (isset($this->owner_to)) {
         $value = $this->p_do_build_owner_to();
       }
@@ -101,7 +101,7 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
         return new c_base_return_false();
       }
     }
-    else if ($this->action === e_database_action::RENAME_TO) {
+    else if ($this->action === e_database_action_deprecated::RENAME_TO) {
       if (isset($this->rename_to)) {
         $value = $this->p_do_build_rename_to();
       }

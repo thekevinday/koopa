@@ -73,32 +73,17 @@ trait t_database_action_alter_column_reset {
   /**
    * Get the currently assigned settings.
    *
-   * @param int|null $index
-   *   (optional) Get the settings at the specified index.
-   *   When NULL, all settings are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array of settings or NULL if not defined.
-   *   A single settings is returned if $index is an integer.
    *   NULL with the error bit reset is returned on error.
    */
-  public function get_action_alter_column_reset($index = NULL) {
+  public function get_action_alter_column_reset() {
     if (is_null($this->action_alter_column_reset)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->action_alter_column_reset)) {
-        return c_base_return_array::s_new($this->action_alter_column_reset);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->action_alter_column_reset)) {
-        return c_base_return_array::s_new($this->action_alter_column_reset[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_alter_column_reset[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->action_alter_column_reset)) {
+      return c_base_return_array::s_new($this->action_alter_column_reset);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_alter_column_reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

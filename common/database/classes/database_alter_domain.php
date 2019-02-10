@@ -8,7 +8,7 @@ namespace n_koopa;
 require_once('common/base/classes/base_error.php');
 require_once('common/base/classes/base_return.php');
 
-require_once('common/database/enumerations/database_action.php');
+require_once('common/database/enumerations/database_action_deprecated.php');
 require_once('common/database/enumerations/database_cascade.php');
 
 require_once('common/database/classes/database_query.php');
@@ -17,19 +17,19 @@ require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_owner_to.php');
 require_once('common/database/traits/database_rename_to.php');
 require_once('common/database/traits/database_set_schema.php');
-require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_action_deprecated.php');
 
 /**
  * The class for building and returning a Postgresql ALTER DOMAIN query string.
  *
  * @see: https://www.postgresql.org/docs/current/static/sql-alterdomain.html
  */
-class c_database_alter_coalation extends c_database_query {
+class c_database_alter_domain extends c_database_query {
   use t_database_name;
   use t_database_owner_to;
   use t_database_rename_to;
   use t_database_set_schema;
-  use t_database_action;
+  use t_database_action_deprecated;
 
   protected const p_QUERY_COMMAND = 'alter domain';
 
@@ -239,7 +239,7 @@ class c_database_alter_coalation extends c_database_query {
 
     $value = $this->p_do_build_name() . ' ';
     switch ($this->action) {
-        case e_database_action::ADD:
+        case e_database_action_deprecated::ADD:
           if (!is_array($this->constraint)) {
             unset($value);
             return new c_base_return_false();
@@ -253,14 +253,14 @@ class c_database_alter_coalation extends c_database_query {
           }
           break;
 
-        case e_database_action::DROP:
+        case e_database_action_deprecated::DROP:
           $value .= c_database_string::DROP;
           if ($this->property === e_database_property::NOT_NULL) {
             $value .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
-        case e_database_action::DROP_CONSTRAINT:
+        case e_database_action_deprecated::DROP_CONSTRAINT:
           if (!is_array($this->constraint['name'])) {
             unset($value);
             return new c_base_return_false();
@@ -281,11 +281,11 @@ class c_database_alter_coalation extends c_database_query {
           }
           break;
 
-        case e_database_action::DROP_DEFAULT:
+        case e_database_action_deprecated::DROP_DEFAULT:
           $value .= c_database_string::DROP_DEFAULT;
           break;
 
-        case e_database_action::OWNER_TO:
+        case e_database_action_deprecated::OWNER_TO:
           if (!isset($this->owner_to)) {
             unset($value);
             return new c_base_return_false();
@@ -294,7 +294,7 @@ class c_database_alter_coalation extends c_database_query {
           $value .= $this->p_do_build_owner_to();
           break;
 
-        case e_database_action::RENAME_CONSTRAINT:
+        case e_database_action_deprecated::RENAME_CONSTRAINT:
           if (!isset($this->constraint['name']) || !isset($this->constraint['name_new'])) {
             unset($value);
             return new c_base_return_false();
@@ -303,7 +303,7 @@ class c_database_alter_coalation extends c_database_query {
           $value .= c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
           break;
 
-        case e_database_action::RENAME_TO:
+        case e_database_action_deprecated::RENAME_TO:
           if (!isset($this->rename_to)) {
             unset($value);
             return new c_base_return_false();
@@ -312,14 +312,14 @@ class c_database_alter_coalation extends c_database_query {
           $value .= $this->p_do_build_rename_to();
           break;
 
-        case e_database_action::SET:
+        case e_database_action_deprecated::SET:
           $value = c_database_string::SET;
           if ($this->property === e_database_property::NOT_NULL) {
             $value .= ' ' . c_database_string::NOT_NULL;
           }
           break;
 
-        case e_database_action::SET_DEFAULT:
+        case e_database_action_deprecated::SET_DEFAULT:
           if (!isset($this->expression)) {
             unset($value);
             return new c_base_return_false();
@@ -328,7 +328,7 @@ class c_database_alter_coalation extends c_database_query {
           $value .= c_database_string::SET_DEFAULT . ' ' . $this->expression;
           break;
 
-        case e_database_action::SET_SCHEMA:
+        case e_database_action_deprecated::SET_SCHEMA:
           if (!isset($this->set_schema)) {
             unset($value);
             return new c_base_return_false();
@@ -337,7 +337,7 @@ class c_database_alter_coalation extends c_database_query {
           $value .= $this->p_do_build_set_schema();
           break;
 
-        case e_database_action::VALIDATE_CONSTRAINT:
+        case e_database_action_deprecated::VALIDATE_CONSTRAINT:
           if (!is_array($this->constraint)) {
             unset($value);
             return new c_base_return_false();

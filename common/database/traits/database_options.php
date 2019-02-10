@@ -93,32 +93,17 @@ trait t_database_options {
   /**
    * Get the options.
    *
-   * @param int|null $index
-   *   (optional) Get the options at the specified index.
-   *   When NULL, all options are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array of options arrays or NULL if not defined.
-   *   A single options array is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_options($index = NULL) {
+  public function get_options() {
     if (is_null($this->options)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->options)) {
-        return c_base_return_array::s_new($this->options);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->options) && is_array($this->options[$index])) {
-        return c_base_return_array::s_new($this->options[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'options[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->options)) {
+      return c_base_return_array::s_new($this->options);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

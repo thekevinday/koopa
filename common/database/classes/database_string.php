@@ -13,6 +13,7 @@ namespace n_koopa;
 class c_database_string {
   public const ACCESS_METHOD                         = 'access method';
   public const ADD                                   = 'add';
+  public const ADD_ATTRIBUTE                         = 'add attribute';
   public const ADD_COLUMN                            = 'add column';
   public const ADD_TABLE                             = 'add table';
   public const ADD_VALUE                             = 'add value';
@@ -21,6 +22,7 @@ class c_database_string {
   public const ALL                                   = 'all';
   public const ALLOW_CONNECTIONS                     = 'allow_connections';
   public const ALTER                                 = 'alter';
+  public const ALTER_ATTRIBUTE                       = 'alter attribute';
   public const ALTER_CONSTRAINT                      = 'alter constraint';
   public const AS                                    = 'as';
   public const ASCEND                                = 'asc';
@@ -71,6 +73,7 @@ class c_database_string {
   public const DISABLE_TRIGGER                       = 'disable trigger';
   public const DOMAIN                                = 'domain';
   public const DROP                                  = 'drop';
+  public const DROP_ATTRIBUTE                        = 'drop attribute';
   public const DROP_CONSTRAINT                       = 'drop constraint';
   public const DROP_DEFAULT                          = 'drop default';
   public const DROP_MAPPING                          = 'drop mapping';
@@ -90,9 +93,9 @@ class c_database_string {
   public const FALSE                                 = 'false';
   public const FASTUPDATE                            = 'fastupdate';
   public const FILLFACTOR                            = 'fillfactor';
+  public const FOR                                   = 'for';
   public const FOREIGN_DATA_WRAPPER                  = 'foreign data wrapper';
   public const FOREIGN_TABLE                         = 'foreign table';
-  public const FOR                                   = 'for';
   public const FOR_ORDER_BY                          = 'for order by';
   public const FOR_ROLE                              = 'for role';
   public const FOR_SEARCH                            = 'for search';
@@ -176,9 +179,10 @@ class c_database_string {
   public const REFRESH                               = 'refresh';
   public const REFRESH_PUBLICATION                   = 'refresh publication';
   public const REFRESH_VERSION                       = 'refresh version';
-  public const RENAME_TO                             = 'rename to';
+  public const RENAME_ATTRIBUTE                      = 'rename attribute';
   public const RENAME_COLUMN                         = 'rename column';
   public const RENAME_CONSTRAINT                     = 'rename constraint';
+  public const RENAME_TO                             = 'rename to';
   public const REPLICA_IDENTITY                      = 'replica identity';
   public const REPLICATION                           = 'replication';
   public const RESET                                 = 'reset';
@@ -202,6 +206,7 @@ class c_database_string {
   public const SESSION_USER                          = 'session user';
   public const SET                                   = 'set';
   public const SET_DATA                              = 'set data';
+  public const SET_DATA_TYPE                         = 'set data type';
   public const SET_DEFAULT                           = 'set default';
   public const SET_LOGGED                            = 'set logged';
   public const SET_PUBLICATION                       = 'set publication';
@@ -243,7 +248,7 @@ class c_database_string {
   public const USING_INDEX                           = 'using index';
   public const VALIDATOR                             = 'validator';
   public const VALIDATE_CONSTRAINT                   = 'validate constraint';
-  public const VALIDUNTIL                            = 'validuntil';
+  public const VALID_UNTIL                           = 'valid until';
   public const VARIADIC                              = 'variadic';
   public const VERSION                               = 'version';
   public const VOLATILE                              = 'volatile';

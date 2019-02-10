@@ -76,7 +76,7 @@ trait t_database_with_role_option {
 
       case e_database_role_option::PASSWORD:
       case e_database_role_option::PASSWORD_ENCRYPTED:
-      case e_database_role_option::VALIDUNTIL:
+      case e_database_role_option::VALID_UNTIL:
         if (is_string($value)) {
           $placeholder = $this->add_placeholder($value);
           if ($placeholder->has_error()) {
@@ -194,8 +194,8 @@ trait t_database_with_role_option {
       else if ($role_option['type'] === e_database_role_option::PASSWORD_ENCRYPTED) {
         $values[] = c_database_string::PASSWORD_ENCRYPTED . ' ' . $role_option['value'];
       }
-      else if ($role_option['type'] === e_database_role_option::VALIDUNTIL) {
-        $values[] = c_database_string::VALIDUNTIL . ' ' . $role_option['value'];
+      else if ($role_option['type'] === e_database_role_option::VALID_UNTIL) {
+        $values[] = c_database_string::VALID_UNTIL . ' ' . $role_option['value'];
       }
     }
     unset($role_option);

@@ -80,32 +80,17 @@ trait t_database_set_operator {
   /**
    * Get the (operator) SET values.
    *
-   * @param int|null $index
-   *   (optional) Get the set parameter and value at the specified index.
-   *   When NULL, all parameters and values are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array of parameters and values or NULL if not defined.
-   *   A single parameters and value array is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set_operator($index = NULL) {
+  public function get_set_operator() {
     if (is_null($this->set_operator)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->set_operator)) {
-        return c_base_return_array::s_new($this->set_operator);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->set_operator)) {
-        return c_base_return_array::s_new($this->set_operator[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_operator[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->set_operator)) {
+      return c_base_return_array::s_new($this->set_operator);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_operator', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

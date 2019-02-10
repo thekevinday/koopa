@@ -12,8 +12,9 @@ namespace n_koopa;
  */
 class e_database_user {
   public const NONE    = 0;
-  public const CURRENT = 1;
-  public const SESSION = 2;
+  public const ALL     = 1;
+  public const CURRENT = 2;
   public const NAME    = 3;
-  public const ALL     = 4;
+  public const PUBLIC  = 4;
+  public const SESSION = 5;
 }

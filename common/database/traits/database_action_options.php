@@ -93,32 +93,17 @@ trait t_database_action_options {
   /**
    * Get the action_options.
    *
-   * @param int|null $index
-   *   (optional) Get the action_options at the specified index.
-   *   When NULL, all action_options are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array of action_options arrays or NULL if not defined.
-   *   A single action_options array is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_action_options($index = NULL) {
+  public function get_action_options() {
     if (is_null($this->action_options)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->action_options)) {
-        return c_base_return_array::s_new($this->action_options);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->action_options) && is_array($this->action_options[$index])) {
-        return c_base_return_array::s_new($this->action_options[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_options[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->action_options)) {
+      return c_base_return_array::s_new($this->action_options);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'action_options', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

@@ -52,7 +52,7 @@ trait t_database_refresh_publication {
    *   NULL is returned if not set (refresh publication not to be used).
    *   NULL with the error bit set is returned on error.
    */
-  public function get_refresh_publication($index = NULL) {
+  public function get_refresh_publication() {
     if (is_null($this->refresh_publication)) {
       return new c_base_return_null();
     }

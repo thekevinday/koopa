@@ -68,34 +68,20 @@ trait t_database_with_refresh_option {
   }
 
   /**
-   * Get the currently assigned WITH refresh option at the specified index.
-   *
-   * @param int|null $index
-   *   (optional) Get the refresh options at the specified index.
-   *   When NULL, all refresh options are returned.
+   * Get the currently assigned WITH refresh option.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the with refresh option settings.
-   *   NULL is returned if not set (with refresh option not to be used).
+   *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_with_refresh_option($index = NULL) {
+  public function get_with_refresh_option() {
     if (is_null($this->with_refresh_option)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->with_refresh_option)) {
-        return c_base_return_array::s_new($this->with_refresh_option);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->with_refresh_option)) {
-        return c_base_return_array::s_new($this->with_refresh_option[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'with_refresh_option[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->with_refresh_option)) {
+      return c_base_return_array::s_new($this->with_refresh_option);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'with_refresh_option', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

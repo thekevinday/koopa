@@ -11,7 +11,7 @@ require_once('common/base/classes/base_return.php');
 require_once('common/database/classes/database_query.php');
 require_once('common/database/classes/database_member_object.php');
 
-require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_action_deprecated.php');
 require_once('common/database/traits/database_name.php');
 
 
@@ -21,7 +21,7 @@ require_once('common/database/traits/database_name.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alterextension.html
  */
 class c_database_alter_extension extends c_database_query {
-  use t_database_action;
+  use t_database_action_deprecated;
   use t_database_action_parameter;
   use t_database_name;
 
@@ -85,7 +85,7 @@ class c_database_alter_extension extends c_database_query {
 
     $value = $this->p_do_build_name() . ' ';
     switch($this->action) {
-      case e_database_action::UPDATE:
+      case e_database_action_deprecated::UPDATE:
         $value .= c_database_string::UPDATE;
         if (isset($this->action_parameter)) {
           $value .= ' ' . c_database_string::TO . ' ' . $this->action_parameter;
@@ -95,7 +95,7 @@ class c_database_alter_extension extends c_database_query {
           return new c_base_return_false();
         }
         break;
-      case e_database_action::SET_SCHEMA:
+      case e_database_action_deprecated::SET_SCHEMA:
         if (isset($this->set_schema)) {
           $value = $this->p_do_build_set_schema();
         }
@@ -104,7 +104,7 @@ class c_database_alter_extension extends c_database_query {
           return new c_base_return_false();
         }
         break;
-      case e_database_action::ADD:
+      case e_database_action_deprecated::ADD:
         $value .= c_database_string::ADD;
         if ($this->action_parameter instanceof c_database_member_object && $this->action_parameter->do_build() instanceof c_base_return_true) {
           $value .= ' ' . $this->action_parameter->get_value();
@@ -114,7 +114,7 @@ class c_database_alter_extension extends c_database_query {
           return new c_base_return_false();
         }
         break;
-      case e_database_action::DROP:
+      case e_database_action_deprecated::DROP:
         $value .= c_database_string::DROP;
         if ($this->action_parameter instanceof c_database_member_object) {
           if ($this->action_parameter->do_build() instanceof c_base_return_true) {

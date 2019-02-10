@@ -78,13 +78,9 @@ trait t_database_set_table {
   /**
    * Get the currently assigned add table settings.
    *
-   * @param int|null $index
-   *   (optional) Get the add table settings at the specified index.
-   *   When NULL, all add table settings are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the add table settings.
-   *   NULL is returned if not set (add table not to be used).
+   *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
   public function get_set_table() {
@@ -92,7 +88,7 @@ trait t_database_set_table {
       return new c_base_return_null();
     }
 
-    if (isset($this->set_table)) {
+    if (is_array($this->set_table)) {
       return c_base_return_array::s_new($this->set_table);
     }
 

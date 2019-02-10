@@ -10,7 +10,7 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_action_deprecated.php');
 require_once('common/database/traits/database_name.php');
 require_once('common/database/traits/database_owner_to.php');
 require_once('common/database/traits/database_rename_to.php');
@@ -21,8 +21,8 @@ require_once('common/database/traits/database_rename_to.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-altereventtrigger.html
  */
 class c_database_alter_coalation extends c_database_query {
-  use t_database_action;
-  use t_database_action_property;
+  use t_database_action_deprecated;
+  use t_database_action_property_deprecated;
   use t_database_name;
   use t_database_owner_to;
   use t_database_rename_to;
@@ -87,10 +87,10 @@ class c_database_alter_coalation extends c_database_query {
 
     $value = $this->p_do_build_name() . ' ';
     switch($this->action) {
-      case e_database_action::DISABLE:
+      case e_database_action_deprecated::DISABLE:
         $value .= c_database_string::DISABLE;
         break;
-      case e_database_action::ENABLE:
+      case e_database_action_deprecated::ENABLE:
         $value .= c_database_string::ENABLE;
         if ($this->action_property === e_database_property::REPLICA) {
           $value .= ' ' . c_database_string::REPLICA;
@@ -103,7 +103,7 @@ class c_database_alter_coalation extends c_database_query {
           return new c_base_return_false();
         }
         break;
-      case e_database_action::OWNER_TO:
+      case e_database_action_deprecated::OWNER_TO:
         if (isset($this->owner_to)) {
           $value .= $this->p_do_build_owner_to();
         }
@@ -112,7 +112,7 @@ class c_database_alter_coalation extends c_database_query {
           return new c_base_return_false();
         }
         break;
-      case e_database_action::RENAME_TO:
+      case e_database_action_deprecated::RENAME_TO:
         if (isset($this->rename_to)) {
           $value .= $this->p_do_build_rename_to();
         }

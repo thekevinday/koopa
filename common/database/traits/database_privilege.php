@@ -63,35 +63,20 @@ trait t_database_privilege {
   /**
    * Get the privileges.
    *
-   * @param int|null $index
-   *   (optional) Get the privilege at the specified index.
-   *   When NULL, all privileges are returned.
-   *
-   * @return c_base_return_int|c_base_return_array|c_base_return_null
+   * @return c_base_return_array|c_base_return_null
    *   An array of privileges or NULL if not defined.
-   *   A single privilege is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_privilege($index = NULL) {
+  public function get_privilege() {
     if (is_null($this->privilege)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if ($this->privilege === e_database_privilege::ALL) {
-        return c_base_return_array::s_new([$this->privilege]);
-      }
-      else if (is_array($this->privilege)) {
-        return c_base_return_array::s_new($this->privilege);
-      }
+    if ($this->privilege === e_database_privilege::ALL) {
+      return c_base_return_array::s_new([$this->privilege]);
     }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->privilege) && is_int($this->privilege[$index])) {
-        return clone($this->privilege[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'privilege[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    else if (is_array($this->privilege)) {
+      return c_base_return_array::s_new($this->privilege);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'privilege', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

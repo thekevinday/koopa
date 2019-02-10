@@ -20,6 +20,8 @@ require_once('common/database/traits/database_set_schema.php');
  *
  * When no argument mode is specified, then a wildcard * is auto-provided for the aggregate_signature parameter.
  *
+ * @todo: review this implementation, may be outdated.
+ *
  * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
  */
 class c_database_alter_aggregate extends c_database_query {
@@ -151,32 +153,17 @@ class c_database_alter_aggregate extends c_database_query {
   /**
    * Get the aggregate signatures.
    *
-   * @param int|null $index
-   *   (optional) Get the argument signature at the specified index.
-   *   When NULL, all argument signatures are returned.
-   *
-   * @return c_database_argument_aggregate_signature|c_base_return_array|c_base_return_null
+   * @return c_base_return_array|c_base_return_null
    *   An array of aggregate signatures or NULL if not defined.
-   *   A single aggregate signature is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_aggregate_signature($index = NULL) {
+  public function get_aggregate_signature() {
     if (is_null($this->aggregate_signatures)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->aggregate_signatures)) {
-        return c_base_return_array::s_new($this->aggregate_signatures);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->aggregate_signatures) && $this->aggregate_signatures[$index] instanceof c_database_argument_aggregate_signature) {
-        return clone($this->aggregate_signatures[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'aggregate_signatures[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->aggregate_signatures)) {
+      return c_base_return_array::s_new($this->aggregate_signatures);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'aggregate_signatures', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -186,23 +173,16 @@ class c_database_alter_aggregate extends c_database_query {
   /**
    * Get the total aggregate signatures.
    *
-   * @param int|null $index
-   *   (optional) Get the aggregate signature at the specified index.
-   *   When NULL, all aggregate signatures are returned.
-   *
    * @return c_base_return_int
    *   The total number of aggregate signatures.
    *   0 with the error bit set is returned on error.
    */
-  public function get_aggregate_signature_count($index = NULL) {
+  public function get_aggregate_signature_count() {
     if (is_null($this->aggregate_signatures)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      return new c_base_return_int(0);
-    }
-    else if (is_array($this->aggregate_signatures)) {
+    if (is_array($this->aggregate_signatures)) {
       return new c_base_return_int(count($this->aggregate_signatures));
     }
 
@@ -213,32 +193,17 @@ class c_database_alter_aggregate extends c_database_query {
   /**
    * Get the order by aggregate signatures.
    *
-   * @param int|null $index
-   *   (optional) Get the argument signature at the specified index.
-   *   When NULL, all argument signatures are returned.
-   *
-   * @return c_database_argument_aggregate_signature|c_base_return_array|c_base_return_null
+   * @return c_base_return_array|c_base_return_null
    *   An array of order by aggregate signatures or NULL if not defined.
-   *   A single order by aggregate signature is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_order_by_signature($index = NULL) {
+  public function get_order_by_signature() {
     if (is_null($this->order_by_signatures)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->order_by_signatures)) {
-        return c_base_return_array::s_new($this->order_by_signatures);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->order_by_signatures) && $this->order_by_signatures[$index] instanceof c_database_argument_aggregate_signature_base) {
-        return clone($this->order_by_signatures[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'order_by_signatures[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->order_by_signatures)) {
+      return c_base_return_array::s_new($this->order_by_signatures);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'order_by_signatures', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
@@ -252,15 +217,12 @@ class c_database_alter_aggregate extends c_database_query {
    *   The total number of aggregate signatures.
    *   0 with the error bit set is returned on error.
    */
-  public function get_order_by_signature_count($index = NULL) {
+  public function get_order_by_signature_count() {
     if (is_null($this->order_by_signatures)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      return new c_base_return_int(0);
-    }
-    else if (is_array($this->aggregate_signatures)) {
+    if (is_array($this->aggregate_signatures)) {
       return new c_base_return_int(count($this->aggregate_signatures));
     }
 

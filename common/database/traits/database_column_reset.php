@@ -83,34 +83,20 @@ trait t_database_column_reset {
   }
 
   /**
-   * Get the currently assigned COLUMN_RESET attribute option at the specified index.
+   * Get the currently assigned COLUMN_RESET attribute option.
    *
-   * @param int|null $index
-   *   (optional) Get the index attribute option type at the specified index.
-   *   When NULL, all index attribute option types are returned.
-   *
-   * @return c_base_return_array|c_base_return_int|c_base_return_null
-   *   A code or an array of codes representing the argument_type on success.
-   *   NULL is returned if not set (column_reset tablespace is not to be used).
+   * @return c_base_return_array|c_base_return_null
+   *   An array of codes representing the argument_type on success.
+   *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_column_reset($index = NULL) {
+  public function get_column_reset() {
     if (is_null($this->column_reset)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->column_reset)) {
-        return c_base_return_array::s_new($this->column_reset);
-      }
-    }
-    else {
-      if (is_int($index) && isset($this->column_reset['values'][$index]) && is_int($this->column_reset['values'][$index])) {
-        return c_base_return_int::s_new($this->column_reset['values'][$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_reset[values][index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->column_reset)) {
+      return c_base_return_array::s_new($this->column_reset);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'column_reset', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

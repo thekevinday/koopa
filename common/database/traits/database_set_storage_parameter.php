@@ -79,34 +79,20 @@ trait t_database_set_storage_parameter {
   }
 
   /**
-   * Get the currently assigned SET index storage parameter at the specified index.
-   *
-   * @param int|null $index
-   *   (optional) Get the index storage parameter type at the specified index.
-   *   When NULL, all index storage parameter types are returned.
+   * Get the currently assigned SET index storage parameter.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the set index storage parameter settings.
-   *   NULL is returned if not set (set index storage parameter not to be used).
+   *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_set_storage_parameter($index = NULL) {
+  public function get_set_storage_parameter() {
     if (is_null($this->set_storage_parameter)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->set_storage_parameter)) {
-        return c_base_return_array::s_new($this->set_storage_parameter);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->set_storage_parameter)) {
-        return c_base_return_array::s_new($this->set_storage_parameter[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_storage_parameter[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->set_storage_parameter)) {
+      return c_base_return_array::s_new($this->set_storage_parameter);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'set_storage_parameter', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);

@@ -12,7 +12,7 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
-require_once('common/database/traits/database_action.php');
+require_once('common/database/traits/database_action_deprecated.php');
 require_once('common/database/traits/database_name.php');
 
 /**
@@ -21,7 +21,7 @@ require_once('common/database/traits/database_name.php');
  * @see: https://www.postgresql.org/docs/current/static/sql-alterextension.html
  */
 class c_database_member_object extends c_database_query {
-  use t_database_action;
+  use t_database_action_deprecated;
   use t_database_action_parameter;
   use t_database_name;
 

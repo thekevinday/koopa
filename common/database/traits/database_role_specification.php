@@ -66,7 +66,7 @@ trait t_database_role_specification {
    *   NULL is returned if not set.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_role_specification($index = NULL) {
+  public function get_role_specification() {
     if (is_null($this->role_specification)) {
       return new c_base_return_null();
     }

@@ -78,10 +78,6 @@ trait t_database_drop_value {
   /**
    * Get the currently assigned add table settings.
    *
-   * @param int|null $index
-   *   (optional) Get the add table settings at the specified index.
-   *   When NULL, all add table settings are returned.
-   *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the add table settings.
    *   NULL is returned if not set (add table not to be used).
@@ -92,7 +88,7 @@ trait t_database_drop_value {
       return new c_base_return_null();
     }
 
-    if (isset($this->drop_value)) {
+    if (is_array($this->drop_value)) {
       return c_base_return_array::s_new($this->drop_value);
     }
 

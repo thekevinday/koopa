@@ -58,32 +58,17 @@ trait t_database_for_role {
   /**
    * Get the currently assigned for role value.
    *
-   * @param int|null $index
-   *   (optional) Get the for role at the specified index.
-   *   When NULL, all for role values are returned.
-   *
-   * @return i_database_query_placeholder|c_base_return_array|c_base_return_null
+   * @return c_base_return_array|c_base_return_null
    *   An array of for roles or NULL if not defined.
-   *   A single for role query placeholder is returned if $index is an integer.
    *   NULL with the error bit set is returned on error.
    */
-  public function get_for_role($index = NULL) {
+  public function get_for_role() {
     if (is_null($this->for_role)) {
       return new c_base_return_null();
     }
 
-    if (is_null($index)) {
-      if (is_array($this->for_role)) {
-        return c_base_return_array::s_new($this->for_role);
-      }
-    }
-    else {
-      if (is_int($index) && array_key_exists($index, $this->for_role) && isset($this->for_role[$index])) {
-        return clone($this->for_role[$index]);
-      }
-
-      $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'for_role[index]', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
-      return c_base_return_error::s_null($error);
+    if (is_array($this->for_role)) {
+      return c_base_return_array::s_new($this->for_role);
     }
 
     $error = c_base_error::s_log(NULL, ['arguments' => [':{variable_name}' => 'for_role', ':{function_name}' => __CLASS__ . '->' . __FUNCTION__]], i_base_error_messages::INVALID_VARIABLE);
