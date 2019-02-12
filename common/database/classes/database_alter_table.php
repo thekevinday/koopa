@@ -90,7 +90,6 @@ class c_database_alter_table extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter table';
 
-
   /**
    * Class constructor.
    */

@@ -17,7 +17,7 @@ trait t_database_restart_with {
   protected $restart_with;
 
   /**
-   * Set the RESTART WITH settings.
+   * Assign the settings.
    *
    * @param int|null $value
    *   A number representing the start with value.
@@ -78,6 +78,6 @@ trait t_database_restart_with {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_restart_with() {
-    return c_database_string::RESTART_WITH . ' ' . $this->restart_with;
+    return c_database_string::RESTART . ' ' . c_database_string::WITH . ' ' . $this->restart_with;
   }
 }

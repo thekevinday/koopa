@@ -33,7 +33,6 @@ class c_database_alter_policy extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter policy';
 
-
   /**
    * Class constructor.
    */

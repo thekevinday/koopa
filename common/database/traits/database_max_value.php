@@ -17,7 +17,7 @@ trait t_database_max_value {
   protected $max_value;
 
   /**
-   * Set the MAXVALUE data type settings.
+   * Assign the settings.
    *
    * @param int|false|null $value
    *   A number representing the max value.

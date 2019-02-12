@@ -19,7 +19,7 @@ trait t_database_with_dictionary {
   protected $with_dictionary;
 
   /**
-   * Set the WITH DICTIONARY settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The dictionary name.
@@ -82,6 +82,6 @@ trait t_database_with_dictionary {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_with_dictionary() {
-    return c_database_string::WITH_DICTIONARY . ' ' . $this->with_dictionary;
+    return c_database_string::WITH . ' ' . c_database_string::DICTIONARY . ' ' . $this->with_dictionary;
   }
 }

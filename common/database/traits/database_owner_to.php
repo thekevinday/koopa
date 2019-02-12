@@ -21,7 +21,7 @@ trait t_database_owner_to {
   protected $owner_to;
 
   /**
-   * Set the OWNER TO settings.
+   * Assign the settings.
    *
    * @param int|null $owner_to
    *   The owner type to assign.
@@ -117,6 +117,6 @@ trait t_database_owner_to {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_owner_to() {
-    return c_database_string::OWNER_TO . ' ' . $this->owner_to['value'];
+    return c_database_string::OWNER . ' ' . c_database_string::TO . ' ' . $this->owner_to['value'];
   }
 }

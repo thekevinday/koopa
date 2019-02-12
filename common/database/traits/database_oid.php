@@ -17,7 +17,7 @@ trait t_database_oid {
   protected $oid;
 
   /**
-   * Set the OID settings.
+   * Assign the settings.
    *
    * @param string|null $oid
    *   The oid to use.

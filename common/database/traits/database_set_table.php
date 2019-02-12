@@ -19,7 +19,7 @@ trait t_database_set_table {
   protected $set_table;
 
   /**
-   * Set the SET TABLE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The table name.
@@ -106,7 +106,7 @@ trait t_database_set_table {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_table() {
-    $value = c_database_string::SET_TABLE;
+    $value = c_database_string::SET . ' ' . c_database_string::TABLE;
 
     if ($this->set_table['only']) {
       $value .= ' ' . c_database_string::ONLY;

@@ -17,7 +17,7 @@ trait t_database_disable {
   protected $disable;
 
   /**
-   * Set the DISABLE settings.
+   * Assign the settings.
    *
    * @param bool|null $disable
    *   Set to TRUE for DISABLE.

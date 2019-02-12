@@ -23,7 +23,7 @@ trait t_database_action_constraint {
   protected $action_constraint;
 
   /**
-   * Set the ADD/ALTER/VALIDATE/DROP action CONSTRAINT settings.
+   * Assign the settings.
    *
    * @param string|null $action_constraint_name
    *   The name to use.
@@ -161,33 +161,33 @@ trait t_database_action_constraint {
       $value = c_database_string::ADD . ' ' . $this->action_constraint['name'];
 
       if ($this->action_constraint['value']) {
-        $value .= ' ' . c_database_string::NOT_VALID;
+        $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::VALID;
       }
     }
     else if ($this->action_constraint['type'] === e_database_constraint::ALTER) {
-      $value = c_database_string::ALTER_CONSTRAINT . ' ' . $this->action_constraint['name'];
+      $value = c_database_string::ALTER . ' ' . c_database_string::CONSTRAINT . ' ' . $this->action_constraint['name'];
 
       if ($this->action_constraint['value'] === e_database_constraint_mode::DEFERRABLE) {
         $value .= ' ' . c_database_string::DEFERRABLE;
       }
       else if ($this->action_constraint['value'] === e_database_constraint_mode::INITIALLY_DEFERRED) {
-        $value .= ' ' . c_database_string::INITIALLY_DEFERRED;
+        $value .= ' ' . c_database_string::INITIALLY . ' ' . c_database_string::DEFERRED;
       }
       else if ($this->action_constraint['value'] === e_database_constraint_mode::INITIALLY_IMMEDIATE) {
-        $value .= ' ' . c_database_string::INITIALLY_IMMEDIATE;
+        $value .= ' ' . c_database_string::INITIALLY . ' ' . c_database_string::IMMEDIATE;
       }
       else if ($this->action_constraint['value'] === e_database_constraint_mode::NOT_DEFERRABLE) {
-        $value .= ' ' . c_database_string::NOT_DEFERRABLE;
+        $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::DEFERRABLE;
       }
     }
     else if ($this->action_constraint['type'] === e_database_constraint::DROP) {
-      $value = c_database_string::DROP_CONSTRAINT . ' ' . $this->action_constraint['name'];
+      $value = c_database_string::DROP . ' ' . c_database_string::CONSTRAINT . ' ' . $this->action_constraint['name'];
     }
     else if ($this->action_constraint['type'] === e_database_constraint::VALIDATE) {
       $value = c_database_string::VALIDATE_CONSTAINT;
 
       if ($this->action_constraint['value']) {
-        $value .= ' ' . c_database_string::NOT_VALID;
+        $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::VALID;
       }
 
       $value .=' ' . $this->action_constraint['name'];

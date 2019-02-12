@@ -19,7 +19,7 @@ trait t_database_procedural {
   protected $procedural;
 
   /**
-   * Set the PROCEDURAL value.
+   * Assign the settings.
    *
    * @param bool|null $procedural
    *   Set to TRUE for PROCEDURAL.

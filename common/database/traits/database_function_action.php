@@ -21,7 +21,7 @@ trait t_database_function_action {
   protected $function_action;
 
   /**
-   * Set the argument type settings.
+   * Assign the settings.
    *
    * @param int|null $function_action
    *   The function action code to assign.
@@ -175,7 +175,7 @@ trait t_database_function_action {
     $values = [];
     foreach ($this->function_action as $function_action) {
       if ($function_action['type'] === e_database_function_action::CALLED_ON_NULL_INPUT) {
-        $values[] = c_database_string::CALLED_ON_NULL_INPUT;
+        $values[] = c_database_string::CALLED . ' ' . c_database_string::ON . ' ' . c_database_string::NULL . ' ' . c_database_string::INPUT;
       }
       else if ($function_action['type'] === e_database_function_action::COST) {
         $values[] = c_database_string::COST . ' ' . $function_action['parameter_1'];
@@ -187,7 +187,7 @@ trait t_database_function_action {
         $values[] = c_database_string::LEAKPROOF;
       }
       else if ($function_action['type'] === e_database_function_action::NOT_LEAKPROOF) {
-        $values[] = c_database_string::NOT_LEAKPROOF;
+        $values[] = c_database_string::NOT . ' ' . c_database_string::LEAKPROOF;
       }
       else if ($function_action['type'] === e_database_function_action::PARALLEL_RESTRICTED) {
         $values[] = c_database_string::PARALLEL_RESTRICTED;
@@ -202,19 +202,19 @@ trait t_database_function_action {
         $values[] = c_database_string::RESET;
       }
       else if ($function_action['type'] === e_database_function_action::RESET_ALL) {
-        $values[] = c_database_string::RESET_ALL;
+        $values[] = c_database_string::RESET . ' ' . c_database_string::ALL;
       }
       else if ($function_action['type'] === e_database_function_action::RETURNS_NULL_ON_NULL_INPUT) {
-        $values[] = c_database_string::RETURNS_NULL_ON_NULL_INPUT;
+        $values[] = c_database_string::RETURNS . ' ' . c_database_string::NULL . ' ' . c_database_string::ON . ' ' . c_database_string::NULL . ' ' . c_database_string::INPUT;
       }
       else if ($function_action['type'] === e_database_function_action::ROWS) {
         $values[] = c_database_string::ROWS . ' ' . $function_action['parameter_1'];
       }
       else if ($function_action['type'] === e_database_function_action::SECURITY_DEFINER) {
-        $values[] = c_database_string::SECURITY_DEFINER;
+        $values[] = c_database_string::SECURITY . ' ' . c_database_string::DEFINER;
       }
       else if ($function_action['type'] === e_database_function_action::SECURITY_INVOKER) {
-        $values[] = c_database_string::SECURITY_INVOKER;
+        $values[] = c_database_string::SECURITY . ' ' . c_database_string::INVOKER;
       }
       else if ($function_action['type'] === e_database_function_action::SET_EQUAL) {
         $value = is_null($function_action['parameter_2']) ? c_database_string::DEFAULT : $function_action['parameter_2'];
@@ -222,7 +222,7 @@ trait t_database_function_action {
         unset($value);
       }
       else if ($function_action['type'] === e_database_function_action::SET_FROM) {
-        $values[] = c_database_string::SET . ' ' . $function_action['parameter_1'] . ' ' . c_database_string::FROM_CURRENT;
+        $values[] = c_database_string::SET . ' ' . $function_action['parameter_1'] . ' ' . c_database_string::FROM . ' ' . c_database_string::CURRENT;
         unset($value);
       }
       else if ($function_action['type'] === e_database_function_action::SET_TO) {

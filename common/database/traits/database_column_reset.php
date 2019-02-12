@@ -21,7 +21,7 @@ trait t_database_column_reset {
   protected $column_reset;
 
   /**
-   * Set the COLUMN_RESET (attribute_option ...) settings.
+   * Assign the settings.
    *
    * @param int|null $attribute_option
    *   The attribute option code to assign.
@@ -83,7 +83,7 @@ trait t_database_column_reset {
   }
 
   /**
-   * Get the currently assigned COLUMN_RESET attribute option.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array of codes representing the argument_type on success.

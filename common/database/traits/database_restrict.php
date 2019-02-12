@@ -19,7 +19,7 @@ trait t_database_restrict {
   protected $restrict;
 
   /**
-   * Set the RESTRICT value.
+   * Assign the settings.
    *
    * @param bool|null $restrict
    *   Set to TRUE for RESTRICT.

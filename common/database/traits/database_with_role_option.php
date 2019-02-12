@@ -21,7 +21,7 @@ trait t_database_with_role_option {
   protected $with_role_option;
 
   /**
-   * Set the with role option.
+   * Assign the settings.
    *
    * @param int|null $type
    *   The option type from e_database_role_option.
@@ -186,16 +186,16 @@ trait t_database_with_role_option {
         $values[] = c_database_string::SUPERUSER;
       }
       else if ($role_option['type'] === e_database_role_option::CONNECTION_LIMIT) {
-        $values[] = c_database_string::CONNECTION_LIMIT . ' ' . $role_option['value'];
+        $values[] = c_database_string::CONNECTION . ' ' . c_database_string::LIMIT . ' ' . $role_option['value'];
       }
       else if ($role_option['type'] === e_database_role_option::PASSWORD) {
         $values[] = c_database_string::PASSWORD . ' ' . $role_option['value'];
       }
       else if ($role_option['type'] === e_database_role_option::PASSWORD_ENCRYPTED) {
-        $values[] = c_database_string::PASSWORD_ENCRYPTED . ' ' . $role_option['value'];
+        $values[] = c_database_string::PASSWORD . ' ' . c_database_string::ENCRYPTED . ' ' . $role_option['value'];
       }
       else if ($role_option['type'] === e_database_role_option::VALID_UNTIL) {
-        $values[] = c_database_string::VALID_UNTIL . ' ' . $role_option['value'];
+        $values[] = c_database_string::VALID . ' ' . c_database_string::UNTIL . ' ' . $role_option['value'];
       }
     }
     unset($role_option);

@@ -21,7 +21,7 @@ trait t_database_reset_storage_parameter {
   protected $reset_storage_parameter;
 
   /**
-   * Set the RESET (storage_parameter ...) settings.
+   * Assign the settings.
    *
    * @param int|null $storage_parameter
    *   The index storage_parameter code to assign.

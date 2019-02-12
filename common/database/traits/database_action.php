@@ -19,7 +19,7 @@ trait t_database_action {
   protected $action;
 
   /**
-   * Set the settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The type action name.

@@ -19,7 +19,7 @@ trait t_database_in_schema {
   protected $in_schema;
 
   /**
-   * Set the in schema, schema names.
+   * Assign the settings.
    *
    * @param string|null $schema_name
    *   The schema name to use.
@@ -86,6 +86,6 @@ trait t_database_in_schema {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_in_schema() {
-    return c_database_string::IN_SCHEMA . ' ' . implode(', ', $this->in_schema);
+    return c_database_string::IN . ' ' . c_database_string::SCHEMA . ' ' . implode(', ', $this->in_schema);
   }
 }

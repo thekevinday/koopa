@@ -19,7 +19,7 @@ trait t_database_cascade {
   protected $cascade;
 
   /**
-   * Set the HANDLER settings.
+   * Assign the settings.
    *
    * @param int|null $cascade
    *   The integer representing cascade/no-cascade.

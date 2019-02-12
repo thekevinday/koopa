@@ -19,7 +19,7 @@ trait t_database_options {
   protected $options;
 
   /**
-   * Set the in options.
+   * Assign the settings.
    *
    * @param string|null $type
    *   The option type to use.

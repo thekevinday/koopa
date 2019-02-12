@@ -17,7 +17,7 @@ trait t_database_enable {
   protected $enable;
 
   /**
-   * Set the ENABLE settings.
+   * Assign the settings.
    *
    * @param bool|null $enable
    *   Set to TRUE for ENABLE.

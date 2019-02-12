@@ -21,7 +21,7 @@ trait t_database_set_configuration_parameter {
   protected $set_configuration_parameter;
 
   /**
-   * Set the SET configuation parameter settings.
+   * Assign the settings.
    *
    * @param int|null $type
    *   The SET code to assign.
@@ -152,10 +152,10 @@ trait t_database_set_configuration_parameter {
       }
     }
     else if ($this->set_configuration_parameter['type'] == e_database_set::FROM_CURRENT) {
-      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' = ' . c_database_string::FROM_CURRENT;
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' = ' . c_database_string::FROM . ' ' . c_database_string::CURRENT;
     }
     else if ($this->set_configuration_parameter['type'] == e_database_set::TO_DEFAULT) {
-      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' ' . c_database_string::TO_DEFAULT;
+      $value = c_database_string::SET . ' ' . $this->set_configuration_parameter['parameter'] . ' ' . c_database_string::TO . ' ' . c_database_string::DEFAULT;
     }
 
     return $value;

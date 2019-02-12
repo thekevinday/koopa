@@ -21,7 +21,7 @@ trait t_database_action_disable_trigger {
   protected $action_disable_trigger;
 
   /**
-   * Set the action DISABLE TRIGGER value.
+   * Assign the settings.
    *
    * @param int|null $type
    *   An integer representing the type of the trigger.
@@ -109,7 +109,7 @@ trait t_database_action_disable_trigger {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_disable_trigger() {
-    $value = c_database_string::DISABLE_TRIGGER;
+    $value = c_database_string::DISABLE . ' ' . c_database_string::TRIGGER;
 
     if ($this->action_disable_trigger['type'] === e_database_trigger::NAME) {
       if (is_string($this->action_disable_trigger['name'])) {

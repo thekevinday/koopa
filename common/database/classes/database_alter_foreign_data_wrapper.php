@@ -32,7 +32,6 @@ class c_database_alter_foreign_data_wrapper extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter foreign data wrapper';
 
-
   /**
    * Class constructor.
    */

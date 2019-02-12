@@ -22,7 +22,7 @@ trait t_database_add_operator_family {
   protected $add_operator_family;
 
   /**
-   * Set the add user or drop user.
+   * Assign the settings.
    *
    * @param bool|null $add
    *   Set to TRUE for ADD OPERATOR.
@@ -248,13 +248,13 @@ trait t_database_add_operator_family {
 
       if ($add_operator_family['add'] && $add_operator_family['type'] === e_database_operator_family::OPERATOR) {
         if ($add_operator_family['for_type'] === e_database_operator_for::FOR_ORDER_BY) {
-          $value .= ' ' . c_database_string::FOR_ORDER_BY;
+          $value .= ' ' . c_database_string::FOR . ' ' . c_database_string::ORDER . ' ' . c_database_string::BY;
           if (isset($add_operator_family['sort_family_name'])) {
             $value .= ' ' . $add_operator_family['sort_family_name'];
           }
         }
         else if ($add_operator_family['for_type'] === e_database_operator_for::FOR_SEARCH) {
-          $value .= ' ' . c_database_string::FOR_SEARCH;
+          $value .= ' ' . c_database_string::FOR . ' ' . c_database_string::SEARCH;
         }
       }
 

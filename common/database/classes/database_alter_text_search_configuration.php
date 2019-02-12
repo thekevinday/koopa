@@ -35,7 +35,6 @@ class c_database_alter_text_search_configuration extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter text search configuration';
 
-
   /**
    * Class constructor.
    */

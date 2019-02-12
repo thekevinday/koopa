@@ -19,7 +19,7 @@ trait t_database_set_publication_name {
   protected $set_publication_name;
 
   /**
-   * Set the SET PUBLICATION (name ...) settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The publication name.
@@ -79,6 +79,6 @@ trait t_database_set_publication_name {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_publication_name() {
-    return c_database_string::SET_PUBLICATION . ' ' . implode(', ', $this->set_publication_name);
+    return c_database_string::SET . ' ' . c_database_string::PUBLICATION . ' ' . implode(', ', $this->set_publication_name);
   }
 }

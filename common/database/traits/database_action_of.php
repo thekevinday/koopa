@@ -19,7 +19,7 @@ trait t_database_action_of {
   protected $action_of;
 
   /**
-   * Set the action OF settings.
+   * Assign the settings.
    *
    * @param string|null $type_name
    *   The of type name to set to.

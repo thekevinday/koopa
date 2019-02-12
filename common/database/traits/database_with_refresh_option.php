@@ -21,7 +21,7 @@ trait t_database_with_refresh_option {
   protected $with_refresh_option;
 
   /**
-   * Set the WITH (refresh_option ...) settings.
+   * Assign the settings.
    *
    * @param int|null $option
    *   The refresh option code to assign.

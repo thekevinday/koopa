@@ -21,7 +21,7 @@ trait t_database_role_specification {
   protected $role_specification;
 
   /**
-   * Set the role specification.
+   * Assign the settings.
    *
    * @param int|string|null $name
    *   A string representing the role name to use.

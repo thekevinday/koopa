@@ -17,7 +17,7 @@ trait t_database_version {
   protected $version;
 
   /**
-   * Set the VERSION settings.
+   * Assign the settings.
    *
    * @param string|null $version
    *   The version to use.

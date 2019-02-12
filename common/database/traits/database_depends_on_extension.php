@@ -19,7 +19,7 @@ trait t_database_depends_on_extension {
   protected $depends_on_extension;
 
   /**
-   * Set the RENAME TO settings.
+   * Assign the settings.
    *
    * @param string|null $depends_on_extension
    *   The name to rename to.
@@ -75,6 +75,6 @@ trait t_database_depends_on_extension {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_depends_on_extension() {
-    return c_database_string::DEPENDS_ON_EXTENSION . ' ' . $this->depends_on_extension;
+    return c_database_string::DEPENDS . ' ' . c_database_string::ON . ' ' . c_database_string::EXTENSION . ' ' . $this->depends_on_extension;
   }
 }

@@ -17,7 +17,7 @@ trait t_database_as_data_type {
   protected $as_data_type;
 
   /**
-   * Set the AS data type settings.
+   * Assign the settings.
    *
    * @param string|null $type
    *   The data type to use.

@@ -19,7 +19,7 @@ trait t_database_action_alter_column_set {
   protected $action_alter_column_set;
 
   /**
-   * Set the SET attribute option settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.
@@ -117,7 +117,7 @@ trait t_database_action_alter_column_set {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_alter_column_set() {
-    $value = c_database_string::ALTER_COLUMN . ' ' . $this->action_alter_column_set['column_name'] . ' ' . c_database_string::SET;
+    $value = c_database_string::ALTER . ' ' . c_database_string::COLUMN . ' ' . $this->action_alter_column_set['column_name'] . ' ' . c_database_string::SET;
 
     $values = [];
     foreach ($this->action_alter_column_set['values'] as $set) {

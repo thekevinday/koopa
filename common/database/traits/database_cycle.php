@@ -17,7 +17,7 @@ trait t_database_cycle {
   protected $cycle;
 
   /**
-   * Set the CYCLE settings.
+   * Assign the settings.
    *
    * @param bool|null $cycle
    *   Set to TRUE for CYCLE.

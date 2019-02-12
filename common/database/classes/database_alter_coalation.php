@@ -79,7 +79,7 @@ class c_database_alter_coalation extends c_database_query {
   }
 
   /**
-   * Set the refresh version.
+   * Assign the settings.
    *
    * @param bool|null $refresh_version
    *   Whether or not to use REFRESH VERSION in the query.
@@ -135,7 +135,7 @@ class c_database_alter_coalation extends c_database_query {
     $value = $this->p_do_build_name();
     if (is_bool($this->refresh_version)) {
       if ($this->refresh_version) {
-        $value .= c_database_string::REFRESH_VERSION;
+        $value .= c_database_string::REFRESH . ' ' . c_database_string::VERSION;
       }
     }
     else if (isset($this->rename_to)) {

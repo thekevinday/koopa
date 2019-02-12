@@ -22,7 +22,7 @@ trait t_database_set_publication_parameter {
   protected $set_publication_parameter;
 
   /**
-   * Set the SET (publication_parameter ...) settings.
+   * Assign the settings.
    *
    * @param int|null $parameter
    *   The publication parameter code to assign.

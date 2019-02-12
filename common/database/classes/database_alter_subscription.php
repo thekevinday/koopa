@@ -45,7 +45,6 @@ class c_database_alter_subscription extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter subsciption';
 
-
   /**
    * Class constructor.
    */

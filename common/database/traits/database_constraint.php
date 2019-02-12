@@ -22,7 +22,7 @@ trait t_database_constraint {
   protected $constraint;
 
   /**
-   * Set the ADD/VALIDATE/DROP CONSTRAINT settings.
+   * Assign the settings.
    *
    * @param string|null $constraint_name
    *   The name to use.
@@ -143,17 +143,17 @@ trait t_database_constraint {
       $value = c_database_string::ADD . ' ' . $this->constraint['name']->get_name();
 
       if ($this->constraint['exists_or_invalid']) {
-        $value .= ' ' . c_database_string::NOT_VALID;
+        $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::VALID;
       }
     }
     else if ($this->constraint['type'] === e_database_constraint::DROP) {
-      $value = c_database_string::DROP_CONSTRAINT . ' ' . $this->constraint['name'];
+      $value = c_database_string::DROP . ' ' . c_database_string::CONSTRAINT . ' ' . $this->constraint['name'];
     }
     else if ($this->constraint['type'] === e_database_constraint::VALIDATE) {
       $value = c_database_string::VALIDATE_CONSTAINT;
 
       if ($this->constraint['exists_or_invalid']) {
-        $value .= ' ' . c_database_string::NOT_VALID;
+        $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::VALID;
       }
 
       $value .=' ' . $this->constraint['name'];

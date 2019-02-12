@@ -36,7 +36,6 @@ class c_database_alter_aggregate extends c_database_query {
   protected $aggregate_signatures;
   protected $order_by_signatures;
 
-
   /**
    * Class constructor.
    */
@@ -89,7 +88,7 @@ class c_database_alter_aggregate extends c_database_query {
   }
 
   /**
-   * Set the aggregate signatures.
+   * Assign the settings.
    *
    * @param c_database_argument_aggregate_signature|null $aggregate_signature
    *   The aggregate signatures to use.
@@ -120,7 +119,7 @@ class c_database_alter_aggregate extends c_database_query {
   }
 
   /**
-   * Set the order by aggregate signatures.
+   * Assign the settings.
    *
    * @param c_database_argument_aggregate_signature_base|null $order_by_signature
    *   The order by aggregate signature to use.
@@ -277,7 +276,7 @@ class c_database_alter_aggregate extends c_database_query {
       if (isset($aggregate_signatures)) {
         $aggregate_signatures = ' (' . $aggregate_signatures;
         if (isset($order_by_signatures)) {
-          $aggregate_signatures = ' ' . c_database_string::ORDER_BY . ' ' . $order_by_signatures . '';
+          $aggregate_signatures = ' ' . c_database_string::ORDER . ' ' . c_database_string::BY . ' ' . $order_by_signatures . '';
         }
         $aggregate_signatures .= ')';
       }

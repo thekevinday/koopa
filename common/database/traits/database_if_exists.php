@@ -19,7 +19,7 @@ trait t_database_if_exists {
   protected $if_exists;
 
   /**
-   * Set the IF EXISTS value.
+   * Assign the settings.
    *
    * @param bool|null $if_exists
    *   Set to TRUE for 'IF EXISTS'.

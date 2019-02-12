@@ -19,7 +19,7 @@ trait t_database_validator {
   protected $validator;
 
   /**
-   * Set the VALIDATOR settings.
+   * Assign the settings.
    *
    * @param int|null $validator
    *   The integer representing validator/no-validator.
@@ -107,7 +107,7 @@ trait t_database_validator {
       }
     }
     else if ($this->validator['type'] == e_database_validator::NO_VALIDATOR) {
-      $value = c_database_string::NO_VALIDATOR;
+      $value = c_database_string::NO . ' ' . c_database_string::VALIDATOR;
     }
 
     return $value;

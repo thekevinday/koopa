@@ -19,7 +19,7 @@ trait t_database_refresh_publication {
   protected $refresh_publication;
 
   /**
-   * Set the REFRESH PUBLICATION settings.
+   * Assign the settings.
    *
    * @param bool|null $refresh
    *   Set to TRUE to use REFRESH PUBLICATION.
@@ -71,7 +71,7 @@ trait t_database_refresh_publication {
    */
   protected function p_do_build_refresh_publication() {
     if ($this->refresh_publication) {
-      return c_database_string::REFRESH_PUBLICATION;
+      return c_database_string::REFRESH . ' ' . c_database_string::PUBLICATION;
     }
 
     return NULL;

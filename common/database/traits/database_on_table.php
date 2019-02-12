@@ -17,7 +17,7 @@ trait t_database_on_table {
   protected $on_table;
 
   /**
-   * Set the ON TABLE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The table name to use.

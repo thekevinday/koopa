@@ -10,27 +10,37 @@ require_once('common/base/classes/base_return.php');
 
 require_once('common/database/classes/database_query.php');
 
+require_once('common/database/traits/database_transaction_action.php');
+require_once('common/database/traits/database_transaction_mode.php');
 
 /**
- * The class for building and returning a Postgresql ALTER COALATION query string.
+ * The class for building and returning a Postgresql BEGIN query string.
  *
- * @see: https://www.postgresql.org/docs/current/static/sql-alteraggregate.html
+ * @see: https://www.postgresql.org/docs/current/static/sql-begin.html
  */
-class c_database_alter_coalation extends c_database_query {
-  protected const p_QUERY_COMMAND = 'alter coalation';
+class c_database_begin extends c_database_query {
+  use t_database_transaction_action;
+  use t_database_transaction_mode;
 
+  protected const p_QUERY_COMMAND = 'begin';
 
   /**
    * Class constructor.
    */
   public function __construct() {
     parent::__construct();
+
+    $this->transaction_action = NULL;
+    $this->transaction_mode   = NULL;
   }
 
   /**
    * Class destructor.
    */
   public function __destruct() {
+    unset($this->transaction_action);
+    unset($this->transaction_mode);
+
     parent::__destruct();
   }
 
@@ -59,11 +69,20 @@ class c_database_alter_coalation extends c_database_query {
    * Implements do_build().
    */
   public function do_build() {
-    if (is_null($this->name)) {
-      return new c_base_return_false();
+    $value = NULL;
+
+    if (isset($this->transaction_action)) {
+      $value = $this->p_do_build_transaction_action();
     }
 
-    $value = $this->p_do_build_name();
+    if (isset($this->transaction_mode)) {
+      if (is_null($value)) {
+        $value = $this->p_do_build_transaction_mode();
+      }
+      else {
+        $value = ' ' . $this->p_do_build_transaction_mode();
+      }
+    }
 
     $this->value = static::p_QUERY_COMMAND;
     $this->value .= ' ' . $value;

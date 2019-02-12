@@ -17,7 +17,7 @@ trait t_database_server_name {
   protected $server_name;
 
   /**
-   * Set the SERVER settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The server name to use.

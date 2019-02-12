@@ -21,7 +21,7 @@ trait t_database_column_set {
   protected $column_set;
 
   /**
-   * Set the SET index (attribute_option ...) settings.
+   * Assign the settings.
    *
    * @param int|null $attribute_option
    *   The attribute option code to assign.
@@ -92,7 +92,7 @@ trait t_database_column_set {
   }
 
   /**
-   * Get the currently assigned COLUMN .. SET index attribute option.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array containing the set index attribute option settings.

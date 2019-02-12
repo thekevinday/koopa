@@ -41,7 +41,7 @@ class c_database_alter_domain extends c_database_query {
    */
   public function __construct() {
     parent::__construct();
-;
+
     $this->action     = NULL;
     $this->name       = NULL;
     $this->owner_to   = NULL;
@@ -249,14 +249,14 @@ class c_database_alter_domain extends c_database_query {
           $value .= ' ' . $this->constraint['name'];
 
           if ($this->property === e_database_property::NOT_VALID) {
-            $value .= ' ' . c_database_string::NOT_VALID;
+            $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::VALID;
           }
           break;
 
         case e_database_action_deprecated::DROP:
           $value .= c_database_string::DROP;
           if ($this->property === e_database_property::NOT_NULL) {
-            $value .= ' ' . c_database_string::NOT_NULL;
+            $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::NULL;
           }
           break;
 
@@ -266,9 +266,9 @@ class c_database_alter_domain extends c_database_query {
             return new c_base_return_false();
           }
 
-          $value .= c_database_string::DROP_CONSTRAINT;
+          $value .= c_database_string::DROP . ' ' . c_database_string::CONSTRAINT;
           if ($this->property === e_database_property::IF_EXISTS) {
-            $value .= ' ' . c_database_string::IF_EXISTS;
+            $value .= ' ' . c_database_string::IF . ' ' . c_database_string::EXISTS;
           }
 
           $value .= ' ' . $this->constraint['name'];
@@ -282,7 +282,7 @@ class c_database_alter_domain extends c_database_query {
           break;
 
         case e_database_action_deprecated::DROP_DEFAULT:
-          $value .= c_database_string::DROP_DEFAULT;
+          $value .= c_database_string::DROP . ' ' . c_database_string::DEFAULT;
           break;
 
         case e_database_action_deprecated::OWNER_TO:
@@ -300,7 +300,7 @@ class c_database_alter_domain extends c_database_query {
             return new c_base_return_false();
           }
 
-          $value .= c_database_string::RENAME_CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
+          $value .= c_database_string::RENAME . ' ' . c_database_string::CONSTRAINT . ' ' . $this->constraint['name'] . ' ' . c_database_string::TO . ' ' . $this->constraint['name_new'];
           break;
 
         case e_database_action_deprecated::RENAME_TO:
@@ -325,7 +325,7 @@ class c_database_alter_domain extends c_database_query {
             return new c_base_return_false();
           }
 
-          $value .= c_database_string::SET_DEFAULT . ' ' . $this->expression;
+          $value .= c_database_string::SET . ' ' . c_database_string::DEFAULT . ' ' . $this->expression;
           break;
 
         case e_database_action_deprecated::SET_SCHEMA:
@@ -343,7 +343,7 @@ class c_database_alter_domain extends c_database_query {
             return new c_base_return_false();
           }
 
-          $value .= c_database_string::VALIDATE_CONSTRAINT . ' ' . $this->constraint['name'];
+          $value .= c_database_string::VALIDATE . ' ' . c_database_string::CONSTRAINT . ' ' . $this->constraint['name'];
           break;
 
         default:

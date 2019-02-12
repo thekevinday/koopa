@@ -19,7 +19,7 @@ trait t_database_column_set_storage {
   protected $column_set_storage;
 
   /**
-   * Set the COLUMN .. SET STORAGE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The column name.

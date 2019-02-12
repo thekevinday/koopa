@@ -17,7 +17,7 @@ trait t_database_increment_by {
   protected $increment_by;
 
   /**
-   * Set the INCREMENT BY settings.
+   * Assign the settings.
    *
    * @param int|null $by
    *   A positive or negative number to increment by.

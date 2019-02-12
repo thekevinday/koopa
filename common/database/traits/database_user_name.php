@@ -21,7 +21,7 @@ trait t_database_user_name {
   protected $user_name;
 
   /**
-   * Set the user name.
+   * Assign the settings.
    *
    * @param int|null $type
    *   The user name type to use, from e_database_user.
@@ -104,13 +104,13 @@ trait t_database_user_name {
     $value = NULL;
 
     if ($this->user_name['type'] === e_database_user::CURRENT) {
-      $value = c_database_string::CURRENT_USER;
+      $value = c_database_string::CURRENT . ' ' . c_database_string::USER;
     }
     else if ($this->user_name['type'] === e_database_user::PUBLIC) {
       $value = c_database_string::PUBLIC;
     }
     else if ($this->user_name['type'] === e_database_user::SESSION) {
-      $value = c_database_string::SESSION_USER;
+      $value = c_database_string::SESSION . ' ' . c_database_string::USER;
     }
     else if ($this->user_name['type'] === e_database_user::NAME) {
       $value = $this->user_name['name'];

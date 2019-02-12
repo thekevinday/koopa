@@ -17,7 +17,7 @@ trait t_database_min_value {
   protected $min_value;
 
   /**
-   * Set the MINVALUE data type settings.
+   * Assign the settings.
    *
    * @param int|false|null $value
    *   A number representing the min value.

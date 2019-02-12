@@ -368,7 +368,7 @@ class c_database_argument_query extends c_base_return_string implements i_databa
   }
 
   /**
-   * Set the SQL query.
+   * Assign the settings.
    *
    * @param c_database_query|null $query
    *   A fully configured query.
@@ -500,7 +500,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
   }
 
   /**
-   * Set the SQL expression.
+   * Assign the settings.
    *
    * Expression are usually fields but also be other expressions.
    * Expressions may even be SQL queries.
@@ -529,7 +529,7 @@ class c_database_argument_expression extends c_base_return_string implements i_d
   }
 
   /**
-   * Set the SQL expression alias.
+   * Assign the settings.
    *
    * @param string|null $alias
    *   An optional alias to assign.
@@ -671,7 +671,7 @@ class c_database_argument_expression_column extends c_database_argument_expressi
   }
 
   /**
-   * Set the SQL expression column.
+   * Assign the settings.
    *
    * @param string|null $column
    *   Set to NULL to remove the assigned expression column.
@@ -814,7 +814,7 @@ class c_database_argument_aggregate_signature_base extends c_base_return_string 
   }
 
   /**
-   * Set the SQL argument mode.
+   * Assign the settings.
    *
    * @param int|null $argument_mode
    *   The argument mode to assign.
@@ -840,7 +840,7 @@ class c_database_argument_aggregate_signature_base extends c_base_return_string 
   }
 
   /**
-   * Set the SQL argument name.
+   * Assign the settings.
    *
    * @param string|null $argument_name
    *   The argument name to assign.
@@ -866,7 +866,7 @@ class c_database_argument_aggregate_signature_base extends c_base_return_string 
   }
 
   /**
-   * Set the SQL argument type.
+   * Assign the settings.
    *
    * @param string|null $argument_type
    *   The argument type to assign.
@@ -1040,7 +1040,7 @@ class c_database_argument_aggregate_signature extends c_database_argument_aggreg
   }
 
   /**
-   * Set the SQL argument all.
+   * Assign the settings.
    *
    * This represents whether or not a wildcard is used to represent all fields.
    *
@@ -1186,7 +1186,7 @@ class c_database_argument_database_option extends c_base_return_string implement
   }
 
   /**
-   * Set the SQL argument allow connection.
+   * Assign the settings.
    *
    * @param bool|null $allow_connection
    *   Set to TRUE to enable allow connection.
@@ -1213,7 +1213,7 @@ class c_database_argument_database_option extends c_base_return_string implement
   }
 
   /**
-   * Set the SQL argument connection limit.
+   * Assign the settings.
    *
    * @param int|null $connection_limit
    *   A connection limit integer.
@@ -1240,7 +1240,7 @@ class c_database_argument_database_option extends c_base_return_string implement
   }
 
   /**
-   * Set the SQL argument is template.
+   * Assign the settings.
    *
    * @param bool|null $is_template
    *   Set to TRUE to enable is template.
@@ -1435,7 +1435,7 @@ class c_database_argument_role_name extends c_base_return_string implements i_da
   }
 
   /**
-   * Set the SQL argument mode.
+   * Assign the settings.
    *
    * @param int|null $argument_mode
    *   The argument mode to assign.
@@ -1461,7 +1461,7 @@ class c_database_argument_role_name extends c_base_return_string implements i_da
   }
 
   /**
-   * Set the SQL argument name.
+   * Assign the settings.
    *
    * @param string|null $argument_name
    *   The argument name to assign.

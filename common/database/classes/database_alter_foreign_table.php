@@ -60,7 +60,6 @@ class c_database_alter_foreign_table extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter foreign table';
 
-
   /**
    * Class constructor.
    */

@@ -19,7 +19,7 @@ trait t_database_action_without_cluster {
   protected $action_without_cluster;
 
   /**
-   * Set the WITHOUT CLUSTER value.
+   * Assign the settings.
    *
    * @param bool|null $without_cluster
    *   Set to TRUE for WITHOUT CLUSTER.
@@ -76,6 +76,6 @@ trait t_database_action_without_cluster {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_without_cluster() {
-    return $this->action_without_cluster ? c_database_string::WITHOUT_CLUSTER : NULL;
+    return $this->action_without_cluster ? c_database_string::WITHOUT . ' ' . c_database_string::CLUSTER : NULL;
   }
 }

@@ -17,7 +17,7 @@ trait t_database_attach_partition {
   protected $attach_partition;
 
   /**
-   * Set the ATTACH PARTITION settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The partition name to use.
@@ -99,6 +99,6 @@ trait t_database_attach_partition {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_attach_partition() {
-    return c_database_string::ATTACH_PARTITION . ' ' . $this->attach_partition['name'] . ' ' . c_database_string::FOR_VALUES . ' ' . $this->attach_partition['bound_spec'];
+    return c_database_string::ATTACH . ' ' . c_database_string::PARTITION . ' ' . $this->attach_partition['name'] . ' ' . c_database_string::FOR . ' ' . c_database_string::VALUES . ' ' . $this->attach_partition['bound_spec'];
   }
 }

@@ -19,7 +19,7 @@ trait t_database_action_alter_column {
   protected $action_alter_column;
 
   /**
-   * Set the action ALTER COLUMN settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.
@@ -172,29 +172,29 @@ trait t_database_action_alter_column {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_alter_column() {
-    $value = c_database_string::ALTER_COLUMN . ' ' . $this->action_alter_column['column_name'];
+    $value = c_database_string::ALTER . ' ' . c_database_string::COLUMN . ' ' . $this->action_alter_column['column_name'];
 
     switch ($this->action_alter_column['type']) {
       case e_database_alter_column::DROP:
         $value .= ' ' . c_database_string::DROP;
         if ($this->action_alter_column['value']) {
-          $value .= ' ' . c_database_string::NOT_NULL;
+          $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::NULL;
         }
         break;
 
       case e_database_alter_column::SET:
         $value .= ' ' . c_database_string::SET;
         if ($this->action_alter_column['value']) {
-          $value .= ' ' . c_database_string::NOT_NULL;
+          $value .= ' ' . c_database_string::NOT . ' ' . c_database_string::NULL;
         }
         break;
 
       case e_database_alter_column::DROP_DEFAULT:
-        $value .= ' ' . c_database_string::DROP_DEFAULT;
+        $value .= ' ' . c_database_string::DROP . ' ' . c_database_string::DEFAULT;
         break;
 
       case e_database_alter_column::SET_DATA:
-        $value .= ' ' . c_database_string::SET_DATA;
+        $value .= ' ' . c_database_string::SET . ' ' . c_database_string::DATA;
         $value .= ' ' . c_database_string::TYPE;
         $value .= ' ' . strval($this->action_alter_column['value']);
         if (isset($this->action_alter_column['value2'])) {
@@ -204,7 +204,7 @@ trait t_database_action_alter_column {
         break;
 
       case e_database_alter_column::SET_DEFAULT:
-        $value .= ' ' . c_database_string::SET_DEFAULT;
+        $value .= ' ' . c_database_string::SET . ' ' . c_database_string::DEFAULT;
         $value .= ' ' . strval($this->action_alter_column['value']);
         break;
 
@@ -214,7 +214,7 @@ trait t_database_action_alter_column {
         break;
 
       case e_database_alter_column::SET_STORAGE:
-        $value .= ' ' . c_database_string::SET_STORAGE;
+        $value .= ' ' . c_database_string::SET . ' ' . c_database_string::STORAGE;
         if ($this->action_alter_column['value'] === e_database_set_storage::EXTENDED) {
           $value .= ' ' . c_database_string::EXTENDED;
         }

@@ -21,7 +21,7 @@ trait t_database_argument_type {
   protected $argument_type;
 
   /**
-   * Set the argument type settings.
+   * Assign the settings.
    *
    * @param string|null $argument_type
    *   The argument type to assign.

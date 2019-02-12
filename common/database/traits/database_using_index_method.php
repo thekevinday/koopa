@@ -17,7 +17,7 @@ trait t_database_using_index_method {
   protected $using_index_method;
 
   /**
-   * Set the USING settings.
+   * Assign the settings.
    *
    * @param string|null $using_index_method
    *   The using_index_method to use.

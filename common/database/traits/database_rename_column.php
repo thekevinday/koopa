@@ -17,7 +17,7 @@ trait t_database_rename_column {
   protected $rename_column;
 
   /**
-   * Set the RENAME COLUMN settings.
+   * Assign the settings.
    *
    * @param string|null $from_name
    *   The column name to rename from.
@@ -99,6 +99,6 @@ trait t_database_rename_column {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_rename_column() {
-    return c_database_string::RENAME_COLUMN . ' ' . $this->rename_column['from'] . ' ' . c_database_string::TO . ' ' . $this->rename_column['to'];
+    return c_database_string::RENAME . ' ' . c_database_string::COLUMN . ' ' . $this->rename_column['from'] . ' ' . c_database_string::TO . ' ' . $this->rename_column['to'];
   }
 }

@@ -21,7 +21,7 @@ trait t_database_action_enable_rule {
   protected $action_enable_rule;
 
   /**
-   * Set the action ENABLE RULE value.
+   * Assign the settings.
    *
    * @param int|null $type
    *   An integer representing the type of the rule.
@@ -114,23 +114,23 @@ trait t_database_action_enable_rule {
     if ($this->action_enable_rule['type'] === e_database_rule::ALWAYS || $this->action_enable_rule['type'] === e_database_rule::REPLICA) {
       if (is_string($this->action_enable_rule['name'])) {
         if ($this->action_enable_rule['type'] === e_database_rule::ALWAYS) {
-          $value = c_database_string::ENABLE_ALWAYS_RULE . ' ' . $this->action_enable_rule['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::ALWAYS . ' ' . c_database_string::RULE . ' ' . $this->action_enable_rule['name'];
         }
         else if ($this->action_enable_rule['type'] === e_database_rule::REPLICA) {
-          $value = c_database_string::ENABLE_REPLICA_RULE . ' ' . $this->action_enable_rule['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::REPLICA . ' ' . c_database_string::RULE . ' ' . $this->action_enable_rule['name'];
         }
       }
     }
     else if ($this->action_enable_rule['type'] === e_database_rule::NAME) {
       if (is_string($this->action_enable_rule['name'])) {
-          $value = c_database_string::ENABLE_RULE . ' ' . $this->action_enable_rule['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::RULE . ' ' . $this->action_enable_rule['name'];
       }
     }
     else if ($this->action_enable_rule['type'] === e_database_rule::ALL) {
-      $value = c_database_string::ENABLE_RULE . ' ' . c_database_string::ALL;
+      $value = c_database_string::ENABLE . ' ' . c_database_string::RULE . ' ' . c_database_string::ALL;
     }
     else if ($this->action_enable_rule['type'] === e_database_rule::USER) {
-      $value = c_database_string::ENABLE_RULE . ' ' . c_database_string::USER;
+      $value = c_database_string::ENABLE . ' ' . c_database_string::RULE . ' ' . c_database_string::USER;
     }
 
     return $value;

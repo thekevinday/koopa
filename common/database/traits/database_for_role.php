@@ -19,7 +19,7 @@ trait t_database_for_role {
   protected $for_role;
 
   /**
-   * Set the FOR ROLE value.
+   * Assign the settings.
    *
    * @param string|null $for_role
    *   Append a role name to the list.
@@ -85,6 +85,6 @@ trait t_database_for_role {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_for_role() {
-    return c_database_string::FOR_ROLE . ' ' . implode(', ', $this->for_role);
+    return c_database_string::FOR . ' ' . c_database_string::ROLE . ' ' . implode(', ', $this->for_role);
   }
 }

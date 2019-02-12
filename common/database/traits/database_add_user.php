@@ -21,7 +21,7 @@ trait t_database_add_user {
   protected $add_user;
 
   /**
-   * Set the add user or drop user.
+   * Assign the settings.
    *
    * @param string|int|bool|null $name
    *   The user name (role name) to use.

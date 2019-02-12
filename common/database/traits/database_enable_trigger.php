@@ -21,7 +21,7 @@ trait t_database_enable_trigger {
   protected $enable_trigger;
 
   /**
-   * Set the ENABLE TRIGGER value.
+   * Assign the settings.
    *
    * @param int|null $type
    *   An integer representing the type of the trigger.
@@ -114,23 +114,23 @@ trait t_database_enable_trigger {
     if ($this->enable_trigger['type'] === e_database_trigger::ALWAYS || $this->enable_trigger['type'] === e_database_trigger::REPLICA) {
       if (is_string($this->enable_trigger['name'])) {
         if ($this->enable_trigger['type'] === e_database_trigger::ALWAYS) {
-          $value = c_database_string::ENABLE_ALWAYS_TRIGGER . ' ' . $this->enable_trigger['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::ALWAYS . ' ' . c_database_string::TRIGGER . ' ' . $this->enable_trigger['name'];
         }
         else if ($this->enable_trigger['type'] === e_database_trigger::REPLICA) {
-          $value = c_database_string::ENABLE_REPLICA_TRIGGER . ' ' . $this->enable_trigger['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::REPLICA . ' ' . c_database_string::TRIGGER . ' ' . $this->enable_trigger['name'];
         }
       }
     }
     else if ($this->enable_trigger['type'] === e_database_trigger::NAME) {
       if (is_string($this->enable_trigger['name'])) {
-          $value = c_database_string::ENABLE_TRIGGER . ' ' . $this->enable_trigger['name'];
+          $value = c_database_string::ENABLE . ' ' . c_database_string::TRIGGER . ' ' . $this->enable_trigger['name'];
       }
     }
     else if ($this->enable_trigger['type'] === e_database_trigger::ALL) {
-      $value = c_database_string::ENABLE_TRIGGER . ' ' . c_database_string::ALL;
+      $value = c_database_string::ENABLE . ' ' . c_database_string::TRIGGER . ' ' . c_database_string::ALL;
     }
     else if ($this->enable_trigger['type'] === e_database_trigger::USER) {
-      $value = c_database_string::ENABLE_TRIGGER . ' ' . c_database_string::USER;
+      $value = c_database_string::ENABLE . ' ' . c_database_string::TRIGGER . ' ' . c_database_string::USER;
     }
 
     return $value;

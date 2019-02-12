@@ -19,7 +19,7 @@ trait t_database_order_by {
   protected $order_by;
 
   /**
-   * Set the GROUP BY settings.
+   * Assign the settings.
    *
    * @param string|null $order_by
    *   The name to group by.
@@ -85,6 +85,6 @@ trait t_database_order_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_order_by() {
-    return c_database_string::ORDER_BY . ' ' . implode(', ', $this->order_by);
+    return c_database_string::ORDER . ' ' . c_database_string::BY . ' ' . implode(', ', $this->order_by);
   }
 }

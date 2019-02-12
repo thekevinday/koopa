@@ -19,7 +19,7 @@ trait t_database_add_table {
   protected $add_table;
 
   /**
-   * Set the ADD TABLE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The table name.
@@ -106,7 +106,7 @@ trait t_database_add_table {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_add_table() {
-    $value = c_database_string::ADD_TABLE;
+    $value = c_database_string::ADD . ' ' . c_database_string::TABLE;
 
     if ($this->add_table['only']) {
       $value .= ' ' . c_database_string::ONLY;

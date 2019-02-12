@@ -21,7 +21,7 @@ trait t_database_add_value {
   protected $add_value;
 
   /**
-   * Set the SET WITH OIDS value.
+   * Assign the settings.
    *
    * @param string|null $new_enum_value
    *   The enum value to use.
@@ -130,12 +130,12 @@ trait t_database_add_value {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_add_value() {
-    $value = c_database_string::ADD_VALUE;
+    $value = c_database_string::ADD . ' ' . c_database_string::VALUE;
     // @todo: confirm/deny whether or not the placeholder will be auto-quoted by PDO.
     $value .= ' \'' . $this->add_value['new_enum_value'] . '\'';
 
     if ($this->add_value['if_not_exists']) {
-      $value .= ' ' . c_database_string::IF_NOT_EXISTS;
+      $value .= ' ' . c_database_string::IF . ' ' . c_database_string::NOT . ' ' . c_database_string::EXISTS;
     }
 
     if (is_int($this->add_value['position'])) {

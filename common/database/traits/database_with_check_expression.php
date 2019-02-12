@@ -17,7 +17,7 @@ trait t_database_with_check_expression {
   protected $with_check_expression;
 
   /**
-   * Set the WITH CHECK expression settings.
+   * Assign the settings.
    *
    * @param string|null $sql_expression
    *   An SQL conditional expression.
@@ -75,6 +75,6 @@ trait t_database_with_check_expression {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_with_check_expression() {
-    return c_database_string::WITH_CHECK . ' ' . $this->with_check_expression;
+    return c_database_string::WITH . ' ' . c_database_string::CHECK . ' ' . $this->with_check_expression;
   }
 }

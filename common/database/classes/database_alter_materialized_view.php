@@ -57,7 +57,6 @@ class c_database_alter_materialized_view extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter materialized view';
 
-
   /**
    * Class constructor.
    */

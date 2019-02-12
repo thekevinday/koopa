@@ -21,7 +21,7 @@ trait t_database_group_by {
   protected $group_by;
 
   /**
-   * Set the GROUP BY settings.
+   * Assign the settings.
    *
    * @param string|null $group_by
    *   The name to group by.
@@ -87,6 +87,6 @@ trait t_database_group_by {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_group_by() {
-    return c_database_string::GROUP_BY . implode(', ', $this->group_by);
+    return c_database_string::GROUP . ' ' . c_database_string::BY . implode(', ', $this->group_by);
   }
 }

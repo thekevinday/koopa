@@ -19,7 +19,7 @@ trait t_database_set_schema {
   protected $set_schema;
 
   /**
-   * Set the SET SCHEMA settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The schema name.
@@ -82,6 +82,6 @@ trait t_database_set_schema {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_schema() {
-    return c_database_string::SET_SCHEMA . ' ' . $this->set_schema;
+    return c_database_string::SET . ' ' . c_database_string::SCHEMA . ' ' . $this->set_schema;
   }
 }

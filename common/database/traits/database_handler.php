@@ -19,7 +19,7 @@ trait t_database_handler {
   protected $handler;
 
   /**
-   * Set the HANDLER settings.
+   * Assign the settings.
    *
    * @param int|null $handler
    *   The integer representing handler/no-handler.
@@ -108,7 +108,7 @@ trait t_database_handler {
       }
     }
     else if ($this->handler['type'] === e_database_handler::NO_HANDLER) {
-      $value .= c_database_string::NO_HANDLER;
+      $value .= c_database_string::NO . ' ' . c_database_string::HANDLER;
     }
 
     return $value;

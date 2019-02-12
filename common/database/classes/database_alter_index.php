@@ -39,7 +39,6 @@ class c_database_alter_index extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter index';
 
-
   /**
    * Class constructor.
    */

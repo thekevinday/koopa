@@ -17,7 +17,7 @@ trait t_database_using_expression {
   protected $using_expression;
 
   /**
-   * Set the USING expression settings.
+   * Assign the settings.
    *
    * @param string|null $sql_expression
    *   An SQL conditional expression.

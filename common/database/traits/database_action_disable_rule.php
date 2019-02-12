@@ -21,7 +21,7 @@ trait t_database_action_disable_rule {
   protected $action_disable_rule;
 
   /**
-   * Set the action DISABLE RULE value.
+   * Assign the settings.
    *
    * @param string|null $name
    *   A string representing the rule name.
@@ -84,6 +84,6 @@ trait t_database_action_disable_rule {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_disable_rule() {
-    return c_database_string::DISABLE_RULE . ' ' . $this->action_disable_rule;
+    return c_database_string::DISABLE . ' ' . c_database_string::RULE . ' ' . $this->action_disable_rule;
   }
 }

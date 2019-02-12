@@ -19,7 +19,7 @@ trait t_database_action_drop_column {
   protected $action_drop_column;
 
   /**
-   * Set the action DROP COLUMN settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.

@@ -27,7 +27,6 @@ class c_database_alter_text_search_template extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter text search template';
 
-
   /**
    * Class constructor.
    */

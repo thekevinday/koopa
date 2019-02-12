@@ -19,7 +19,7 @@ trait t_database_with_grant_option {
   protected $with_grant_option;
 
   /**
-   * Set the WITH GRANT OPTION value.
+   * Assign the settings.
    *
    * @param bool|null $with_grant_option
    *   Set to TRUE for WITH GRANT OPTION.
@@ -76,6 +76,6 @@ trait t_database_with_grant_option {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_with_grant_option() {
-    return $this->with_grant_option ? c_database_string::WITH_GRANT_OPTION : NULL;
+    return $this->with_grant_option ? c_database_string::WITH . ' ' . c_database_string::GRANT . ' ' . c_database_string::OPTION : NULL;
   }
 }

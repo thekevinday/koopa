@@ -17,7 +17,7 @@ trait t_database_rename_constraint {
   protected $rename_constraint;
 
   /**
-   * Set the RENAME CONSTRAINT settings.
+   * Assign the settings.
    *
    * @param string|null $from_name
    *   The constraint name to rename from.
@@ -99,6 +99,6 @@ trait t_database_rename_constraint {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_rename_constraint() {
-    return c_database_string::RENAME_CONSTRAINT . ' ' . $this->rename_constraint['from'] . ' ' . c_database_string::TO . ' ' . $this->rename_constraint['to'];
+    return c_database_string::RENAME . ' ' . c_database_string::CONSTRAINT . ' ' . $this->rename_constraint['from'] . ' ' . c_database_string::TO . ' ' . $this->rename_constraint['to'];
   }
 }

@@ -29,7 +29,6 @@ class c_database_alter_extension extends c_database_query {
 
   protected $member_object;
 
-
   /**
    * Class constructor.
    */

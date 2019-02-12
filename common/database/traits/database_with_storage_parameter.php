@@ -21,7 +21,7 @@ trait t_database_with_storage_parameter {
   protected $with_storage_parameter;
 
   /**
-   * Set the WITH index (storage_parameter ...) settings.
+   * Assign the settings.
    *
    * @param int|null $parameter
    *   The storage parameter code to assign.

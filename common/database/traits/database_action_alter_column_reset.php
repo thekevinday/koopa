@@ -19,7 +19,7 @@ trait t_database_action_alter_column_reset {
   protected $action_alter_column_reset;
 
   /**
-   * Set the RESET attribute option settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.
@@ -100,7 +100,7 @@ trait t_database_action_alter_column_reset {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_alter_column_reset() {
-    $value = c_database_string::ALTER_COLUMN . ' ' . $this->action_alter_column_reset['column_name'] . ' ' . c_database_string::RESET;
+    $value = c_database_string::ALTER . ' ' . c_database_string::COLUMN . ' ' . $this->action_alter_column_reset['column_name'] . ' ' . c_database_string::RESET;
 
     $values = [];
     foreach ($this->action_alter_column_reset['values'] as $reset) {

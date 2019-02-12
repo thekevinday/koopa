@@ -17,7 +17,7 @@ trait t_database_action_set_logged {
   protected $action_set_logged;
 
   /**
-   * Set the action SET LOGGED / SET UNLOGGED settings.
+   * Assign the settings.
    *
    * @param bool|null $logged
    *   Set to TRUE for logged.
@@ -75,9 +75,9 @@ trait t_database_action_set_logged {
    */
   protected function p_do_build_action_set_logged() {
     if ($this->action_set_logged) {
-      return c_database_string::SET_LOGGED;
+      return c_database_string::SET . ' ' . c_database_string::LOGGED;
     }
 
-    return c_database_string::SET_UNLOGGED;
+    return c_database_string::SET . ' ' . c_database_string::UNLOGGED;
   }
 }

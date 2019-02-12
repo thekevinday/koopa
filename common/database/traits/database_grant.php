@@ -22,7 +22,7 @@ trait t_database_grant {
   protected $grant;
 
   /**
-   * Set the GRANT settings.
+   * Assign the settings.
    *
    * @param int|null $grant
    *   The grant/revoke code to assign.

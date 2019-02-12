@@ -21,7 +21,7 @@ trait t_database_set_storage_parameter {
   protected $set_storage_parameter;
 
   /**
-   * Set the SET index (storage_parameter ...) settings.
+   * Assign the settings.
    *
    * @param int|null $parameter
    *   The storage parameter code to assign.

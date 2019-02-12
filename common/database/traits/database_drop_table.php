@@ -19,7 +19,7 @@ trait t_database_drop_value {
   protected $drop_value;
 
   /**
-   * Set the DROP TABLE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The table name.
@@ -106,7 +106,7 @@ trait t_database_drop_value {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_drop_value() {
-    $value = c_database_string::DROP_TABLE;
+    $value = c_database_string::DROP . ' ' . c_database_string::TABLE;
 
     if ($this->drop_value['only']) {
       $value .= ' ' . c_database_string::ONLY;

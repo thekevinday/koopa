@@ -21,7 +21,7 @@ trait t_database_rename_attribute {
   protected $rename_attribute;
 
   /**
-   * Set the RENAME ATTRIBUTE settings.
+   * Assign the settings.
    *
    * @param string|null $from
    *   The name to rename from.

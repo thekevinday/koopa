@@ -21,7 +21,7 @@ trait t_database_set_operator {
   protected $set_operator;
 
   /**
-   * Set the (operator) SET settings.
+   * Assign the settings.
    *
    * @param int|null $parameter
    *   The SET code to assign.

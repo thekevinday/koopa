@@ -29,7 +29,6 @@ class c_database_alter_language extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter language';
 
-
   /**
    * Class constructor.
    */

@@ -22,7 +22,7 @@ trait t_database_type_action {
   protected $type_action;
 
   /**
-   * Set the settings.
+   * Assign the settings.
    *
    * @param int|null $attribute
    *   The attribute type to use from e_database_attribute_action.
@@ -174,7 +174,7 @@ trait t_database_type_action {
     $value = NULL;
 
     if ($this->type_action['attribute'] === e_database_attribute_action::ADD) {
-      $value = c_database_string::ADD_ATTRIBUTE;
+      $value = c_database_string::ADD . ' ' . c_database_string::ATTRIBUTE;
       $value .= ' ' . $this->type_action['name'];
       $value .= ' ' . $this->type_action['data_type'];
 
@@ -184,9 +184,9 @@ trait t_database_type_action {
       }
     }
     else if ($this->type_action['attribute'] === e_database_attribute_action::ALTER) {
-      $value = c_database_string::ALTER_ATTRIBUTE;
+      $value = c_database_string::ALTER . ' ' . c_database_string::ATTRIBUTE;
       $value .= ' ' . $this->type_action['name'];
-      $value .= ' ' . c_database_string::SET_DATA_TYPE;
+      $value .= ' ' . c_database_string::SET . ' ' . c_database_string::DATA . ' ' . c_database_string::TYPE;
       $value .= ' ' . $this->type_action['data_type'];
 
       if (isset($this->type_action['collation'])) {
@@ -195,9 +195,9 @@ trait t_database_type_action {
       }
     }
     else if ($this->type_action['attribute'] === e_database_attribute_action::DROP) {
-      $value = c_database_string::DROP_ATTRIBUTE;
+      $value = c_database_string::DROP . ' ' . c_database_string::ATTRIBUTE;
       if ($this->type_action['if_exists']) {
-        $value .= ' ' . c_database_string::IF_EXISTS;
+        $value .= ' ' . c_database_string::IF . ' ' . c_database_string::EXISTS;
       }
 
       $value .= ' ' . $this->type_action['name'];

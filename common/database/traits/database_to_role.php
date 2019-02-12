@@ -21,7 +21,7 @@ trait t_database_to_role {
   protected $to_role;
 
   /**
-   * Set the in schema, to roles.
+   * Assign the settings.
    *
    * @param int|null $role_type
    *   The role type to use.
@@ -74,7 +74,7 @@ trait t_database_to_role {
   }
 
   /**
-   * Get the in schema, to roles.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_array|c_base_return_null
    *   An array of to role arrays or NULL if not defined.

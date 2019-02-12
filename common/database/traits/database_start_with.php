@@ -17,7 +17,7 @@ trait t_database_start_with {
   protected $start_with;
 
   /**
-   * Set the START WITH settings.
+   * Assign the settings.
    *
    * @param int|null $value
    *   A number representing the start with value.
@@ -43,7 +43,7 @@ trait t_database_start_with {
   }
 
   /**
-   * Get the currently assigned start with value.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_string|c_base_return_null
    *   A number representing the start with value.
@@ -73,6 +73,6 @@ trait t_database_start_with {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_start_with() {
-    return c_database_string::START_WITH . ' ' . $this->start_with;
+    return c_database_string::START . ' ' . c_database_string::WITH . ' ' . $this->start_with;
   }
 }

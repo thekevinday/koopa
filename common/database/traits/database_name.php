@@ -17,7 +17,7 @@ trait t_database_name {
   protected $name;
 
   /**
-   * Set the NAME settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The name to use.

@@ -19,7 +19,7 @@ trait t_database_rename_value {
   protected $rename_value;
 
   /**
-   * Set the RENAME VALUE settings.
+   * Assign the settings.
    *
    * @param string|null $from
    *   The name to rename from.

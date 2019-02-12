@@ -17,7 +17,7 @@ trait t_database_cache {
   protected $cache;
 
   /**
-   * Set the CACHE settings.
+   * Assign the settings.
    *
    * @param int|null $sequence
    *   The cache sequence number to use.

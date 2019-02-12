@@ -19,7 +19,7 @@ trait t_database_wildcard {
   protected $wildcard;
 
   /**
-   * Set the * value.
+   * Assign the settings.
    *
    * @param bool|null $wildcard
    *   Set to TRUE for '*'.

@@ -19,7 +19,7 @@ trait t_database_set_tablespace {
   protected $set_tablespace;
 
   /**
-   * Set the SET TABLESPACE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The tablespace name to set to.
@@ -82,6 +82,6 @@ trait t_database_set_tablespace {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_tablespace() {
-    return c_database_string::SET_TABLESPACE . ' ' . $this->set_tablespace;
+    return c_database_string::SET . ' ' . c_database_string::TABLESPACE . ' ' . $this->set_tablespace;
   }
 }

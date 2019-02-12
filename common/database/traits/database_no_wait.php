@@ -19,7 +19,7 @@ trait t_database_no_wait {
   protected $no_wait;
 
   /**
-   * Set the NOWAIT value.
+   * Assign the settings.
    *
    * @param bool|null $no_wait
    *   Set to TRUE for NOWAIT.

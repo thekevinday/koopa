@@ -27,7 +27,6 @@ class c_database_alter_schema extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter schema';
 
-
   /**
    * Class constructor.
    */

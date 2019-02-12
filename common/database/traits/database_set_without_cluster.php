@@ -19,7 +19,7 @@ trait t_database_set_without_cluster {
   protected $set_without_cluster;
 
   /**
-   * Set the SET WITHOUT CLUSTER value.
+   * Assign the settings.
    *
    * @param bool|null $set_without_cluster
    *   Set to TRUE for SET WITHOUT CLUSTER.
@@ -46,7 +46,7 @@ trait t_database_set_without_cluster {
   }
 
   /**
-   * Get the currently assigned with grant option value.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_bool|c_base_return_null
    *   TRUE for SET WITHOUT CLUSTER on success.
@@ -76,6 +76,6 @@ trait t_database_set_without_cluster {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_without_cluster() {
-    return $this->set_without_cluster ? c_database_string::SET_WITHOUT_CLUSTER : NULL;
+    return $this->set_without_cluster ? c_database_string::SET . ' ' . c_database_string::WITHOUT . ' ' . c_database_string::CLUSTER : NULL;
   }
 }

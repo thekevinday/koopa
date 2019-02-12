@@ -21,7 +21,7 @@ trait t_database_action_replica_identity {
   protected $action_replica_identity;
 
   /**
-   * Set the REPLICA IDENTITY attribute option settings.
+   * Assign the settings.
    *
    * @param int|null $type
    *   An integer of e_database_replica_identity to use.
@@ -104,7 +104,7 @@ trait t_database_action_replica_identity {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_replica_identity() {
-    $value = c_database_string::REPLICA_IDENTITY;
+    $value = c_database_string::REPLICA . ' ' . c_database_string::IDENTITY;
 
     if ($this->action_replica_identity['type'] === e_database_replica_identity::DEFAULT) {
       $value .= ' ' . c_database_string::DEFAULT;
@@ -116,7 +116,7 @@ trait t_database_action_replica_identity {
       $value .= ' ' . c_database_string::NOTHING;
     }
     else if ($this->action_replica_identity['type'] === e_database_replica_identity::USING_INDEX) {
-      $value .= ' ' . c_database_string::USING_INDEX;
+      $value .= ' ' . c_database_string::USING . ' ' . c_database_string::INDEX;
       $value .= ' ' . $this->action_replica_identity['name'];
     }
 

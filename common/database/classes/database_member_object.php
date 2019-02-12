@@ -82,7 +82,7 @@ class c_database_member_object extends c_database_query {
     $value = NULL;
     switch($this->action) {
       case e_database_method_object::ACCESS_METHOD:
-        $value = c_database_string::ACCESS_METHOD . ' ' . $this->p_do_build_name();
+        $value = c_database_string::ACCESS . ' ' . c_database_string::METHOD . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::AGGREGATE:
         $value = c_database_string::AGGREGATE . ' ' . $this->p_do_build_name();
@@ -116,13 +116,13 @@ class c_database_member_object extends c_database_query {
         $value = c_database_string::DOMAIN . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::EVENT_TRIGGER:
-        $value = c_database_string::EVENT_TRIGGER . ' ' . $this->p_do_build_name();
+        $value = c_database_string::EVENT . ' ' . c_database_string::TRIGGER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FOREIGN_DATA_WRAPPER:
-        $value = c_database_string::FOREIGN_DATA_WRAPPER . ' ' . $this->p_do_build_name();
+        $value = c_database_string::FOREIGN . ' ' . c_database_string::DATA . ' ' . c_database_string::WRAPPER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FOREIGN_TABLE:
-        $value = c_database_string::FOREIGN_TABLE . ' ' . $this->p_do_build_name();
+        $value = c_database_string::FOREIGN . ' ' . c_database_string::TABLE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::FUNCTION:
         $value = c_database_string::FUNCTION . ' ' . $this->p_do_build_name();
@@ -137,7 +137,7 @@ class c_database_member_object extends c_database_query {
         }*/
         break;
       case e_database_method_object::MATERIALIZED_VIEW:
-        $value = c_database_string::MATERIALIZED_VIEW . ' ' . $this->p_do_build_name();
+        $value = c_database_string::MATERIALIZED . ' ' . c_database_string::VIEW . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::OPERATOR:
         $value = c_database_string::OPERATOR . ' ' . $this->p_do_build_name();
@@ -150,7 +150,7 @@ class c_database_member_object extends c_database_query {
         }
         break;
       case e_database_method_object::OPERATOR_CLASS:
-        $value = c_database_string::OPERATOR_CLASS . ' ' . $this->p_do_build_name();
+        $value = c_database_string::OPERATOR . ' ' . c_database_string::CLASS_ . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
           $value .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
         }
@@ -160,7 +160,7 @@ class c_database_member_object extends c_database_query {
         }
         break;
       case e_database_method_object::OPERATOR_FAMILY:
-        $value = c_database_string::OPERATOR_FAMILY . ' ' . $this->p_do_build_name();
+        $value = c_database_string::OPERATOR . ' ' . c_database_string::FAMILY . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
           $value .= ' ' . c_database_string::USING . ' ' . $this->action_parameter;
         }
@@ -188,19 +188,19 @@ class c_database_member_object extends c_database_query {
         $value = c_database_string::TABLE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_CONFIGURATION:
-        $value = c_database_string::TEXT_SEARCH_CONFIGURATION . ' ' . $this->p_do_build_name();
+        $value = c_database_string::TEXT . ' ' . c_database_string::SEARCH . ' ' . c_database_string::CONFIGURATION . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_DICTIONARY:
-        $value = c_database_string::TEXT_SEARCH_DICTIONARY . ' ' . $this->p_do_build_name();
+        $value = c_database_string::TEXT . ' ' . c_database_string::SEARCH . ' ' . c_database_string::DICTIONARY . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_PARSER:
-        $value = c_database_string::TEXT_SEARCH_PARSER . ' ' . $this->p_do_build_name();
+        $value = c_database_string::TEXT . ' ' . c_database_string::SEARCH . ' ' . c_database_string::PARSER . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TEXT_SEARCH_TEMPLATE:
-        $value = c_database_string::TEXT_SEARCH_TEMPLATE . ' ' . $this->p_do_build_name();
+        $value = c_database_string::TEXT . ' ' . c_database_string::SEARCH . ' ' . c_database_string::TEMPLATE . ' ' . $this->p_do_build_name();
         break;
       case e_database_method_object::TRANSFORM_FOR:
-        $value = c_database_string::TRANSFORM_FOR . ' ' . $this->p_do_build_name();
+        $value = c_database_string::TRANSFORM . ' ' . c_database_string::FOR . ' ' . $this->p_do_build_name();
         if (is_string($this->action_parameter)) {
           $value .= ' ' . c_database_string::LANGUAGE . ' ' . $this->action_parameter;
         }

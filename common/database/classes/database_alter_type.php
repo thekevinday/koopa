@@ -36,7 +36,6 @@ class c_database_alter_type extends c_database_query {
 
   protected const p_QUERY_COMMAND = 'alter type';
 
-
   /**
    * Class constructor.
    */

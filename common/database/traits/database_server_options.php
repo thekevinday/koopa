@@ -21,7 +21,7 @@ trait t_database_server_options {
   protected $server_options;
 
   /**
-   * Set the OPTIONS (...) settings.
+   * Assign the settings.
    *
    * @param int|null $option
    *   The server option code to assign.

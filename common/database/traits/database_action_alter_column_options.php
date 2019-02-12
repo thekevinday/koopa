@@ -21,7 +21,7 @@ trait t_database_action_alter_column_options {
   protected $action_alter_column_options;
 
   /**
-   * Set the OPTIONS settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.
@@ -133,7 +133,7 @@ trait t_database_action_alter_column_options {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_alter_column_options() {
-    $value = c_database_string::ALTER_COLUMN . ' ' . $this->action_alter_column_options['column_name'] . ' ' . c_database_string::OPTIONS;
+    $value = c_database_string::ALTER . ' ' . c_database_string::COLUMN . ' ' . $this->action_alter_column_options['column_name'] . ' ' . c_database_string::OPTIONS;
 
     $values = [];
     foreach ($this->action_alter_column_options['values'] as $set) {

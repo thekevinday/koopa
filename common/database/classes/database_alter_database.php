@@ -93,7 +93,7 @@ class c_database_alter_database extends c_database_query {
   }
 
   /**
-   * Set the option.
+   * Assign the settings.
    *
    * @param c_database_argument_database_option|null $option
    *   The database options to use.

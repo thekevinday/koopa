@@ -17,7 +17,7 @@ trait t_database_action_add_column {
   protected $action_add_column;
 
   /**
-   * Set the action ADD COLUMN settings.
+   * Assign the settings.
    *
    * @param string|null $column_name
    *   The column name to use.
@@ -160,7 +160,7 @@ trait t_database_action_add_column {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_add_column() {
-    $value = c_database_string::ADD_COLUMN . ' ' . $this->action_add_column['column_name'] . ' ' . $this->action_add_column['data_type'];
+    $value = c_database_string::ADD . ' ' . c_database_string::COLUMN . ' ' . $this->action_add_column['column_name'] . ' ' . $this->action_add_column['data_type'];
     if (!is_null($this->action_add_column['collate'])) {
       $value .= ' ' . $this->action_add_column['collate'];
     }

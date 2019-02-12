@@ -17,7 +17,7 @@ trait t_database_in_database {
   protected $in_database;
 
   /**
-   * Set the IN DATABASE settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The database name to use.
@@ -80,6 +80,6 @@ trait t_database_in_database {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_in_database() {
-    return c_database_string::IN_DATABASE . ' ' . $this->in_database;
+    return c_database_string::IN . ' ' . c_database_string::DATABASE . ' ' . $this->in_database;
   }
 }

@@ -19,7 +19,7 @@ trait t_database_column_set_statistics {
   protected $column_set_statistics;
 
   /**
-   * Set the COLUMN .. SET STATISTICS settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The column name.
@@ -93,6 +93,6 @@ trait t_database_column_set_statistics {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_column_set_statistics() {
-    return c_database_string::COLUMN . ' ' . $this->column_set_statistics['name'] . ' ' . c_database_string::SET_STATISTICS . ' ' . $this->column_set_statistics['value'];
+    return c_database_string::COLUMN . ' ' . $this->column_set_statistics['name'] . ' ' . c_database_string::SET . ' ' . c_database_string::STATISTICS . ' ' . $this->column_set_statistics['value'];
   }
 }

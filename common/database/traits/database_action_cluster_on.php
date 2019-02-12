@@ -19,7 +19,7 @@ trait t_database_action_cluster_on {
   protected $action_cluster_on;
 
   /**
-   * Set the action CLUSTER ON settings.
+   * Assign the settings.
    *
    * @param string|null $name
    *   The index name to use.
@@ -82,6 +82,6 @@ trait t_database_action_cluster_on {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_cluster_on() {
-    return c_database_string::CLUSTER_ON . ' ' . $this->action_cluster_on;
+    return c_database_string::CLUSTER . ' ' . c_database_string::ON . ' ' . $this->action_cluster_on;
   }
 }

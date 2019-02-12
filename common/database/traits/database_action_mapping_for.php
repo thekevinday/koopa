@@ -21,7 +21,7 @@ trait t_database_mapping_for {
   protected $mapping_for;
 
   /**
-   * Set the MAPPING FOR settings.
+   * Assign the settings.
    *
    * Set all parameters to NULL to reset data to NULL.
    *
@@ -125,16 +125,16 @@ trait t_database_mapping_for {
     $value = NULL;
 
     if ($this->mapping_for['type'] === e_database_mapping_for::ADD) {
-      $value = c_database_string::ADD . ' ' . c_database_string::MAPPING_FOR;
+      $value = c_database_string::ADD . ' ' . c_database_string::MAPPING . ' ' . c_database_string::FOR;
     }
     else if ($this->mapping_for['type'] === e_database_mapping_for::ALTER) {
-      $value = c_database_string::ALTER . ' ' . c_database_string::MAPPING_FOR;
+      $value = c_database_string::ALTER . ' ' . c_database_string::MAPPING . ' ' . c_database_string::FOR;
     }
     else if ($this->mapping_for['type'] === e_database_mapping_for::DROP) {
-      $value = c_database_string::DROP_MAPPING;
+      $value = c_database_string::DROP . ' ' . c_database_string::MAPPING;
 
       if ($this->mapping_for['if_exists']) {
-        $value .= ' ' . c_database_string::IF_EXISTS;
+        $value .= ' ' . c_database_string::IF . ' ' . c_database_string::EXISTS;
       }
 
       $value .= ' ' . c_database_string::FOR;

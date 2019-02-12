@@ -17,7 +17,7 @@ trait t_database_connection {
   protected $connection;
 
   /**
-   * Set the CONNECTION settings.
+   * Assign the settings.
    *
    * @param string|null $value
    *   The connection information to use.

@@ -19,7 +19,7 @@ trait t_database_set_with_oids {
   protected $set_with_oids;
 
   /**
-   * Set the SET WITH OIDS value.
+   * Assign the settings.
    *
    * @param bool|null $set_with_oids
    *   Set to TRUE for SET WITH OIDS.
@@ -46,7 +46,7 @@ trait t_database_set_with_oids {
   }
 
   /**
-   * Get the currently assigned set with oids status.
+   * Get the currently assigned settings.
    *
    * @return c_base_return_bool|c_base_return_null
    *   TRUE for SET WITH OIDS or FALSE for SET WITHOUT OIDS on success.
@@ -76,6 +76,6 @@ trait t_database_set_with_oids {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_set_with_oids() {
-    return $this->set_with_oids ? c_database_string::SET_WITH_OIDS : c_database_string::SET_WITHOUT_OIDS;
+    return $this->set_with_oids ? c_database_string::SET . ' ' . c_database_string::WITH . ' ' . c_database_string::OIDS : c_database_string::SET . ' ' . c_database_string::WITHOUT . ' ' . c_database_string::OIDS;
   }
 }

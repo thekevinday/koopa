@@ -21,7 +21,7 @@ trait t_database_action_row_level_security {
   protected $action_row_level_security;
 
   /**
-   * Set the ROW LEVEL SECURITY attribute option settings.
+   * Assign the settings.
    *
    * @param int|null $type
    *   An integer of e_database_row_level_security to use.
@@ -90,7 +90,7 @@ trait t_database_action_row_level_security {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_row_level_security() {
-    $value = c_database_string::REPLICA_IDENTITY;
+    $value = c_database_string::REPLICA . ' ' . c_database_string::IDENTITY;
 
     if ($this->action_row_level_security['type'] === e_database_row_level_security::DISABLE) {
       $value .= ' ' . c_database_string::DISABLE;
@@ -105,7 +105,7 @@ trait t_database_action_row_level_security {
       $value .= ' ' . c_database_string::NO_FORCE;
     }
 
-    $value .= ' ' . c_database_string::ROW_LEVEL_SECURITY;
+    $value .= ' ' . c_database_string::ROW . ' ' . c_database_string::LEVEL . ' ' . c_database_string::SECURITY;
     return $value;
   }
 }

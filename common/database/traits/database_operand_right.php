@@ -21,7 +21,7 @@ trait t_database_operand_right {
   protected $operand_right;
 
   /**
-   * Set the (right) operand settings.
+   * Assign the settings.
    *
    * @param int|string|null $type
    *   The operand to assign.

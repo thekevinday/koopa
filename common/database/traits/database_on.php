@@ -84,19 +84,19 @@ trait t_database_on {
     $value = NULL;
     switch($this->on) {
       case e_database_on::TABLES_TO:
-        $value .= c_database_string::ON_TABLES_TO;
+        $value .= c_database_string::ON . ' ' . c_database_string::TABLES . ' ' . c_database_string::TO;
         break;
       case e_database_on::SEQUENCES:
-        $value .= c_database_string::ON_SEQUENCES;
+        $value .= c_database_string::ON . ' ' . c_database_string::SEQUENCES;
         break;
       case e_database_on::FUNCTIONS:
-        $value .= c_database_string::ON_FUNCTIONS;
+        $value .= c_database_string::ON . ' ' . c_database_string::FUNCTIONS;
         break;
       case e_database_on::TYPES:
-        $value .= c_database_string::ON_TYPES;
+        $value .= c_database_string::ON . ' ' . c_database_string::TYPES;
         break;
       case e_database_on::SCHEMAS:
-        $value .= c_database_string::ON_SCHEMAS;
+        $value .= c_database_string::ON . ' ' . c_database_string::SCHEMAS;
         break;
     }
 

@@ -21,7 +21,7 @@ trait t_database_reset_configuration_parameter {
   protected $reset_configuration_parameter;
 
   /**
-   * Set the RESET configuration_parameter settings.
+   * Assign the settings.
    *
    * @param int|null $type
    *   The reset code to assign.

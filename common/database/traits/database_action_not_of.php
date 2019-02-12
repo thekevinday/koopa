@@ -19,7 +19,7 @@ trait t_database_action_not_of {
   protected $action_not_of;
 
   /**
-   * Set the action NOT OF settings.
+   * Assign the settings.
    *
    * @param bool|null $not_of
    *   Set to TRUE to enable.
@@ -76,6 +76,6 @@ trait t_database_action_not_of {
    *   NULL is returned if there is nothing to process or there is an error.
    */
   protected function p_do_build_action_not_of() {
-    return $this->action_not_of ? c_database_string::NOT_OF : NULL;
+    return $this->action_not_of ? c_database_string::NOT . ' ' . c_database_string::OF : NULL;
   }
 }

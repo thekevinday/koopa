@@ -21,7 +21,7 @@ trait t_database_with_publication_option {
   protected $with_publication_option;
 
   /**
-   * Set the WITH (publication_option ...) settings.
+   * Assign the settings.
    *
    * @param int|null $option
    *   The publication option code to assign.
